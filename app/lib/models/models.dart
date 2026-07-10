@@ -1,0 +1,620 @@
+/// 백엔드 DTO 매핑 모델들. 봉투 언래핑 후의 `data` 를 받는다.
+library;
+
+DateTime? _pdate(dynamic v) => v == null ? null : DateTime.tryParse(v.toString());
+int _pint(dynamic v) => v is num ? v.round() : int.tryParse('$v') ?? 0;
+
+class Profile {
+  final String id;
+  final String? name;
+  final String phone;
+  final bool phoneSearchConsent;
+  final List<String> industryTags;
+  final bool hasBusiness;
+
+  Profile({
+    required this.id,
+    required this.name,
+    required this.phone,
+    required this.phoneSearchConsent,
+    required this.industryTags,
+    required this.hasBusiness,
+  });
+
+  factory Profile.fromJson(Map j) => Profile(
+        id: j['id'].toString(),
+        name: j['name'] as String?,
+        phone: j['phone']?.toString() ?? '',
+        phoneSearchConsent: j['phoneSearchConsent'] == true,
+        industryTags:
+            (j['industryTags'] as List?)?.map((e) => e.toString()).toList() ?? [],
+        hasBusiness: j['hasBusiness'] == true,
+      );
+}
+
+class AuthResult {
+  final String accessToken;
+  final bool isNew;
+  final Profile profile;
+  AuthResult(this.accessToken, this.isNew, this.profile);
+  factory AuthResult.fromJson(Map j) => AuthResult(
+        j['accessToken'].toString(),
+        j['isNew'] == true,
+        Profile.fromJson(j['profile'] as Map),
+      );
+}
+
+class Confirmation {
+  final String id;
+  final String status;
+  final String statusLabel;
+  final String date; // YYYY-MM-DD (KST)
+  final String siteName;
+  final String? businessId;
+  final String companyName;
+  final String? contact;
+  final String workDescription;
+  final String startTime; // HH:mm
+  final String endTime;
+  final String rateType;
+  final String rateTypeLabel;
+  final int total;
+  final Map? equipmentSection;
+  final Map? amountCalc;
+  final String shareToken;
+  final String? signerName;
+
+  Confirmation({
+    required this.id,
+    required this.status,
+    required this.statusLabel,
+    required this.date,
+    required this.siteName,
+    required this.businessId,
+    required this.companyName,
+    required this.contact,
+    required this.workDescription,
+    required this.startTime,
+    required this.endTime,
+    required this.rateType,
+    required this.rateTypeLabel,
+    required this.total,
+    required this.equipmentSection,
+    required this.amountCalc,
+    required this.shareToken,
+    required this.signerName,
+  });
+
+  factory Confirmation.fromJson(Map j) => Confirmation(
+        id: j['id'].toString(),
+        status: j['status']?.toString() ?? 'DRAFT',
+        statusLabel: j['statusLabel']?.toString() ?? '',
+        date: j['date']?.toString() ?? '',
+        siteName: j['siteName']?.toString() ?? '',
+        businessId: j['businessId'] as String?,
+        companyName: j['companyName']?.toString() ?? '',
+        contact: j['contact'] as String?,
+        workDescription: j['workDescription']?.toString() ?? '',
+        startTime: j['startTime']?.toString() ?? '',
+        endTime: j['endTime']?.toString() ?? '',
+        rateType: j['rateType']?.toString() ?? 'DAILY',
+        rateTypeLabel: j['rateTypeLabel']?.toString() ?? '',
+        total: _pint(j['total']),
+        equipmentSection: j['equipmentSection'] as Map?,
+        amountCalc: j['amountCalc'] as Map?,
+        shareToken: j['shareToken']?.toString() ?? '',
+        signerName: j['signerName'] as String?,
+      );
+
+  DateTime get dateTime => DateTime.parse(date);
+}
+
+class DayAggregate {
+  final String date;
+  final int count;
+  final int totalAmount;
+  DayAggregate(this.date, this.count, this.totalAmount);
+  factory DayAggregate.fromJson(Map j) =>
+      DayAggregate(j['date'].toString(), _pint(j['count']), _pint(j['totalAmount']));
+}
+
+class ConfirmationList {
+  final int count;
+  final int totalAmount;
+  final List<DayAggregate> byDate;
+  final List<Confirmation> items;
+  ConfirmationList(this.count, this.totalAmount, this.byDate, this.items);
+  factory ConfirmationList.fromJson(Map j) => ConfirmationList(
+        _pint(j['count']),
+        _pint(j['totalAmount']),
+        (j['byDate'] as List? ?? [])
+            .map((e) => DayAggregate.fromJson(e as Map))
+            .toList(),
+        (j['items'] as List? ?? [])
+            .map((e) => Confirmation.fromJson(e as Map))
+            .toList(),
+      );
+
+  /// 날짜별 집계 맵 (캘린더 그리드용).
+  Map<String, DayAggregate> get byDateMap => {for (final d in byDate) d.date: d};
+}
+
+class LedgerSummary {
+  final String month;
+  final int daysWorked;
+  final int totalBilled;
+  final int totalOutstanding;
+  final int totalPaid;
+  final int entryCount;
+  LedgerSummary(this.month, this.daysWorked, this.totalBilled,
+      this.totalOutstanding, this.totalPaid, this.entryCount);
+  factory LedgerSummary.fromJson(Map j) => LedgerSummary(
+        j['month']?.toString() ?? '',
+        _pint(j['daysWorked']),
+        _pint(j['totalBilled']),
+        _pint(j['totalOutstanding']),
+        _pint(j['totalPaid']),
+        _pint(j['entryCount']),
+      );
+}
+
+class LedgerCompany {
+  final String companyName;
+  final String? businessId;
+  final int days;
+  final int total;
+  final int paid;
+  final int outstanding;
+  final DateTime? dueDate;
+  final int? dday;
+  final String status;
+  final String statusLabel;
+  LedgerCompany({
+    required this.companyName,
+    required this.businessId,
+    required this.days,
+    required this.total,
+    required this.paid,
+    required this.outstanding,
+    required this.dueDate,
+    required this.dday,
+    required this.status,
+    required this.statusLabel,
+  });
+  factory LedgerCompany.fromJson(Map j) => LedgerCompany(
+        companyName: j['companyName']?.toString() ?? '(미지정)',
+        businessId: j['businessId'] as String?,
+        days: _pint(j['days']),
+        total: _pint(j['total']),
+        paid: _pint(j['paid']),
+        outstanding: _pint(j['outstanding']),
+        dueDate: _pdate(j['dueDate']),
+        dday: j['dday'] == null ? null : _pint(j['dday']),
+        status: j['status']?.toString() ?? 'PENDING',
+        statusLabel: j['statusLabel']?.toString() ?? '',
+      );
+}
+
+class LedgerEntry {
+  final String id;
+  final String companyName;
+  final String? businessId;
+  final String? siteName;
+  final String? date;
+  final int amount;
+  final int paid;
+  final int outstanding;
+  final String status;
+  final String statusLabel;
+  final int? dday;
+  final DateTime? dueDate;
+  final List payments;
+  LedgerEntry({
+    required this.id,
+    required this.companyName,
+    required this.businessId,
+    required this.siteName,
+    required this.date,
+    required this.amount,
+    required this.paid,
+    required this.outstanding,
+    required this.status,
+    required this.statusLabel,
+    required this.dday,
+    required this.dueDate,
+    required this.payments,
+  });
+  factory LedgerEntry.fromJson(Map j) => LedgerEntry(
+        id: j['id'].toString(),
+        companyName: j['companyName']?.toString() ?? '(미지정)',
+        businessId: j['businessId'] as String?,
+        siteName: j['siteName'] as String?,
+        date: j['date'] as String?,
+        amount: _pint(j['amount']),
+        paid: _pint(j['paid']),
+        outstanding: _pint(j['outstanding']),
+        status: j['status']?.toString() ?? 'PENDING',
+        statusLabel: j['statusLabel']?.toString() ?? '',
+        dday: j['dday'] == null ? null : _pint(j['dday']),
+        dueDate: _pdate(j['dueDate']),
+        payments: j['payments'] as List? ?? const [],
+      );
+}
+
+class ExpiringDoc {
+  final String id;
+  final String type;
+  final int? dday;
+  final DateTime? expiryDate;
+  final String derivedStatus;
+  ExpiringDoc(this.id, this.type, this.dday, this.expiryDate, this.derivedStatus);
+  factory ExpiringDoc.fromJson(Map j) => ExpiringDoc(
+        j['id'].toString(),
+        j['type']?.toString() ?? '서류',
+        j['dday'] == null ? null : _pint(j['dday']),
+        _pdate(j['expiryDate']),
+        j['derivedStatus']?.toString() ?? '',
+      );
+}
+
+class ConnectionItem {
+  final String id;
+  final String status;
+  final String role; // BUSINESS(내가 사업장) / WORKER(내가 작업자)
+  final String businessId;
+  final String businessName;
+  final String workerId;
+  final String workerName;
+  ConnectionItem(this.id, this.status, this.role, this.businessId,
+      this.businessName, this.workerId, this.workerName);
+  factory ConnectionItem.fromJson(Map j) {
+    final biz = j['business'] as Map? ?? const {};
+    final worker = j['worker'] as Map? ?? const {};
+    return ConnectionItem(
+      j['id'].toString(),
+      j['status']?.toString() ?? '',
+      j['role']?.toString() ?? '',
+      biz['id']?.toString() ?? '',
+      biz['name']?.toString() ?? '',
+      worker['id']?.toString() ?? '',
+      worker['name']?.toString() ?? '',
+    );
+  }
+}
+
+// ===========================================================================
+// S4b: 서류 지갑 / 사업장 모드 / 알림
+// ===========================================================================
+
+/// 서류 지갑 항목.
+class DocumentItem {
+  final String id;
+  final String type;
+  final String ownerType; // PROFILE / EQUIPMENT
+  final String? equipmentId;
+  final String status;
+  final String derivedStatus; // VALID/EXPIRING_SOON/EXPIRED/NONE
+  final int? dday;
+  final DateTime? issuedDate;
+  final DateTime? expiryDate;
+  final bool hasMask;
+  final String? mimeType;
+  final String? originalFileName;
+
+  DocumentItem({
+    required this.id,
+    required this.type,
+    required this.ownerType,
+    required this.equipmentId,
+    required this.status,
+    required this.derivedStatus,
+    required this.dday,
+    required this.issuedDate,
+    required this.expiryDate,
+    required this.hasMask,
+    required this.mimeType,
+    required this.originalFileName,
+  });
+
+  bool get isImage => (mimeType ?? '').startsWith('image/');
+
+  factory DocumentItem.fromJson(Map j) => DocumentItem(
+        id: j['id'].toString(),
+        type: j['type']?.toString() ?? '서류',
+        ownerType: j['ownerType']?.toString() ?? 'PROFILE',
+        equipmentId: j['equipmentId'] as String?,
+        status: j['status']?.toString() ?? '',
+        derivedStatus: j['derivedStatus']?.toString() ?? 'NONE',
+        dday: j['dday'] == null ? null : _pint(j['dday']),
+        issuedDate: _pdate(j['issuedDate']),
+        expiryDate: _pdate(j['expiryDate']),
+        hasMask: j['hasMask'] == true,
+        mimeType: j['mimeType'] as String?,
+        originalFileName: j['originalFileName'] as String?,
+      );
+}
+
+/// 장비 항목.
+class EquipmentItem {
+  final String id;
+  final String type;
+  final String? vehicleNumber;
+  final String? spec;
+  final int documentCount;
+  EquipmentItem(
+      this.id, this.type, this.vehicleNumber, this.spec, this.documentCount);
+  factory EquipmentItem.fromJson(Map j) => EquipmentItem(
+        j['id'].toString(),
+        j['type']?.toString() ?? '장비',
+        j['vehicleNumber'] as String?,
+        j['spec'] as String?,
+        _pint((j['_count'] as Map?)?['documents'] ?? 0),
+      );
+}
+
+/// 묶음 공유 생성 결과.
+class ShareResult {
+  final String shareToken;
+  final String url;
+  final DateTime? expiresAt;
+  final int documentCount;
+  ShareResult(this.shareToken, this.url, this.expiresAt, this.documentCount);
+  factory ShareResult.fromJson(Map j) => ShareResult(
+        j['shareToken']?.toString() ?? '',
+        j['url']?.toString() ?? '',
+        _pdate(j['expiresAt']),
+        _pint(j['documentCount']),
+      );
+}
+
+/// 내 공유 목록 항목.
+class ShareItem {
+  final String id;
+  final String shareToken;
+  final DateTime? expiresAt;
+  final bool active;
+  final int viewCount;
+  final List<String> docTypes;
+  ShareItem(this.id, this.shareToken, this.expiresAt, this.active,
+      this.viewCount, this.docTypes);
+  factory ShareItem.fromJson(Map j) => ShareItem(
+        j['id'].toString(),
+        j['shareToken']?.toString() ?? '',
+        _pdate(j['expiresAt']),
+        j['active'] == true,
+        _pint(j['viewCount']),
+        (j['documents'] as List? ?? [])
+            .map((e) => (e as Map)['type']?.toString() ?? '서류')
+            .toList(),
+      );
+}
+
+/// 사업장.
+class BusinessItem {
+  final String id;
+  final String name;
+  final String? businessNumber;
+  final String? inviteCode;
+  final String? address;
+  BusinessItem(this.id, this.name, this.businessNumber, this.inviteCode,
+      this.address);
+  factory BusinessItem.fromJson(Map j) => BusinessItem(
+        j['id'].toString(),
+        j['name']?.toString() ?? '',
+        j['businessNumber'] as String?,
+        j['inviteCode'] as String?,
+        j['address'] as String?,
+      );
+}
+
+/// 작업자 검색 결과.
+class WorkerSearchItem {
+  final String profileId;
+  final String maskedName;
+  final List<String> industryTags;
+  WorkerSearchItem(this.profileId, this.maskedName, this.industryTags);
+  factory WorkerSearchItem.fromJson(Map j) => WorkerSearchItem(
+        j['profileId'].toString(),
+        j['maskedName']?.toString() ?? '',
+        (j['industryTags'] as List? ?? []).map((e) => e.toString()).toList(),
+      );
+}
+
+/// 작업 지시.
+class JobItem {
+  final String id;
+  final String? businessId;
+  final String workerProfileId;
+  final String site;
+  final DateTime scheduledAt;
+  final String rateType;
+  final int rate;
+  final String status; // SCHEDULED/IN_PROGRESS/DONE
+  final DateTime? acceptedAt;
+  final String role; // BUSINESS/WORKER
+  final String? businessName;
+  final DateTime? startedAt;
+  final DateTime? finishedAt;
+
+  JobItem({
+    required this.id,
+    required this.businessId,
+    required this.workerProfileId,
+    required this.site,
+    required this.scheduledAt,
+    required this.rateType,
+    required this.rate,
+    required this.status,
+    required this.acceptedAt,
+    required this.role,
+    required this.businessName,
+    required this.startedAt,
+    required this.finishedAt,
+  });
+
+  factory JobItem.fromJson(Map j) {
+    final wl = j['workLog'] as Map?;
+    return JobItem(
+      id: j['id'].toString(),
+      businessId: j['businessId'] as String?,
+      workerProfileId: j['workerProfileId']?.toString() ?? '',
+      site: j['site']?.toString() ?? '',
+      scheduledAt:
+          DateTime.tryParse(j['scheduledAt']?.toString() ?? '') ?? DateTime.now(),
+      rateType: j['rateType']?.toString() ?? 'DAILY',
+      rate: _pint(j['rate']),
+      status: j['status']?.toString() ?? 'SCHEDULED',
+      acceptedAt: _pdate(j['acceptedAt']),
+      role: j['role']?.toString() ?? 'WORKER',
+      businessName: j['businessName'] as String?,
+      startedAt: _pdate(wl?['startedAt']),
+      finishedAt: _pdate(wl?['finishedAt']),
+    );
+  }
+}
+
+/// 수신함 항목.
+class InboxItem {
+  final String id;
+  final String status;
+  final String date;
+  final String site;
+  final String companyName;
+  final String workerName;
+  final int total;
+  final String? signerName;
+  InboxItem(this.id, this.status, this.date, this.site, this.companyName,
+      this.workerName, this.total, this.signerName);
+  factory InboxItem.fromJson(Map j) => InboxItem(
+        j['id'].toString(),
+        j['status']?.toString() ?? '',
+        j['date']?.toString() ?? '',
+        j['site']?.toString() ?? '',
+        j['companyName']?.toString() ?? '',
+        j['workerName']?.toString() ?? '',
+        _pint(j['total']),
+        j['signerName'] as String?,
+      );
+  bool get signed => status == 'SIGNED';
+}
+
+/// 수신함 상세(PaperCard 렌더용).
+class BizConfirmationDetail {
+  final String id;
+  final String status;
+  final bool signed;
+  final String date;
+  final String companyName;
+  final String? contact;
+  final String workerName;
+  final String site;
+  final String workContent;
+  final String startTime;
+  final String endTime;
+  final String rateTypeLabel;
+  final int total;
+  final Map? amountCalc;
+  final Map? equipmentSection;
+  final String? signerName;
+  final String? signedAt;
+
+  BizConfirmationDetail({
+    required this.id,
+    required this.status,
+    required this.signed,
+    required this.date,
+    required this.companyName,
+    required this.contact,
+    required this.workerName,
+    required this.site,
+    required this.workContent,
+    required this.startTime,
+    required this.endTime,
+    required this.rateTypeLabel,
+    required this.total,
+    required this.amountCalc,
+    required this.equipmentSection,
+    required this.signerName,
+    required this.signedAt,
+  });
+
+  factory BizConfirmationDetail.fromJson(Map j) => BizConfirmationDetail(
+        id: j['id'].toString(),
+        status: j['status']?.toString() ?? '',
+        signed: j['signed'] == true,
+        date: j['date']?.toString() ?? '',
+        companyName: j['companyName']?.toString() ?? '',
+        contact: j['contact'] as String?,
+        workerName: j['workerName']?.toString() ?? '',
+        site: j['site']?.toString() ?? '',
+        workContent: j['workContent']?.toString() ?? '',
+        startTime: j['startTime']?.toString() ?? '',
+        endTime: j['endTime']?.toString() ?? '',
+        rateTypeLabel: j['rateTypeLabel']?.toString() ?? '',
+        total: _pint(j['total']),
+        amountCalc: j['amountCalc'] as Map?,
+        equipmentSection: j['equipmentSection'] as Map?,
+        signerName: j['signerName'] as String?,
+        signedAt: j['signedAt'] as String?,
+      );
+}
+
+/// 정산: 작업자별 미지급 집계.
+class SettlementWorker {
+  final String workerProfileId;
+  final String workerName;
+  final int entryCount;
+  final int total;
+  final int paid;
+  final int outstanding;
+  final List<String> ledgerEntryIds;
+  SettlementWorker(this.workerProfileId, this.workerName, this.entryCount,
+      this.total, this.paid, this.outstanding, this.ledgerEntryIds);
+  factory SettlementWorker.fromJson(Map j) => SettlementWorker(
+        j['workerProfileId'].toString(),
+        j['workerName']?.toString() ?? '',
+        _pint(j['entryCount']),
+        _pint(j['total']),
+        _pint(j['paid']),
+        _pint(j['outstanding']),
+        (j['ledgerEntryIds'] as List? ?? []).map((e) => e.toString()).toList(),
+      );
+}
+
+/// 알림 항목.
+class NotificationItem {
+  final String id;
+  final String type;
+  final String title;
+  final String body;
+  final Map? data;
+  final bool read;
+  final DateTime? createdAt;
+  NotificationItem(this.id, this.type, this.title, this.body, this.data,
+      this.read, this.createdAt);
+  factory NotificationItem.fromJson(Map j) => NotificationItem(
+        j['id'].toString(),
+        j['type']?.toString() ?? '',
+        j['title']?.toString() ?? '',
+        j['body']?.toString() ?? '',
+        j['data'] as Map?,
+        j['read'] == true,
+        _pdate(j['createdAt']),
+      );
+
+  /// 폭염 알림의 safety_log id (확인 버튼용).
+  String? get safetyLogId => data?['logId']?.toString() ?? data?['safetyLogId']?.toString();
+}
+
+/// 알림 목록 + 미읽음 수.
+class NotificationList {
+  final int unreadCount;
+  final List<NotificationItem> items;
+  NotificationList(this.unreadCount, this.items);
+  factory NotificationList.fromJson(Map j) => NotificationList(
+        _pint(j['unreadCount']),
+        (j['items'] as List? ?? [])
+            .map((e) => NotificationItem.fromJson(e as Map))
+            .toList(),
+      );
+}

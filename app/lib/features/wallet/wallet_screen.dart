@@ -1,0 +1,401 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
+import '../../theme/app_colors.dart';
+import '../../core/format.dart';
+import '../../models/models.dart';
+import '../../providers/wallet.dart';
+import '../../widgets/common.dart';
+import 'doc_ui.dart';
+import 'document_detail_screen.dart';
+import 'upload_sheet.dart';
+import 'mask_editor.dart';
+import 'my_shares_screen.dart';
+import 'equipment_screen.dart';
+
+class WalletScreen extends ConsumerStatefulWidget {
+  const WalletScreen({super.key});
+  @override
+  ConsumerState<WalletScreen> createState() => _WalletScreenState();
+}
+
+class _WalletScreenState extends ConsumerState<WalletScreen> {
+  bool _selectMode = false;
+  final Set<String> _selected = {};
+
+  void _toggleSelect(String id) {
+    setState(() {
+      if (_selected.contains(id)) {
+        _selected.remove(id);
+      } else {
+        _selected.add(id);
+      }
+    });
+  }
+
+  Future<void> _upload() async {
+    final result = await runUploadFlow(context, ref);
+    if (result != null && result.doc.isImage && mounted) {
+      // 업로드 직후 마스킹 편집 제안(방금 고른 이미지 바이트 재사용).
+      final go = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('개인정보를 가릴까요?'),
+          content: const Text('주민번호·주소 등 민감정보를 마스킹하면 안전하게 공유할 수 있어요.'),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text('나중에')),
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: const Text('마스킹 편집')),
+          ],
+        ),
+      );
+      if (go == true && mounted) {
+        await Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => MaskEditorScreen(
+              documentId: result.doc.id, imageBytes: result.picked.bytes),
+        ));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final docs = ref.watch(documentsProvider);
+    return Scaffold(
+      backgroundColor: c.bg,
+      appBar: AppBar(
+        backgroundColor: c.bg,
+        elevation: 0,
+        title: Text(_selectMode ? '${_selected.length}개 선택' : '서류 지갑',
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.w800, color: c.ink)),
+        actions: [
+          if (!_selectMode) ...[
+            IconButton(
+                tooltip: '장비 관리',
+                icon: const Icon(Icons.agriculture_outlined),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => const EquipmentScreen()))),
+            IconButton(
+                tooltip: '내 공유',
+                icon: const Icon(Icons.link_rounded),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => const MySharesScreen()))),
+          ],
+          if (_selectMode)
+            TextButton(
+                onPressed: () => setState(() {
+                      _selectMode = false;
+                      _selected.clear();
+                    }),
+                child: const Text('취소')),
+        ],
+      ),
+      floatingActionButton: _selectMode
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: _upload,
+              backgroundColor: c.primary,
+              foregroundColor: c.primaryInk,
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('서류 추가',
+                  style: TextStyle(fontWeight: FontWeight.w700)),
+            ),
+      body: SafeArea(
+        child: docs.when(
+          loading: () =>
+              Center(child: CircularProgressIndicator(color: c.primary)),
+          error: (e, _) => Center(
+              child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: ErrorRetry(
+                      boxed: false,
+                      onRetry: () => ref.invalidate(documentsProvider)))),
+          data: (list) {
+            final expiring = list
+                .where((d) => d.derivedStatus == 'EXPIRED' ||
+                    d.derivedStatus == 'EXPIRING_SOON')
+                .toList()
+              ..sort((a, b) => (a.dday ?? 9999).compareTo(b.dday ?? 9999));
+            return Column(
+              children: [
+                if (expiring.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                    child: WarnBanner(
+                      title: expiring.first.derivedStatus == 'EXPIRED'
+                          ? '${expiring.first.type} 만료됨'
+                          : '${expiring.first.type} 만료 ${ddayLabel(expiring.first.dday)}',
+                      subtitle: expiring.length > 1
+                          ? '만료 임박 서류 ${expiring.length}건 — 갱신 후 다시 등록하세요'
+                          : '갱신 후 다시 등록하세요',
+                    ),
+                  ),
+                Expanded(
+                  child: list.isEmpty
+                      ? _empty(c)
+                      : GridView.builder(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.82,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                          ),
+                          itemCount: list.length,
+                          itemBuilder: (context, i) => _DocCard(
+                            doc: list[i],
+                            selectMode: _selectMode,
+                            selected: _selected.contains(list[i].id),
+                            onTap: () {
+                              if (_selectMode) {
+                                _toggleSelect(list[i].id);
+                              } else {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (_) =>
+                                        DocumentDetailScreen(doc: list[i])));
+                              }
+                            },
+                            onLongPress: () => setState(() {
+                              _selectMode = true;
+                              _selected.add(list[i].id);
+                            }),
+                          ),
+                        ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar: _selectMode && _selected.isNotEmpty
+          ? _SendBar(
+              count: _selected.length,
+              onSend: () => _openShareFlow(list: docs.value ?? []),
+            )
+          : null,
+    );
+  }
+
+  Widget _empty(AppColors c) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.folder_open_outlined, size: 64, color: c.ink3),
+            const SizedBox(height: 12),
+            Text('아직 등록한 서류가 없어요',
+                style: TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w700, color: c.ink)),
+            const SizedBox(height: 4),
+            Text('자격증·보험·검사증을 등록하고 만료를 관리하세요',
+                style: TextStyle(fontSize: 14, color: c.ink2)),
+          ],
+        ),
+      );
+
+  Future<void> _openShareFlow({required List<DocumentItem> list}) async {
+    final selectedDocs =
+        list.where((d) => _selected.contains(d.id)).toList();
+    final anyMasked = selectedDocs.any((d) => d.hasMask);
+    final days = await showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: context.c.surface,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => _ShareOptionsSheet(anyMasked: anyMasked),
+    );
+    if (days == null || !mounted) return;
+    try {
+      final result = await ref.read(walletRepoProvider).createShare(
+            documentIds: selectedDocs.map((d) => d.id).toList(),
+            expiresInDays: days,
+          );
+      ref.invalidate(mySharesProvider);
+      if (!mounted) return;
+      setState(() {
+        _selectMode = false;
+        _selected.clear();
+      });
+      final box = context.findRenderObject() as RenderBox?;
+      await Share.share(
+        '[작업온] 서류 ${result.documentCount}건을 보냅니다.\n'
+        '아래 링크에서 확인하세요 (유효 $days일).\n${result.url}',
+        subject: '작업온 서류 공유',
+        sharePositionOrigin:
+            box != null ? box.localToGlobal(Offset.zero) & box.size : null,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('공유 실패: $e')));
+      }
+    }
+  }
+}
+
+class _DocCard extends StatelessWidget {
+  final DocumentItem doc;
+  final bool selectMode;
+  final bool selected;
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
+  const _DocCard({
+    required this.doc,
+    required this.selectMode,
+    required this.selected,
+    required this.onTap,
+    required this.onLongPress,
+  });
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return GestureDetector(
+      onTap: onTap,
+      onLongPress: onLongPress,
+      child: Container(
+        decoration: BoxDecoration(
+          color: c.surface,
+          border: Border.all(
+              color: selected ? c.primary : c.border,
+              width: selected ? 2 : 1),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(docTypeIcon(doc.type), size: 30, color: c.accentText),
+                const Spacer(),
+                if (selectMode)
+                  Icon(
+                      selected
+                          ? Icons.check_circle_rounded
+                          : Icons.radio_button_unchecked,
+                      color: selected ? c.primary : c.ink3)
+                else if (doc.hasMask)
+                  Icon(Icons.security_rounded, size: 16, color: c.depositedBadge),
+              ],
+            ),
+            const Spacer(),
+            Text(doc.type,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.w800, color: c.ink)),
+            const SizedBox(height: 8),
+            DocStatusBadge(doc: doc),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SendBar extends StatelessWidget {
+  final int count;
+  final VoidCallback onSend;
+  const _SendBar({required this.count, required this.onSend});
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        child: PrimaryButton(
+          label: '$count건 묶어 보내기',
+          icon: Icons.send_rounded,
+          onPressed: onSend,
+        ),
+      ),
+    );
+  }
+}
+
+class _ShareOptionsSheet extends StatefulWidget {
+  final bool anyMasked;
+  const _ShareOptionsSheet({required this.anyMasked});
+  @override
+  State<_ShareOptionsSheet> createState() => _ShareOptionsSheetState();
+}
+
+class _ShareOptionsSheetState extends State<_ShareOptionsSheet> {
+  int _days = 7;
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('묶음 보내기',
+                style: TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
+            const SizedBox(height: 12),
+            Text('유효기간',
+                style: TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.w700, color: c.ink2)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                for (final d in [7, 14, 30])
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      label: Text('$d일'),
+                      selected: _days == d,
+                      onSelected: (_) => setState(() => _days = d),
+                      selectedColor: c.primary.withValues(alpha: 0.18),
+                      labelStyle: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: _days == d ? c.accentText : c.ink2),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                  color: c.surface2,
+                  border: Border.all(color: c.border),
+                  borderRadius: BorderRadius.circular(10)),
+              child: Row(
+                children: [
+                  Icon(
+                      widget.anyMasked
+                          ? Icons.security_rounded
+                          : Icons.info_outline_rounded,
+                      size: 18,
+                      color: widget.anyMasked ? c.depositedBadge : c.ink3),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                        widget.anyMasked
+                            ? '마스킹본이 있는 서류는 개인정보가 가려진 상태로 전송됩니다.'
+                            : '마스킹본이 없으면 원본이 그대로 전송됩니다. 상세에서 마스킹할 수 있어요.',
+                        style: TextStyle(fontSize: 13, color: c.ink2)),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            PrimaryButton(
+              label: '링크 만들고 공유',
+              icon: Icons.share_rounded,
+              onPressed: () => Navigator.pop(context, _days),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

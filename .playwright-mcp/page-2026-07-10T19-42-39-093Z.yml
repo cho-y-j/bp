@@ -1,0 +1,69 @@
+- generic [ref=f25e1]:
+  - generic [ref=f25e2]:
+    - complementary [ref=f25e3]:
+      - generic [ref=f25e4]:
+        - paragraph [ref=f25e5]: 작업온
+        - generic [ref=f25e7]: 대성건설
+      - link "수신함" [ref=f25e8] [cursor=pointer]:
+        - /url: /biz/inbox
+      - link "정산" [ref=f25e12] [cursor=pointer]:
+        - /url: /biz/settlements
+      - link "작업자·지시" [ref=f25e15] [cursor=pointer]:
+        - /url: /biz/workers
+      - link "안전 리포트" [ref=f25e20] [cursor=pointer]:
+        - /url: /biz/safety
+      - button "로그아웃" [ref=f25e23] [cursor=pointer]
+    - main [ref=f25e26]:
+      - heading "수신함" [level=1] [ref=f25e32]
+      - paragraph [ref=f25e33]: 작업자가 보낸 작업확인서입니다. 확인 후 앱에서 바로 서명하세요.
+      - button "김 대성건설 신축현장 김*사 · 2026.07.10 (금) 250,000원 서명대기" [active] [ref=f25e35] [cursor=pointer]:
+        - generic [ref=f25e36]: 김
+        - generic [ref=f25e37]:
+          - generic [ref=f25e38]: 대성건설 신축현장
+          - generic [ref=f25e39]: 김*사 · 2026.07.10 (금)
+        - generic [ref=f25e40]:
+          - generic [ref=f25e41]: 250,000원
+          - generic [ref=f25e42]: 서명대기
+      - generic [ref=f25e54]:
+        - generic [ref=f25e56]:
+          - heading "수신 확인서" [level=2] [ref=f25e57]
+          - button "닫기" [ref=f25e58] [cursor=pointer]
+        - generic [ref=f25e59]:
+          - generic [ref=f25e60]:
+            - generic [ref=f25e61]: 작 업 확 인 서
+            - generic [ref=f25e64]:
+              - generic [ref=f25e65]:
+                - generic [ref=f25e66]: 작업일
+                - generic [ref=f25e67]: 2026.07.10 (금)
+                - generic [ref=f25e68]: 시간
+                - generic [ref=f25e69]: 08:00 ~ 17:30
+                - generic [ref=f25e70]: 현장
+                - generic [ref=f25e71]: 대성건설 신축현장
+                - generic [ref=f25e72]: 작업자
+                - generic [ref=f25e73]: 김*사
+                - generic [ref=f25e74]: 지시자
+                - generic [ref=f25e75]: 대성건설
+                - generic [ref=f25e76]: 작업내용
+                - generic [ref=f25e77]: 기초 콘크리트 타설
+              - generic [ref=f25e78]:
+                - generic [ref=f25e79]:
+                  - generic [ref=f25e80]:
+                    - text: 기본(일당)
+                    - generic [ref=f25e81]: 250,000 × 1
+                  - generic [ref=f25e82]: 250,000 원
+                - generic [ref=f25e83]:
+                  - generic [ref=f25e84]: 받을 금액
+                  - generic [ref=f25e85]: 250,000 원
+          - generic [ref=f25e86]:
+            - generic [ref=f25e87]: 앱에서 바로 서명
+            - generic [ref=f25e91]:
+              - generic [ref=f25e92]: 서명자 이름
+              - textbox "서명자 이름" [ref=f25e93]:
+                - /placeholder: 예) 이현수
+            - generic [ref=f25e94]:
+              - generic "서명 입력 영역" [ref=f25e95]
+              - generic: 여기에 손가락 또는 마우스로 서명하세요
+            - button "다시 그리기" [disabled] [ref=f25e97]
+            - button "서명하고 확정" [ref=f25e98] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=f25e48] [cursor=pointer]
+  - alert [ref=f25e52]

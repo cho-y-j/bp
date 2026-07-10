@@ -1,0 +1,9 @@
+- main [ref=f4e2]:
+  - paragraph [ref=f4e3]: 작업온 · 사업장 웹
+  - heading "전화번호로 로그인" [level=1] [ref=f4e5]
+  - paragraph [ref=f4e6]: 가입한 전화번호로 인증코드를 보내드립니다.
+  - generic [ref=f4e7]:
+    - generic [ref=f4e8]: 전화번호
+    - textbox "전화번호" [ref=f4e9]:
+      - /placeholder: 010-0000-0000
+  - button "인증코드 받기" [ref=f4e10] [cursor=pointer]

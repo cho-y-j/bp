@@ -1,0 +1,54 @@
+- generic [active] [ref=f23e1]:
+  - main [ref=f23e2]:
+    - paragraph [ref=f23e4]: 작업온 · 작업확인서
+    - generic [ref=f23e6]:
+      - generic [ref=f23e7]: 작 업 확 인 서
+      - generic [ref=f23e10]:
+        - generic [ref=f23e11]:
+          - generic [ref=f23e12]: 작업일
+          - generic [ref=f23e13]: 2026.07.11 (토)
+          - generic [ref=f23e14]: 시간
+          - generic [ref=f23e15]: 07:00 ~ 19:00
+          - generic [ref=f23e16]: 현장
+          - generic [ref=f23e17]: 래미안 원펜타스 3공구
+          - generic [ref=f23e18]: 작업자
+          - generic [ref=f23e19]: 김기사
+          - generic [ref=f23e20]: 지시자
+          - generic [ref=f23e21]:
+            - text: 한빛토건
+            - generic [ref=f23e22]: · 010-5555-1234
+          - generic [ref=f23e23]: 작업내용
+          - generic [ref=f23e24]: 굴착기 터파기 및 잔토처리
+          - generic [ref=f23e25]: 장비
+          - generic [ref=f23e26]: 06W 굴착기 · 서울 12가 3456 · 0.6㎥ · 유도원
+        - generic [ref=f23e27]:
+          - generic [ref=f23e28]:
+            - generic [ref=f23e29]:
+              - text: 기본(일당)
+              - generic [ref=f23e30]: 550,000 × 1
+            - generic [ref=f23e31]: 550,000 원
+          - generic [ref=f23e32]:
+            - generic [ref=f23e33]:
+              - text: 연장
+              - generic [ref=f23e34]: 100,000 × 1
+            - generic [ref=f23e35]: 100,000 원
+          - generic [ref=f23e36]:
+            - generic [ref=f23e37]: 받을 금액
+            - generic [ref=f23e38]: 650,000 원
+        - paragraph [ref=f23e39]: 메모 · 진입로 협소, 유도원 배치
+    - generic [ref=f23e40]:
+      - generic [ref=f23e71]:
+        - generic [ref=f23e72]: 서명 완료
+        - generic [ref=f23e73]:
+          - text: 이현수 님이 서명했습니다
+          - generic [ref=f23e74]: · 2026-07-11 04:41
+      - link "서명된 확인서 PDF 보기" [ref=f23e75] [cursor=pointer]:
+        - /url: http://localhost:3020/api/public/confirmations/PzqsaEWwfn9f4KBUbI6z-qQMHm4ssKjQ/pdf
+    - generic [ref=f23e78]:
+      - paragraph [ref=f23e79]: 작업온
+      - heading "이 확인서를 작업온으로 관리하세요" [level=2] [ref=f23e81]
+      - paragraph [ref=f23e82]: 받은 확인서·정산 내역이 자동으로 장부에 쌓입니다. 사업장이라면 웹에서 수신·정산·안전관리까지 한번에.
+      - link "작업온 시작하기" [ref=f23e83] [cursor=pointer]:
+        - /url: /login
+  - button "Open Next.js Dev Tools" [ref=f23e63] [cursor=pointer]
+  - alert [ref=f23e67]

@@ -1,0 +1,49 @@
+- generic [ref=f14e1]:
+  - main [ref=f14e2]:
+    - paragraph [ref=f14e4]: 작업온 · 작업확인서
+    - generic [ref=f14e6]:
+      - generic [ref=f14e7]: 작 업 확 인 서
+      - generic [ref=f14e10]:
+        - generic [ref=f14e11]:
+          - generic [ref=f14e12]: 작업일
+          - generic [ref=f14e13]: 2026.07.09 (목)
+          - generic [ref=f14e14]: 시간
+          - generic [ref=f14e15]: 08:00 ~ 17:00
+          - generic [ref=f14e16]: 현장
+          - generic [ref=f14e17]: 래미안 원펜타스 3공구
+          - generic [ref=f14e18]: 작업자
+          - generic [ref=f14e19]: 김기사
+          - generic [ref=f14e20]: 지시자
+          - generic [ref=f14e21]:
+            - text: 한빛토건
+            - generic [ref=f14e22]: · 010-9999-8888
+          - generic [ref=f14e23]: 작업내용
+          - generic [ref=f14e24]: 굴삭기 06W 터파기 및 잔토처리
+          - generic [ref=f14e25]: 장비
+          - generic [ref=f14e26]: 굴삭기 06W · 서울12가3456 · 유도원
+        - generic [ref=f14e27]:
+          - generic [ref=f14e28]:
+            - generic [ref=f14e29]:
+              - text: 기본(일당)
+              - generic [ref=f14e30]: 650,000 × 1
+            - generic [ref=f14e31]: 650,000 원
+          - generic [ref=f14e32]:
+            - generic [ref=f14e33]: 받을 금액
+            - generic [ref=f14e34]: 650,000 원
+        - paragraph [ref=f14e35]: 메모 · 우천 시 익일 순연
+    - generic [ref=f14e36]:
+      - generic [ref=f14e37]: 여기에 서명해 주세요
+      - generic [ref=f14e41]:
+        - generic [ref=f14e42]: 서명자 이름
+        - textbox "서명자 이름" [ref=f14e43]:
+          - /placeholder: 예) 이현수
+      - generic [ref=f14e44]: 서명
+      - generic [ref=f14e45]:
+        - generic "서명 입력 영역" [ref=f14e46]
+        - generic: 여기에 손가락 또는 마우스로 서명하세요
+      - button "다시 그리기" [disabled] [ref=f14e48]
+      - alert [ref=f14e64]: 서명자 이름을 입력하세요.
+      - button "서명하고 확인 완료" [active] [ref=f14e49] [cursor=pointer]
+      - paragraph [ref=f14e53]: 서명 즉시 작업자와 양측에 확인서가 확정됩니다
+  - button "Open Next.js Dev Tools" [ref=f14e59] [cursor=pointer]
+  - alert [ref=f14e63]

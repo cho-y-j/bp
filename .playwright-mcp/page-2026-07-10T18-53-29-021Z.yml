@@ -1,0 +1,28 @@
+- main [ref=f2e2]:
+  - generic [ref=f2e3]:
+    - paragraph [ref=f2e4]: 작업온 · 서류 묶음
+    - heading "공유된 서류 2건" [level=1] [ref=f2e6]
+    - paragraph [ref=f2e7]: 유효기간 2026.07.18 (토)까지 열람 가능
+  - generic [ref=f2e8]:
+    - generic [ref=f2e9]:
+      - generic [ref=f2e10]:
+        - generic [ref=f2e15]:
+          - generic [ref=f2e16]: 자격증
+          - generic [ref=f2e17]: 만료 2026.08.01 (토)
+        - generic [ref=f2e19]: D-21
+      - generic [ref=f2e20]:
+        - link "보기" [ref=f2e21] [cursor=pointer]:
+          - /url: http://localhost:3010/api/public/shares/gpR-hfGuAolkWMQtfCzi-IfX-A7XF-Vg/files/52359177-bed9-4b7b-8566-32f4b0e498bd
+        - link "다운로드" [ref=f2e25] [cursor=pointer]:
+          - /url: http://localhost:3010/api/public/shares/gpR-hfGuAolkWMQtfCzi-IfX-A7XF-Vg/files/52359177-bed9-4b7b-8566-32f4b0e498bd
+    - generic [ref=f2e28]:
+      - generic [ref=f2e29]:
+        - generic [ref=f2e34]:
+          - generic [ref=f2e35]: 보험증권
+          - generic [ref=f2e36]: 만료 2026.12.31 (목)
+        - generic [ref=f2e38]: D-173
+      - generic [ref=f2e39]:
+        - link "보기" [ref=f2e40] [cursor=pointer]:
+          - /url: http://localhost:3010/api/public/shares/gpR-hfGuAolkWMQtfCzi-IfX-A7XF-Vg/files/ec6bc87d-262b-4a81-abdd-665754c7110d
+        - link "다운로드" [ref=f2e44] [cursor=pointer]:
+          - /url: http://localhost:3010/api/public/shares/gpR-hfGuAolkWMQtfCzi-IfX-A7XF-Vg/files/ec6bc87d-262b-4a81-abdd-665754c7110d

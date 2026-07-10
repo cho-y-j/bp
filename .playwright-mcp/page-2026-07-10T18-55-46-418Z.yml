@@ -1,0 +1,35 @@
+- generic [active] [ref=f7e1]:
+  - generic [ref=f7e2]:
+    - complementary [ref=f7e3]:
+      - generic [ref=f7e4]:
+        - paragraph [ref=f7e5]: 작업온
+        - generic [ref=f7e7]: 대성건설
+      - link "수신함" [ref=f7e8] [cursor=pointer]:
+        - /url: /biz/inbox
+      - link "정산" [ref=f7e12] [cursor=pointer]:
+        - /url: /biz/settlements
+      - link "작업자·지시" [ref=f7e15] [cursor=pointer]:
+        - /url: /biz/workers
+      - link "안전 리포트" [ref=f7e20] [cursor=pointer]:
+        - /url: /biz/safety
+      - button "로그아웃" [ref=f7e23] [cursor=pointer]
+    - main [ref=f7e26]:
+      - heading "정산" [level=1] [ref=f7e32]
+      - paragraph [ref=f7e33]: 서명 완료된 확인서 기준, 작업자별 미지급 금액입니다. 선택해 지급 처리하면 작업자 장부에도 즉시 반영됩니다.
+      - generic [ref=f7e34]:
+        - generic [ref=f7e35]:
+          - button "이전 달" [ref=f7e36] [cursor=pointer]
+          - generic [ref=f7e39]: 2026년 7월
+          - button "다음 달" [ref=f7e40] [cursor=pointer]
+        - generic [ref=f7e72]:
+          - generic [ref=f7e73]: 이번 달 미지급 합계
+          - generic [ref=f7e74]: 0원
+      - status [ref=f7e75]: 250,000원 지급 처리 완료
+      - generic [ref=f7e80]:
+        - generic [ref=f7e82]: 김
+        - generic [ref=f7e83]:
+          - generic [ref=f7e84]: 김*사
+          - generic [ref=f7e85]: 확인서 1건 · 지급 250,000원
+        - generic [ref=f7e86]: 완납
+  - button "Open Next.js Dev Tools" [ref=f7e66] [cursor=pointer]
+  - alert [ref=f7e70]

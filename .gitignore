@@ -1,0 +1,26 @@
+# 환경변수 — 절대 커밋 금지
+.env
+.env.*
+!.env.example
+**/.env
+!**/.env.example
+
+# 의존성·빌드 산출물
+node_modules/
+dist/
+.next/
+build/
+
+# 업로드 데이터
+uploads/
+
+# 비밀 파일(FCM 서비스계정 JSON 등) — .gitkeep 만 커밋
+infra/secrets/*
+!infra/secrets/.gitkeep
+
+# 참고용 외부 코드 (별도 저장소)
+ref/
+
+# OS/에디터
+.DS_Store
+*.log

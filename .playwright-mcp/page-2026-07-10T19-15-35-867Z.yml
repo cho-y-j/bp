@@ -1,0 +1,24 @@
+- generic [active] [ref=f18e1]:
+  - button "Open Next.js Dev Tools" [ref=f18e19] [cursor=pointer]
+  - alert [ref=f18e13]
+  - generic [ref=f18e36]:
+    - generic [ref=f18e37]:
+      - link "수신함" [ref=f18e38] [cursor=pointer]:
+        - /url: /biz/inbox
+      - link "정산" [ref=f18e42] [cursor=pointer]:
+        - /url: /biz/settlements
+      - link "작업자·지시" [ref=f18e45] [cursor=pointer]:
+        - /url: /biz/workers
+      - link "안전 리포트" [ref=f18e50] [cursor=pointer]:
+        - /url: /biz/safety
+    - main [ref=f18e53]:
+      - heading "수신함" [level=1] [ref=f18e54]
+      - paragraph [ref=f18e55]: 작업자가 보낸 작업확인서입니다. 확인 후 앱에서 바로 서명하세요.
+      - button "김 대성건설 반포현장 김*사 · 2026.07.10 (금) 250,000원 서명대기" [ref=f18e57] [cursor=pointer]:
+        - generic [ref=f18e58]: 김
+        - generic [ref=f18e59]:
+          - generic [ref=f18e60]: 대성건설 반포현장
+          - generic [ref=f18e61]: 김*사 · 2026.07.10 (금)
+        - generic [ref=f18e62]:
+          - generic [ref=f18e63]: 250,000원
+          - generic [ref=f18e64]: 서명대기

@@ -1,0 +1,21 @@
+# dependencies
+/node_modules
+
+# build
+/dist
+
+# env
+.env
+.env.local
+
+# prisma generated client (generated on install/build)
+# (schema & migrations are tracked)
+
+# logs
+*.log
+
+# uploads (local file storage)
+/uploads
+
+# OS
+.DS_Store

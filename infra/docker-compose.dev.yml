@@ -1,0 +1,32 @@
+# ============================================================================
+#  작업온 — 개발용 (postgres 만 컨테이너로, api/web 은 로컬에서 실행)
+#
+#  실행:  docker compose -f infra/docker-compose.dev.yml up -d
+#  이후:  backend 에서  npm run prisma:migrate  &&  npm run start:dev
+#         web 에서       npm run dev
+#
+#  backend/.env 의 DATABASE_URL 은 아래 접속 정보와 일치해야 한다:
+#    postgresql://jakeobon:jakeobon@localhost:5432/jakeobon?schema=public
+# ============================================================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jakeobon-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: jakeobon
+      POSTGRES_PASSWORD: jakeobon
+      POSTGRES_DB: jakeobon
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U jakeobon -d jakeobon']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata_dev:

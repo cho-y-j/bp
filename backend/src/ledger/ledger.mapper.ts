@@ -1,0 +1,57 @@
+import { LedgerEntry, LedgerStatus } from '@prisma/client';
+import { computeOutstanding, PaymentRecord } from './ledger.util';
+
+const STATUS_LABEL: Record<LedgerStatus, string> = {
+  PENDING: '미수',
+  PARTIAL: '부분입금',
+  PAID: '전액입금',
+  OVERDUE: '기한지남',
+};
+
+export interface LedgerDto {
+  id: string;
+  confirmationId: string | null;
+  businessId: string | null;
+  counterpartyName: string | null;
+  amount: number;
+  paid: number;
+  outstanding: number;
+  status: LedgerStatus;
+  statusLabel: string;
+  dueDate: Date | null;
+  dday: number | null;
+  payments: PaymentRecord[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/** LedgerEntry → API DTO (미수/상태/D-day 파생). */
+export function toLedgerDto(e: LedgerEntry, now: Date = new Date()): LedgerDto {
+  const amount = Number(e.amount);
+  const { paid, outstanding, status, dday } = computeOutstanding(
+    amount,
+    e.payments,
+    e.dueDate,
+    now,
+  );
+  return {
+    id: e.id,
+    confirmationId: e.confirmationId,
+    businessId: e.businessId,
+    counterpartyName: e.counterpartyName,
+    amount,
+    paid,
+    outstanding,
+    status,
+    statusLabel: STATUS_LABEL[status],
+    dueDate: e.dueDate,
+    dday,
+    payments: Array.isArray(e.payments)
+      ? (e.payments as unknown as PaymentRecord[])
+      : [],
+    createdAt: e.createdAt,
+    updatedAt: e.updatedAt,
+  };
+}
+
+export { STATUS_LABEL };

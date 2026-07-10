@@ -1,0 +1,20 @@
+- generic [active] [ref=f1e1]:
+  - main [ref=f1e2]:
+    - generic [ref=f1e3]:
+      - paragraph [ref=f1e4]: 작업온 · 서류 묶음
+      - heading "공유된 서류 1건" [level=1] [ref=f1e6]
+      - paragraph [ref=f1e7]: 유효기간 2026.07.18 (토)까지 열람 가능
+    - generic [ref=f1e9]:
+      - generic [ref=f1e10]:
+        - generic [ref=f1e15]:
+          - generic [ref=f1e16]: 신분증
+          - generic [ref=f1e17]:
+            - generic [ref=f1e18]: 만료 2026.08.01 (토)
+            - text: · 마스킹본
+        - generic [ref=f1e19]: D-21
+      - generic [ref=f1e20]:
+        - link "보기" [ref=f1e21] [cursor=pointer]:
+          - /url: /api/public/shares/J9bm3WUYM8iJ9j6t65SgYwlzSIRxrd1_/files/0c40e41c-0e90-434d-8dbb-39ef90cd602b
+        - link "다운로드" [ref=f1e25] [cursor=pointer]:
+          - /url: /api/public/shares/J9bm3WUYM8iJ9j6t65SgYwlzSIRxrd1_/files/0c40e41c-0e90-434d-8dbb-39ef90cd602b?download=1
+  - alert [ref=f1e28]

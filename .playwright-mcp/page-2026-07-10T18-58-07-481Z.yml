@@ -1,0 +1,15 @@
+- generic [ref=f10e1]:
+  - button "Open Next.js Dev Tools" [ref=f10e34] [cursor=pointer]
+  - alert [ref=f10e38]
+  - main [ref=f10e39]:
+    - paragraph [ref=f10e40]: 작업온 · 사업장 웹
+    - heading "전화번호로 로그인" [level=1] [ref=f10e42]
+    - paragraph [ref=f10e43]: 01011110010 로 보낸 인증코드를 입력하세요.
+    - status [ref=f10e50]:
+      - generic [ref=f10e51]: "개발용 인증코드: 047457"
+    - generic [ref=f10e52]:
+      - generic [ref=f10e53]: 인증코드
+      - textbox "인증코드" [active] [ref=f10e54]:
+        - /placeholder: 6자리 숫자
+    - button "로그인" [ref=f10e55] [cursor=pointer]
+    - button "전화번호 다시 입력" [ref=f10e58] [cursor=pointer]

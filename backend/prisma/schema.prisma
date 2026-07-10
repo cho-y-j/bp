@@ -1,0 +1,502 @@
+// ============================================================================
+//  작업온 (Jakeobon) — Prisma 스키마  (Stage 1)
+//  근거: docs/DESIGN.md §5 데이터 모델 + docs/BUILD-PLAN.md S1 명세
+//  DB: PostgreSQL 16 / 단일 모놀리식 (마이크로서비스 아님)
+//
+//  설계 원칙 요약
+//   - 미가입 상대 허용: jobs/confirmations/ledger 의 상대방은 businessId(FK) 또는
+//     수기 입력(상호명+연락처) 둘 다 허용 → 작업자 혼자서도 100% 동작.
+//   - 증거력: safety_logs 와 서명 기록은 append-only(수정 금지), 시각은 서버 기준.
+//   - 만료 관리: documents.expiryDate 인덱스 → 만료 임박 조회(D-30/7/0).
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+//  Enums
+// ============================================================================
+
+// 연결 상태 (작업자 ↔ 사업장)
+enum ConnectionStatus {
+  REQUESTED // 요청
+  ACCEPTED // 수락
+  REJECTED // 거절
+}
+
+// 연결 경로
+enum ConnectionPath {
+  PHONE_SEARCH // 전화번호 검색(동의자)
+  INVITE_CODE // 사업장 초대코드
+  QR // 현장 QR
+  LINK // 공유 링크
+}
+
+// 서류 소유자 유형 (다형)
+enum DocumentOwnerType {
+  PROFILE // 프로필(개인) 소속 서류
+  EQUIPMENT // 장비 소속 서류
+}
+
+// 서류 상태
+enum DocumentStatus {
+  ACTIVE // 유효
+  EXPIRING // 만료 임박
+  EXPIRED // 만료됨
+  ARCHIVED // 보관(비활성)
+}
+
+// 단가 유형 (일당/시급/건당 + 확장)
+enum RateType {
+  DAILY // 일당
+  HOURLY // 시급
+  PER_CASE // 건당
+  MONTHLY // 월급
+  UNIT // 물량(㎥·톤 등) 단가
+}
+
+// 작업 지시/예약 상태
+enum JobStatus {
+  SCHEDULED // 예약됨
+  IN_PROGRESS // 진행중
+  DONE // 완료
+  CANCELLED // 취소
+}
+
+// 확인서 상태 (SKEP 3단계 패턴 차용)
+enum ConfirmationStatus {
+  DRAFT // 작성됨
+  SENT // 전송됨
+  SIGNED // 서명됨
+}
+
+// 장부 상태
+enum LedgerStatus {
+  PENDING // 미수(대기)
+  PARTIAL // 부분입금
+  PAID // 완납
+  OVERDUE // 연체
+}
+
+// 안전 로그 유형
+enum SafetyLogType {
+  HEAT_ALERT // 폭염 알림
+  REST_GUIDE // 휴식 안내
+  DOCUMENT_VALIDITY // 서류 유효 확인
+  CONDITION_CHECK // 컨디션 체크
+}
+
+// 알림 유형
+enum NotificationType {
+  PAYMENT_DUE // 수금 D-day
+  DOCUMENT_EXPIRY // 서류 만료 D-30/7/0
+  RESERVATION // 예약 확인
+  HEAT_ALERT // 폭염
+  CONFIRMATION // 확인서 관련(수신/서명)
+}
+
+// 디바이스 플랫폼 (FCM)
+enum DevicePlatform {
+  ANDROID
+  IOS
+  WEB
+}
+
+// ============================================================================
+//  profiles — 사용자 (1 사용자 = 1 프로필)
+// ============================================================================
+model Profile {
+  id                 String   @id @default(uuid())
+  name               String? // 이름 (가입 직후엔 없음 → 온보딩에서 채움)
+  phone              String   @unique // 전화(인증)
+  kakaoId            String?  @unique // 카카오 로그인 식별자 (카카오 가입자만)
+  phoneSearchConsent Boolean  @default(false) // 전화번호 검색 허용 동의 (법적 필수)
+  industryTags       String[] @default([]) // 업종 태그
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // 관계
+  ownedBusinesses Business[]      @relation("BusinessOwner")
+  connections     Connection[]
+  equipments      Equipment[]
+  documents       Document[]
+  documentShares  DocumentShare[]
+  jobs            Job[]
+  confirmations   Confirmation[]
+  ledgerEntries   LedgerEntry[]
+  safetyLogs      SafetyLog[]     @relation("SafetyTarget")
+  notifications   Notification[]
+  deviceTokens    DeviceToken[]
+
+  @@index([phone])
+  @@map("profiles")
+}
+
+// ============================================================================
+//  businesses — 사업장 (사업장 모드)
+// ============================================================================
+model Business {
+  id             String   @id @default(uuid())
+  name           String // 상호
+  businessNumber String? // 사업자번호 (선택)
+  inviteCode     String   @unique // 초대코드 (6자리)
+  ownerId        String
+  address        String? // 현장/사업장 주소 (폭염 좌표 조회 참고용)
+  lat            Float? // 위도 (폭염 기상 조회용, nullable)
+  lng            Float? // 경도 (폭염 기상 조회용, nullable)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // 관계
+  owner         Profile        @relation("BusinessOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  connections   Connection[]
+  jobs          Job[]
+  confirmations Confirmation[]
+  ledgerEntries LedgerEntry[]
+  safetyLogs    SafetyLog[]
+
+  @@index([ownerId])
+  @@map("businesses")
+}
+
+// ============================================================================
+//  connections — 작업자 ↔ 사업장 연결
+// ============================================================================
+model Connection {
+  id         String           @id @default(uuid())
+  profileId  String // 작업자
+  businessId String // 사업장
+  status     ConnectionStatus @default(REQUESTED)
+  path       ConnectionPath // 연결 경로
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  profile  Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, businessId])
+  @@index([businessId])
+  @@map("connections")
+}
+
+// ============================================================================
+//  equipments — (장비 사용자) 장비
+// ============================================================================
+model Equipment {
+  id            String   @id @default(uuid())
+  profileId     String // 소속 프로필
+  type          String // 종류 (예: 굴삭기, 지게차)
+  vehicleNumber String? // 차량번호
+  spec          String? // 규격 (예: 06W, 3.5톤)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  profile   Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@index([profileId])
+  @@map("equipments")
+}
+
+// ============================================================================
+//  documents — 서류 (소유자: 프로필 | 장비 다형)
+//   - 만료 임박 조회를 위해 expiryDate 인덱스 (SKEP has_expiry 패턴)
+//   - 공유는 마스킹본(maskedFilePath)으로만 → 원본 filePath 는 소유자 전용
+// ============================================================================
+model Document {
+  id                 String            @id @default(uuid())
+  ownerType          DocumentOwnerType // PROFILE | EQUIPMENT
+  profileId          String? // ownerType=PROFILE 일 때
+  equipmentId        String? // ownerType=EQUIPMENT 일 때
+  type               String // 유형 (신분증/사업자등록증/자격증/장비검사증 등)
+  filePath           String // 정규화본(PDF) 경로 — 열람/공유의 기준 파일
+  maskedFilePath     String? // 주민번호 등 마스킹본 경로 (공유 기본값)
+  originalFilePath   String? // 업로드 원본 파일 경로 (이미지→PDF 정규화 시 보존)
+  originalFileName   String? // 업로드 당시 파일명 (다운로드 표시용)
+  fileSize           Int? // 업로드 원본 바이트 크기
+  mimeType           String? // 업로드 원본 MIME 타입
+  issuedDate         DateTime? // 발급일
+  expiryDate         DateTime? // 만료일 (nullable)
+  status             DocumentStatus    @default(ACTIVE)
+  verificationResult Json? // 진위확인 결과 (govapi 응답 등)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  profile   Profile?         @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  equipment Equipment?       @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  sharedIn  SharedDocument[] // 공유 묶음에 포함된 항목 (명시적 조인)
+
+  @@index([expiryDate]) // 만료 임박 조회 (D-30/7/0)
+  @@index([profileId])
+  @@index([equipmentId])
+  @@map("documents")
+}
+
+// ============================================================================
+//  document_shares — 선택 묶음 공유 (서류 체크 선택 → 링크)
+//   - 선택된 문서들과 다대다 관계 (SharedDocuments)
+//   - 유효기간 + 열람 로그(JSONB[])
+//   - 마스킹 정책: 주민번호 등 민감정보 서류는 기본 마스킹본(masked_file_path)을
+//     공유한다(useMasked=true). 공유 생성 시 서류별로 원본 노출을 선택할 수 있으며,
+//     그 선택은 명시적 조인 모델 SharedDocument.useOriginal 플래그로 관리한다.
+//     useMasked 는 이 공유 묶음의 기본값(마스킹본 우선 사용 여부)이다.
+// ============================================================================
+model DocumentShare {
+  id         String   @id @default(uuid())
+  ownerId    String // 공유를 만든 프로필
+  shareToken String   @unique // 외부 링크 토큰
+  expiresAt  DateTime // 유효기간
+  useMasked  Boolean  @default(true) // 기본 마스킹본 공유 여부 (민감정보 서류 보호)
+  revokedAt  DateTime? // 즉시 무효화 시각 (설정 시 링크 만료 처리)
+  viewLogs   Json[]   @default([]) // 열람 로그 [{ ip, ua, at }] — 최근 50개만 유지
+  viewCount  Int      @default(0) // 누적 열람 횟수 (viewLogs 는 cap 되므로 총계는 이 카운터로)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  owner     Profile          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  documents SharedDocument[] // 선택된 문서 묶음 (명시적 조인)
+
+  @@index([ownerId])
+  @@map("document_shares")
+}
+
+// ============================================================================
+//  shared_documents — DocumentShare ↔ Document 명시적 조인 모델
+//   - 암묵 M:N(_SharedDocuments) 을 승격해 서류별 원본/마스킹 선택을 담는다.
+//   - useOriginal=true 면 그 서류만 마스킹 안 한 정규화본(원본)을 공유한다.
+// ============================================================================
+model SharedDocument {
+  id              String   @id @default(uuid())
+  documentShareId String
+  documentId      String
+  useOriginal     Boolean  @default(false) // true = 이 서류는 마스킹본 대신 원본(정규화본) 공유
+  createdAt       DateTime @default(now())
+
+  share    DocumentShare @relation(fields: [documentShareId], references: [id], onDelete: Cascade)
+  document Document      @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([documentShareId, documentId])
+  @@index([documentId])
+  @@map("shared_documents")
+}
+
+// ============================================================================
+//  jobs — 작업 예약/지시
+//   - 상대: businessId(FK) 또는 수기(manualCompanyName/manualContact)
+// ============================================================================
+model Job {
+  id                String    @id @default(uuid())
+  profileId         String // 작업자(수행자)
+  businessId        String? // 지시 사업장 (가입 시)
+  manualCompanyName String? // 수기 상호명 (미가입 상대)
+  manualContact     String? // 수기 연락처
+  site              String // 현장/장소
+  scheduledAt       DateTime // 일시
+  rateType          RateType // 단가 유형
+  rate              Decimal   @db.Decimal(12, 2) // 단가
+  overtimeRate      Decimal?  @db.Decimal(12, 2) // 연장 단가
+  nightRate         Decimal?  @db.Decimal(12, 2) // 야간 단가
+  status            JobStatus @default(SCHEDULED)
+  acceptedAt        DateTime? // 작업자가 예약을 확인(수락)한 시각
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  profile       Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  business      Business?      @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  workLogs      WorkLog[]
+  confirmations Confirmation[]
+
+  @@index([profileId])
+  @@index([businessId])
+  @@index([scheduledAt])
+  @@index([manualContact]) // 미가입 상대 승격 스캔 (manualContact 매칭)
+  @@map("jobs")
+}
+
+// ============================================================================
+//  work_logs — 수행 기록
+// ============================================================================
+model WorkLog {
+  id             String    @id @default(uuid())
+  jobId          String
+  startedAt      DateTime? // 시작 시각
+  finishedAt     DateTime? // 완료 시각
+  gpsLat         Float? // GPS 위도
+  gpsLng         Float? // GPS 경도
+  photoPaths     String[]  @default([]) // 사진 경로들
+  conditionCheck Json? // 컨디션 체크 결과
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  job Job @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@map("work_logs")
+}
+
+// ============================================================================
+//  confirmations — 작업확인서 (공통 코어 + 장비 섹션)
+//   - 외부 서명: shareToken 링크 → 웹 열람 → 이름 입력 + 터치 서명
+//   - 서명 기록(signImagePath/signerName/signedAt)은 서버 시각 기준
+// ============================================================================
+model Confirmation {
+  id               String   @id @default(uuid())
+  profileId        String // 작성자(작업자)
+  jobId            String? // 연결된 작업(선택)
+  businessId       String? // 지시 사업장 (가입 시)
+  companyName      String // 회사명(지시자) — 수기 포함
+  date             DateTime // 날짜
+  site             String // 현장/장소
+  workContent      String // 작업 내용
+  startTime        DateTime // 시작 시각
+  endTime          DateTime // 종료 시각
+  manualContact    String? // 수기 상대 연락처 (미가입 상대, businessId 없을 때)
+  rateType         RateType // 단가 유형
+  amountCalc       Json // 금액 계산 내역 { items:[{type,label,rate,quantity,amount}], subtotal, vatRate, vat, total }
+  equipmentSection Json? // 장비 섹션 (장비명/차량번호/규격/유도원) — 장비 사용자만
+  notes            String? // 특이사항
+
+  // 외부 서명 / 공개 링크
+  shareToken    String             @unique // 외부 링크 토큰 (생성 시 발급)
+  signImagePath String? // 서명 이미지 경로
+  signerName    String? // 서명자 이름
+  signedAt      DateTime? // 서명 시각 (서버 기준)
+  revokedAt     DateTime? // 링크 무효화 시각 (설정 시 공개 열람 차단)
+  viewLogs      Json[]             @default([]) // 공개 열람 로그 [{ at, ip, ua }] — 최근 50개만 유지
+  viewCount     Int                @default(0) // 누적 열람 횟수 (viewLogs 는 cap 되므로 총계는 이 카운터로)
+  status        ConfirmationStatus @default(DRAFT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile     Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  job         Job?         @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  business    Business?    @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  ledgerEntry LedgerEntry?
+
+  @@index([profileId])
+  @@index([status])
+  @@index([profileId, date]) // 월별 캘린더 집계 (프로필 + 날짜)
+  @@index([manualContact]) // 미가입 상대 승격 스캔 (manualContact 매칭)
+  @@map("confirmations")
+}
+
+// ============================================================================
+//  ledger_entries — 장부 (받을 돈)
+//   - 확인서 연결(선택) + 상대(사업장FK 또는 수기명)
+//   - 부분입금 허용: payments JSONB[]
+// ============================================================================
+model LedgerEntry {
+  id               String       @id @default(uuid())
+  profileId        String // 장부 소유자(작업자)
+  confirmationId   String?      @unique // 연결된 확인서 (선택)
+  businessId       String? // 상대 사업장 (가입 시)
+  counterpartyName String? // 상대 수기명 (미가입)
+  amount           Decimal      @db.Decimal(12, 2) // 받을 금액
+  dueDate          DateTime? // 수금 예정일
+  status           LedgerStatus @default(PENDING)
+  payments         Json[]       @default([]) // 입금 기록 [{ amount, paidAt, method }] (부분입금)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  profile      Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  confirmation Confirmation? @relation(fields: [confirmationId], references: [id], onDelete: SetNull)
+  business     Business?     @relation(fields: [businessId], references: [id], onDelete: SetNull)
+
+  @@index([profileId])
+  @@index([businessId])
+  @@index([dueDate])
+  @@map("ledger_entries")
+}
+
+// ============================================================================
+//  safety_logs — 안전 증빙 (APPEND-ONLY)
+//   ⚠️ 증거력 원칙: 이 테이블의 레코드는 생성 후 UPDATE / DELETE 하지 않는다.
+//      상태 변화(발송→수신→확인)는 기존 레코드 수정이 아니라, 각 시점 필드에
+//      값을 append 하는 방식으로만 기록한다. updatedAt 컬럼을 두지 않는다.
+//      (application 레벨에서 update/delete 금지, 시각은 서버 기준으로만 기록)
+// ============================================================================
+model SafetyLog {
+  id              String        @id @default(uuid())
+  type            SafetyLogType // 유형
+  targetProfileId String // 대상자
+  businessId      String? // 관련 사업장 (사업장 안전 리포트 집계용, 미가입/개인은 null)
+  payload         Json? // 알림 내용(폭염 기준/문구 등)
+  sentAt          DateTime? // 발송 시각
+  receivedAt      DateTime? // 수신 시각
+  confirmedAt     DateTime? // 확인 시각
+  ackAt           DateTime? // 작업자 "확인" 시각 (append-only 예외: 최초 1회만 UPDATE 허용)
+  createdAt       DateTime      @default(now())
+  // 주의: updatedAt 없음 — append-only 설계 (ackAt 만 최초 1회 UPDATE)
+
+  target   Profile   @relation("SafetyTarget", fields: [targetProfileId], references: [id], onDelete: Cascade)
+  business Business? @relation(fields: [businessId], references: [id], onDelete: SetNull)
+
+  @@index([targetProfileId])
+  @@index([type])
+  @@index([businessId]) // 사업장별 안전 리포트 집계
+  @@map("safety_logs")
+}
+
+// ============================================================================
+//  otp_codes — 전화번호 인증 코드 (DB 저장: 서버 재시작에도 유지)
+//   - 단일 인스턴스 전제. code 는 bcrypt 해시로만 저장(평문 저장 금지).
+//   - 만료 3분 / 시도 5회 제한 / 재요청 쿨다운 30초는 애플리케이션 레벨에서 강제.
+// ============================================================================
+model OtpCode {
+  id        String   @id @default(uuid())
+  phone     String // 인증 대상 전화번호
+  codeHash  String // 6자리 코드의 bcrypt 해시
+  expiresAt DateTime // 만료 시각 (발급 + 3분)
+  attempts  Int      @default(0) // 검증 시도 횟수 (5회 초과 차단)
+  verified  Boolean  @default(false) // 검증 완료 여부 (재사용 방지)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([phone])
+  @@index([expiresAt])
+  @@map("otp_codes")
+}
+
+// ============================================================================
+//  notifications — 알림
+// ============================================================================
+model Notification {
+  id        String           @id @default(uuid())
+  profileId String
+  type      NotificationType
+  title     String
+  body      String
+  data      Json? // 딥링크/참조 id 등
+  readAt    DateTime? // 읽음 시각 (null = 미읽음)
+  createdAt DateTime         @default(now())
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@index([type])
+  @@map("notifications")
+}
+
+// ============================================================================
+//  device_tokens — FCM 디바이스 토큰
+// ============================================================================
+model DeviceToken {
+  id        String         @id @default(uuid())
+  profileId String
+  token     String         @unique // FCM 토큰
+  platform  DevicePlatform
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("device_tokens")
+}
