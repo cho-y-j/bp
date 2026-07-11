@@ -69,9 +69,12 @@ body {
 body {
   background: var(--bg);
   color: var(--ink);
+  /* Pretendard: 한글·라틴·키릴·베트남어 커버. 데바나가리(네팔어)는 미포함이라
+     시스템 데바나가리 폰트로 폴백(macOS Kohinoor·Windows Nirmala·Android/Noto). */
   font-family: "Pretendard Variable", Pretendard, -apple-system,
     BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕",
-    sans-serif;
+    "Noto Sans Devanagari", "Kohinoor Devanagari", "Devanagari Sangam MN",
+    "Nirmala UI", "Mangal", sans-serif;
   font-size: 17px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -428,6 +431,80 @@ button {
   border: 1px solid var(--warn-border);
   border-radius: 16px;
   padding: 20px;
+}
+
+/* ── 언어 선택 (외부 공개 페이지 상단) ── */
+.lang-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+.lang-switch {
+  position: relative;
+  display: inline-block;
+}
+.lang-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 44px;
+  padding: 0 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.lang-trigger:hover {
+  background: var(--surface-2);
+}
+.lang-trigger svg:first-child {
+  color: var(--accent-text);
+}
+.lang-current {
+  line-height: 1;
+}
+.lang-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 172px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lift);
+  z-index: 60;
+}
+.lang-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.lang-option:hover {
+  background: var(--surface-2);
+}
+.lang-option.on {
+  color: var(--accent-text);
+  font-weight: 800;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
 }
 
 /* 페이지 래퍼 (모바일 우선) */

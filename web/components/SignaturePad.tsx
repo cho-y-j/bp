@@ -24,8 +24,22 @@ type Point = { x: number; y: number };
  * 접힘/키보드/회전 등 resize 이벤트에서 캔버스를 재초기화한 뒤 **기존 서명을 리드로우**한다.
  * (이전 구현은 resize 시 서명이 지워졌음)
  */
-const SignaturePad = forwardRef<SignaturePadHandle, { onChange?: (empty: boolean) => void }>(
-  function SignaturePad({ onChange }, ref) {
+const SignaturePad = forwardRef<
+  SignaturePadHandle,
+  {
+    onChange?: (empty: boolean) => void;
+    hint?: string;
+    ariaLabel?: string;
+  }
+>(
+  function SignaturePad(
+    {
+      onChange,
+      hint = '여기에 손가락 또는 마우스로 서명하세요',
+      ariaLabel = '서명 입력 영역',
+    },
+    ref,
+  ) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const drawing = useRef(false);
     const strokes = useRef<Point[][]>([]);
@@ -177,12 +191,12 @@ const SignaturePad = forwardRef<SignaturePadHandle, { onChange?: (empty: boolean
           onPointerUp={end}
           onPointerLeave={end}
           onPointerCancel={end}
-          aria-label="서명 입력 영역"
+          aria-label={ariaLabel}
         />
         {empty ? (
           <>
             <span className="sign-baseline" />
-            <span className="sign-hint">여기에 손가락 또는 마우스로 서명하세요</span>
+            <span className="sign-hint">{hint}</span>
           </>
         ) : null}
       </div>

@@ -7,17 +7,21 @@ import { API_URL, absoluteUrl } from '@/lib/api';
 import SignaturePad, { type SignaturePadHandle } from '@/components/SignaturePad';
 import type { ConfirmationView } from '@/components/PaperConfirmation';
 import { CheckCircle, Pen, Download } from '@/components/Icons';
+import { createT, type Lang } from '@/lib/i18n';
 
 /** 외부(미가입) 서명 섹션 — 미서명이면 서명 폼, 서명 후 완료+가입 유도. */
 export default function SignSection({
   token,
   initialSigned,
   view,
+  lang = 'ko',
 }: {
   token: string;
   initialSigned: boolean;
   view: ConfirmationView;
+  lang?: Lang;
 }) {
+  const t = createT(lang);
   const padRef = useRef<SignaturePadHandle>(null);
   const [signerName, setSignerName] = useState('');
   const [padEmpty, setPadEmpty] = useState(true);
@@ -34,11 +38,11 @@ export default function SignSection({
   async function submit() {
     setError(null);
     if (signerName.trim().length < 1) {
-      setError('서명자 이름을 입력하세요.');
+      setError(t('signErrName'));
       return;
     }
     if (padRef.current?.isEmpty()) {
-      setError('서명을 입력하세요.');
+      setError(t('signErrSign'));
       return;
     }
     setSubmitting(true);
@@ -61,7 +65,7 @@ export default function SignSection({
       const msg =
         axios.isAxiosError(e) && e.response?.data?.error?.message
           ? e.response.data.error.message
-          : '서명 전송에 실패했습니다. 잠시 후 다시 시도하세요.';
+          : t('signErrSubmit');
       setError(msg);
     } finally {
       setSubmitting(false);
@@ -90,15 +94,13 @@ export default function SignSection({
           >
             <CheckCircle width={30} height={30} />
             <div>
-              <div style={{ fontSize: 20, fontWeight: 800 }}>서명 완료</div>
+              <div style={{ fontSize: 20, fontWeight: 800 }}>
+                {t('signDoneTitle')}
+              </div>
               <div style={{ fontSize: 15, color: 'var(--ink-2)' }}>
-                {signedInfo.signerName ? (
-                  <>
-                    <b>{signedInfo.signerName}</b> 님이 서명했습니다
-                  </>
-                ) : (
-                  '서명이 접수되었습니다'
-                )}
+                {signedInfo.signerName
+                  ? t('signDoneBy', { name: signedInfo.signerName })
+                  : t('signDoneReceived')}
                 {signedInfo.signedAt ? (
                   <span className="num"> · {signedInfo.signedAt}</span>
                 ) : null}
@@ -113,7 +115,7 @@ export default function SignSection({
             style={{ width: '100%', marginTop: 16 }}
           >
             <Download width={20} height={20} />
-            서명된 확인서 PDF 보기
+            {t('signViewPdf')}
           </a>
         </div>
 
@@ -130,18 +132,17 @@ export default function SignSection({
               lineHeight: 1.3,
             }}
           >
-            이 확인서를 작업온으로 관리하세요
+            {t('joinTitle')}
           </h2>
           <p style={{ fontSize: 15, color: 'var(--ink-2)', margin: '0 0 16px' }}>
-            받은 확인서·정산 내역이 자동으로 장부에 쌓입니다. 사업장이라면 웹에서
-            수신·정산·안전관리까지 한번에.
+            {t('joinDesc')}
           </p>
           <Link
             href="/login"
             className="btn btn-primary btn-lg"
             style={{ maxWidth: 320 }}
           >
-            작업온 시작하기
+            {t('joinCta')}
           </Link>
         </div>
       </>
@@ -161,18 +162,18 @@ export default function SignSection({
       >
         <Pen width={22} height={22} />
         <span style={{ fontSize: 19, fontWeight: 800, color: 'var(--ink)' }}>
-          여기에 서명해 주세요
+          {t('signHeading')}
         </span>
       </div>
 
       <div className="field">
         <label className="flabel" htmlFor="signerName">
-          서명자 이름
+          {t('signNameLabel')}
         </label>
         <input
           id="signerName"
           className="input"
-          placeholder="예) 이현수"
+          placeholder={t('signNamePlaceholder')}
           value={signerName}
           onChange={(e) => setSignerName(e.target.value)}
           maxLength={50}
@@ -180,8 +181,13 @@ export default function SignSection({
         />
       </div>
 
-      <label className="flabel">서명</label>
-      <SignaturePad ref={padRef} onChange={setPadEmpty} />
+      <label className="flabel">{t('signSignLabel')}</label>
+      <SignaturePad
+        ref={padRef}
+        onChange={setPadEmpty}
+        hint={t('signPadHint')}
+        ariaLabel={t('signPadAria')}
+      />
       <div
         style={{
           display: 'flex',
@@ -196,7 +202,7 @@ export default function SignSection({
           onClick={() => padRef.current?.clear()}
           disabled={padEmpty}
         >
-          다시 그리기
+          {t('signRedraw')}
         </button>
       </div>
 
@@ -217,7 +223,7 @@ export default function SignSection({
         disabled={submitting}
       >
         {submitting ? <span className="spinner" /> : <CheckCircle />}
-        {submitting ? '전송 중…' : '서명하고 확인 완료'}
+        {submitting ? t('signSubmitting') : t('signSubmit')}
       </button>
       <p
         style={{
@@ -227,7 +233,18 @@ export default function SignSection({
           marginTop: 10,
         }}
       >
-        서명 즉시 작업자와 양측에 확인서가 확정됩니다
+        {t('signFootnote')}
+      </p>
+      <p
+        style={{
+          textAlign: 'center',
+          fontSize: 13,
+          color: 'var(--ink-3)',
+          marginTop: 6,
+          lineHeight: 1.5,
+        }}
+      >
+        {t('signLegal')}
       </p>
     </div>
   );

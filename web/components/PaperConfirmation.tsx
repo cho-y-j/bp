@@ -1,5 +1,15 @@
-import { won, dateLabel } from '@/lib/format';
+import { money, formatDate } from '@/lib/format';
+import { createT, type Lang, type MessageKey } from '@/lib/i18n';
 import { Check } from './Icons';
+
+/** 금액 항목 type → 번역 키. OTHER/미지의 유형은 서버 label 을 그대로 쓴다. */
+const AMOUNT_TYPE_KEY: Record<string, MessageKey> = {
+  BASE: 'amtBase',
+  OVERTIME: 'amtOvertime',
+  EARLY: 'amtEarly',
+  NIGHT: 'amtNight',
+  ALLNIGHT: 'amtAllnight',
+};
 
 export interface AmountItem {
   type: string;
@@ -7,6 +17,7 @@ export interface AmountItem {
   rate: number;
   quantity: number;
   amount: number;
+  unit?: string;
 }
 export interface AmountCalc {
   items: AmountItem[];
@@ -45,27 +56,40 @@ export interface ConfirmationView {
  * 종이 확인서 렌더 (시그니처 컴포넌트).
  * 절취선·스탬프·필드 표·큰 금액. 외부 열람과 사업장 수신함에서 공용.
  */
-export default function PaperConfirmation({ c }: { c: ConfirmationView }) {
+export default function PaperConfirmation({
+  c,
+  lang = 'ko',
+}: {
+  c: ConfirmationView;
+  lang?: Lang;
+}) {
   const eq = c.equipmentSection;
+  const t = createT(lang);
+  // 한국어는 서버 라벨(예: "기본(일당)")을 그대로 유지, 그 외 언어는 type 기준 번역.
+  const itemLabel = (it: AmountItem): string => {
+    if (lang === 'ko') return it.label;
+    const key = AMOUNT_TYPE_KEY[it.type];
+    return key ? t(key) : it.label;
+  };
   return (
     <div className="paper">
       <div className="perf">
-        <span className="stamp">작 업 확 인 서</span>
+        <span className="stamp">{t('paperStamp')}</span>
         <span className="tear" />
       </div>
       <div className="paper-body">
         <div className="conf-table">
-          <div className="k">작업일</div>
-          <div className="v num">{dateLabel(c.date)}</div>
-          <div className="k">시간</div>
+          <div className="k">{t('paperDate')}</div>
+          <div className="v num">{formatDate(c.date, lang)}</div>
+          <div className="k">{t('paperTime')}</div>
           <div className="v num">
             {c.startTime} ~ {c.endTime}
           </div>
-          <div className="k">현장</div>
+          <div className="k">{t('paperSite')}</div>
           <div className="v">{c.site}</div>
-          <div className="k">작업자</div>
+          <div className="k">{t('paperWorker')}</div>
           <div className="v">{c.workerName ?? '-'}</div>
-          <div className="k">지시자</div>
+          <div className="k">{t('paperOrderer')}</div>
           <div className="v">
             {c.companyName ?? '-'}
             {c.contact ? (
@@ -75,16 +99,16 @@ export default function PaperConfirmation({ c }: { c: ConfirmationView }) {
               </span>
             ) : null}
           </div>
-          <div className="k">작업내용</div>
+          <div className="k">{t('paperWork')}</div>
           <div className="v">{c.workContent}</div>
           {eq && (eq.name || eq.vehicleNumber) ? (
             <>
-              <div className="k">장비</div>
+              <div className="k">{t('paperEquipment')}</div>
               <div className="v num">
                 {[eq.name, eq.vehicleNumber, eq.spec]
                   .filter(Boolean)
                   .join(' · ')}
-                {eq.guide ? ' · 유도원' : ''}
+                {eq.guide ? ` · ${t('paperGuide')}` : ''}
               </div>
             </>
           ) : null}
@@ -94,29 +118,28 @@ export default function PaperConfirmation({ c }: { c: ConfirmationView }) {
           {c.amountCalc.items.map((it, i) => (
             <div className="line" key={i}>
               <span>
-                {it.label}
+                {itemLabel(it)}
                 {it.quantity ? (
                   <span className="num" style={{ color: 'var(--ink-3)' }}>
                     {'  '}
-                    {won(it.rate)} × {it.quantity}
+                    {money(it.rate, lang)} × {it.quantity}
                   </span>
                 ) : null}
               </span>
-              <span className="num">{won(it.amount)} 원</span>
+              <span className="num">{money(it.amount, lang)}</span>
             </div>
           ))}
           {c.amountCalc.vat > 0 ? (
             <div className="line">
-              <span>부가세 ({Math.round(c.amountCalc.vatRate * 100)}%)</span>
-              <span className="num">{won(c.amountCalc.vat)} 원</span>
+              <span>
+                {t('paperVat', { rate: Math.round(c.amountCalc.vatRate * 100) })}
+              </span>
+              <span className="num">{money(c.amountCalc.vat, lang)}</span>
             </div>
           ) : null}
           <div className="total">
-            <span className="k">받을 금액</span>
-            <span className="v num">
-              {won(c.total)}
-              <small> 원</small>
-            </span>
+            <span className="k">{t('paperTotal')}</span>
+            <span className="v num">{money(c.total, lang)}</span>
           </div>
         </div>
 
@@ -128,19 +151,19 @@ export default function PaperConfirmation({ c }: { c: ConfirmationView }) {
               color: 'var(--ink-2)',
             }}
           >
-            메모 · {c.notes}
+            {t('paperMemo')} · {c.notes}
           </p>
         ) : null}
 
         {c.signed ? (
           <div className="sign-zone">
             <div className="sign-head">
-              <span className="k">지시자 서명</span>
+              <span className="k">{t('paperSignHead')}</span>
             </div>
             <div className="sign-stamp">
               <Check width={20} height={20} />
               <span>
-                <b>{c.signerName}</b> 님 서명 완료
+                {t('paperSignedBy', { name: c.signerName ?? '' })}
                 {c.signedAt ? (
                   <span
                     className="num"

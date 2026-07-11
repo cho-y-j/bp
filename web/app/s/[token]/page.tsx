@@ -1,13 +1,17 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { apiGet, classifyLoadError, absoluteUrl } from '@/lib/api';
-import { dateLabel, ddayBadge } from '@/lib/format';
+import { formatDate, ddayBadge } from '@/lib/format';
 import { FileText, Download } from '@/components/Icons';
 import StatusScreen from '@/components/StatusScreen';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { createT } from '@/lib/i18n';
+import { resolveServerLang } from '@/lib/i18n/server';
 
 export const dynamic = 'force-dynamic';
 
 type Params = { token: string };
+type SearchParams = { lang?: string };
 
 interface ShareDoc {
   documentId: string;
@@ -59,10 +63,15 @@ export async function generateMetadata({
 
 export default async function SharePage({
   params,
+  searchParams,
 }: {
   params: Promise<Params>;
+  searchParams: Promise<SearchParams>;
 }) {
   const { token } = await params;
+  const { lang: langParam } = await searchParams;
+  const lang = await resolveServerLang(langParam);
+  const t = createT(lang);
   const r = await load(token);
 
   // 무효/만료 링크 → HTTP 404, 일시 장애 → 친화 화면(200).
@@ -70,8 +79,9 @@ export default async function SharePage({
   if (r.status === 'transient') {
     return (
       <StatusScreen
-        title="일시적인 오류입니다"
-        message="잠시 후 다시 시도해 주세요."
+        lang={lang}
+        title={t('statusTransientTitle')}
+        message={t('statusTransientMsg')}
       />
     );
   }
@@ -79,16 +89,19 @@ export default async function SharePage({
 
   return (
     <main className="page">
+      <div className="lang-bar">
+        <LanguageSwitcher current={lang} />
+      </div>
       <header style={{ marginBottom: 8 }}>
         <p className="brand-kicker">
           <span className="brand-dot" />
-          작업온 · 서류 묶음
+          작업온 · {t('kickerShare')}
         </p>
         <h1 style={{ fontSize: 26, fontWeight: 800, margin: '12px 0 4px' }}>
-          공유된 서류 {s.documents.length}건
+          {t('shareCount', { n: s.documents.length })}
         </h1>
         <p style={{ color: 'var(--ink-2)', fontSize: 15, margin: 0 }}>
-          유효기간 {dateLabel(s.expiresAt)}까지 열람 가능
+          {t('shareValidUntil', { date: formatDate(s.expiresAt, lang) })}
         </p>
       </header>
 
@@ -123,12 +136,14 @@ export default async function SharePage({
                   >
                     {d.expiryDate ? (
                       <span className="num">
-                        만료 {dateLabel(d.expiryDate)}
+                        {t('shareExpiry', {
+                          date: formatDate(d.expiryDate, lang),
+                        })}
                       </span>
                     ) : (
-                      '만료일 없음'
+                      t('shareNoExpiry')
                     )}
-                    {d.masked ? ' · 마스킹본' : ''}
+                    {d.masked ? ` · ${t('shareMasked')}` : ''}
                   </div>
                 </div>
                 {d.dday !== null ? (
@@ -144,7 +159,7 @@ export default async function SharePage({
                   style={{ flex: 1 }}
                 >
                   <FileText width={18} height={18} />
-                  보기
+                  {t('shareView')}
                 </a>
                 <a
                   href={downloadUrl}
@@ -153,7 +168,7 @@ export default async function SharePage({
                   style={{ flex: 1 }}
                 >
                   <Download width={18} height={18} />
-                  다운로드
+                  {t('shareDownload')}
                 </a>
               </div>
             </div>
