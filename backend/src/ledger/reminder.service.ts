@@ -14,10 +14,9 @@ import { toKstDateStr } from '../confirmations/time.util';
 import { NotificationsService } from '../notifications/notifications.service';
 import { computeOutstanding } from './ledger.util';
 import {
+  appendReminder,
   autoReminderStage,
-  hasStageBeenSent,
   manualCooldown,
-  normalizeReminders,
   ReminderRecord,
   ReminderStage,
 } from './reminder.util';
@@ -67,10 +66,10 @@ export class ReminderService {
     for (const e of entries) {
       if (!e.dueDate) continue;
       const dday = computeDday(e.dueDate, now);
-      const stage = autoReminderStage(dday);
+      // dday <= -7/-30 이면서 해당 단계 미발송이면 발송(정확 일치 완화 + 중복 방지 통합).
+      // 두 단계 동시 조건이면 높은 단계(D30) 하나만 반환 → 스팸 방지.
+      const stage = autoReminderStage(dday, e.reminders);
       if (!stage) continue;
-      // 같은 단계 이미 발송했으면 건너뜀(중복 방지).
-      if (hasStageBeenSent(e.reminders, stage)) continue;
       // 완납이면 건너뜀(status 필터 보강).
       const { outstanding } = computeOutstanding(
         Number(e.amount),
@@ -219,12 +218,13 @@ export class ReminderService {
     }
 
     // 발송 이력 append (같은 단계 중복 방지는 호출부에서 검사).
+    // 최근 REMINDER_HISTORY_CAP 건만 유지(오래된 것 drop).
     const record: ReminderRecord = {
       at: now.toISOString(),
       channel,
       stage,
     };
-    const next = [...normalizeReminders(entry.reminders), record];
+    const next = appendReminder(entry.reminders, record);
     await this.prisma.ledgerEntry.update({
       where: { id: entry.id },
       data: { reminders: next as unknown as Prisma.InputJsonValue[] },

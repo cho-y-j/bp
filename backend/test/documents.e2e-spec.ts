@@ -21,6 +21,11 @@ describe('Documents flow (e2e)', () => {
   let userId: string;
   const phone = '010-8888-0001';
   const normalized = '01088880001';
+  // 오늘(KST 달력일) YYYY-MM-DD — D-0(오늘 만료) 검증용 동적 날짜.
+  // dday.util 이 KST(UTC+9) 자정을 기준으로 D-day 를 계산하므로 동일 기준으로 산출.
+  const kstTodayIso = new Date(Date.now() + 9 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10);
 
   async function makePng(): Promise<Buffer> {
     return sharp({
@@ -80,7 +85,7 @@ describe('Documents flow (e2e)', () => {
       .set('Authorization', auth())
       .field('type', '신분증')
       .field('ownerType', 'PROFILE')
-      .field('expiryDate', '2026-07-11') // 오늘 만료 → D-0
+      .field('expiryDate', kstTodayIso) // 오늘 만료 → D-0 (동적: 오늘 KST 날짜)
       .attach('file', png, { filename: 'id.png', contentType: 'image/png' })
       .expect(201);
 
