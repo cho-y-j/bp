@@ -6,4 +6,5 @@ export const SAFETY_TYPE_LABEL: Record<SafetyLogType, string> = {
   REST_GUIDE: '휴식안내',
   DOCUMENT_VALIDITY: '서류확인',
   CONDITION_CHECK: '컨디션체크',
+  TBM: 'TBM',
 };

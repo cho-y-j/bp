@@ -25,6 +25,9 @@ class NotificationsRepo {
   /// 폭염 안전 알림 "확인" (ack).
   Future<void> ackSafety(String logId) => api.post('/safety/$logId/ack');
 
+  /// TBM 참석자 "확인" (ack).
+  Future<void> ackTbm(String attendeeId) => api.post('/tbm/$attendeeId/ack');
+
   /// FCM 디바이스 토큰 등록.
   Future<void> registerDeviceToken(String token, String platform) =>
       api.post('/device-tokens', body: {'token': token, 'platform': platform});

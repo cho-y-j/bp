@@ -111,6 +111,15 @@ export interface SafetyReportRow {
   ackAt: string | null; // 확인 시각 (없으면 '-')
 }
 
+/** 월간 TBM(안전점검회의) 요약 행 (P2c). */
+export interface SafetyReportTbmRow {
+  date: string; // 실시 일자 (YYYY-MM-DD)
+  site: string; // 현장명
+  hazards: string; // 위험요인 요약(한국어)
+  attendeeCount: number; // 참석 N
+  ackCount: number; // 확인 M
+}
+
 export interface SafetyReportPdfData {
   title: string; // "안전관리 이행 리포트"
   month: string; // YYYY-MM
@@ -118,4 +127,5 @@ export interface SafetyReportPdfData {
   totalCount: number;
   byType: SafetyReportTypeCount[];
   rows: SafetyReportRow[];
+  tbm?: SafetyReportTbmRow[]; // 월간 TBM 목록 (P2c)
 }

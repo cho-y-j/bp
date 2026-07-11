@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/api_client.dart';
+import '../core/file_pick.dart';
 import '../models/models.dart';
 import 'auth.dart';
 
@@ -94,6 +96,32 @@ final myContractsProvider = FutureProvider<List<LaborContract>>((ref) async {
   final res = await api.get('/contracts');
   final items = (res as Map)['items'] as List? ?? [];
   return items.map((e) => LaborContract.fromJson(e as Map)).toList();
+});
+
+/// 사업장 TBM 기록 목록 — GET /biz/tbm.
+final bizTbmProvider = FutureProvider<List<TbmRecord>>((ref) async {
+  final api = ref.watch(apiClientProvider);
+  final res = await api.get('/biz/tbm');
+  final items = (res as Map)['items'] as List? ?? [];
+  return items.map((e) => TbmRecord.fromJson(e as Map)).toList();
+});
+
+/// 작업자 "받은 TBM" 목록 — GET /tbm (내 안전 기록).
+final myTbmProvider = FutureProvider<List<TbmReceivedItem>>((ref) async {
+  final api = ref.watch(apiClientProvider);
+  final res = await api.get('/tbm');
+  final items = (res as Map)['items'] as List? ?? [];
+  return items.map((e) => TbmReceivedItem.fromJson(e as Map)).toList();
+});
+
+/// 사업장 TBM 커스텀 프리셋 — GET /biz/tbm/presets?businessId=.
+final tbmPresetsProvider =
+    FutureProvider.family<List<TbmPreset>, String>((ref, businessId) async {
+  final api = ref.watch(apiClientProvider);
+  final res =
+      await api.get('/biz/tbm/presets', query: {'businessId': businessId});
+  final items = (res as Map)['items'] as List? ?? [];
+  return items.map((e) => TbmPreset.fromJson(e as Map)).toList();
 });
 
 /// 데이터 무효화 유틸 — 쓰기 후 홈/캘린더/장부 새로고침.
@@ -244,6 +272,58 @@ class Repo {
         body: {'signerName': signerName, 'signImageBase64': signImageBase64});
     return LaborContract.fromJson(res as Map);
   }
+
+  // ── 간편 TBM (안전점검회의) ──────────────────────────────
+  /// TBM 기록 생성(사업장 모드). body 는 POST /biz/tbm 본문 그대로.
+  Future<TbmRecord> createTbm(Map<String, dynamic> body) async {
+    final res = await api.post('/biz/tbm', body: body);
+    return TbmRecord.fromJson(res as Map);
+  }
+
+  /// TBM 상세(사업장 측).
+  Future<TbmRecord> bizTbm(String id) async {
+    final res = await api.get('/biz/tbm/$id');
+    return TbmRecord.fromJson(res as Map);
+  }
+
+  /// TBM 수정(당일만). 부분 필드.
+  Future<TbmRecord> updateTbm(String id, Map<String, dynamic> body) async {
+    final res = await api.patch('/biz/tbm/$id', body: body);
+    return TbmRecord.fromJson(res as Map);
+  }
+
+  /// TBM 삭제(당일만).
+  Future<void> deleteTbm(String id) => api.delete('/biz/tbm/$id');
+
+  /// TBM 사진 업로드(multipart) → { uploaded, photoCount }.
+  Future<Map> uploadTbmPhotos(String id, List<PickedDoc> photos) async {
+    final form = FormData();
+    for (final p in photos) {
+      form.files.add(MapEntry(
+        'files',
+        MultipartFile.fromBytes(p.bytes,
+            filename: p.filename,
+            contentType: DioMediaType.parse(p.mime)),
+      ));
+    }
+    final res = await api.postMultipart('/biz/tbm/$id/photos', form);
+    return res as Map;
+  }
+
+  /// TBM 프리셋 추가(커스텀 문구).
+  Future<TbmPreset> createTbmPreset(
+      String businessId, String kind, String text) async {
+    final res = await api.post('/biz/tbm/presets',
+        body: {'businessId': businessId, 'kind': kind, 'text': text});
+    return TbmPreset.fromJson(res as Map);
+  }
+
+  /// TBM 프리셋 삭제.
+  Future<void> deleteTbmPreset(String id) => api.delete('/biz/tbm/presets/$id');
+
+  /// 참석자 확인(ack).
+  Future<void> ackTbm(String attendeeId) =>
+      api.post('/tbm/$attendeeId/ack');
 }
 
 final repoProvider = Provider<Repo>((ref) => Repo(ref.watch(apiClientProvider)));

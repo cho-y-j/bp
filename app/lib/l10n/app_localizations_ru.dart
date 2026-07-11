@@ -1873,4 +1873,206 @@ class AppLocalizationsRu extends AppLocalizations {
   String lcPdfFailed(String msg) {
     return 'Не удалось открыть PDF: $msg';
   }
+
+  @override
+  String get tbmMenuTitle => 'Журнал TBM';
+
+  @override
+  String get tbmMenuDesc => 'Собрание по ТБ · риски и подтверждение участников';
+
+  @override
+  String get tbmMyTitle => 'Полученные TBM';
+
+  @override
+  String get tbmMySub => 'Мои записи по ТБ · подтверждение';
+
+  @override
+  String get tbmTitle => 'TBM (собрание по ТБ)';
+
+  @override
+  String get tbmStamp => 'T B M';
+
+  @override
+  String get tbmListEmptyTitle => 'Пока нет записей TBM';
+
+  @override
+  String get tbmListEmptySub => 'Запишите собрание по ТБ на площадке.';
+
+  @override
+  String get tbmNew => 'Новый TBM';
+
+  @override
+  String get tbmFormTitle => 'Создать TBM';
+
+  @override
+  String get tbmSite => 'Объект';
+
+  @override
+  String get tbmSiteHint => 'напр.: Объект А, 3 этаж';
+
+  @override
+  String get tbmDate => 'Дата и время';
+
+  @override
+  String get tbmHazards => 'Риски';
+
+  @override
+  String get tbmHazardsHint => 'Выберите чипы или введите своё';
+
+  @override
+  String get tbmAddCustom => 'Своё';
+
+  @override
+  String get tbmCustomHint => 'Введите риск';
+
+  @override
+  String get tbmMeasures => 'Меры безопасности';
+
+  @override
+  String get tbmMeasuresHint => 'напр.: страховочный пояс, сигнальщик';
+
+  @override
+  String get tbmNotes => 'Примечания';
+
+  @override
+  String get tbmNotesHint => 'Примечания (необяз.)';
+
+  @override
+  String get tbmAttendees => 'Участники';
+
+  @override
+  String get tbmSelectWorkers => 'Выбрать связанных работников';
+
+  @override
+  String get tbmNoConnections => 'Нет связанных работников';
+
+  @override
+  String get tbmAddAttendeeManual => 'Добавить участника вручную';
+
+  @override
+  String get tbmAttendeeNameHint => 'Имя участника';
+
+  @override
+  String get tbmPhotos => 'Фото объекта';
+
+  @override
+  String get tbmAddPhoto => 'Добавить фото';
+
+  @override
+  String get tbmSave => 'Сохранить TBM';
+
+  @override
+  String get tbmSaved => 'TBM записан';
+
+  @override
+  String tbmSaveFailed(String msg) {
+    return 'Не удалось сохранить: $msg';
+  }
+
+  @override
+  String get tbmNeedHazard => 'Выберите хотя бы один риск';
+
+  @override
+  String get tbmNeedSite => 'Введите объект';
+
+  @override
+  String get tbmPresetMine => 'Мои шаблоны';
+
+  @override
+  String get tbmPresetAddChip => '＋ Сохранить шаблон';
+
+  @override
+  String get tbmPresetAddTitle => 'Сохранить частую фразу';
+
+  @override
+  String get tbmPresetDeleted => 'Шаблон удалён';
+
+  @override
+  String get tbmDetailTitle => 'Детали TBM';
+
+  @override
+  String get tbmAttendeesStatus => 'Статус подтверждений';
+
+  @override
+  String get tbmAcked => 'Подтв.';
+
+  @override
+  String get tbmNotAcked => 'Ожидание';
+
+  @override
+  String tbmAckSummary(int att, int ack) {
+    return '$att присут. · $ack подтв.';
+  }
+
+  @override
+  String get tbmReadonly => 'Только чтение после дня создания';
+
+  @override
+  String get tbmEdit => 'Изменить';
+
+  @override
+  String get tbmDeleteConfirm => 'Удалить эту запись TBM?';
+
+  @override
+  String get tbmDeleted => 'Удалено';
+
+  @override
+  String get tbmSaveUpdated => 'Обновлено';
+
+  @override
+  String tbmPhotoFailed(String msg) {
+    return 'Ошибка фото: $msg';
+  }
+
+  @override
+  String get tbmReceivedEmpty => 'Нет полученных TBM';
+
+  @override
+  String get tbmAckButton => 'Подтвердить TBM';
+
+  @override
+  String get tbmAckDone => 'Подтверждено';
+
+  @override
+  String tbmAckFailed(String msg) {
+    return 'Не удалось подтвердить: $msg';
+  }
+
+  @override
+  String get tbmAlreadyAcked => 'Уже подтверждено';
+
+  @override
+  String tbmPhotoCount(int n) {
+    return '$n фото';
+  }
+
+  @override
+  String get tbmHzHeavyEquip => 'Защемление/удар спецтехникой';
+
+  @override
+  String get tbmHzFallHeight => 'Падение с высоты';
+
+  @override
+  String get tbmHzHeatIllness => 'Тепловой удар';
+
+  @override
+  String get tbmHzElectric => 'Поражение током';
+
+  @override
+  String get tbmHzFallingObject => 'Падающие предметы';
+
+  @override
+  String get tbmHzCollapse => 'Обрушение/засыпание';
+
+  @override
+  String get tbmHzFire => 'Пожар/взрыв';
+
+  @override
+  String get tbmHzDustNoise => 'Пыль/шум';
+
+  @override
+  String get tbmHzSlipTrip => 'Скольжение/спотыкание';
+
+  @override
+  String get tbmHzConfined => 'Удушье в замкнутом пространстве';
 }

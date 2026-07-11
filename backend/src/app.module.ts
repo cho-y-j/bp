@@ -12,6 +12,7 @@ import { DocumentSharesModule } from './document-shares/document-shares.module';
 import { ConfirmationsModule } from './confirmations/confirmations.module';
 import { TeamsModule } from './teams/teams.module';
 import { LaborContractsModule } from './labor-contracts/labor-contracts.module';
+import { TbmModule } from './tbm/tbm.module';
 import { LedgerModule } from './ledger/ledger.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ConnectionsModule } from './connections/connections.module';
@@ -40,6 +41,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     ConfirmationsModule,
     TeamsModule,
     LaborContractsModule,
+    TbmModule,
     LedgerModule,
     NotificationsModule,
     ConnectionsModule,

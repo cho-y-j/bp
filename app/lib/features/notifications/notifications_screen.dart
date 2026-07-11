@@ -4,6 +4,7 @@ import '../../theme/app_colors.dart';
 import '../../models/models.dart';
 import '../../providers/notifications.dart';
 import '../../widgets/common.dart';
+import '../../l10n/app_localizations.dart';
 import '../../l10n/l10n_ext.dart';
 
 IconData _iconFor(String type) {
@@ -16,6 +17,8 @@ IconData _iconFor(String type) {
       return Icons.event_available_outlined;
     case 'HEAT_ALERT':
       return Icons.wb_sunny_outlined;
+    case 'TBM':
+      return Icons.health_and_safety_outlined;
     default:
       return Icons.notifications_none_rounded;
   }
@@ -67,11 +70,27 @@ class _NotiTile extends ConsumerWidget {
   final NotificationItem noti;
   const _NotiTile({required this.noti});
 
+  Future<void> _ack(BuildContext context, WidgetRef ref, AppLocalizations l,
+      Future<void> Function() action) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await action();
+      if (!noti.read) {
+        await ref.read(notificationsRepoProvider).markRead(noti.id);
+      }
+      ref.invalidate(notificationsProvider);
+      messenger.showSnackBar(SnackBar(content: Text(l.notiAckDone)));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(l.notiAckFailed('$e'))));
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
     final l = context.l;
     final isHeat = noti.type == 'HEAT_ALERT';
+    final isTbmAck = noti.type == 'TBM' && noti.tbmAttendeeId != null;
     return Material(
       color: noti.read ? c.surface : c.primary.withValues(alpha: 0.06),
       borderRadius: BorderRadius.circular(14),
@@ -131,35 +150,32 @@ class _NotiTile extends ConsumerWidget {
                       SizedBox(
                         height: 40,
                         child: FilledButton.icon(
-                          onPressed: () async {
-                            try {
-                              await ref
+                          onPressed: () => _ack(context, ref, l,
+                              () => ref
                                   .read(notificationsRepoProvider)
-                                  .ackSafety(noti.safetyLogId!);
-                              if (!noti.read) {
-                                await ref
-                                    .read(notificationsRepoProvider)
-                                    .markRead(noti.id);
-                              }
-                              ref.invalidate(notificationsProvider);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text(l.notiAckDone)));
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text(l.notiAckFailed('$e'))));
-                              }
-                            }
-                          },
+                                  .ackSafety(noti.safetyLogId!)),
                           style: FilledButton.styleFrom(
                               backgroundColor: c.warnInk,
                               foregroundColor: Colors.white),
                           icon: const Icon(Icons.check_rounded, size: 18),
                           label: Text(l.confirm),
+                        ),
+                      ),
+                    ],
+                    if (isTbmAck) ...[
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        height: 40,
+                        child: FilledButton.icon(
+                          onPressed: () => _ack(context, ref, l,
+                              () => ref
+                                  .read(notificationsRepoProvider)
+                                  .ackTbm(noti.tbmAttendeeId!)),
+                          style: FilledButton.styleFrom(
+                              backgroundColor: c.accentText,
+                              foregroundColor: Colors.white),
+                          icon: const Icon(Icons.check_rounded, size: 18),
+                          label: Text(l.tbmAckButton),
                         ),
                       ),
                     ],

@@ -1827,4 +1827,206 @@ class AppLocalizationsKo extends AppLocalizations {
   String lcPdfFailed(String msg) {
     return 'PDF를 열지 못했어요: $msg';
   }
+
+  @override
+  String get tbmMenuTitle => 'TBM 기록';
+
+  @override
+  String get tbmMenuDesc => '안전점검회의 · 위험요인·참석자 확인';
+
+  @override
+  String get tbmMyTitle => '받은 TBM';
+
+  @override
+  String get tbmMySub => '내 안전 기록 · 확인';
+
+  @override
+  String get tbmTitle => 'TBM(안전점검회의)';
+
+  @override
+  String get tbmStamp => 'T B M';
+
+  @override
+  String get tbmListEmptyTitle => '오늘 TBM 기록이 없어요';
+
+  @override
+  String get tbmListEmptySub => '현장 안전점검회의를 기록하세요.';
+
+  @override
+  String get tbmNew => '오늘 TBM 작성';
+
+  @override
+  String get tbmFormTitle => 'TBM 작성';
+
+  @override
+  String get tbmSite => '현장명';
+
+  @override
+  String get tbmSiteHint => '예: 강동 현장 3층';
+
+  @override
+  String get tbmDate => '일시';
+
+  @override
+  String get tbmHazards => '위험요인';
+
+  @override
+  String get tbmHazardsHint => '칩을 눌러 선택하거나 직접 입력하세요';
+
+  @override
+  String get tbmAddCustom => '직접 입력';
+
+  @override
+  String get tbmCustomHint => '위험요인 직접 입력';
+
+  @override
+  String get tbmMeasures => '안전 조치';
+
+  @override
+  String get tbmMeasuresHint => '예: 안전벨트 착용, 유도원 배치';
+
+  @override
+  String get tbmNotes => '특이사항';
+
+  @override
+  String get tbmNotesHint => '특이사항(선택)';
+
+  @override
+  String get tbmAttendees => '참석자';
+
+  @override
+  String get tbmSelectWorkers => '연결 작업자 선택';
+
+  @override
+  String get tbmNoConnections => '연결된 작업자가 없어요';
+
+  @override
+  String get tbmAddAttendeeManual => '수기 참석자 추가';
+
+  @override
+  String get tbmAttendeeNameHint => '참석자 이름';
+
+  @override
+  String get tbmPhotos => '현장 사진';
+
+  @override
+  String get tbmAddPhoto => '사진 추가';
+
+  @override
+  String get tbmSave => 'TBM 저장';
+
+  @override
+  String get tbmSaved => 'TBM을 기록했어요';
+
+  @override
+  String tbmSaveFailed(String msg) {
+    return '저장하지 못했어요: $msg';
+  }
+
+  @override
+  String get tbmNeedHazard => '위험요인을 1개 이상 선택하세요';
+
+  @override
+  String get tbmNeedSite => '현장명을 입력하세요';
+
+  @override
+  String get tbmPresetMine => '내 프리셋';
+
+  @override
+  String get tbmPresetAddChip => '＋ 프리셋 저장';
+
+  @override
+  String get tbmPresetAddTitle => '자주 쓰는 문구 저장';
+
+  @override
+  String get tbmPresetDeleted => '프리셋을 삭제했어요';
+
+  @override
+  String get tbmDetailTitle => 'TBM 상세';
+
+  @override
+  String get tbmAttendeesStatus => '참석자 확인 현황';
+
+  @override
+  String get tbmAcked => '확인';
+
+  @override
+  String get tbmNotAcked => '미확인';
+
+  @override
+  String tbmAckSummary(int att, int ack) {
+    return '참석 $att명 · 확인 $ack명';
+  }
+
+  @override
+  String get tbmReadonly => '작성 당일이 지나 읽기 전용입니다';
+
+  @override
+  String get tbmEdit => '수정';
+
+  @override
+  String get tbmDeleteConfirm => '이 TBM 기록을 삭제할까요?';
+
+  @override
+  String get tbmDeleted => '삭제했어요';
+
+  @override
+  String get tbmSaveUpdated => '수정했어요';
+
+  @override
+  String tbmPhotoFailed(String msg) {
+    return '사진 처리 실패: $msg';
+  }
+
+  @override
+  String get tbmReceivedEmpty => '받은 TBM이 없어요';
+
+  @override
+  String get tbmAckButton => 'TBM 확인';
+
+  @override
+  String get tbmAckDone => '확인했어요';
+
+  @override
+  String tbmAckFailed(String msg) {
+    return '확인하지 못했어요: $msg';
+  }
+
+  @override
+  String get tbmAlreadyAcked => '이미 확인함';
+
+  @override
+  String tbmPhotoCount(int n) {
+    return '사진 $n장';
+  }
+
+  @override
+  String get tbmHzHeavyEquip => '중장비 협착·충돌';
+
+  @override
+  String get tbmHzFallHeight => '고소작업 추락';
+
+  @override
+  String get tbmHzHeatIllness => '폭염 온열질환';
+
+  @override
+  String get tbmHzElectric => '감전';
+
+  @override
+  String get tbmHzFallingObject => '낙하물';
+
+  @override
+  String get tbmHzCollapse => '붕괴·매몰';
+
+  @override
+  String get tbmHzFire => '화재·폭발';
+
+  @override
+  String get tbmHzDustNoise => '분진·소음';
+
+  @override
+  String get tbmHzSlipTrip => '전도·미끄러짐';
+
+  @override
+  String get tbmHzConfined => '밀폐공간 질식';
 }

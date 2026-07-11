@@ -91,6 +91,7 @@ enum SafetyLogType {
   REST_GUIDE // 휴식 안내
   DOCUMENT_VALIDITY // 서류 유효 확인
   CONDITION_CHECK // 컨디션 체크
+  TBM // 간편 TBM(안전점검회의) 기록·확인 (P2c)
 }
 
 // 알림 유형
@@ -100,6 +101,13 @@ enum NotificationType {
   RESERVATION // 예약 확인
   HEAT_ALERT // 폭염
   CONFIRMATION // 확인서 관련(수신/서명)
+  TBM // 간편 TBM(안전점검회의) 도착·확인 요청 (P2c)
+}
+
+// TBM 프리셋 분류 (사업장 커스텀 문구) — 위험요인 / 조치 (P2c)
+enum TbmPresetKind {
+  HAZARD // 위험요인
+  MEASURE // 조치
 }
 
 // 디바이스 플랫폼 (FCM)
@@ -154,6 +162,8 @@ model Profile {
   teams           Team[]          @relation("TeamOwner") // 반장(팀장)으로서 소유한 팀
   teamMemberships TeamMember[]    @relation("TeamMemberProfile") // 가입자로서 소속된 팀원 항목
   workerContracts LaborContract[] @relation("LaborContractWorker") // 가입 작업자로서 받은 근로계약서 (P2b)
+  tbmAttendances  TbmAttendee[]   @relation("TbmAttendeeProfile") // 가입 작업자로서 참석한 TBM (P2c)
+  tbmAuthored     TbmRecord[]     @relation("TbmAuthor") // 작성한 TBM 기록 (P2c)
 
   @@index([phone])
   @@map("profiles")
@@ -182,6 +192,8 @@ model Business {
   ledgerEntries  LedgerEntry[]
   safetyLogs     SafetyLog[]
   laborContracts LaborContract[] // 이 사업장이 발행한 표준근로계약서 (P2b)
+  tbmRecords     TbmRecord[] // 이 사업장의 간편 TBM 기록 (P2c)
+  tbmPresets     TbmPreset[] // 이 사업장의 TBM 프리셋 문구 (P2c)
 
   @@index([ownerId])
   @@map("businesses")
@@ -647,4 +659,73 @@ model LaborContract {
   @@index([workerProfileId]) // 작업자 "내 계약서" 조회
   @@index([status])
   @@map("labor_contracts")
+}
+
+// ============================================================================
+//  tbm_records — 간편 TBM(툴박스 미팅/안전점검회의) 기록 (P2c)
+//   - 사업장 소유자가 현장 TBM 을 기록. 당일 수정 허용, 이후 읽기전용(증빙 무결성).
+//   - 위험요인(hazards)은 키 기반 JSON 배열 [{ code?, text? }]:
+//       code = 기본 프리셋 코드(작업자에게 자기 언어로 번역 표시),
+//       text = 사업장 커스텀/직접입력 문구(원문 그대로).
+//   - measures(조치), notes(특이사항)는 자유 텍스트. photoPaths 는 현장 사진.
+// ============================================================================
+model TbmRecord {
+  id               String   @id @default(uuid())
+  businessId       String // 기록 사업장 (소유자만 작성)
+  authorProfileId  String? // 작성자(사업장 소유자) — 참고용, 삭제 시 SetNull
+  site             String // 현장명/장소
+  occurredAt       DateTime // TBM 실시 일시
+  hazards          Json     @default("[]") // 위험요인 [{ code?, text? }]
+  measures         String? // 안전 조치 (자유 텍스트)
+  notes            String? // 특이사항
+  photoPaths       String[] @default([]) // 현장 사진 경로들
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  business  Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  author    Profile?      @relation("TbmAuthor", fields: [authorProfileId], references: [id], onDelete: SetNull)
+  attendees TbmAttendee[]
+
+  @@index([businessId])
+  @@index([businessId, occurredAt]) // 월간 리포트 집계
+  @@map("tbm_records")
+}
+
+// ============================================================================
+//  tbm_attendees — TBM 참석자 (P2c)
+//   - profileId 있으면 가입 작업자(연결/동의자). 없으면 수기(name).
+//   - ackAt: 참석자 "확인" 시각 (append-only 예외: 최초 1회만 UPDATE, 재확인 409).
+// ============================================================================
+model TbmAttendee {
+  id        String    @id @default(uuid())
+  recordId  String
+  profileId String? // 가입 작업자(연결)일 때만
+  name      String // 표시 이름 (가입자면 스냅샷, 수기면 입력값)
+  ackAt     DateTime? // 참석자 확인 시각 (서버 기준, 최초 1회)
+  createdAt DateTime  @default(now())
+
+  record  TbmRecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  profile Profile?  @relation("TbmAttendeeProfile", fields: [profileId], references: [id], onDelete: SetNull)
+
+  @@index([recordId])
+  @@index([profileId]) // 작업자 "받은 TBM" 조회
+  @@map("tbm_attendees")
+}
+
+// ============================================================================
+//  tbm_presets — 사업장별 자주 쓰는 TBM 문구 프리셋 (P2c)
+//   - 커스텀 문구만 저장(원문). 기본 프리셋(건설 현장 일반)은 코드 기반으로
+//     클라이언트가 6언어 번역해 노출하므로 DB 에 두지 않는다.
+// ============================================================================
+model TbmPreset {
+  id         String        @id @default(uuid())
+  businessId String
+  kind       TbmPresetKind // HAZARD | MEASURE
+  text       String // 프리셋 문구(원문)
+  createdAt  DateTime      @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@map("tbm_presets")
 }

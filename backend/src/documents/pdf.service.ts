@@ -954,7 +954,75 @@ export class PdfService {
     }
     y -= 10;
 
+    const pageBreak = (need: number) => {
+      if (y < margin + need) {
+        page = pdf.addPage([595.28, 841.89]);
+        y = height - margin;
+      }
+    };
+
+    // TBM(안전점검회의) 월간 목록 (P2c)
+    if (data.tbm && data.tbm.length > 0) {
+      pageBreak(80);
+      text('■ TBM(안전점검회의)', margin, y, 12);
+      const tbmTotal = `총 ${data.tbm.length}회`;
+      text(
+        tbmTotal,
+        width - margin - font.widthOfTextAtSize(tbmTotal, 10),
+        y,
+        10,
+        gray,
+      );
+      y -= 20;
+      const tcol = {
+        date: margin,
+        site: margin + 88,
+        hazards: margin + 210,
+        att: width - margin,
+      };
+      text('일자', tcol.date, y, 10, gray);
+      text('현장', tcol.site, y, 10, gray);
+      text('위험요인', tcol.hazards, y, 10, gray);
+      const attHdr = '참석/확인';
+      text(attHdr, tcol.att - font.widthOfTextAtSize(attHdr, 10), y, 10, gray);
+      y -= 6;
+      page.drawLine({
+        start: { x: margin, y },
+        end: { x: width - margin, y },
+        thickness: 0.6,
+        color: line,
+      });
+      y -= 16;
+      const clip = (s: string, maxW: number, size: number): string => {
+        let shown = s ?? '';
+        while (
+          font.widthOfTextAtSize(shown, size) > maxW &&
+          shown.length > 1
+        ) {
+          shown = shown.slice(0, -1);
+        }
+        return shown !== (s ?? '') ? shown.slice(0, -1) + '…' : shown;
+      };
+      for (const t of data.tbm) {
+        pageBreak(30);
+        text(t.date, tcol.date, y, 10);
+        text(clip(t.site, tcol.hazards - tcol.site - 8, 10), tcol.site, y, 10);
+        text(
+          clip(t.hazards || '-', tcol.att - tcol.hazards - 60, 10),
+          tcol.hazards,
+          y,
+          10,
+          gray,
+        );
+        const att = `${t.attendeeCount}/${t.ackCount}`;
+        text(att, tcol.att - font.widthOfTextAtSize(att, 10), y, 10);
+        y -= 18;
+      }
+      y -= 10;
+    }
+
     // 발송/확인 기록 표
+    pageBreak(60);
     text('■ 발송 · 확인 기록', margin, y, 12);
     y -= 20;
     const cols = {

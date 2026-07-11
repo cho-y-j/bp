@@ -69,8 +69,10 @@ ref/       SKEP 참고 코드 (기존, 빌드 제외)
 - [x] 앱: 사업장 계약서 작성 폼(자주 쓰는 값 저장)→내 서명→전송(연결 알림/링크 공유)·목록·상태, 작업자 지갑 "내 계약서"(목록·PDF·받은 계약서 서명), 신규 문구 6개 ARB(조항 라벨 웹 사전과 일치, 552키×6)
 - [x] 검증: 백엔드 단위 97·e2e 111(신규 3+16, 권한 격리·지갑 자동 연결), pdftotext 조항·양측 서명, web build 0·playwright /lc ko+vi 열람·실서명·/c 팀 명단 스크린샷 4장, flutter analyze 0·test 70, iOS 시뮬 E2E+스크린샷 5장. 임시 pg 5436/백엔드 3040/web 3004만 사용, live-db(5432) 무손상
 
-### P2c. 간편 TBM(안전점검회의) 기록
-- 사업장 모드: 참석자 체크(연결+수기), 위험요인·조치(프리셋), 사진, 참석자 확인 탭 → safety_logs 연동 → 안전 리포트에 TBM 섹션
+### P2c. 간편 TBM(안전점검회의) 기록 ✅ 완료 (구현+실측 검증, `worklog/2026-07-11-P2c-TBM.md`)
+- [x] 백엔드: `tbm_records`·`tbm_attendees`·`tbm_presets` 마이그레이션 1개(additive), NotificationType/SafetyLogType +TBM, TbmPresetKind. `/biz/tbm` CRUD(당일 수정·이후 읽기전용 409)+사진 업로드(FileStorageService)+프리셋 CRUD, `/tbm` 받은목록·`POST /tbm/:attendeeId/ack`(원자적 최초 1회, 재확인 409). 생성 시 가입 참석자 알림 + safety_logs 기록·확인 각각 append. renderSafetyReportPdf 에 **월간 TBM 섹션**(일자·현장·위험요인·참석 N/확인 M)
+- [x] 앱: 사업장 "TBM 기록"(위험요인 프리셋 칩 다중선택+직접입력+커스텀 프리셋 저장, 연결 참석자 칩+수기, 조치, 사진, 저장)·목록·상세(참석자 확인 현황), 작업자 "받은 TBM"+알림 확인 탭. **위험요인 프리셋 키 기반**(기본 10종 코드+6언어 번역, 커스텀은 원문). 신규 64키 × 6 ARB
+- [x] 검증: 백엔드 단위 103·e2e 120(신규 6+9, 권한 격리·재ack 409·당일 후 수정 차단·safety_logs 반영), pdftotext TBM 섹션(참석/확인 2/1) 확인. flutter analyze 0·test 74, iOS 시뮬 E2E(작성→작업자 확인→상세 1/1) 스크린샷 4장. 임시 pg 5436/백엔드 3040만 사용, live-db(5432) 무손상
 
 ### P2d. 연간 소득 리포트
 - 기간별 수입 집계(월별 추이·상대별·공수·입금/미수) + 종소세 안내 → PDF. 앱 더보기→소득 리포트

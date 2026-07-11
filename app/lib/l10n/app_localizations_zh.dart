@@ -1824,4 +1824,206 @@ class AppLocalizationsZh extends AppLocalizations {
   String lcPdfFailed(String msg) {
     return '无法打开PDF：$msg';
   }
+
+  @override
+  String get tbmMenuTitle => 'TBM 记录';
+
+  @override
+  String get tbmMenuDesc => '安全会议 · 危险因素与参会确认';
+
+  @override
+  String get tbmMyTitle => '收到的 TBM';
+
+  @override
+  String get tbmMySub => '我的安全记录 · 确认';
+
+  @override
+  String get tbmTitle => 'TBM(安全会议)';
+
+  @override
+  String get tbmStamp => 'T B M';
+
+  @override
+  String get tbmListEmptyTitle => '还没有 TBM 记录';
+
+  @override
+  String get tbmListEmptySub => '记录现场安全会议。';
+
+  @override
+  String get tbmNew => '新建 TBM';
+
+  @override
+  String get tbmFormTitle => '填写 TBM';
+
+  @override
+  String get tbmSite => '现场名称';
+
+  @override
+  String get tbmSiteHint => '例：A现场 3层';
+
+  @override
+  String get tbmDate => '日期时间';
+
+  @override
+  String get tbmHazards => '危险因素';
+
+  @override
+  String get tbmHazardsHint => '点击标签选择或自行输入';
+
+  @override
+  String get tbmAddCustom => '自定义';
+
+  @override
+  String get tbmCustomHint => '输入危险因素';
+
+  @override
+  String get tbmMeasures => '安全措施';
+
+  @override
+  String get tbmMeasuresHint => '例：佩戴安全带、安排指挥员';
+
+  @override
+  String get tbmNotes => '备注';
+
+  @override
+  String get tbmNotesHint => '备注（可选）';
+
+  @override
+  String get tbmAttendees => '参会人员';
+
+  @override
+  String get tbmSelectWorkers => '选择关联工人';
+
+  @override
+  String get tbmNoConnections => '没有关联工人';
+
+  @override
+  String get tbmAddAttendeeManual => '手动添加参会人';
+
+  @override
+  String get tbmAttendeeNameHint => '参会人姓名';
+
+  @override
+  String get tbmPhotos => '现场照片';
+
+  @override
+  String get tbmAddPhoto => '添加照片';
+
+  @override
+  String get tbmSave => '保存 TBM';
+
+  @override
+  String get tbmSaved => 'TBM 已记录';
+
+  @override
+  String tbmSaveFailed(String msg) {
+    return '保存失败：$msg';
+  }
+
+  @override
+  String get tbmNeedHazard => '请至少选择一个危险因素';
+
+  @override
+  String get tbmNeedSite => '请输入现场名称';
+
+  @override
+  String get tbmPresetMine => '我的预设';
+
+  @override
+  String get tbmPresetAddChip => '＋ 保存预设';
+
+  @override
+  String get tbmPresetAddTitle => '保存常用短语';
+
+  @override
+  String get tbmPresetDeleted => '预设已删除';
+
+  @override
+  String get tbmDetailTitle => 'TBM 详情';
+
+  @override
+  String get tbmAttendeesStatus => '参会确认状态';
+
+  @override
+  String get tbmAcked => '已确认';
+
+  @override
+  String get tbmNotAcked => '未确认';
+
+  @override
+  String tbmAckSummary(int att, int ack) {
+    return '参会 $att · 确认 $ack';
+  }
+
+  @override
+  String get tbmReadonly => '创建当日之后为只读';
+
+  @override
+  String get tbmEdit => '编辑';
+
+  @override
+  String get tbmDeleteConfirm => '删除此 TBM 记录？';
+
+  @override
+  String get tbmDeleted => '已删除';
+
+  @override
+  String get tbmSaveUpdated => '已更新';
+
+  @override
+  String tbmPhotoFailed(String msg) {
+    return '照片处理失败：$msg';
+  }
+
+  @override
+  String get tbmReceivedEmpty => '没有收到 TBM';
+
+  @override
+  String get tbmAckButton => '确认 TBM';
+
+  @override
+  String get tbmAckDone => '已确认';
+
+  @override
+  String tbmAckFailed(String msg) {
+    return '确认失败：$msg';
+  }
+
+  @override
+  String get tbmAlreadyAcked => '已确认';
+
+  @override
+  String tbmPhotoCount(int n) {
+    return '$n 张照片';
+  }
+
+  @override
+  String get tbmHzHeavyEquip => '重型机械挤压·碰撞';
+
+  @override
+  String get tbmHzFallHeight => '高处坠落';
+
+  @override
+  String get tbmHzHeatIllness => '高温中暑';
+
+  @override
+  String get tbmHzElectric => '触电';
+
+  @override
+  String get tbmHzFallingObject => '落物';
+
+  @override
+  String get tbmHzCollapse => '坍塌·掩埋';
+
+  @override
+  String get tbmHzFire => '火灾·爆炸';
+
+  @override
+  String get tbmHzDustNoise => '粉尘·噪声';
+
+  @override
+  String get tbmHzSlipTrip => '滑倒·绊倒';
+
+  @override
+  String get tbmHzConfined => '密闭空间窒息';
 }

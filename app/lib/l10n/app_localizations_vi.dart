@@ -1868,4 +1868,206 @@ class AppLocalizationsVi extends AppLocalizations {
   String lcPdfFailed(String msg) {
     return 'Không thể mở PDF: $msg';
   }
+
+  @override
+  String get tbmMenuTitle => 'Ghi TBM';
+
+  @override
+  String get tbmMenuDesc => 'Họp an toàn · rủi ro & xác nhận người dự';
+
+  @override
+  String get tbmMyTitle => 'TBM đã nhận';
+
+  @override
+  String get tbmMySub => 'Hồ sơ an toàn của tôi · xác nhận';
+
+  @override
+  String get tbmTitle => 'TBM (Họp an toàn)';
+
+  @override
+  String get tbmStamp => 'T B M';
+
+  @override
+  String get tbmListEmptyTitle => 'Chưa có TBM nào';
+
+  @override
+  String get tbmListEmptySub => 'Ghi lại buổi họp an toàn tại công trường.';
+
+  @override
+  String get tbmNew => 'TBM mới';
+
+  @override
+  String get tbmFormTitle => 'Viết TBM';
+
+  @override
+  String get tbmSite => 'Công trường';
+
+  @override
+  String get tbmSiteHint => 'vd: Công trường A, tầng 3';
+
+  @override
+  String get tbmDate => 'Ngày giờ';
+
+  @override
+  String get tbmHazards => 'Rủi ro';
+
+  @override
+  String get tbmHazardsHint => 'Chạm để chọn hoặc tự nhập';
+
+  @override
+  String get tbmAddCustom => 'Tự nhập';
+
+  @override
+  String get tbmCustomHint => 'Nhập rủi ro';
+
+  @override
+  String get tbmMeasures => 'Biện pháp an toàn';
+
+  @override
+  String get tbmMeasuresHint => 'vd: đeo dây an toàn, bố trí người điều phối';
+
+  @override
+  String get tbmNotes => 'Ghi chú';
+
+  @override
+  String get tbmNotesHint => 'Ghi chú (tuỳ chọn)';
+
+  @override
+  String get tbmAttendees => 'Người dự';
+
+  @override
+  String get tbmSelectWorkers => 'Chọn thợ đã liên kết';
+
+  @override
+  String get tbmNoConnections => 'Chưa có thợ liên kết';
+
+  @override
+  String get tbmAddAttendeeManual => 'Thêm người dự thủ công';
+
+  @override
+  String get tbmAttendeeNameHint => 'Tên người dự';
+
+  @override
+  String get tbmPhotos => 'Ảnh công trường';
+
+  @override
+  String get tbmAddPhoto => 'Thêm ảnh';
+
+  @override
+  String get tbmSave => 'Lưu TBM';
+
+  @override
+  String get tbmSaved => 'Đã ghi TBM';
+
+  @override
+  String tbmSaveFailed(String msg) {
+    return 'Không lưu được: $msg';
+  }
+
+  @override
+  String get tbmNeedHazard => 'Chọn ít nhất một rủi ro';
+
+  @override
+  String get tbmNeedSite => 'Nhập tên công trường';
+
+  @override
+  String get tbmPresetMine => 'Mẫu của tôi';
+
+  @override
+  String get tbmPresetAddChip => '＋ Lưu mẫu';
+
+  @override
+  String get tbmPresetAddTitle => 'Lưu cụm từ hay dùng';
+
+  @override
+  String get tbmPresetDeleted => 'Đã xoá mẫu';
+
+  @override
+  String get tbmDetailTitle => 'Chi tiết TBM';
+
+  @override
+  String get tbmAttendeesStatus => 'Trạng thái xác nhận';
+
+  @override
+  String get tbmAcked => 'Đã xác nhận';
+
+  @override
+  String get tbmNotAcked => 'Chưa xác nhận';
+
+  @override
+  String tbmAckSummary(int att, int ack) {
+    return '$att dự · $ack xác nhận';
+  }
+
+  @override
+  String get tbmReadonly => 'Chỉ đọc sau ngày tạo';
+
+  @override
+  String get tbmEdit => 'Sửa';
+
+  @override
+  String get tbmDeleteConfirm => 'Xoá bản ghi TBM này?';
+
+  @override
+  String get tbmDeleted => 'Đã xoá';
+
+  @override
+  String get tbmSaveUpdated => 'Đã cập nhật';
+
+  @override
+  String tbmPhotoFailed(String msg) {
+    return 'Lỗi ảnh: $msg';
+  }
+
+  @override
+  String get tbmReceivedEmpty => 'Chưa nhận TBM';
+
+  @override
+  String get tbmAckButton => 'Xác nhận TBM';
+
+  @override
+  String get tbmAckDone => 'Đã xác nhận';
+
+  @override
+  String tbmAckFailed(String msg) {
+    return 'Không xác nhận được: $msg';
+  }
+
+  @override
+  String get tbmAlreadyAcked => 'Đã xác nhận';
+
+  @override
+  String tbmPhotoCount(int n) {
+    return '$n ảnh';
+  }
+
+  @override
+  String get tbmHzHeavyEquip => 'Kẹt/va chạm máy nặng';
+
+  @override
+  String get tbmHzFallHeight => 'Ngã từ trên cao';
+
+  @override
+  String get tbmHzHeatIllness => 'Bệnh do nắng nóng';
+
+  @override
+  String get tbmHzElectric => 'Điện giật';
+
+  @override
+  String get tbmHzFallingObject => 'Vật rơi';
+
+  @override
+  String get tbmHzCollapse => 'Sập/vùi lấp';
+
+  @override
+  String get tbmHzFire => 'Cháy/nổ';
+
+  @override
+  String get tbmHzDustNoise => 'Bụi/tiếng ồn';
+
+  @override
+  String get tbmHzSlipTrip => 'Trượt/vấp';
+
+  @override
+  String get tbmHzConfined => 'Ngạt không gian kín';
 }

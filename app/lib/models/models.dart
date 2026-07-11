@@ -726,6 +726,9 @@ class NotificationItem {
 
   /// 폭염 알림의 safety_log id (확인 버튼용).
   String? get safetyLogId => data?['logId']?.toString() ?? data?['safetyLogId']?.toString();
+
+  /// TBM 알림의 참석자 id (확인 버튼용).
+  String? get tbmAttendeeId => data?['tbmAttendeeId']?.toString();
 }
 
 /// 알림 목록 + 미읽음 수.
@@ -976,5 +979,135 @@ class TaxInvoiceData {
             .map((e) => TaxInvoiceGroup.fromJson(e as Map))
             .toList(),
         text: j['text']?.toString() ?? '',
+      );
+}
+
+// ===========================================================================
+// 간편 TBM (안전점검회의) — P2c
+// ===========================================================================
+
+/// 위험요인 항목 — 기본 프리셋 코드(code, 앱이 자기 언어로 번역) 또는 커스텀 원문(text).
+class TbmHazard {
+  final String? code;
+  final String? text;
+  const TbmHazard({this.code, this.text});
+  factory TbmHazard.fromJson(Map j) => TbmHazard(
+        code: j['code'] as String?,
+        text: j['text'] as String?,
+      );
+  Map<String, dynamic> toJson() => {
+        if (code != null) 'code': code,
+        if (text != null) 'text': text,
+      };
+}
+
+/// TBM 참석자 + 확인 현황.
+class TbmAttendee {
+  final String id;
+  final String? profileId;
+  final bool linked;
+  final String name;
+  final bool acked;
+  final String? ackAt;
+  TbmAttendee(this.id, this.profileId, this.linked, this.name, this.acked,
+      this.ackAt);
+  factory TbmAttendee.fromJson(Map j) => TbmAttendee(
+        j['id'].toString(),
+        j['profileId'] as String?,
+        j['linked'] == true,
+        j['name']?.toString() ?? '',
+        j['acked'] == true,
+        j['ackAt'] as String?,
+      );
+}
+
+/// TBM 기록.
+class TbmRecord {
+  final String id;
+  final String businessId;
+  final String? businessName;
+  final String site;
+  final String occurredAt; // YYYY-MM-DD HH:mm
+  final String date; // YYYY-MM-DD
+  final List<TbmHazard> hazards;
+  final List<String> hazardLabelsKo;
+  final String? measures;
+  final String? notes;
+  final int photoCount;
+  final List<String> photoUrls;
+  final int attendeeCount;
+  final int ackCount;
+  final List<TbmAttendee> attendees;
+  final bool editable;
+  TbmRecord({
+    required this.id,
+    required this.businessId,
+    required this.businessName,
+    required this.site,
+    required this.occurredAt,
+    required this.date,
+    required this.hazards,
+    required this.hazardLabelsKo,
+    required this.measures,
+    required this.notes,
+    required this.photoCount,
+    required this.photoUrls,
+    required this.attendeeCount,
+    required this.ackCount,
+    required this.attendees,
+    required this.editable,
+  });
+  factory TbmRecord.fromJson(Map j) => TbmRecord(
+        id: j['id'].toString(),
+        businessId: j['businessId']?.toString() ?? '',
+        businessName: j['businessName'] as String?,
+        site: j['site']?.toString() ?? '',
+        occurredAt: j['occurredAt']?.toString() ?? '',
+        date: j['date']?.toString() ?? '',
+        hazards: (j['hazards'] as List? ?? [])
+            .map((e) => TbmHazard.fromJson(e as Map))
+            .toList(),
+        hazardLabelsKo: (j['hazardLabelsKo'] as List? ?? [])
+            .map((e) => e.toString())
+            .toList(),
+        measures: j['measures'] as String?,
+        notes: j['notes'] as String?,
+        photoCount: _pint(j['photoCount']),
+        photoUrls:
+            (j['photoUrls'] as List? ?? []).map((e) => e.toString()).toList(),
+        attendeeCount: _pint(j['attendeeCount']),
+        ackCount: _pint(j['ackCount']),
+        attendees: (j['attendees'] as List? ?? [])
+            .map((e) => TbmAttendee.fromJson(e as Map))
+            .toList(),
+        editable: j['editable'] == true,
+      );
+}
+
+/// 작업자 "받은 TBM" 목록 항목 (내 attendeeId + 확인 여부 + 기록).
+class TbmReceivedItem {
+  final String attendeeId;
+  final bool acked;
+  final TbmRecord record;
+  TbmReceivedItem(this.attendeeId, this.acked, this.record);
+  factory TbmReceivedItem.fromJson(Map j) => TbmReceivedItem(
+        j['attendeeId'].toString(),
+        j['acked'] == true,
+        TbmRecord.fromJson(j['record'] as Map),
+      );
+}
+
+/// 사업장 커스텀 TBM 프리셋 문구.
+class TbmPreset {
+  final String id;
+  final String businessId;
+  final String kind; // HAZARD | MEASURE
+  final String text;
+  TbmPreset(this.id, this.businessId, this.kind, this.text);
+  factory TbmPreset.fromJson(Map j) => TbmPreset(
+        j['id'].toString(),
+        j['businessId']?.toString() ?? '',
+        j['kind']?.toString() ?? 'HAZARD',
+        j['text']?.toString() ?? '',
       );
 }

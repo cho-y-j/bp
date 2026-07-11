@@ -1875,4 +1875,206 @@ class AppLocalizationsEn extends AppLocalizations {
   String lcPdfFailed(String msg) {
     return 'Could not open PDF: $msg';
   }
+
+  @override
+  String get tbmMenuTitle => 'TBM Log';
+
+  @override
+  String get tbmMenuDesc => 'Toolbox meeting · hazards & attendee check';
+
+  @override
+  String get tbmMyTitle => 'Received TBM';
+
+  @override
+  String get tbmMySub => 'My safety records · confirm';
+
+  @override
+  String get tbmTitle => 'TBM (Toolbox Meeting)';
+
+  @override
+  String get tbmStamp => 'T B M';
+
+  @override
+  String get tbmListEmptyTitle => 'No TBM logged yet';
+
+  @override
+  String get tbmListEmptySub => 'Log your site safety meeting.';
+
+  @override
+  String get tbmNew => 'New TBM';
+
+  @override
+  String get tbmFormTitle => 'Write TBM';
+
+  @override
+  String get tbmSite => 'Site';
+
+  @override
+  String get tbmSiteHint => 'e.g. Site A, 3rd floor';
+
+  @override
+  String get tbmDate => 'Date & time';
+
+  @override
+  String get tbmHazards => 'Hazards';
+
+  @override
+  String get tbmHazardsHint => 'Tap chips to select or type your own';
+
+  @override
+  String get tbmAddCustom => 'Custom';
+
+  @override
+  String get tbmCustomHint => 'Enter a hazard';
+
+  @override
+  String get tbmMeasures => 'Safety measures';
+
+  @override
+  String get tbmMeasuresHint => 'e.g. wear harness, assign spotter';
+
+  @override
+  String get tbmNotes => 'Notes';
+
+  @override
+  String get tbmNotesHint => 'Notes (optional)';
+
+  @override
+  String get tbmAttendees => 'Attendees';
+
+  @override
+  String get tbmSelectWorkers => 'Select linked workers';
+
+  @override
+  String get tbmNoConnections => 'No linked workers';
+
+  @override
+  String get tbmAddAttendeeManual => 'Add attendee manually';
+
+  @override
+  String get tbmAttendeeNameHint => 'Attendee name';
+
+  @override
+  String get tbmPhotos => 'Site photos';
+
+  @override
+  String get tbmAddPhoto => 'Add photo';
+
+  @override
+  String get tbmSave => 'Save TBM';
+
+  @override
+  String get tbmSaved => 'TBM logged';
+
+  @override
+  String tbmSaveFailed(String msg) {
+    return 'Could not save: $msg';
+  }
+
+  @override
+  String get tbmNeedHazard => 'Select at least one hazard';
+
+  @override
+  String get tbmNeedSite => 'Enter the site name';
+
+  @override
+  String get tbmPresetMine => 'My presets';
+
+  @override
+  String get tbmPresetAddChip => '＋ Save preset';
+
+  @override
+  String get tbmPresetAddTitle => 'Save a frequent phrase';
+
+  @override
+  String get tbmPresetDeleted => 'Preset deleted';
+
+  @override
+  String get tbmDetailTitle => 'TBM detail';
+
+  @override
+  String get tbmAttendeesStatus => 'Attendee confirmations';
+
+  @override
+  String get tbmAcked => 'Confirmed';
+
+  @override
+  String get tbmNotAcked => 'Pending';
+
+  @override
+  String tbmAckSummary(int att, int ack) {
+    return '$att attended · $ack confirmed';
+  }
+
+  @override
+  String get tbmReadonly => 'Read-only after the day it was created';
+
+  @override
+  String get tbmEdit => 'Edit';
+
+  @override
+  String get tbmDeleteConfirm => 'Delete this TBM record?';
+
+  @override
+  String get tbmDeleted => 'Deleted';
+
+  @override
+  String get tbmSaveUpdated => 'Updated';
+
+  @override
+  String tbmPhotoFailed(String msg) {
+    return 'Photo failed: $msg';
+  }
+
+  @override
+  String get tbmReceivedEmpty => 'No TBM received';
+
+  @override
+  String get tbmAckButton => 'Confirm TBM';
+
+  @override
+  String get tbmAckDone => 'Confirmed';
+
+  @override
+  String tbmAckFailed(String msg) {
+    return 'Could not confirm: $msg';
+  }
+
+  @override
+  String get tbmAlreadyAcked => 'Already confirmed';
+
+  @override
+  String tbmPhotoCount(int n) {
+    return '$n photos';
+  }
+
+  @override
+  String get tbmHzHeavyEquip => 'Heavy equipment pinch/collision';
+
+  @override
+  String get tbmHzFallHeight => 'Fall from height';
+
+  @override
+  String get tbmHzHeatIllness => 'Heat illness';
+
+  @override
+  String get tbmHzElectric => 'Electric shock';
+
+  @override
+  String get tbmHzFallingObject => 'Falling objects';
+
+  @override
+  String get tbmHzCollapse => 'Collapse/burial';
+
+  @override
+  String get tbmHzFire => 'Fire/explosion';
+
+  @override
+  String get tbmHzDustNoise => 'Dust/noise';
+
+  @override
+  String get tbmHzSlipTrip => 'Slip/trip';
+
+  @override
+  String get tbmHzConfined => 'Confined space asphyxia';
 }

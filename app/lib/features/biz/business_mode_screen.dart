@@ -12,6 +12,7 @@ import 'workers_screen.dart';
 import 'jobs_screen.dart';
 import 'safety_screen.dart';
 import 'contracts_screen.dart';
+import 'tbm_records_screen.dart';
 
 /// 사업장 모드 진입 — hasBusiness 없으면 생성 플로우, 있으면 사업장 홈.
 class BusinessModeScreen extends ConsumerWidget {
@@ -199,6 +200,13 @@ class _BizHome extends StatelessWidget {
           title: l.jobTitle,
           subtitle: l.bizMenuJobDesc,
           onTap: () => _push(context, const JobsScreen()),
+        ),
+        _MenuCard(
+          icon: Icons.fact_check_outlined,
+          title: l.tbmMenuTitle,
+          subtitle: l.tbmMenuDesc,
+          onTap: () =>
+              _push(context, TbmRecordsScreen(businessId: business.id)),
         ),
         _MenuCard(
           icon: Icons.health_and_safety_outlined,

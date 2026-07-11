@@ -3417,6 +3417,390 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'PDF를 열지 못했어요: {msg}'**
   String lcPdfFailed(String msg);
+
+  /// No description provided for @tbmMenuTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'TBM 기록'**
+  String get tbmMenuTitle;
+
+  /// No description provided for @tbmMenuDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전점검회의 · 위험요인·참석자 확인'**
+  String get tbmMenuDesc;
+
+  /// No description provided for @tbmMyTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'받은 TBM'**
+  String get tbmMyTitle;
+
+  /// No description provided for @tbmMySub.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 안전 기록 · 확인'**
+  String get tbmMySub;
+
+  /// No description provided for @tbmTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'TBM(안전점검회의)'**
+  String get tbmTitle;
+
+  /// No description provided for @tbmStamp.
+  ///
+  /// In ko, this message translates to:
+  /// **'T B M'**
+  String get tbmStamp;
+
+  /// No description provided for @tbmListEmptyTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘 TBM 기록이 없어요'**
+  String get tbmListEmptyTitle;
+
+  /// No description provided for @tbmListEmptySub.
+  ///
+  /// In ko, this message translates to:
+  /// **'현장 안전점검회의를 기록하세요.'**
+  String get tbmListEmptySub;
+
+  /// No description provided for @tbmNew.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘 TBM 작성'**
+  String get tbmNew;
+
+  /// No description provided for @tbmFormTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'TBM 작성'**
+  String get tbmFormTitle;
+
+  /// No description provided for @tbmSite.
+  ///
+  /// In ko, this message translates to:
+  /// **'현장명'**
+  String get tbmSite;
+
+  /// No description provided for @tbmSiteHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 강동 현장 3층'**
+  String get tbmSiteHint;
+
+  /// No description provided for @tbmDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시'**
+  String get tbmDate;
+
+  /// No description provided for @tbmHazards.
+  ///
+  /// In ko, this message translates to:
+  /// **'위험요인'**
+  String get tbmHazards;
+
+  /// No description provided for @tbmHazardsHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'칩을 눌러 선택하거나 직접 입력하세요'**
+  String get tbmHazardsHint;
+
+  /// No description provided for @tbmAddCustom.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 입력'**
+  String get tbmAddCustom;
+
+  /// No description provided for @tbmCustomHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'위험요인 직접 입력'**
+  String get tbmCustomHint;
+
+  /// No description provided for @tbmMeasures.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전 조치'**
+  String get tbmMeasures;
+
+  /// No description provided for @tbmMeasuresHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 안전벨트 착용, 유도원 배치'**
+  String get tbmMeasuresHint;
+
+  /// No description provided for @tbmNotes.
+  ///
+  /// In ko, this message translates to:
+  /// **'특이사항'**
+  String get tbmNotes;
+
+  /// No description provided for @tbmNotesHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'특이사항(선택)'**
+  String get tbmNotesHint;
+
+  /// No description provided for @tbmAttendees.
+  ///
+  /// In ko, this message translates to:
+  /// **'참석자'**
+  String get tbmAttendees;
+
+  /// No description provided for @tbmSelectWorkers.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결 작업자 선택'**
+  String get tbmSelectWorkers;
+
+  /// No description provided for @tbmNoConnections.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결된 작업자가 없어요'**
+  String get tbmNoConnections;
+
+  /// No description provided for @tbmAddAttendeeManual.
+  ///
+  /// In ko, this message translates to:
+  /// **'수기 참석자 추가'**
+  String get tbmAddAttendeeManual;
+
+  /// No description provided for @tbmAttendeeNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'참석자 이름'**
+  String get tbmAttendeeNameHint;
+
+  /// No description provided for @tbmPhotos.
+  ///
+  /// In ko, this message translates to:
+  /// **'현장 사진'**
+  String get tbmPhotos;
+
+  /// No description provided for @tbmAddPhoto.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진 추가'**
+  String get tbmAddPhoto;
+
+  /// No description provided for @tbmSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'TBM 저장'**
+  String get tbmSave;
+
+  /// No description provided for @tbmSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'TBM을 기록했어요'**
+  String get tbmSaved;
+
+  /// No description provided for @tbmSaveFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장하지 못했어요: {msg}'**
+  String tbmSaveFailed(String msg);
+
+  /// No description provided for @tbmNeedHazard.
+  ///
+  /// In ko, this message translates to:
+  /// **'위험요인을 1개 이상 선택하세요'**
+  String get tbmNeedHazard;
+
+  /// No description provided for @tbmNeedSite.
+  ///
+  /// In ko, this message translates to:
+  /// **'현장명을 입력하세요'**
+  String get tbmNeedSite;
+
+  /// No description provided for @tbmPresetMine.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 프리셋'**
+  String get tbmPresetMine;
+
+  /// No description provided for @tbmPresetAddChip.
+  ///
+  /// In ko, this message translates to:
+  /// **'＋ 프리셋 저장'**
+  String get tbmPresetAddChip;
+
+  /// No description provided for @tbmPresetAddTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'자주 쓰는 문구 저장'**
+  String get tbmPresetAddTitle;
+
+  /// No description provided for @tbmPresetDeleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'프리셋을 삭제했어요'**
+  String get tbmPresetDeleted;
+
+  /// No description provided for @tbmDetailTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'TBM 상세'**
+  String get tbmDetailTitle;
+
+  /// No description provided for @tbmAttendeesStatus.
+  ///
+  /// In ko, this message translates to:
+  /// **'참석자 확인 현황'**
+  String get tbmAttendeesStatus;
+
+  /// No description provided for @tbmAcked.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get tbmAcked;
+
+  /// No description provided for @tbmNotAcked.
+  ///
+  /// In ko, this message translates to:
+  /// **'미확인'**
+  String get tbmNotAcked;
+
+  /// No description provided for @tbmAckSummary.
+  ///
+  /// In ko, this message translates to:
+  /// **'참석 {att}명 · 확인 {ack}명'**
+  String tbmAckSummary(int att, int ack);
+
+  /// No description provided for @tbmReadonly.
+  ///
+  /// In ko, this message translates to:
+  /// **'작성 당일이 지나 읽기 전용입니다'**
+  String get tbmReadonly;
+
+  /// No description provided for @tbmEdit.
+  ///
+  /// In ko, this message translates to:
+  /// **'수정'**
+  String get tbmEdit;
+
+  /// No description provided for @tbmDeleteConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 TBM 기록을 삭제할까요?'**
+  String get tbmDeleteConfirm;
+
+  /// No description provided for @tbmDeleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제했어요'**
+  String get tbmDeleted;
+
+  /// No description provided for @tbmSaveUpdated.
+  ///
+  /// In ko, this message translates to:
+  /// **'수정했어요'**
+  String get tbmSaveUpdated;
+
+  /// No description provided for @tbmPhotoFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진 처리 실패: {msg}'**
+  String tbmPhotoFailed(String msg);
+
+  /// No description provided for @tbmReceivedEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'받은 TBM이 없어요'**
+  String get tbmReceivedEmpty;
+
+  /// No description provided for @tbmAckButton.
+  ///
+  /// In ko, this message translates to:
+  /// **'TBM 확인'**
+  String get tbmAckButton;
+
+  /// No description provided for @tbmAckDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인했어요'**
+  String get tbmAckDone;
+
+  /// No description provided for @tbmAckFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인하지 못했어요: {msg}'**
+  String tbmAckFailed(String msg);
+
+  /// No description provided for @tbmAlreadyAcked.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 확인함'**
+  String get tbmAlreadyAcked;
+
+  /// No description provided for @tbmPhotoCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'사진 {n}장'**
+  String tbmPhotoCount(int n);
+
+  /// No description provided for @tbmHzHeavyEquip.
+  ///
+  /// In ko, this message translates to:
+  /// **'중장비 협착·충돌'**
+  String get tbmHzHeavyEquip;
+
+  /// No description provided for @tbmHzFallHeight.
+  ///
+  /// In ko, this message translates to:
+  /// **'고소작업 추락'**
+  String get tbmHzFallHeight;
+
+  /// No description provided for @tbmHzHeatIllness.
+  ///
+  /// In ko, this message translates to:
+  /// **'폭염 온열질환'**
+  String get tbmHzHeatIllness;
+
+  /// No description provided for @tbmHzElectric.
+  ///
+  /// In ko, this message translates to:
+  /// **'감전'**
+  String get tbmHzElectric;
+
+  /// No description provided for @tbmHzFallingObject.
+  ///
+  /// In ko, this message translates to:
+  /// **'낙하물'**
+  String get tbmHzFallingObject;
+
+  /// No description provided for @tbmHzCollapse.
+  ///
+  /// In ko, this message translates to:
+  /// **'붕괴·매몰'**
+  String get tbmHzCollapse;
+
+  /// No description provided for @tbmHzFire.
+  ///
+  /// In ko, this message translates to:
+  /// **'화재·폭발'**
+  String get tbmHzFire;
+
+  /// No description provided for @tbmHzDustNoise.
+  ///
+  /// In ko, this message translates to:
+  /// **'분진·소음'**
+  String get tbmHzDustNoise;
+
+  /// No description provided for @tbmHzSlipTrip.
+  ///
+  /// In ko, this message translates to:
+  /// **'전도·미끄러짐'**
+  String get tbmHzSlipTrip;
+
+  /// No description provided for @tbmHzConfined.
+  ///
+  /// In ko, this message translates to:
+  /// **'밀폐공간 질식'**
+  String get tbmHzConfined;
 }
 
 class _AppLocalizationsDelegate

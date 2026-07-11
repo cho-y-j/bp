@@ -1135,5 +1135,107 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tbmMenuTitle": "TBM 기록",
+  "tbmMenuDesc": "안전점검회의 · 위험요인·참석자 확인",
+  "tbmMyTitle": "받은 TBM",
+  "tbmMySub": "내 안전 기록 · 확인",
+  "tbmTitle": "TBM(안전점검회의)",
+  "tbmStamp": "T B M",
+  "tbmListEmptyTitle": "오늘 TBM 기록이 없어요",
+  "tbmListEmptySub": "현장 안전점검회의를 기록하세요.",
+  "tbmNew": "오늘 TBM 작성",
+  "tbmFormTitle": "TBM 작성",
+  "tbmSite": "현장명",
+  "tbmSiteHint": "예: 강동 현장 3층",
+  "tbmDate": "일시",
+  "tbmHazards": "위험요인",
+  "tbmHazardsHint": "칩을 눌러 선택하거나 직접 입력하세요",
+  "tbmAddCustom": "직접 입력",
+  "tbmCustomHint": "위험요인 직접 입력",
+  "tbmMeasures": "안전 조치",
+  "tbmMeasuresHint": "예: 안전벨트 착용, 유도원 배치",
+  "tbmNotes": "특이사항",
+  "tbmNotesHint": "특이사항(선택)",
+  "tbmAttendees": "참석자",
+  "tbmSelectWorkers": "연결 작업자 선택",
+  "tbmNoConnections": "연결된 작업자가 없어요",
+  "tbmAddAttendeeManual": "수기 참석자 추가",
+  "tbmAttendeeNameHint": "참석자 이름",
+  "tbmPhotos": "현장 사진",
+  "tbmAddPhoto": "사진 추가",
+  "tbmSave": "TBM 저장",
+  "tbmSaved": "TBM을 기록했어요",
+  "tbmSaveFailed": "저장하지 못했어요: {msg}",
+  "@tbmSaveFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "tbmNeedHazard": "위험요인을 1개 이상 선택하세요",
+  "tbmNeedSite": "현장명을 입력하세요",
+  "tbmPresetMine": "내 프리셋",
+  "tbmPresetAddChip": "＋ 프리셋 저장",
+  "tbmPresetAddTitle": "자주 쓰는 문구 저장",
+  "tbmPresetDeleted": "프리셋을 삭제했어요",
+  "tbmDetailTitle": "TBM 상세",
+  "tbmAttendeesStatus": "참석자 확인 현황",
+  "tbmAcked": "확인",
+  "tbmNotAcked": "미확인",
+  "tbmAckSummary": "참석 {att}명 · 확인 {ack}명",
+  "@tbmAckSummary": {
+    "placeholders": {
+      "att": {
+        "type": "int"
+      },
+      "ack": {
+        "type": "int"
+      }
+    }
+  },
+  "tbmReadonly": "작성 당일이 지나 읽기 전용입니다",
+  "tbmEdit": "수정",
+  "tbmDeleteConfirm": "이 TBM 기록을 삭제할까요?",
+  "tbmDeleted": "삭제했어요",
+  "tbmSaveUpdated": "수정했어요",
+  "tbmPhotoFailed": "사진 처리 실패: {msg}",
+  "@tbmPhotoFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "tbmReceivedEmpty": "받은 TBM이 없어요",
+  "tbmAckButton": "TBM 확인",
+  "tbmAckDone": "확인했어요",
+  "tbmAckFailed": "확인하지 못했어요: {msg}",
+  "@tbmAckFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "tbmAlreadyAcked": "이미 확인함",
+  "tbmPhotoCount": "사진 {n}장",
+  "@tbmPhotoCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "tbmHzHeavyEquip": "중장비 협착·충돌",
+  "tbmHzFallHeight": "고소작업 추락",
+  "tbmHzHeatIllness": "폭염 온열질환",
+  "tbmHzElectric": "감전",
+  "tbmHzFallingObject": "낙하물",
+  "tbmHzCollapse": "붕괴·매몰",
+  "tbmHzFire": "화재·폭발",
+  "tbmHzDustNoise": "분진·소음",
+  "tbmHzSlipTrip": "전도·미끄러짐",
+  "tbmHzConfined": "밀폐공간 질식"
 }

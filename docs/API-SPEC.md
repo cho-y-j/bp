@@ -84,6 +84,13 @@
 - `POST /safety/:id/ack` — 작업자 "확인" 탭 → 확인 시각 기록
 - 서류 유효성 확인 기록: jobs 배정 시 자동 safety_log 생성
 
+## 간편 TBM /biz/tbm, /tbm (P2c)
+- **사업장(소유자)** — `POST /biz/tbm`(현장·일시·위험요인[{code|text}]·조치·특이사항·참석자[{profileId|name}]) → 가입 참석자 알림(TBM) + safety_log(TBM_RECORD) append. `GET /biz/tbm`·`GET /biz/tbm/:id`(참석자 확인 현황), `PATCH`/`DELETE /biz/tbm/:id`(**작성 당일만**, 이후 409 NOT_EDITABLE/NOT_DELETABLE — 증빙 무결성)
+- `POST /biz/tbm/:id/photos`(multipart, 당일만, FileStorageService) / `GET /biz/tbm/:id/photos/:idx` — 사진
+- **프리셋(커스텀 문구)** — `GET /biz/tbm/presets?businessId=`·`POST /biz/tbm/presets`(kind=HAZARD|MEASURE)·`DELETE /biz/tbm/presets/:id`. 기본 위험요인 프리셋 10종은 **코드 기반**(앱이 6언어 번역), 커스텀은 원문 저장
+- **작업자(참석자)** — `GET /tbm`(받은 TBM, 위험요인 코드 기반 → 자기 언어 렌더), `POST /tbm/:attendeeId/ack`(본인만·**최초 1회 원자적**·재확인 409 ALREADY_ACKED → safety_log(TBM_ACK) append + 사업장 알림), `GET /tbm/:id/photos/:idx`
+- **안전 리포트 연동**: `GET /biz/safety-report` PDF 에 **월간 TBM 섹션**(일자·현장·위험요인·참석 N/확인 M) 추가. NotificationType/SafetyLogType 에 `TBM`(additive)
+
 ## 알림 /notifications
 - `GET /notifications` / `POST /device-tokens` (FCM 토큰 등록)
 - 스케줄러: 수금 D-day, 서류 만료 D-30/7/0, 작업 예약 리마인드

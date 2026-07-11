@@ -6,9 +6,11 @@ import { PdfService } from '../documents/pdf.service';
 import type {
   SafetyReportPdfData,
   SafetyReportRow,
+  SafetyReportTbmRow,
 } from '../documents/pdf.types';
 import { NotificationsService } from '../notifications/notifications.service';
 import { SAFETY_TYPE_LABEL } from '../common/safety-labels';
+import { tbmHazardsSummaryKo, TbmHazardItem } from '../common/tbm-presets';
 import { maskName } from '../common/phone.util';
 import {
   computeOutstanding,
@@ -281,6 +283,40 @@ export class BizService {
       });
     }
 
+    // TBM(안전점검회의) 월간 목록 — tbm_records 에서 직접 집계.
+    const tbmRecords =
+      businessIds.length === 0
+        ? []
+        : await this.prisma.tbmRecord.findMany({
+            where: {
+              businessId: { in: businessIds },
+              occurredAt: { gte: start, lt: end },
+            },
+            include: { _count: { select: { attendees: true } } },
+            orderBy: { occurredAt: 'asc' },
+          });
+    const tbmAckCounts = new Map<string, number>();
+    if (tbmRecords.length > 0) {
+      const acks = await this.prisma.tbmAttendee.groupBy({
+        by: ['recordId'],
+        where: {
+          recordId: { in: tbmRecords.map((t) => t.id) },
+          ackAt: { not: null },
+        },
+        _count: { _all: true },
+      });
+      for (const a of acks) tbmAckCounts.set(a.recordId, a._count._all);
+    }
+    const tbm: SafetyReportTbmRow[] = tbmRecords.map((t) => ({
+      date: toKstDateStr(t.occurredAt),
+      site: t.site,
+      hazards: tbmHazardsSummaryKo(
+        Array.isArray(t.hazards) ? (t.hazards as TbmHazardItem[]) : [],
+      ),
+      attendeeCount: t._count.attendees,
+      ackCount: tbmAckCounts.get(t.id) ?? 0,
+    }));
+
     const data: SafetyReportPdfData = {
       title: '안전관리 이행 리포트',
       month,
@@ -291,6 +327,7 @@ export class BizService {
         count,
       })),
       rows,
+      tbm,
     };
     return this.pdf.renderSafetyReportPdf(data);
   }

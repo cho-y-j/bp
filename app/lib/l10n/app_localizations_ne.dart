@@ -1868,4 +1868,206 @@ class AppLocalizationsNe extends AppLocalizations {
   String lcPdfFailed(String msg) {
     return 'PDF खोल्न सकिएन: $msg';
   }
+
+  @override
+  String get tbmMenuTitle => 'TBM रेकर्ड';
+
+  @override
+  String get tbmMenuDesc => 'सुरक्षा बैठक · जोखिम र उपस्थिति पुष्टि';
+
+  @override
+  String get tbmMyTitle => 'प्राप्त TBM';
+
+  @override
+  String get tbmMySub => 'मेरो सुरक्षा रेकर्ड · पुष्टि';
+
+  @override
+  String get tbmTitle => 'TBM (सुरक्षा बैठक)';
+
+  @override
+  String get tbmStamp => 'T B M';
+
+  @override
+  String get tbmListEmptyTitle => 'अहिलेसम्म TBM छैन';
+
+  @override
+  String get tbmListEmptySub => 'साइट सुरक्षा बैठक रेकर्ड गर्नुहोस्।';
+
+  @override
+  String get tbmNew => 'नयाँ TBM';
+
+  @override
+  String get tbmFormTitle => 'TBM लेख्नुहोस्';
+
+  @override
+  String get tbmSite => 'साइट';
+
+  @override
+  String get tbmSiteHint => 'उदा: साइट A, तेस्रो तल्ला';
+
+  @override
+  String get tbmDate => 'मिति र समय';
+
+  @override
+  String get tbmHazards => 'जोखिम';
+
+  @override
+  String get tbmHazardsHint => 'चिप छान्नुहोस् वा आफैँ लेख्नुहोस्';
+
+  @override
+  String get tbmAddCustom => 'आफ्नै';
+
+  @override
+  String get tbmCustomHint => 'जोखिम लेख्नुहोस्';
+
+  @override
+  String get tbmMeasures => 'सुरक्षा उपाय';
+
+  @override
+  String get tbmMeasuresHint => 'उदा: सेफ्टी बेल्ट, गाइड राख्नु';
+
+  @override
+  String get tbmNotes => 'टिप्पणी';
+
+  @override
+  String get tbmNotesHint => 'टिप्पणी (वैकल्पिक)';
+
+  @override
+  String get tbmAttendees => 'उपस्थित';
+
+  @override
+  String get tbmSelectWorkers => 'जोडिएका कामदार छान्नुहोस्';
+
+  @override
+  String get tbmNoConnections => 'जोडिएको कामदार छैन';
+
+  @override
+  String get tbmAddAttendeeManual => 'हातैले उपस्थित थप्नुहोस्';
+
+  @override
+  String get tbmAttendeeNameHint => 'उपस्थितको नाम';
+
+  @override
+  String get tbmPhotos => 'साइट फोटो';
+
+  @override
+  String get tbmAddPhoto => 'फोटो थप्नुहोस्';
+
+  @override
+  String get tbmSave => 'TBM सुरक्षित';
+
+  @override
+  String get tbmSaved => 'TBM रेकर्ड भयो';
+
+  @override
+  String tbmSaveFailed(String msg) {
+    return 'सुरक्षित भएन: $msg';
+  }
+
+  @override
+  String get tbmNeedHazard => 'कम्तीमा एउटा जोखिम छान्नुहोस्';
+
+  @override
+  String get tbmNeedSite => 'साइटको नाम लेख्नुहोस्';
+
+  @override
+  String get tbmPresetMine => 'मेरो प्रिसेट';
+
+  @override
+  String get tbmPresetAddChip => '＋ प्रिसेट सुरक्षित';
+
+  @override
+  String get tbmPresetAddTitle => 'बारम्बार वाक्यांश सुरक्षित';
+
+  @override
+  String get tbmPresetDeleted => 'प्रिसेट मेटियो';
+
+  @override
+  String get tbmDetailTitle => 'TBM विवरण';
+
+  @override
+  String get tbmAttendeesStatus => 'उपस्थिति पुष्टि स्थिति';
+
+  @override
+  String get tbmAcked => 'पुष्टि भयो';
+
+  @override
+  String get tbmNotAcked => 'बाँकी';
+
+  @override
+  String tbmAckSummary(int att, int ack) {
+    return '$att उपस्थित · $ack पुष्टि';
+  }
+
+  @override
+  String get tbmReadonly => 'बनाएको दिनपछि पढ्ने मात्र';
+
+  @override
+  String get tbmEdit => 'सम्पादन';
+
+  @override
+  String get tbmDeleteConfirm => 'यो TBM मेट्ने?';
+
+  @override
+  String get tbmDeleted => 'मेटियो';
+
+  @override
+  String get tbmSaveUpdated => 'अपडेट भयो';
+
+  @override
+  String tbmPhotoFailed(String msg) {
+    return 'फोटो असफल: $msg';
+  }
+
+  @override
+  String get tbmReceivedEmpty => 'कुनै TBM छैन';
+
+  @override
+  String get tbmAckButton => 'TBM पुष्टि';
+
+  @override
+  String get tbmAckDone => 'पुष्टि भयो';
+
+  @override
+  String tbmAckFailed(String msg) {
+    return 'पुष्टि भएन: $msg';
+  }
+
+  @override
+  String get tbmAlreadyAcked => 'पहिले नै पुष्टि';
+
+  @override
+  String tbmPhotoCount(int n) {
+    return '$n फोटो';
+  }
+
+  @override
+  String get tbmHzHeavyEquip => 'भारी उपकरण थिचाइ/ठक्कर';
+
+  @override
+  String get tbmHzFallHeight => 'उचाइबाट खस्ने';
+
+  @override
+  String get tbmHzHeatIllness => 'तातो/लू लाग्ने';
+
+  @override
+  String get tbmHzElectric => 'करेन्ट लाग्ने';
+
+  @override
+  String get tbmHzFallingObject => 'खस्ने वस्तु';
+
+  @override
+  String get tbmHzCollapse => 'भत्किने/पुरिने';
+
+  @override
+  String get tbmHzFire => 'आगलागी/विस्फोट';
+
+  @override
+  String get tbmHzDustNoise => 'धुलो/आवाज';
+
+  @override
+  String get tbmHzSlipTrip => 'चिप्लने/ठेस';
+
+  @override
+  String get tbmHzConfined => 'बन्द ठाउँ निसासिने';
 }
