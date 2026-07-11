@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../core/api_client.dart';
 import '../../core/env.dart';
+import '../../core/home_widget_bridge.dart';
 import '../../core/kakao_auth.dart';
 import '../../l10n/l10n_ext.dart';
 import '../../providers/auth.dart';
@@ -172,6 +173,9 @@ class MoreScreen extends ConsumerWidget {
                 );
                 if (ok == true) {
                   await ref.read(authControllerProvider.notifier).logout();
+                  // 홈 화면 위젯을 "로그인해 주세요" 상태로 클리어.
+                  await HomeWidgetBridge.push(
+                      HomeWidgetBridge.buildLoggedOut(l: l));
                 }
               },
             ),

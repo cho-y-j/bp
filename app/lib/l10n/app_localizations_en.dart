@@ -9,6 +9,23 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get widgetToday => 'Today';
+
+  @override
+  String get widgetNoSchedule => 'No schedule today';
+
+  @override
+  String get widgetOutstanding => 'This month due';
+
+  @override
+  String get widgetLoginPlease => 'Please log in';
+
+  @override
+  String widgetSyncedAt(String time) {
+    return 'Updated $time';
+  }
+
+  @override
   String get cancel => 'Cancel';
 
   @override

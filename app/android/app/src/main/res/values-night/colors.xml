@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 홈 위젯 시안 토큰 (다크) — 네이비 기반 배경 + 오렌지 유지. -->
+    <color name="workon_widget_bg">#0F1522</color>
+    <color name="workon_widget_surface">#141C2B</color>
+    <color name="workon_widget_border">#2A3446</color>
+    <color name="workon_ink">#F1EFEA</color>
+    <color name="workon_ink2">#9AA6B8</color>
+    <color name="workon_orange">#F4770C</color>
+    <color name="workon_receivable">#FB7A57</color>    <!-- 다크 대비용 밝은 미수 색 -->
+</resources>

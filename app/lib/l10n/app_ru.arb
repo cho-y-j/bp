@@ -1,4 +1,9 @@
 {
+  "widgetToday": "Сегодня",
+  "widgetNoSchedule": "Нет задач",
+  "widgetOutstanding": "Долг за месяц",
+  "widgetLoginPlease": "Войдите в аккаунт",
+  "widgetSyncedAt": "Обновлено {time}",
   "@@locale": "ru",
   "cancel": "Отмена",
   "confirm": "OK",

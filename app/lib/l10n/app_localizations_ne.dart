@@ -9,6 +9,23 @@ class AppLocalizationsNe extends AppLocalizations {
   AppLocalizationsNe([String locale = 'ne']) : super(locale);
 
   @override
+  String get widgetToday => 'आजको तालिका';
+
+  @override
+  String get widgetNoSchedule => 'आज कुनै तालिका छैन';
+
+  @override
+  String get widgetOutstanding => 'यस महिनाको बाँकी';
+
+  @override
+  String get widgetLoginPlease => 'कृपया लग इन गर्नुहोस्';
+
+  @override
+  String widgetSyncedAt(String time) {
+    return '$time अद्यावधिक';
+  }
+
+  @override
   String get cancel => 'रद्द गर्नुहोस्';
 
   @override

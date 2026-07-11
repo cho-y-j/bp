@@ -1,4 +1,9 @@
 {
+  "widgetToday": "今日日程",
+  "widgetNoSchedule": "今日无日程",
+  "widgetOutstanding": "本月应收款",
+  "widgetLoginPlease": "请登录",
+  "widgetSyncedAt": "{time} 更新",
   "@@locale": "zh",
   "cancel": "取消",
   "confirm": "确定",

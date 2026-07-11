@@ -106,6 +106,36 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
+  /// No description provided for @widgetToday.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘 일정'**
+  String get widgetToday;
+
+  /// No description provided for @widgetNoSchedule.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘 일정 없음'**
+  String get widgetNoSchedule;
+
+  /// No description provided for @widgetOutstanding.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 달 미수금'**
+  String get widgetOutstanding;
+
+  /// No description provided for @widgetLoginPlease.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인해 주세요'**
+  String get widgetLoginPlease;
+
+  /// No description provided for @widgetSyncedAt.
+  ///
+  /// In ko, this message translates to:
+  /// **'{time} 기준'**
+  String widgetSyncedAt(String time);
+
   /// No description provided for @cancel.
   ///
   /// In ko, this message translates to:

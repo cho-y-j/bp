@@ -9,6 +9,23 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get widgetToday => 'Сегодня';
+
+  @override
+  String get widgetNoSchedule => 'Нет задач';
+
+  @override
+  String get widgetOutstanding => 'Долг за месяц';
+
+  @override
+  String get widgetLoginPlease => 'Войдите в аккаунт';
+
+  @override
+  String widgetSyncedAt(String time) {
+    return 'Обновлено $time';
+  }
+
+  @override
   String get cancel => 'Отмена';
 
   @override

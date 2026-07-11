@@ -1,4 +1,14 @@
 {
+  "widgetToday": "오늘 일정",
+  "widgetNoSchedule": "오늘 일정 없음",
+  "widgetOutstanding": "이번 달 미수금",
+  "widgetLoginPlease": "로그인해 주세요",
+  "widgetSyncedAt": "{time} 기준",
+  "@widgetSyncedAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
   "@@locale": "ko",
   "cancel": "취소",
   "confirm": "확인",

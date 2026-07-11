@@ -9,6 +9,23 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get widgetToday => '오늘 일정';
+
+  @override
+  String get widgetNoSchedule => '오늘 일정 없음';
+
+  @override
+  String get widgetOutstanding => '이번 달 미수금';
+
+  @override
+  String get widgetLoginPlease => '로그인해 주세요';
+
+  @override
+  String widgetSyncedAt(String time) {
+    return '$time 기준';
+  }
+
+  @override
   String get cancel => '취소';
 
   @override

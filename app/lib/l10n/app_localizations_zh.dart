@@ -9,6 +9,23 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get widgetToday => '今日日程';
+
+  @override
+  String get widgetNoSchedule => '今日无日程';
+
+  @override
+  String get widgetOutstanding => '本月应收款';
+
+  @override
+  String get widgetLoginPlease => '请登录';
+
+  @override
+  String widgetSyncedAt(String time) {
+    return '$time 更新';
+  }
+
+  @override
   String get cancel => '取消';
 
   @override

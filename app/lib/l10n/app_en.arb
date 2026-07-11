@@ -1,4 +1,9 @@
 {
+  "widgetToday": "Today",
+  "widgetNoSchedule": "No schedule today",
+  "widgetOutstanding": "This month due",
+  "widgetLoginPlease": "Please log in",
+  "widgetSyncedAt": "Updated {time}",
   "@@locale": "en",
   "cancel": "Cancel",
   "confirm": "OK",

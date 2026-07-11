@@ -9,6 +9,23 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get widgetToday => 'Lịch hôm nay';
+
+  @override
+  String get widgetNoSchedule => 'Không có lịch';
+
+  @override
+  String get widgetOutstanding => 'Nợ tháng này';
+
+  @override
+  String get widgetLoginPlease => 'Vui lòng đăng nhập';
+
+  @override
+  String widgetSyncedAt(String time) {
+    return 'Cập nhật $time';
+  }
+
+  @override
   String get cancel => 'Huỷ';
 
   @override

@@ -1,4 +1,9 @@
 {
+  "widgetToday": "Lịch hôm nay",
+  "widgetNoSchedule": "Không có lịch",
+  "widgetOutstanding": "Nợ tháng này",
+  "widgetLoginPlease": "Vui lòng đăng nhập",
+  "widgetSyncedAt": "Cập nhật {time}",
   "@@locale": "vi",
   "cancel": "Huỷ",
   "confirm": "OK",

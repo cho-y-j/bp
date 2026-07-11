@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../core/format.dart';
+import '../../core/home_widget_bridge.dart';
 import '../../l10n/l10n_ext.dart';
 import '../../models/models.dart';
 import '../../providers/auth.dart';
@@ -27,6 +28,26 @@ class HomeScreen extends ConsumerWidget {
     final summary = ref.watch(ledgerSummaryProvider(month));
     final confirmations = ref.watch(confirmationsProvider(month));
     final expiring = ref.watch(expiringDocsProvider);
+
+    // 홈 데이터가 로드되면 홈 화면 위젯(iOS/Android)에 오늘 일정·이번 달 미수금을
+    // 공유 저장한다. 위젯은 네트워크 호출 없이 이 값을 렌더만 한다.
+    if (profile != null && confirmations.hasValue && summary.hasValue) {
+      final todays =
+          confirmations.value!.items.where((x) => x.date == today).toList();
+      final first = todays.isEmpty ? null : todays.first;
+      final site = first?.siteName ?? '';
+      final time = first == null
+          ? ''
+          : '${fmtAmpm(first.startTime, context.lang)} ~ ${fmtAmpm(first.endTime, context.lang)}';
+      HomeWidgetBridge.push(HomeWidgetBridge.buildLoggedIn(
+        l: l,
+        lang: context.lang,
+        site: site,
+        time: time,
+        outstanding: summary.value!.totalOutstanding,
+        syncedAt: DateTime.now(),
+      ));
+    }
 
     return Scaffold(
       backgroundColor: c.bg,

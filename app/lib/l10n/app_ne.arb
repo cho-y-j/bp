@@ -1,4 +1,9 @@
 {
+  "widgetToday": "आजको तालिका",
+  "widgetNoSchedule": "आज कुनै तालिका छैन",
+  "widgetOutstanding": "यस महिनाको बाँकी",
+  "widgetLoginPlease": "कृपया लग इन गर्नुहोस्",
+  "widgetSyncedAt": "{time} अद्यावधिक",
   "@@locale": "ne",
   "cancel": "रद्द गर्नुहोस्",
   "confirm": "ठिक छ",

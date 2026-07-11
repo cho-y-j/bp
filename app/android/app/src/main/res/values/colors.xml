@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 홈 위젯 시안 토큰 (라이트). 다크는 values-night/colors.xml. -->
+    <color name="workon_widget_bg">#F7F6F3</color>       <!-- 종이 종이톤 배경 -->
+    <color name="workon_widget_surface">#FFFFFF</color>   <!-- 카드 -->
+    <color name="workon_widget_border">#E2DFD8</color>
+    <color name="workon_ink">#1A2233</color>             <!-- 딥 네이비 잉크 -->
+    <color name="workon_ink2">#5A6474</color>            <!-- 보조 텍스트 -->
+    <color name="workon_orange">#F4770C</color>          <!-- 안전 오렌지 포인트 -->
+    <color name="workon_receivable">#C2410C</color>      <!-- 미수 빨강 -->
+</resources>
