@@ -6,7 +6,9 @@
   "widgetSyncedAt": "{time} 기준",
   "@widgetSyncedAt": {
     "placeholders": {
-      "time": { "type": "String" }
+      "time": {
+        "type": "String"
+      }
     }
   },
   "@@locale": "ko",
@@ -976,7 +978,9 @@
   "teamMemberCountLabel": "팀원 {count}명",
   "@teamMemberCountLabel": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "teamMemberLinked": "가입 연결",
@@ -1006,8 +1010,130 @@
   "ledgerTeamDerived": "{boss} 반장 팀 작업",
   "@ledgerTeamDerived": {
     "placeholders": {
-      "boss": { "type": "String" }
+      "boss": {
+        "type": "String"
+      }
     }
   },
-  "ledgerDerivedReadonly": "반장이 작성한 팀 작업이에요 (입금만 기록할 수 있어요)"
+  "ledgerDerivedReadonly": "반장이 작성한 팀 작업이에요 (입금만 기록할 수 있어요)",
+  "lcKicker": "표준근로계약서",
+  "lcStamp": "표 준 근 로 계 약 서",
+  "lcParties": "계약 당사자",
+  "lcEmployer": "사업주(갑)",
+  "lcWorkerParty": "근로자(을)",
+  "lcBizNumber": "사업자번호",
+  "lcPeriod": "근로계약기간",
+  "lcPeriodOpen": "기간의 정함 없음 · 일 단위",
+  "lcWorkplace": "근무장소",
+  "lcJob": "업무내용",
+  "lcWorkTime": "근로시간",
+  "lcBreak": "휴게",
+  "lcWage": "임금",
+  "lcWageDaily": "일급",
+  "lcWageHourly": "시급",
+  "lcPayday": "임금 지급일",
+  "lcPayMethod": "지급 방법",
+  "lcAllowance": "수당",
+  "lcWeeklyHoliday": "주휴수당: 1주 소정근로일을 개근하면 주휴수당을 지급합니다.",
+  "lcWeeklyHolidayNone": "주휴수당: 해당 없음(일용·단시간 등).",
+  "lcOvertime": "연장·야간·휴일근로 시 근로기준법에 따라 통상임금의 50%를 가산 지급합니다.",
+  "lcOvertimeNone": "연장·야간·휴일 가산수당: 별도로 정하지 않음.",
+  "lcInsurance": "사회보험 적용",
+  "lcInsEmployment": "고용보험",
+  "lcInsHealth": "건강보험",
+  "lcInsPension": "국민연금",
+  "lcInsAccident": "산재보험",
+  "lcApplied": "적용",
+  "lcNotApplied": "미적용",
+  "lcSpecial": "특약사항",
+  "lcMasterNote": "본 계약서의 정본은 한국어본입니다. 번역본은 이해를 돕기 위한 참고용이며, 해석상 차이가 있을 경우 한국어본이 우선합니다.",
+  "lcEmployerSigned": "사업주 서명 완료",
+  "lcMenuDesc": "작업자와 전자서명으로 계약",
+  "lcListEmptyTitle": "아직 계약서가 없어요",
+  "lcListEmptySub": "작업자와 맺을 근로계약서를 작성해 보세요",
+  "lcNewContract": "계약서 작성",
+  "lcStatusDraft": "작성됨",
+  "lcStatusSent": "전송됨",
+  "lcStatusSigned": "서명됨",
+  "lcWorkerSection": "작업자",
+  "lcWorkerByPhone": "전화로 찾기",
+  "lcWorkerManual": "직접 입력",
+  "lcWorkerNameHint": "작업자 이름",
+  "lcWorkerPhoneHint": "작업자 전화번호 (선택)",
+  "lcSearchPhoneHint": "작업자 전화번호",
+  "lcSearchHint": "전화번호 검색에 동의한 가입자만 찾을 수 있어요",
+  "lcSearchNoResult": "검색 결과가 없어요",
+  "lcWorkerLinkedBadge": "연결",
+  "lcStartDate": "시작일",
+  "lcEndDate": "종료일 (선택)",
+  "lcEndDateNotSet": "정함 없음",
+  "lcWorkplaceHint": "예) 강남 A현장",
+  "lcJobHint": "예) 철근 조립",
+  "lcBreakHint": "예) 12:00~13:00",
+  "lcWageAmountHint": "금액",
+  "lcPaydayHint": "예) 매월 25일",
+  "lcPayMethodHint": "예) 계좌이체",
+  "lcWeeklyHolidaySwitch": "주휴수당 지급",
+  "lcOvertimeSwitch": "연장·야간·휴일 가산수당",
+  "lcSpecialHint": "특약사항 (선택)",
+  "lcSaveCommon": "자주 쓰는 값 저장",
+  "lcSaveCommonSub": "다음 작성 시 자동으로 채워요",
+  "lcSubmit": "계약서 만들기",
+  "lcCreated": "계약서를 만들었어요",
+  "lcDetailTitle": "계약서",
+  "lcSignEmployerTitle": "내 서명 (사업주)",
+  "lcSignEmployerDesc": "서명하면 작업자에게 보낼 수 있어요",
+  "lcSignerNameLabel": "서명자 이름",
+  "lcSignRedraw": "다시 그리기",
+  "lcSignSubmit": "서명하기",
+  "lcSigned": "서명을 완료했어요",
+  "lcSignErrPad": "서명을 입력해 주세요",
+  "lcSignErrName": "서명자 이름을 입력해 주세요",
+  "lcSend": "작업자에게 전송",
+  "lcSentLinked": "작업자에게 전송했어요",
+  "lcSentShare": "링크를 공유해 전달하세요",
+  "lcShareBody": "아래 링크에서 계약서를 확인하고 서명해 주세요",
+  "lcViewPdf": "PDF 열람",
+  "lcDeleteConfirm": "이 계약서를 삭제할까요?",
+  "lcDeleted": "삭제했어요",
+  "lcWaitingWorker": "작업자 서명 대기 중",
+  "lcMyContractsTitle": "내 계약서",
+  "lcMyContractsSub": "받은 근로계약서 확인·서명",
+  "lcMyEmptyTitle": "받은 계약서가 없어요",
+  "lcMyEmptySub": "사업주가 보낸 계약서가 여기에 표시돼요",
+  "lcWorkerSignTitle": "내 서명 (근로자)",
+  "lcWorkerSignDesc": "내용을 확인하고 서명해 주세요",
+  "lcAlreadySigned": "이미 서명한 계약서예요",
+  "lcCreateFailed": "계약서를 저장하지 못했어요: {msg}",
+  "@lcCreateFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSignFailed": "서명하지 못했어요: {msg}",
+  "@lcSignFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSendFailed": "전송하지 못했어요: {msg}",
+  "@lcSendFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcPdfFailed": "PDF를 열지 못했어요: {msg}",
+  "@lcPdfFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -1577,4 +1577,295 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get ledgerDerivedReadonly =>
       'Đây là công việc đội do đội trưởng lập (bạn chỉ có thể ghi nhận thanh toán)';
+
+  @override
+  String get lcKicker => 'Hợp đồng lao động tiêu chuẩn';
+
+  @override
+  String get lcStamp => 'HỢP ĐỒNG LAO ĐỘNG';
+
+  @override
+  String get lcParties => 'Các bên hợp đồng';
+
+  @override
+  String get lcEmployer => 'Người sử dụng lao động (bên A)';
+
+  @override
+  String get lcWorkerParty => 'Người lao động (bên B)';
+
+  @override
+  String get lcBizNumber => 'Mã số doanh nghiệp';
+
+  @override
+  String get lcPeriod => 'Thời hạn hợp đồng';
+
+  @override
+  String get lcPeriodOpen => 'Không xác định thời hạn · theo ngày';
+
+  @override
+  String get lcWorkplace => 'Nơi làm việc';
+
+  @override
+  String get lcJob => 'Nội dung công việc';
+
+  @override
+  String get lcWorkTime => 'Thời gian làm việc';
+
+  @override
+  String get lcBreak => 'Nghỉ giải lao';
+
+  @override
+  String get lcWage => 'Tiền lương';
+
+  @override
+  String get lcWageDaily => 'Lương ngày';
+
+  @override
+  String get lcWageHourly => 'Lương giờ';
+
+  @override
+  String get lcPayday => 'Ngày trả lương';
+
+  @override
+  String get lcPayMethod => 'Phương thức trả';
+
+  @override
+  String get lcAllowance => 'Phụ cấp';
+
+  @override
+  String get lcWeeklyHoliday =>
+      'Phụ cấp nghỉ tuần: đi làm đủ ngày quy định trong tuần sẽ được trả phụ cấp nghỉ tuần.';
+
+  @override
+  String get lcWeeklyHolidayNone =>
+      'Phụ cấp nghỉ tuần: không áp dụng (lao động ngày/bán thời gian).';
+
+  @override
+  String get lcOvertime =>
+      'Làm thêm giờ, ban đêm, ngày nghỉ được trả thêm 50% tiền lương thông thường theo luật lao động.';
+
+  @override
+  String get lcOvertimeNone =>
+      'Phụ cấp làm thêm/ban đêm/ngày nghỉ: không quy định riêng.';
+
+  @override
+  String get lcInsurance => 'Áp dụng bảo hiểm xã hội';
+
+  @override
+  String get lcInsEmployment => 'Bảo hiểm việc làm';
+
+  @override
+  String get lcInsHealth => 'Bảo hiểm y tế';
+
+  @override
+  String get lcInsPension => 'Bảo hiểm hưu trí quốc gia';
+
+  @override
+  String get lcInsAccident => 'Bảo hiểm tai nạn lao động';
+
+  @override
+  String get lcApplied => 'Áp dụng';
+
+  @override
+  String get lcNotApplied => 'Không áp dụng';
+
+  @override
+  String get lcSpecial => 'Điều khoản đặc biệt';
+
+  @override
+  String get lcMasterNote =>
+      'Bản chính của hợp đồng này là bản tiếng Hàn. Bản dịch chỉ nhằm hỗ trợ hiểu; nếu có khác biệt về giải thích, bản tiếng Hàn được ưu tiên.';
+
+  @override
+  String get lcEmployerSigned => 'Người sử dụng lao động đã ký';
+
+  @override
+  String get lcMenuDesc => 'Ký hợp đồng điện tử với người lao động';
+
+  @override
+  String get lcListEmptyTitle => 'Chưa có hợp đồng';
+
+  @override
+  String get lcListEmptySub =>
+      'Tạo hợp đồng lao động với người lao động của bạn';
+
+  @override
+  String get lcNewContract => 'Tạo hợp đồng';
+
+  @override
+  String get lcStatusDraft => 'Bản nháp';
+
+  @override
+  String get lcStatusSent => 'Đã gửi';
+
+  @override
+  String get lcStatusSigned => 'Đã ký';
+
+  @override
+  String get lcWorkerSection => 'Người lao động';
+
+  @override
+  String get lcWorkerByPhone => 'Tìm theo SĐT';
+
+  @override
+  String get lcWorkerManual => 'Nhập thủ công';
+
+  @override
+  String get lcWorkerNameHint => 'Tên người lao động';
+
+  @override
+  String get lcWorkerPhoneHint => 'SĐT người lao động (tùy chọn)';
+
+  @override
+  String get lcSearchPhoneHint => 'SĐT người lao động';
+
+  @override
+  String get lcSearchHint =>
+      'Chỉ tìm được người dùng đã đồng ý tìm kiếm qua SĐT';
+
+  @override
+  String get lcSearchNoResult => 'Không có kết quả';
+
+  @override
+  String get lcWorkerLinkedBadge => 'Đã liên kết';
+
+  @override
+  String get lcStartDate => 'Ngày bắt đầu';
+
+  @override
+  String get lcEndDate => 'Ngày kết thúc (tùy chọn)';
+
+  @override
+  String get lcEndDateNotSet => 'Không đặt';
+
+  @override
+  String get lcWorkplaceHint => 'VD) Công trường A, Gangnam';
+
+  @override
+  String get lcJobHint => 'VD) Lắp cốt thép';
+
+  @override
+  String get lcBreakHint => 'VD) 12:00-13:00';
+
+  @override
+  String get lcWageAmountHint => 'Số tiền';
+
+  @override
+  String get lcPaydayHint => 'VD) Ngày 25 hằng tháng';
+
+  @override
+  String get lcPayMethodHint => 'VD) Chuyển khoản';
+
+  @override
+  String get lcWeeklyHolidaySwitch => 'Trả phụ cấp nghỉ tuần';
+
+  @override
+  String get lcOvertimeSwitch => 'Phụ cấp làm thêm/đêm/ngày nghỉ';
+
+  @override
+  String get lcSpecialHint => 'Điều khoản đặc biệt (tùy chọn)';
+
+  @override
+  String get lcSaveCommon => 'Lưu giá trị thường dùng';
+
+  @override
+  String get lcSaveCommonSub => 'Tự động điền lần sau';
+
+  @override
+  String get lcSubmit => 'Tạo hợp đồng';
+
+  @override
+  String get lcCreated => 'Đã tạo hợp đồng';
+
+  @override
+  String get lcDetailTitle => 'Hợp đồng';
+
+  @override
+  String get lcSignEmployerTitle => 'Chữ ký của tôi (NSDLĐ)';
+
+  @override
+  String get lcSignEmployerDesc => 'Ký để gửi cho người lao động';
+
+  @override
+  String get lcSignerNameLabel => 'Tên người ký';
+
+  @override
+  String get lcSignRedraw => 'Vẽ lại';
+
+  @override
+  String get lcSignSubmit => 'Ký';
+
+  @override
+  String get lcSigned => 'Đã ký';
+
+  @override
+  String get lcSignErrPad => 'Vui lòng ký trước';
+
+  @override
+  String get lcSignErrName => 'Vui lòng nhập tên người ký';
+
+  @override
+  String get lcSend => 'Gửi cho người lao động';
+
+  @override
+  String get lcSentLinked => 'Đã gửi cho người lao động';
+
+  @override
+  String get lcSentShare => 'Chia sẻ liên kết để gửi';
+
+  @override
+  String get lcShareBody => 'Vui lòng xem và ký hợp đồng tại liên kết bên dưới';
+
+  @override
+  String get lcViewPdf => 'Xem PDF';
+
+  @override
+  String get lcDeleteConfirm => 'Xóa hợp đồng này?';
+
+  @override
+  String get lcDeleted => 'Đã xóa';
+
+  @override
+  String get lcWaitingWorker => 'Đang chờ người lao động ký';
+
+  @override
+  String get lcMyContractsTitle => 'Hợp đồng của tôi';
+
+  @override
+  String get lcMyContractsSub => 'Xem và ký hợp đồng đã nhận';
+
+  @override
+  String get lcMyEmptyTitle => 'Chưa nhận hợp đồng';
+
+  @override
+  String get lcMyEmptySub => 'Hợp đồng do NSDLĐ gửi sẽ hiện ở đây';
+
+  @override
+  String get lcWorkerSignTitle => 'Chữ ký của tôi (NLĐ)';
+
+  @override
+  String get lcWorkerSignDesc => 'Vui lòng xem và ký';
+
+  @override
+  String get lcAlreadySigned => 'Đã ký rồi';
+
+  @override
+  String lcCreateFailed(String msg) {
+    return 'Không thể lưu hợp đồng: $msg';
+  }
+
+  @override
+  String lcSignFailed(String msg) {
+    return 'Không thể ký: $msg';
+  }
+
+  @override
+  String lcSendFailed(String msg) {
+    return 'Không thể gửi: $msg';
+  }
+
+  @override
+  String lcPdfFailed(String msg) {
+    return 'Không thể mở PDF: $msg';
+  }
 }

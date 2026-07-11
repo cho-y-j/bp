@@ -436,7 +436,9 @@
   "teamMemberCountLabel": "{count} सदस्य",
   "@teamMemberCountLabel": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "teamMemberLinked": "जडान भएको",
@@ -466,8 +468,130 @@
   "ledgerTeamDerived": "{boss} फोरम्यान टोली काम",
   "@ledgerTeamDerived": {
     "placeholders": {
-      "boss": { "type": "String" }
+      "boss": {
+        "type": "String"
+      }
     }
   },
-  "ledgerDerivedReadonly": "यो फोरम्यानले बनाएको टोली काम हो (तपाईं भुक्तानी मात्र रेकर्ड गर्न सक्नुहुन्छ)"
+  "ledgerDerivedReadonly": "यो फोरम्यानले बनाएको टोली काम हो (तपाईं भुक्तानी मात्र रेकर्ड गर्न सक्नुहुन्छ)",
+  "lcKicker": "मानक श्रम सम्झौता",
+  "lcStamp": "मानक श्रम सम्झौता",
+  "lcParties": "सम्झौताका पक्षहरू",
+  "lcEmployer": "रोजगारदाता (पक्ष क)",
+  "lcWorkerParty": "कामदार (पक्ष ख)",
+  "lcBizNumber": "व्यवसाय दर्ता नम्बर",
+  "lcPeriod": "श्रम सम्झौता अवधि",
+  "lcPeriodOpen": "निश्चित अवधि नभएको · दैनिक",
+  "lcWorkplace": "कार्यस्थल",
+  "lcJob": "कामको विवरण",
+  "lcWorkTime": "कार्य समय",
+  "lcBreak": "विश्राम",
+  "lcWage": "ज्याला",
+  "lcWageDaily": "दैनिक ज्याला",
+  "lcWageHourly": "घण्टा ज्याला",
+  "lcPayday": "ज्याला भुक्तानी दिन",
+  "lcPayMethod": "भुक्तानी विधि",
+  "lcAllowance": "भत्ता",
+  "lcWeeklyHoliday": "साप्ताहिक बिदा भत्ता: हप्ताको तोकिएको कार्यदिन पूर्ण उपस्थित भएमा साप्ताहिक बिदा भत्ता दिइन्छ।",
+  "lcWeeklyHolidayNone": "साप्ताहिक बिदा भत्ता: लागू हुँदैन (दैनिक/अल्पकालीन)।",
+  "lcOvertime": "ओभरटाइम, रात्री र बिदाको काममा श्रम ऐन अनुसार सामान्य ज्यालाको ५०% थप दिइन्छ।",
+  "lcOvertimeNone": "ओभरटाइम/रात्री/बिदा थप भत्ता: छुट्टै तोकिएको छैन।",
+  "lcInsurance": "सामाजिक बीमा लागू",
+  "lcInsEmployment": "रोजगार बीमा",
+  "lcInsHealth": "स्वास्थ्य बीमा",
+  "lcInsPension": "राष्ट्रिय पेन्सन",
+  "lcInsAccident": "दुर्घटना बीमा",
+  "lcApplied": "लागू",
+  "lcNotApplied": "लागू छैन",
+  "lcSpecial": "विशेष सर्त",
+  "lcMasterNote": "यस सम्झौताको मूल प्रति कोरियाली भाषामा हो। अनुवाद बुझ्न सहयोगका लागि मात्र हो; व्याख्यामा भिन्नता भएमा कोरियाली प्रति मान्य हुन्छ।",
+  "lcEmployerSigned": "रोजगारदाताले हस्ताक्षर गर्नुभयो",
+  "lcMenuDesc": "कामदारसँग विद्युतीय हस्ताक्षरमा सम्झौता",
+  "lcListEmptyTitle": "अहिलेसम्म कुनै सम्झौता छैन",
+  "lcListEmptySub": "आफ्नो कामदारसँग श्रम सम्झौता बनाउनुहोस्",
+  "lcNewContract": "नयाँ सम्झौता",
+  "lcStatusDraft": "मस्यौदा",
+  "lcStatusSent": "पठाइयो",
+  "lcStatusSigned": "हस्ताक्षरित",
+  "lcWorkerSection": "कामदार",
+  "lcWorkerByPhone": "फोनबाट खोज्नुहोस्",
+  "lcWorkerManual": "हातैले लेख्नुहोस्",
+  "lcWorkerNameHint": "कामदारको नाम",
+  "lcWorkerPhoneHint": "कामदारको फोन (वैकल्पिक)",
+  "lcSearchPhoneHint": "कामदारको फोन",
+  "lcSearchHint": "फोन खोजीमा सहमत भएका प्रयोगकर्ता मात्र भेटिन्छन्",
+  "lcSearchNoResult": "कुनै परिणाम छैन",
+  "lcWorkerLinkedBadge": "जोडिएको",
+  "lcStartDate": "सुरु मिति",
+  "lcEndDate": "अन्त्य मिति (वैकल्पिक)",
+  "lcEndDateNotSet": "तोकिएको छैन",
+  "lcWorkplaceHint": "उदा) गाङनाम A साइट",
+  "lcJobHint": "उदा) रिबार काम",
+  "lcBreakHint": "उदा) 12:00~13:00",
+  "lcWageAmountHint": "रकम",
+  "lcPaydayHint": "उदा) हरेक महिना २५",
+  "lcPayMethodHint": "उदा) बैंक ट्रान्सफर",
+  "lcWeeklyHolidaySwitch": "साप्ताहिक बिदा भत्ता",
+  "lcOvertimeSwitch": "ओभरटाइम/रात्री/बिदा थप भत्ता",
+  "lcSpecialHint": "विशेष सर्त (वैकल्पिक)",
+  "lcSaveCommon": "बारम्बार प्रयोग हुने मान सुरक्षित",
+  "lcSaveCommonSub": "अर्को पटक स्वतः भरिन्छ",
+  "lcSubmit": "सम्झौता बनाउनुहोस्",
+  "lcCreated": "सम्झौता बन्यो",
+  "lcDetailTitle": "सम्झौता",
+  "lcSignEmployerTitle": "मेरो हस्ताक्षर (रोजगारदाता)",
+  "lcSignEmployerDesc": "हस्ताक्षर गरेपछि कामदारलाई पठाउन सकिन्छ",
+  "lcSignerNameLabel": "हस्ताक्षरकर्ताको नाम",
+  "lcSignRedraw": "फेरि कोर्नुहोस्",
+  "lcSignSubmit": "हस्ताक्षर गर्नुहोस्",
+  "lcSigned": "हस्ताक्षर पूरा भयो",
+  "lcSignErrPad": "कृपया पहिले हस्ताक्षर गर्नुहोस्",
+  "lcSignErrName": "कृपया हस्ताक्षरकर्ताको नाम लेख्नुहोस्",
+  "lcSend": "कामदारलाई पठाउनुहोस्",
+  "lcSentLinked": "कामदारलाई पठाइयो",
+  "lcSentShare": "लिङ्क साझा गरेर पठाउनुहोस्",
+  "lcShareBody": "तलको लिङ्कमा सम्झौता हेरेर हस्ताक्षर गर्नुहोस्",
+  "lcViewPdf": "PDF हेर्नुहोस्",
+  "lcDeleteConfirm": "यो सम्झौता मेटाउने?",
+  "lcDeleted": "मेटाइयो",
+  "lcWaitingWorker": "कामदारको हस्ताक्षर पर्खँदै",
+  "lcMyContractsTitle": "मेरा सम्झौता",
+  "lcMyContractsSub": "प्राप्त सम्झौता हेर्नुहोस्·हस्ताक्षर",
+  "lcMyEmptyTitle": "कुनै सम्झौता प्राप्त भएको छैन",
+  "lcMyEmptySub": "रोजगारदाताले पठाएको सम्झौता यहाँ देखिन्छ",
+  "lcWorkerSignTitle": "मेरो हस्ताक्षर (कामदार)",
+  "lcWorkerSignDesc": "कृपया हेरेर हस्ताक्षर गर्नुहोस्",
+  "lcAlreadySigned": "पहिले नै हस्ताक्षर गरिएको",
+  "lcCreateFailed": "सम्झौता सुरक्षित गर्न सकिएन: {msg}",
+  "@lcCreateFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSignFailed": "हस्ताक्षर गर्न सकिएन: {msg}",
+  "@lcSignFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSendFailed": "पठाउन सकिएन: {msg}",
+  "@lcSendFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcPdfFailed": "PDF खोल्न सकिएन: {msg}",
+  "@lcPdfFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -436,7 +436,9 @@
   "teamMemberCountLabel": "{count} members",
   "@teamMemberCountLabel": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "teamMemberLinked": "Linked",
@@ -466,8 +468,130 @@
   "ledgerTeamDerived": "{boss}'s team work",
   "@ledgerTeamDerived": {
     "placeholders": {
-      "boss": { "type": "String" }
+      "boss": {
+        "type": "String"
+      }
     }
   },
-  "ledgerDerivedReadonly": "This is team work created by the team lead (you can only record payments)"
+  "ledgerDerivedReadonly": "This is team work created by the team lead (you can only record payments)",
+  "lcKicker": "Standard Labor Contract",
+  "lcStamp": "STANDARD LABOR CONTRACT",
+  "lcParties": "Contracting parties",
+  "lcEmployer": "Employer (Party A)",
+  "lcWorkerParty": "Employee (Party B)",
+  "lcBizNumber": "Business reg. no.",
+  "lcPeriod": "Contract period",
+  "lcPeriodOpen": "No fixed term · daily basis",
+  "lcWorkplace": "Workplace",
+  "lcJob": "Job description",
+  "lcWorkTime": "Working hours",
+  "lcBreak": "Break",
+  "lcWage": "Wage",
+  "lcWageDaily": "Daily wage",
+  "lcWageHourly": "Hourly wage",
+  "lcPayday": "Payday",
+  "lcPayMethod": "Payment method",
+  "lcAllowance": "Allowances",
+  "lcWeeklyHoliday": "Weekly holiday pay: paid when the week’s scheduled workdays are fully attended.",
+  "lcWeeklyHolidayNone": "Weekly holiday pay: not applicable (daily/short-term).",
+  "lcOvertime": "Overtime, night, and holiday work are paid an extra 50% of ordinary wage per the Labor Standards Act.",
+  "lcOvertimeNone": "Overtime/night/holiday premiums: not separately agreed.",
+  "lcInsurance": "Social insurance",
+  "lcInsEmployment": "Employment insurance",
+  "lcInsHealth": "Health insurance",
+  "lcInsPension": "National pension",
+  "lcInsAccident": "Industrial accident insurance",
+  "lcApplied": "Applied",
+  "lcNotApplied": "Not applied",
+  "lcSpecial": "Special terms",
+  "lcMasterNote": "The Korean version is the authoritative original of this contract. Translations are for understanding only; the Korean version prevails in case of any discrepancy.",
+  "lcEmployerSigned": "Employer signed",
+  "lcMenuDesc": "Sign labor contracts with workers",
+  "lcListEmptyTitle": "No contracts yet",
+  "lcListEmptySub": "Create a labor contract with your worker",
+  "lcNewContract": "New contract",
+  "lcStatusDraft": "Draft",
+  "lcStatusSent": "Sent",
+  "lcStatusSigned": "Signed",
+  "lcWorkerSection": "Worker",
+  "lcWorkerByPhone": "Find by phone",
+  "lcWorkerManual": "Enter manually",
+  "lcWorkerNameHint": "Worker name",
+  "lcWorkerPhoneHint": "Worker phone (optional)",
+  "lcSearchPhoneHint": "Worker phone",
+  "lcSearchHint": "Only members who allowed phone search can be found",
+  "lcSearchNoResult": "No results",
+  "lcWorkerLinkedBadge": "Linked",
+  "lcStartDate": "Start date",
+  "lcEndDate": "End date (optional)",
+  "lcEndDateNotSet": "Not set",
+  "lcWorkplaceHint": "e.g. Site A, Gangnam",
+  "lcJobHint": "e.g. Rebar work",
+  "lcBreakHint": "e.g. 12:00-13:00",
+  "lcWageAmountHint": "Amount",
+  "lcPaydayHint": "e.g. 25th monthly",
+  "lcPayMethodHint": "e.g. Bank transfer",
+  "lcWeeklyHolidaySwitch": "Weekly holiday pay",
+  "lcOvertimeSwitch": "Overtime/night/holiday premium",
+  "lcSpecialHint": "Special terms (optional)",
+  "lcSaveCommon": "Save common values",
+  "lcSaveCommonSub": "Auto-fill next time",
+  "lcSubmit": "Create contract",
+  "lcCreated": "Contract created",
+  "lcDetailTitle": "Contract",
+  "lcSignEmployerTitle": "My signature (employer)",
+  "lcSignEmployerDesc": "Sign to send it to the worker",
+  "lcSignerNameLabel": "Signer name",
+  "lcSignRedraw": "Redraw",
+  "lcSignSubmit": "Sign",
+  "lcSigned": "Signed",
+  "lcSignErrPad": "Please sign first",
+  "lcSignErrName": "Please enter signer name",
+  "lcSend": "Send to worker",
+  "lcSentLinked": "Sent to the worker",
+  "lcSentShare": "Share the link to deliver it",
+  "lcShareBody": "Please review and sign the contract at the link below",
+  "lcViewPdf": "View PDF",
+  "lcDeleteConfirm": "Delete this contract?",
+  "lcDeleted": "Deleted",
+  "lcWaitingWorker": "Waiting for worker signature",
+  "lcMyContractsTitle": "My contracts",
+  "lcMyContractsSub": "Review and sign received contracts",
+  "lcMyEmptyTitle": "No contracts received",
+  "lcMyEmptySub": "Contracts sent by employers appear here",
+  "lcWorkerSignTitle": "My signature (worker)",
+  "lcWorkerSignDesc": "Please review and sign",
+  "lcAlreadySigned": "Already signed",
+  "lcCreateFailed": "Could not save contract: {msg}",
+  "@lcCreateFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSignFailed": "Could not sign: {msg}",
+  "@lcSignFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSendFailed": "Could not send: {msg}",
+  "@lcSendFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcPdfFailed": "Could not open PDF: {msg}",
+  "@lcPdfFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  }
 }

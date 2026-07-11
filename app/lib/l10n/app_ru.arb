@@ -436,7 +436,9 @@
   "teamMemberCountLabel": "Участников: {count}",
   "@teamMemberCountLabel": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "teamMemberLinked": "Связан",
@@ -466,8 +468,130 @@
   "ledgerTeamDerived": "Работа бригады {boss}",
   "@ledgerTeamDerived": {
     "placeholders": {
-      "boss": { "type": "String" }
+      "boss": {
+        "type": "String"
+      }
     }
   },
-  "ledgerDerivedReadonly": "Это бригадная работа, оформленная бригадиром (можно только записывать оплату)"
+  "ledgerDerivedReadonly": "Это бригадная работа, оформленная бригадиром (можно только записывать оплату)",
+  "lcKicker": "Трудовой договор",
+  "lcStamp": "Т Р У Д О В О Й   Д О Г О В О Р",
+  "lcParties": "Стороны договора",
+  "lcEmployer": "Работодатель (сторона А)",
+  "lcWorkerParty": "Работник (сторона Б)",
+  "lcBizNumber": "Рег. номер предприятия",
+  "lcPeriod": "Срок трудового договора",
+  "lcPeriodOpen": "Без определённого срока · подённо",
+  "lcWorkplace": "Место работы",
+  "lcJob": "Содержание работы",
+  "lcWorkTime": "Рабочее время",
+  "lcBreak": "Перерыв",
+  "lcWage": "Заработная плата",
+  "lcWageDaily": "Дневная ставка",
+  "lcWageHourly": "Почасовая ставка",
+  "lcPayday": "День выплаты",
+  "lcPayMethod": "Способ выплаты",
+  "lcAllowance": "Надбавки",
+  "lcWeeklyHoliday": "Оплата еженедельного выходного: при полной отработке недели выплачивается оплата выходного дня.",
+  "lcWeeklyHolidayNone": "Оплата еженедельного выходного: не применяется (подённая/неполная занятость).",
+  "lcOvertime": "За сверхурочную, ночную и работу в выходные выплачивается надбавка 50% от обычной оплаты согласно закону.",
+  "lcOvertimeNone": "Надбавки за сверхурочную/ночную/праздничную работу: отдельно не оговорены.",
+  "lcInsurance": "Социальное страхование",
+  "lcInsEmployment": "Страхование занятости",
+  "lcInsHealth": "Медицинское страхование",
+  "lcInsPension": "Пенсионное страхование",
+  "lcInsAccident": "Страхование от несчастных случаев",
+  "lcApplied": "Применяется",
+  "lcNotApplied": "Не применяется",
+  "lcSpecial": "Особые условия",
+  "lcMasterNote": "Оригиналом договора является версия на корейском языке. Перевод предоставлен для удобства понимания; при расхождениях преимущество имеет корейская версия.",
+  "lcEmployerSigned": "Работодатель подписал",
+  "lcMenuDesc": "Договоры с работниками через э-подпись",
+  "lcListEmptyTitle": "Пока нет договоров",
+  "lcListEmptySub": "Создайте трудовой договор с работником",
+  "lcNewContract": "Новый договор",
+  "lcStatusDraft": "Черновик",
+  "lcStatusSent": "Отправлен",
+  "lcStatusSigned": "Подписан",
+  "lcWorkerSection": "Работник",
+  "lcWorkerByPhone": "Поиск по телефону",
+  "lcWorkerManual": "Ввести вручную",
+  "lcWorkerNameHint": "Имя работника",
+  "lcWorkerPhoneHint": "Телефон работника (необязательно)",
+  "lcSearchPhoneHint": "Телефон работника",
+  "lcSearchHint": "Найти можно только пользователей, разрешивших поиск по телефону",
+  "lcSearchNoResult": "Ничего не найдено",
+  "lcWorkerLinkedBadge": "Связан",
+  "lcStartDate": "Дата начала",
+  "lcEndDate": "Дата окончания (необязательно)",
+  "lcEndDateNotSet": "Не задано",
+  "lcWorkplaceHint": "напр. Объект А, Каннам",
+  "lcJobHint": "напр. Арматурные работы",
+  "lcBreakHint": "напр. 12:00-13:00",
+  "lcWageAmountHint": "Сумма",
+  "lcPaydayHint": "напр. 25-го числа",
+  "lcPayMethodHint": "напр. Банковский перевод",
+  "lcWeeklyHolidaySwitch": "Оплата выходного дня",
+  "lcOvertimeSwitch": "Надбавка за сверхурочную работу",
+  "lcSpecialHint": "Особые условия (необязательно)",
+  "lcSaveCommon": "Сохранить частые значения",
+  "lcSaveCommonSub": "Автозаполнение в следующий раз",
+  "lcSubmit": "Создать договор",
+  "lcCreated": "Договор создан",
+  "lcDetailTitle": "Договор",
+  "lcSignEmployerTitle": "Моя подпись (работодатель)",
+  "lcSignEmployerDesc": "Подпишите, чтобы отправить работнику",
+  "lcSignerNameLabel": "Имя подписавшего",
+  "lcSignRedraw": "Перерисовать",
+  "lcSignSubmit": "Подписать",
+  "lcSigned": "Подписано",
+  "lcSignErrPad": "Сначала поставьте подпись",
+  "lcSignErrName": "Введите имя подписавшего",
+  "lcSend": "Отправить работнику",
+  "lcSentLinked": "Отправлено работнику",
+  "lcSentShare": "Поделитесь ссылкой для отправки",
+  "lcShareBody": "Ознакомьтесь и подпишите договор по ссылке ниже",
+  "lcViewPdf": "Открыть PDF",
+  "lcDeleteConfirm": "Удалить этот договор?",
+  "lcDeleted": "Удалено",
+  "lcWaitingWorker": "Ожидается подпись работника",
+  "lcMyContractsTitle": "Мои договоры",
+  "lcMyContractsSub": "Просмотр и подпись полученных договоров",
+  "lcMyEmptyTitle": "Нет полученных договоров",
+  "lcMyEmptySub": "Здесь появятся договоры от работодателей",
+  "lcWorkerSignTitle": "Моя подпись (работник)",
+  "lcWorkerSignDesc": "Ознакомьтесь и подпишите",
+  "lcAlreadySigned": "Уже подписан",
+  "lcCreateFailed": "Не удалось сохранить договор: {msg}",
+  "@lcCreateFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSignFailed": "Не удалось подписать: {msg}",
+  "@lcSignFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSendFailed": "Не удалось отправить: {msg}",
+  "@lcSendFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcPdfFailed": "Не удалось открыть PDF: {msg}",
+  "@lcPdfFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  }
 }

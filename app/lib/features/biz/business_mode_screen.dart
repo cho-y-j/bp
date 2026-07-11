@@ -11,6 +11,7 @@ import 'settlement_screen.dart';
 import 'workers_screen.dart';
 import 'jobs_screen.dart';
 import 'safety_screen.dart';
+import 'contracts_screen.dart';
 
 /// 사업장 모드 진입 — hasBusiness 없으면 생성 플로우, 있으면 사업장 홈.
 class BusinessModeScreen extends ConsumerWidget {
@@ -179,6 +180,12 @@ class _BizHome extends StatelessWidget {
           title: l.settleTitle,
           subtitle: l.bizMenuSettleDesc,
           onTap: () => _push(context, const SettlementScreen()),
+        ),
+        _MenuCard(
+          icon: Icons.description_outlined,
+          title: l.lcKicker,
+          subtitle: l.lcMenuDesc,
+          onTap: () => _push(context, const ContractsScreen()),
         ),
         _MenuCard(
           icon: Icons.groups_outlined,

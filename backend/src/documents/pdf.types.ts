@@ -64,6 +64,41 @@ export interface StatementPdfData {
   totalOutstanding: number;
 }
 
+export interface LaborContractPdfData {
+  title: string; // "표준근로계약서"
+  statusLabel: string; // 작성됨/전송됨/서명됨
+  businessName: string; // 사업장(사용자) 상호
+  businessNumber?: string | null;
+  businessAddress?: string | null;
+  workerName: string; // 근로자 성명
+  workerPhone?: string | null;
+  startDate: string; // 근로개시일 YYYY-MM-DD
+  endDate?: string | null; // 종료일(없으면 기간의 정함 없음)
+  workplace: string; // 근무 장소
+  jobDescription: string; // 업무 내용
+  timeRange: string; // "08:00 ~ 17:00"
+  breakTime?: string | null; // 휴게시간
+  wageTypeLabel: string; // 일급/시급
+  wageAmount: number; // 금액
+  payday: string; // 임금 지급일
+  payMethod: string; // 지급 방법
+  weeklyHolidayAllowance: boolean; // 주휴수당 문구
+  overtimeAllowance: boolean; // 연장·야간·휴일 가산수당 문구
+  socialInsurance?: {
+    employment?: boolean;
+    health?: boolean;
+    pension?: boolean;
+    industrialAccident?: boolean;
+  } | null;
+  specialTerms?: string | null; // 특약사항
+  employerSignerName?: string | null; // 사업장 대표자명
+  employerSignedAt?: string | null;
+  employerSignPng?: Buffer | null;
+  workerSignerName?: string | null; // 근로자 서명자명
+  workerSignedAt?: string | null;
+  workerSignPng?: Buffer | null;
+}
+
 export interface SafetyReportTypeCount {
   typeLabel: string; // 유형(폭염알림/휴식안내/서류확인/컨디션체크)
   count: number;

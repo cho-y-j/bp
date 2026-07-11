@@ -1540,4 +1540,288 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ledgerDerivedReadonly => '这是班长填写的班组作业（只能记录收款）';
+
+  @override
+  String get lcKicker => '标准劳动合同';
+
+  @override
+  String get lcStamp => '标 准 劳 动 合 同';
+
+  @override
+  String get lcParties => '合同当事人';
+
+  @override
+  String get lcEmployer => '雇主(甲方)';
+
+  @override
+  String get lcWorkerParty => '劳动者(乙方)';
+
+  @override
+  String get lcBizNumber => '营业执照号';
+
+  @override
+  String get lcPeriod => '劳动合同期限';
+
+  @override
+  String get lcPeriodOpen => '无固定期限 · 按日';
+
+  @override
+  String get lcWorkplace => '工作地点';
+
+  @override
+  String get lcJob => '工作内容';
+
+  @override
+  String get lcWorkTime => '工作时间';
+
+  @override
+  String get lcBreak => '休息';
+
+  @override
+  String get lcWage => '工资';
+
+  @override
+  String get lcWageDaily => '日薪';
+
+  @override
+  String get lcWageHourly => '时薪';
+
+  @override
+  String get lcPayday => '工资支付日';
+
+  @override
+  String get lcPayMethod => '支付方式';
+
+  @override
+  String get lcAllowance => '津贴';
+
+  @override
+  String get lcWeeklyHoliday => '周休津贴：每周法定工作日全勤者支付周休津贴。';
+
+  @override
+  String get lcWeeklyHolidayNone => '周休津贴：不适用（日工·短时工等）。';
+
+  @override
+  String get lcOvertime => '延长·夜间·休息日劳动时，依《劳动基准法》按通常工资的50%加算支付。';
+
+  @override
+  String get lcOvertimeNone => '延长·夜间·休息日加算津贴：另行不作约定。';
+
+  @override
+  String get lcInsurance => '社会保险适用';
+
+  @override
+  String get lcInsEmployment => '雇佣保险';
+
+  @override
+  String get lcInsHealth => '健康保险';
+
+  @override
+  String get lcInsPension => '国民年金';
+
+  @override
+  String get lcInsAccident => '工伤保险';
+
+  @override
+  String get lcApplied => '适用';
+
+  @override
+  String get lcNotApplied => '不适用';
+
+  @override
+  String get lcSpecial => '特别约定';
+
+  @override
+  String get lcMasterNote => '本合同的正本为韩文版。译文仅供理解参考；如有解释差异，以韩文版为准。';
+
+  @override
+  String get lcEmployerSigned => '雇主已签名';
+
+  @override
+  String get lcMenuDesc => '与劳动者电子签署合同';
+
+  @override
+  String get lcListEmptyTitle => '还没有合同';
+
+  @override
+  String get lcListEmptySub => '为您的劳动者创建一份劳动合同';
+
+  @override
+  String get lcNewContract => '新建合同';
+
+  @override
+  String get lcStatusDraft => '草稿';
+
+  @override
+  String get lcStatusSent => '已发送';
+
+  @override
+  String get lcStatusSigned => '已签署';
+
+  @override
+  String get lcWorkerSection => '劳动者';
+
+  @override
+  String get lcWorkerByPhone => '按电话查找';
+
+  @override
+  String get lcWorkerManual => '手动输入';
+
+  @override
+  String get lcWorkerNameHint => '劳动者姓名';
+
+  @override
+  String get lcWorkerPhoneHint => '劳动者电话（可选）';
+
+  @override
+  String get lcSearchPhoneHint => '劳动者电话';
+
+  @override
+  String get lcSearchHint => '只能找到同意电话搜索的注册用户';
+
+  @override
+  String get lcSearchNoResult => '没有结果';
+
+  @override
+  String get lcWorkerLinkedBadge => '已连接';
+
+  @override
+  String get lcStartDate => '开始日期';
+
+  @override
+  String get lcEndDate => '结束日期（可选）';
+
+  @override
+  String get lcEndDateNotSet => '未设定';
+
+  @override
+  String get lcWorkplaceHint => '例）江南A工地';
+
+  @override
+  String get lcJobHint => '例）钢筋组装';
+
+  @override
+  String get lcBreakHint => '例）12:00~13:00';
+
+  @override
+  String get lcWageAmountHint => '金额';
+
+  @override
+  String get lcPaydayHint => '例）每月25日';
+
+  @override
+  String get lcPayMethodHint => '例）银行转账';
+
+  @override
+  String get lcWeeklyHolidaySwitch => '支付周休津贴';
+
+  @override
+  String get lcOvertimeSwitch => '延长·夜间·休息日加算津贴';
+
+  @override
+  String get lcSpecialHint => '特别约定（可选）';
+
+  @override
+  String get lcSaveCommon => '保存常用值';
+
+  @override
+  String get lcSaveCommonSub => '下次自动填充';
+
+  @override
+  String get lcSubmit => '创建合同';
+
+  @override
+  String get lcCreated => '合同已创建';
+
+  @override
+  String get lcDetailTitle => '合同';
+
+  @override
+  String get lcSignEmployerTitle => '我的签名（雇主）';
+
+  @override
+  String get lcSignEmployerDesc => '签名后即可发送给劳动者';
+
+  @override
+  String get lcSignerNameLabel => '签名人姓名';
+
+  @override
+  String get lcSignRedraw => '重新绘制';
+
+  @override
+  String get lcSignSubmit => '签名';
+
+  @override
+  String get lcSigned => '已签名';
+
+  @override
+  String get lcSignErrPad => '请先签名';
+
+  @override
+  String get lcSignErrName => '请输入签名人姓名';
+
+  @override
+  String get lcSend => '发送给劳动者';
+
+  @override
+  String get lcSentLinked => '已发送给劳动者';
+
+  @override
+  String get lcSentShare => '分享链接以送达';
+
+  @override
+  String get lcShareBody => '请在下方链接查看并签署合同';
+
+  @override
+  String get lcViewPdf => '查看PDF';
+
+  @override
+  String get lcDeleteConfirm => '删除此合同？';
+
+  @override
+  String get lcDeleted => '已删除';
+
+  @override
+  String get lcWaitingWorker => '等待劳动者签名';
+
+  @override
+  String get lcMyContractsTitle => '我的合同';
+
+  @override
+  String get lcMyContractsSub => '查看并签署收到的合同';
+
+  @override
+  String get lcMyEmptyTitle => '没有收到合同';
+
+  @override
+  String get lcMyEmptySub => '雇主发送的合同会显示在此';
+
+  @override
+  String get lcWorkerSignTitle => '我的签名（劳动者）';
+
+  @override
+  String get lcWorkerSignDesc => '请查看并签名';
+
+  @override
+  String get lcAlreadySigned => '已签署';
+
+  @override
+  String lcCreateFailed(String msg) {
+    return '无法保存合同：$msg';
+  }
+
+  @override
+  String lcSignFailed(String msg) {
+    return '无法签名：$msg';
+  }
+
+  @override
+  String lcSendFailed(String msg) {
+    return '无法发送：$msg';
+  }
+
+  @override
+  String lcPdfFailed(String msg) {
+    return '无法打开PDF：$msg';
+  }
 }

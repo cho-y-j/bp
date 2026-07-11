@@ -43,6 +43,17 @@
 - **팀원 장부 파생**: 팀 확인서가 **SIGNED** 되는 시점에, 가입+연결된 팀원(profileId 有, 반장 자신 제외)에게 각자 몫 `ledger_entry` 자동 생성(`derived=true`, `sourceConfirmationId`=원 확인서, `counterpartyName`=반장 이름) + 알림. 멱등(같은 원확인서·팀원 중복 방지). 미가입(수기) 팀원은 파생 없음.
 - **공개 열람**(`GET /public/confirmations/:token`): 응답에 `teamEntries`·`isTeam` 포함(웹 PaperConfirmation P2 통합용). **PDF**: 팀 명단 표(이름/공수/단가/금액 + 합계) 렌더.
 
+## 표준근로계약서 /biz/contracts · /contracts · /public/contracts **(P2b)**
+고용노동부 일용직 표준근로계약서 필드 기반. 사업장(발행) ↔ 작업자(서명) 양자. 상태 DRAFT|SENT|SIGNED.
+- **사업장 모드**(발행 사업장 소유자만):
+  - `POST /biz/contracts` — 작성(DRAFT). body: `{ businessId, workerProfileId? | (workerName + workerPhone?), title?, startDate(YYYY-MM-DD), endDate?, workplace, jobDescription, workStartTime(HH:mm), workEndTime, breakTime?, wageType(DAILY|HOURLY), wageAmount, payday, payMethod, weeklyHolidayAllowance?(기본 false), overtimeAllowance?(기본 true), socialInsurance?{employment,health,pension,industrialAccident}, specialTerms? }`. 가입 연결은 전화검색 동의자 또는 사업장과 ACCEPTED 연결 작업자만(아니면 403 WORKER_LINK_NOT_ALLOWED). 남의 사업장 → 404 BUSINESS_NOT_FOUND.
+  - `GET /biz/contracts` — 내 모든 사업장 계약서 목록. `GET /biz/contracts/:id` — 상세. `GET /biz/contracts/:id/pdf` — 양측 서명 PDF.
+  - `PATCH /biz/contracts/:id` — DRAFT + 사업장 미서명일 때만 수정(아니면 409 NOT_EDITABLE). `DELETE` — DRAFT 만(409 NOT_DELETABLE).
+  - `POST /biz/contracts/:id/sign-employer` — 사업장(대표) 서명 `{ signerName, signImageBase64 }`. DRAFT 에서만, 상태는 DRAFT 유지(employerSigned=true). **전송 전 필수 선행**.
+  - `POST /biz/contracts/:id/send` — 사업장 서명 완료 후에만(아니면 409 EMPLOYER_SIGNATURE_REQUIRED) → SENT. 연결 작업자면 알림, 수기면 링크 발급. 반환 `{ shareToken, url(=/lc/{token}), sent, linked, notified, alimtalkSent }`.
+- **작업자 측**(가입 연결 작업자만): `GET /contracts`(내가 받은/서명한 계약서 = "내 계약서", SENT·SIGNED), `GET /contracts/:id`, `GET /contracts/:id/pdf`, `POST /contracts/:id/sign`(앱 내 서명, SENT 만 → SIGNED, 재서명 409 ALREADY_SIGNED). 가입 작업자면 서명 여부와 무관하게 SENT 시점부터 "내 계약서"에 자동 연결(workerProfileId).
+- **공개(외부) 열람·서명**(`@Public`): `GET /public/contracts/:token`(열람+viewLog, 조항 데이터 전체·정본 안내용 필드), `GET /public/contracts/:token/pdf`, `POST /public/contracts/:token/sign`(외부 작업자 서명 `{ signerName, signImageBase64 }`, SENT 만 → SIGNED, 원자적 전이·재서명 409). 서명 시 양측(사업장 소유자 + 가입 작업자) 알림. **PDF·웹 열람 정본 안내**: "본 계약서의 정본은 한국어본입니다" 문구 포함, 열람 페이지 `/lc/{token}` 6개 언어(조항 라벨 번역, 계약 값 원문).
+
 ## 장부 /ledger
 - `GET /ledger/summary?month=` — 월 합계(미수/입금/일한 날 + **P1 `totalGongsu`** 공수 합계)
 - `GET /ledger/tax-invoice-data?month=&businessId?=` **(P1)** — 홈택스 세금계산서 작성 데이터. SIGNED·미발행 확인서만 상대별 집계: 공급자(내 프로필 bizNumber 등), 공급받는자(사업장 상호·사업자번호), 작성일자, 공급가액 합계, 세액(10%), 품목(일자·내용·금액). `{ supplier, supplierReady, groups[{ buyerName, buyerBizNumber, supplyTotal, taxTotal, grandTotal, items[], ledgerIds[] }], text }` — JSON + **복사용 텍스트**.

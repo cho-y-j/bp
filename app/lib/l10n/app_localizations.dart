@@ -2865,6 +2865,558 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'반장이 작성한 팀 작업이에요 (입금만 기록할 수 있어요)'**
   String get ledgerDerivedReadonly;
+
+  /// No description provided for @lcKicker.
+  ///
+  /// In ko, this message translates to:
+  /// **'표준근로계약서'**
+  String get lcKicker;
+
+  /// No description provided for @lcStamp.
+  ///
+  /// In ko, this message translates to:
+  /// **'표 준 근 로 계 약 서'**
+  String get lcStamp;
+
+  /// No description provided for @lcParties.
+  ///
+  /// In ko, this message translates to:
+  /// **'계약 당사자'**
+  String get lcParties;
+
+  /// No description provided for @lcEmployer.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업주(갑)'**
+  String get lcEmployer;
+
+  /// No description provided for @lcWorkerParty.
+  ///
+  /// In ko, this message translates to:
+  /// **'근로자(을)'**
+  String get lcWorkerParty;
+
+  /// No description provided for @lcBizNumber.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자번호'**
+  String get lcBizNumber;
+
+  /// No description provided for @lcPeriod.
+  ///
+  /// In ko, this message translates to:
+  /// **'근로계약기간'**
+  String get lcPeriod;
+
+  /// No description provided for @lcPeriodOpen.
+  ///
+  /// In ko, this message translates to:
+  /// **'기간의 정함 없음 · 일 단위'**
+  String get lcPeriodOpen;
+
+  /// No description provided for @lcWorkplace.
+  ///
+  /// In ko, this message translates to:
+  /// **'근무장소'**
+  String get lcWorkplace;
+
+  /// No description provided for @lcJob.
+  ///
+  /// In ko, this message translates to:
+  /// **'업무내용'**
+  String get lcJob;
+
+  /// No description provided for @lcWorkTime.
+  ///
+  /// In ko, this message translates to:
+  /// **'근로시간'**
+  String get lcWorkTime;
+
+  /// No description provided for @lcBreak.
+  ///
+  /// In ko, this message translates to:
+  /// **'휴게'**
+  String get lcBreak;
+
+  /// No description provided for @lcWage.
+  ///
+  /// In ko, this message translates to:
+  /// **'임금'**
+  String get lcWage;
+
+  /// No description provided for @lcWageDaily.
+  ///
+  /// In ko, this message translates to:
+  /// **'일급'**
+  String get lcWageDaily;
+
+  /// No description provided for @lcWageHourly.
+  ///
+  /// In ko, this message translates to:
+  /// **'시급'**
+  String get lcWageHourly;
+
+  /// No description provided for @lcPayday.
+  ///
+  /// In ko, this message translates to:
+  /// **'임금 지급일'**
+  String get lcPayday;
+
+  /// No description provided for @lcPayMethod.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 방법'**
+  String get lcPayMethod;
+
+  /// No description provided for @lcAllowance.
+  ///
+  /// In ko, this message translates to:
+  /// **'수당'**
+  String get lcAllowance;
+
+  /// No description provided for @lcWeeklyHoliday.
+  ///
+  /// In ko, this message translates to:
+  /// **'주휴수당: 1주 소정근로일을 개근하면 주휴수당을 지급합니다.'**
+  String get lcWeeklyHoliday;
+
+  /// No description provided for @lcWeeklyHolidayNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'주휴수당: 해당 없음(일용·단시간 등).'**
+  String get lcWeeklyHolidayNone;
+
+  /// No description provided for @lcOvertime.
+  ///
+  /// In ko, this message translates to:
+  /// **'연장·야간·휴일근로 시 근로기준법에 따라 통상임금의 50%를 가산 지급합니다.'**
+  String get lcOvertime;
+
+  /// No description provided for @lcOvertimeNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'연장·야간·휴일 가산수당: 별도로 정하지 않음.'**
+  String get lcOvertimeNone;
+
+  /// No description provided for @lcInsurance.
+  ///
+  /// In ko, this message translates to:
+  /// **'사회보험 적용'**
+  String get lcInsurance;
+
+  /// No description provided for @lcInsEmployment.
+  ///
+  /// In ko, this message translates to:
+  /// **'고용보험'**
+  String get lcInsEmployment;
+
+  /// No description provided for @lcInsHealth.
+  ///
+  /// In ko, this message translates to:
+  /// **'건강보험'**
+  String get lcInsHealth;
+
+  /// No description provided for @lcInsPension.
+  ///
+  /// In ko, this message translates to:
+  /// **'국민연금'**
+  String get lcInsPension;
+
+  /// No description provided for @lcInsAccident.
+  ///
+  /// In ko, this message translates to:
+  /// **'산재보험'**
+  String get lcInsAccident;
+
+  /// No description provided for @lcApplied.
+  ///
+  /// In ko, this message translates to:
+  /// **'적용'**
+  String get lcApplied;
+
+  /// No description provided for @lcNotApplied.
+  ///
+  /// In ko, this message translates to:
+  /// **'미적용'**
+  String get lcNotApplied;
+
+  /// No description provided for @lcSpecial.
+  ///
+  /// In ko, this message translates to:
+  /// **'특약사항'**
+  String get lcSpecial;
+
+  /// No description provided for @lcMasterNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'본 계약서의 정본은 한국어본입니다. 번역본은 이해를 돕기 위한 참고용이며, 해석상 차이가 있을 경우 한국어본이 우선합니다.'**
+  String get lcMasterNote;
+
+  /// No description provided for @lcEmployerSigned.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업주 서명 완료'**
+  String get lcEmployerSigned;
+
+  /// No description provided for @lcMenuDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업자와 전자서명으로 계약'**
+  String get lcMenuDesc;
+
+  /// No description provided for @lcListEmptyTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 계약서가 없어요'**
+  String get lcListEmptyTitle;
+
+  /// No description provided for @lcListEmptySub.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업자와 맺을 근로계약서를 작성해 보세요'**
+  String get lcListEmptySub;
+
+  /// No description provided for @lcNewContract.
+  ///
+  /// In ko, this message translates to:
+  /// **'계약서 작성'**
+  String get lcNewContract;
+
+  /// No description provided for @lcStatusDraft.
+  ///
+  /// In ko, this message translates to:
+  /// **'작성됨'**
+  String get lcStatusDraft;
+
+  /// No description provided for @lcStatusSent.
+  ///
+  /// In ko, this message translates to:
+  /// **'전송됨'**
+  String get lcStatusSent;
+
+  /// No description provided for @lcStatusSigned.
+  ///
+  /// In ko, this message translates to:
+  /// **'서명됨'**
+  String get lcStatusSigned;
+
+  /// No description provided for @lcWorkerSection.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업자'**
+  String get lcWorkerSection;
+
+  /// No description provided for @lcWorkerByPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화로 찾기'**
+  String get lcWorkerByPhone;
+
+  /// No description provided for @lcWorkerManual.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 입력'**
+  String get lcWorkerManual;
+
+  /// No description provided for @lcWorkerNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업자 이름'**
+  String get lcWorkerNameHint;
+
+  /// No description provided for @lcWorkerPhoneHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업자 전화번호 (선택)'**
+  String get lcWorkerPhoneHint;
+
+  /// No description provided for @lcSearchPhoneHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업자 전화번호'**
+  String get lcSearchPhoneHint;
+
+  /// No description provided for @lcSearchHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화번호 검색에 동의한 가입자만 찾을 수 있어요'**
+  String get lcSearchHint;
+
+  /// No description provided for @lcSearchNoResult.
+  ///
+  /// In ko, this message translates to:
+  /// **'검색 결과가 없어요'**
+  String get lcSearchNoResult;
+
+  /// No description provided for @lcWorkerLinkedBadge.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결'**
+  String get lcWorkerLinkedBadge;
+
+  /// No description provided for @lcStartDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작일'**
+  String get lcStartDate;
+
+  /// No description provided for @lcEndDate.
+  ///
+  /// In ko, this message translates to:
+  /// **'종료일 (선택)'**
+  String get lcEndDate;
+
+  /// No description provided for @lcEndDateNotSet.
+  ///
+  /// In ko, this message translates to:
+  /// **'정함 없음'**
+  String get lcEndDateNotSet;
+
+  /// No description provided for @lcWorkplaceHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예) 강남 A현장'**
+  String get lcWorkplaceHint;
+
+  /// No description provided for @lcJobHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예) 철근 조립'**
+  String get lcJobHint;
+
+  /// No description provided for @lcBreakHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예) 12:00~13:00'**
+  String get lcBreakHint;
+
+  /// No description provided for @lcWageAmountHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'금액'**
+  String get lcWageAmountHint;
+
+  /// No description provided for @lcPaydayHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예) 매월 25일'**
+  String get lcPaydayHint;
+
+  /// No description provided for @lcPayMethodHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예) 계좌이체'**
+  String get lcPayMethodHint;
+
+  /// No description provided for @lcWeeklyHolidaySwitch.
+  ///
+  /// In ko, this message translates to:
+  /// **'주휴수당 지급'**
+  String get lcWeeklyHolidaySwitch;
+
+  /// No description provided for @lcOvertimeSwitch.
+  ///
+  /// In ko, this message translates to:
+  /// **'연장·야간·휴일 가산수당'**
+  String get lcOvertimeSwitch;
+
+  /// No description provided for @lcSpecialHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'특약사항 (선택)'**
+  String get lcSpecialHint;
+
+  /// No description provided for @lcSaveCommon.
+  ///
+  /// In ko, this message translates to:
+  /// **'자주 쓰는 값 저장'**
+  String get lcSaveCommon;
+
+  /// No description provided for @lcSaveCommonSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음 작성 시 자동으로 채워요'**
+  String get lcSaveCommonSub;
+
+  /// No description provided for @lcSubmit.
+  ///
+  /// In ko, this message translates to:
+  /// **'계약서 만들기'**
+  String get lcSubmit;
+
+  /// No description provided for @lcCreated.
+  ///
+  /// In ko, this message translates to:
+  /// **'계약서를 만들었어요'**
+  String get lcCreated;
+
+  /// No description provided for @lcDetailTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'계약서'**
+  String get lcDetailTitle;
+
+  /// No description provided for @lcSignEmployerTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 서명 (사업주)'**
+  String get lcSignEmployerTitle;
+
+  /// No description provided for @lcSignEmployerDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'서명하면 작업자에게 보낼 수 있어요'**
+  String get lcSignEmployerDesc;
+
+  /// No description provided for @lcSignerNameLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'서명자 이름'**
+  String get lcSignerNameLabel;
+
+  /// No description provided for @lcSignRedraw.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 그리기'**
+  String get lcSignRedraw;
+
+  /// No description provided for @lcSignSubmit.
+  ///
+  /// In ko, this message translates to:
+  /// **'서명하기'**
+  String get lcSignSubmit;
+
+  /// No description provided for @lcSigned.
+  ///
+  /// In ko, this message translates to:
+  /// **'서명을 완료했어요'**
+  String get lcSigned;
+
+  /// No description provided for @lcSignErrPad.
+  ///
+  /// In ko, this message translates to:
+  /// **'서명을 입력해 주세요'**
+  String get lcSignErrPad;
+
+  /// No description provided for @lcSignErrName.
+  ///
+  /// In ko, this message translates to:
+  /// **'서명자 이름을 입력해 주세요'**
+  String get lcSignErrName;
+
+  /// No description provided for @lcSend.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업자에게 전송'**
+  String get lcSend;
+
+  /// No description provided for @lcSentLinked.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업자에게 전송했어요'**
+  String get lcSentLinked;
+
+  /// No description provided for @lcSentShare.
+  ///
+  /// In ko, this message translates to:
+  /// **'링크를 공유해 전달하세요'**
+  String get lcSentShare;
+
+  /// No description provided for @lcShareBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'아래 링크에서 계약서를 확인하고 서명해 주세요'**
+  String get lcShareBody;
+
+  /// No description provided for @lcViewPdf.
+  ///
+  /// In ko, this message translates to:
+  /// **'PDF 열람'**
+  String get lcViewPdf;
+
+  /// No description provided for @lcDeleteConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 계약서를 삭제할까요?'**
+  String get lcDeleteConfirm;
+
+  /// No description provided for @lcDeleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'삭제했어요'**
+  String get lcDeleted;
+
+  /// No description provided for @lcWaitingWorker.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업자 서명 대기 중'**
+  String get lcWaitingWorker;
+
+  /// No description provided for @lcMyContractsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 계약서'**
+  String get lcMyContractsTitle;
+
+  /// No description provided for @lcMyContractsSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'받은 근로계약서 확인·서명'**
+  String get lcMyContractsSub;
+
+  /// No description provided for @lcMyEmptyTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'받은 계약서가 없어요'**
+  String get lcMyEmptyTitle;
+
+  /// No description provided for @lcMyEmptySub.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업주가 보낸 계약서가 여기에 표시돼요'**
+  String get lcMyEmptySub;
+
+  /// No description provided for @lcWorkerSignTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 서명 (근로자)'**
+  String get lcWorkerSignTitle;
+
+  /// No description provided for @lcWorkerSignDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'내용을 확인하고 서명해 주세요'**
+  String get lcWorkerSignDesc;
+
+  /// No description provided for @lcAlreadySigned.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 서명한 계약서예요'**
+  String get lcAlreadySigned;
+
+  /// No description provided for @lcCreateFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'계약서를 저장하지 못했어요: {msg}'**
+  String lcCreateFailed(String msg);
+
+  /// No description provided for @lcSignFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'서명하지 못했어요: {msg}'**
+  String lcSignFailed(String msg);
+
+  /// No description provided for @lcSendFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'전송하지 못했어요: {msg}'**
+  String lcSendFailed(String msg);
+
+  /// No description provided for @lcPdfFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'PDF를 열지 못했어요: {msg}'**
+  String lcPdfFailed(String msg);
 }
 
 class _AppLocalizationsDelegate

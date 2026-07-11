@@ -436,7 +436,9 @@
   "teamMemberCountLabel": "组员 {count} 名",
   "@teamMemberCountLabel": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "teamMemberLinked": "已关联",
@@ -466,8 +468,130 @@
   "ledgerTeamDerived": "{boss} 班长班组作业",
   "@ledgerTeamDerived": {
     "placeholders": {
-      "boss": { "type": "String" }
+      "boss": {
+        "type": "String"
+      }
     }
   },
-  "ledgerDerivedReadonly": "这是班长填写的班组作业（只能记录收款）"
+  "ledgerDerivedReadonly": "这是班长填写的班组作业（只能记录收款）",
+  "lcKicker": "标准劳动合同",
+  "lcStamp": "标 准 劳 动 合 同",
+  "lcParties": "合同当事人",
+  "lcEmployer": "雇主(甲方)",
+  "lcWorkerParty": "劳动者(乙方)",
+  "lcBizNumber": "营业执照号",
+  "lcPeriod": "劳动合同期限",
+  "lcPeriodOpen": "无固定期限 · 按日",
+  "lcWorkplace": "工作地点",
+  "lcJob": "工作内容",
+  "lcWorkTime": "工作时间",
+  "lcBreak": "休息",
+  "lcWage": "工资",
+  "lcWageDaily": "日薪",
+  "lcWageHourly": "时薪",
+  "lcPayday": "工资支付日",
+  "lcPayMethod": "支付方式",
+  "lcAllowance": "津贴",
+  "lcWeeklyHoliday": "周休津贴：每周法定工作日全勤者支付周休津贴。",
+  "lcWeeklyHolidayNone": "周休津贴：不适用（日工·短时工等）。",
+  "lcOvertime": "延长·夜间·休息日劳动时，依《劳动基准法》按通常工资的50%加算支付。",
+  "lcOvertimeNone": "延长·夜间·休息日加算津贴：另行不作约定。",
+  "lcInsurance": "社会保险适用",
+  "lcInsEmployment": "雇佣保险",
+  "lcInsHealth": "健康保险",
+  "lcInsPension": "国民年金",
+  "lcInsAccident": "工伤保险",
+  "lcApplied": "适用",
+  "lcNotApplied": "不适用",
+  "lcSpecial": "特别约定",
+  "lcMasterNote": "本合同的正本为韩文版。译文仅供理解参考；如有解释差异，以韩文版为准。",
+  "lcEmployerSigned": "雇主已签名",
+  "lcMenuDesc": "与劳动者电子签署合同",
+  "lcListEmptyTitle": "还没有合同",
+  "lcListEmptySub": "为您的劳动者创建一份劳动合同",
+  "lcNewContract": "新建合同",
+  "lcStatusDraft": "草稿",
+  "lcStatusSent": "已发送",
+  "lcStatusSigned": "已签署",
+  "lcWorkerSection": "劳动者",
+  "lcWorkerByPhone": "按电话查找",
+  "lcWorkerManual": "手动输入",
+  "lcWorkerNameHint": "劳动者姓名",
+  "lcWorkerPhoneHint": "劳动者电话（可选）",
+  "lcSearchPhoneHint": "劳动者电话",
+  "lcSearchHint": "只能找到同意电话搜索的注册用户",
+  "lcSearchNoResult": "没有结果",
+  "lcWorkerLinkedBadge": "已连接",
+  "lcStartDate": "开始日期",
+  "lcEndDate": "结束日期（可选）",
+  "lcEndDateNotSet": "未设定",
+  "lcWorkplaceHint": "例）江南A工地",
+  "lcJobHint": "例）钢筋组装",
+  "lcBreakHint": "例）12:00~13:00",
+  "lcWageAmountHint": "金额",
+  "lcPaydayHint": "例）每月25日",
+  "lcPayMethodHint": "例）银行转账",
+  "lcWeeklyHolidaySwitch": "支付周休津贴",
+  "lcOvertimeSwitch": "延长·夜间·休息日加算津贴",
+  "lcSpecialHint": "特别约定（可选）",
+  "lcSaveCommon": "保存常用值",
+  "lcSaveCommonSub": "下次自动填充",
+  "lcSubmit": "创建合同",
+  "lcCreated": "合同已创建",
+  "lcDetailTitle": "合同",
+  "lcSignEmployerTitle": "我的签名（雇主）",
+  "lcSignEmployerDesc": "签名后即可发送给劳动者",
+  "lcSignerNameLabel": "签名人姓名",
+  "lcSignRedraw": "重新绘制",
+  "lcSignSubmit": "签名",
+  "lcSigned": "已签名",
+  "lcSignErrPad": "请先签名",
+  "lcSignErrName": "请输入签名人姓名",
+  "lcSend": "发送给劳动者",
+  "lcSentLinked": "已发送给劳动者",
+  "lcSentShare": "分享链接以送达",
+  "lcShareBody": "请在下方链接查看并签署合同",
+  "lcViewPdf": "查看PDF",
+  "lcDeleteConfirm": "删除此合同？",
+  "lcDeleted": "已删除",
+  "lcWaitingWorker": "等待劳动者签名",
+  "lcMyContractsTitle": "我的合同",
+  "lcMyContractsSub": "查看并签署收到的合同",
+  "lcMyEmptyTitle": "没有收到合同",
+  "lcMyEmptySub": "雇主发送的合同会显示在此",
+  "lcWorkerSignTitle": "我的签名（劳动者）",
+  "lcWorkerSignDesc": "请查看并签名",
+  "lcAlreadySigned": "已签署",
+  "lcCreateFailed": "无法保存合同：{msg}",
+  "@lcCreateFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSignFailed": "无法签名：{msg}",
+  "@lcSignFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSendFailed": "无法发送：{msg}",
+  "@lcSendFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcPdfFailed": "无法打开PDF：{msg}",
+  "@lcPdfFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  }
 }

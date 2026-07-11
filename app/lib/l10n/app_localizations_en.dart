@@ -1584,4 +1584,295 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get ledgerDerivedReadonly =>
       'This is team work created by the team lead (you can only record payments)';
+
+  @override
+  String get lcKicker => 'Standard Labor Contract';
+
+  @override
+  String get lcStamp => 'STANDARD LABOR CONTRACT';
+
+  @override
+  String get lcParties => 'Contracting parties';
+
+  @override
+  String get lcEmployer => 'Employer (Party A)';
+
+  @override
+  String get lcWorkerParty => 'Employee (Party B)';
+
+  @override
+  String get lcBizNumber => 'Business reg. no.';
+
+  @override
+  String get lcPeriod => 'Contract period';
+
+  @override
+  String get lcPeriodOpen => 'No fixed term · daily basis';
+
+  @override
+  String get lcWorkplace => 'Workplace';
+
+  @override
+  String get lcJob => 'Job description';
+
+  @override
+  String get lcWorkTime => 'Working hours';
+
+  @override
+  String get lcBreak => 'Break';
+
+  @override
+  String get lcWage => 'Wage';
+
+  @override
+  String get lcWageDaily => 'Daily wage';
+
+  @override
+  String get lcWageHourly => 'Hourly wage';
+
+  @override
+  String get lcPayday => 'Payday';
+
+  @override
+  String get lcPayMethod => 'Payment method';
+
+  @override
+  String get lcAllowance => 'Allowances';
+
+  @override
+  String get lcWeeklyHoliday =>
+      'Weekly holiday pay: paid when the week’s scheduled workdays are fully attended.';
+
+  @override
+  String get lcWeeklyHolidayNone =>
+      'Weekly holiday pay: not applicable (daily/short-term).';
+
+  @override
+  String get lcOvertime =>
+      'Overtime, night, and holiday work are paid an extra 50% of ordinary wage per the Labor Standards Act.';
+
+  @override
+  String get lcOvertimeNone =>
+      'Overtime/night/holiday premiums: not separately agreed.';
+
+  @override
+  String get lcInsurance => 'Social insurance';
+
+  @override
+  String get lcInsEmployment => 'Employment insurance';
+
+  @override
+  String get lcInsHealth => 'Health insurance';
+
+  @override
+  String get lcInsPension => 'National pension';
+
+  @override
+  String get lcInsAccident => 'Industrial accident insurance';
+
+  @override
+  String get lcApplied => 'Applied';
+
+  @override
+  String get lcNotApplied => 'Not applied';
+
+  @override
+  String get lcSpecial => 'Special terms';
+
+  @override
+  String get lcMasterNote =>
+      'The Korean version is the authoritative original of this contract. Translations are for understanding only; the Korean version prevails in case of any discrepancy.';
+
+  @override
+  String get lcEmployerSigned => 'Employer signed';
+
+  @override
+  String get lcMenuDesc => 'Sign labor contracts with workers';
+
+  @override
+  String get lcListEmptyTitle => 'No contracts yet';
+
+  @override
+  String get lcListEmptySub => 'Create a labor contract with your worker';
+
+  @override
+  String get lcNewContract => 'New contract';
+
+  @override
+  String get lcStatusDraft => 'Draft';
+
+  @override
+  String get lcStatusSent => 'Sent';
+
+  @override
+  String get lcStatusSigned => 'Signed';
+
+  @override
+  String get lcWorkerSection => 'Worker';
+
+  @override
+  String get lcWorkerByPhone => 'Find by phone';
+
+  @override
+  String get lcWorkerManual => 'Enter manually';
+
+  @override
+  String get lcWorkerNameHint => 'Worker name';
+
+  @override
+  String get lcWorkerPhoneHint => 'Worker phone (optional)';
+
+  @override
+  String get lcSearchPhoneHint => 'Worker phone';
+
+  @override
+  String get lcSearchHint =>
+      'Only members who allowed phone search can be found';
+
+  @override
+  String get lcSearchNoResult => 'No results';
+
+  @override
+  String get lcWorkerLinkedBadge => 'Linked';
+
+  @override
+  String get lcStartDate => 'Start date';
+
+  @override
+  String get lcEndDate => 'End date (optional)';
+
+  @override
+  String get lcEndDateNotSet => 'Not set';
+
+  @override
+  String get lcWorkplaceHint => 'e.g. Site A, Gangnam';
+
+  @override
+  String get lcJobHint => 'e.g. Rebar work';
+
+  @override
+  String get lcBreakHint => 'e.g. 12:00-13:00';
+
+  @override
+  String get lcWageAmountHint => 'Amount';
+
+  @override
+  String get lcPaydayHint => 'e.g. 25th monthly';
+
+  @override
+  String get lcPayMethodHint => 'e.g. Bank transfer';
+
+  @override
+  String get lcWeeklyHolidaySwitch => 'Weekly holiday pay';
+
+  @override
+  String get lcOvertimeSwitch => 'Overtime/night/holiday premium';
+
+  @override
+  String get lcSpecialHint => 'Special terms (optional)';
+
+  @override
+  String get lcSaveCommon => 'Save common values';
+
+  @override
+  String get lcSaveCommonSub => 'Auto-fill next time';
+
+  @override
+  String get lcSubmit => 'Create contract';
+
+  @override
+  String get lcCreated => 'Contract created';
+
+  @override
+  String get lcDetailTitle => 'Contract';
+
+  @override
+  String get lcSignEmployerTitle => 'My signature (employer)';
+
+  @override
+  String get lcSignEmployerDesc => 'Sign to send it to the worker';
+
+  @override
+  String get lcSignerNameLabel => 'Signer name';
+
+  @override
+  String get lcSignRedraw => 'Redraw';
+
+  @override
+  String get lcSignSubmit => 'Sign';
+
+  @override
+  String get lcSigned => 'Signed';
+
+  @override
+  String get lcSignErrPad => 'Please sign first';
+
+  @override
+  String get lcSignErrName => 'Please enter signer name';
+
+  @override
+  String get lcSend => 'Send to worker';
+
+  @override
+  String get lcSentLinked => 'Sent to the worker';
+
+  @override
+  String get lcSentShare => 'Share the link to deliver it';
+
+  @override
+  String get lcShareBody =>
+      'Please review and sign the contract at the link below';
+
+  @override
+  String get lcViewPdf => 'View PDF';
+
+  @override
+  String get lcDeleteConfirm => 'Delete this contract?';
+
+  @override
+  String get lcDeleted => 'Deleted';
+
+  @override
+  String get lcWaitingWorker => 'Waiting for worker signature';
+
+  @override
+  String get lcMyContractsTitle => 'My contracts';
+
+  @override
+  String get lcMyContractsSub => 'Review and sign received contracts';
+
+  @override
+  String get lcMyEmptyTitle => 'No contracts received';
+
+  @override
+  String get lcMyEmptySub => 'Contracts sent by employers appear here';
+
+  @override
+  String get lcWorkerSignTitle => 'My signature (worker)';
+
+  @override
+  String get lcWorkerSignDesc => 'Please review and sign';
+
+  @override
+  String get lcAlreadySigned => 'Already signed';
+
+  @override
+  String lcCreateFailed(String msg) {
+    return 'Could not save contract: $msg';
+  }
+
+  @override
+  String lcSignFailed(String msg) {
+    return 'Could not sign: $msg';
+  }
+
+  @override
+  String lcSendFailed(String msg) {
+    return 'Could not send: $msg';
+  }
+
+  @override
+  String lcPdfFailed(String msg) {
+    return 'Could not open PDF: $msg';
+  }
 }

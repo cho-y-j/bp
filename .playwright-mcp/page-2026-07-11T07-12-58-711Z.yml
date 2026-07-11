@@ -1,0 +1,55 @@
+- main [ref=f3e2]:
+  - button "한국어" [ref=f3e5] [cursor=pointer]
+  - paragraph [ref=f3e13]: 작업온 · 작업확인서
+  - generic [ref=f3e15]:
+    - generic [ref=f3e16]: 작 업 확 인 서
+    - generic [ref=f3e19]:
+      - generic [ref=f3e20]:
+        - generic [ref=f3e21]: 작업일
+        - generic [ref=f3e22]: 2026년 7월 11일 (토)
+        - generic [ref=f3e23]: 시간
+        - generic [ref=f3e24]: 08:00 ~ 17:00
+        - generic [ref=f3e25]: 현장
+        - generic [ref=f3e26]: 김반장 현장
+        - generic [ref=f3e27]: 작업자
+        - generic [ref=f3e28]: 김반장
+        - generic [ref=f3e29]: 지시자
+        - generic [ref=f3e30]:
+          - text: 대명건설
+          - generic [ref=f3e31]: · 010-9999-0000
+        - generic [ref=f3e32]: 작업내용
+        - generic [ref=f3e33]: 골조 정리(팀 작업)
+      - generic [ref=f3e34]:
+        - generic [ref=f3e35]: 팀 명단
+        - generic [ref=f3e37]:
+          - generic [ref=f3e38]: 이름
+          - generic [ref=f3e39]: 공수
+          - generic [ref=f3e40]: 단가
+          - generic [ref=f3e41]: 금액
+        - generic [ref=f3e42]:
+          - generic [ref=f3e43]: 박철수
+          - generic [ref=f3e44]: 1.5공수
+          - generic [ref=f3e45]: 180,000원
+          - generic [ref=f3e46]: 270,000원
+        - generic [ref=f3e47]:
+          - generic [ref=f3e48]: 최영호
+          - generic [ref=f3e49]: 1공수
+          - generic [ref=f3e50]: 160,000원
+          - generic [ref=f3e51]: 160,000원
+        - generic [ref=f3e52]:
+          - generic [ref=f3e53]: 팀 작업 합계
+          - generic [ref=f3e54]: 430,000원
+  - generic [ref=f3e55]:
+    - generic [ref=f3e56]: 여기에 서명해 주세요
+    - generic [ref=f3e60]:
+      - generic [ref=f3e61]: 서명자 이름
+      - textbox "서명자 이름" [ref=f3e62]:
+        - /placeholder: 예) 이현수
+    - generic [ref=f3e63]: 서명
+    - generic [ref=f3e64]:
+      - generic "서명 입력 영역" [ref=f3e65]
+      - generic: 여기에 손가락 또는 마우스로 서명하세요
+    - button "다시 그리기" [disabled] [ref=f3e67]
+    - button "서명하고 확인 완료" [ref=f3e68] [cursor=pointer]
+    - paragraph [ref=f3e72]: 서명 즉시 작업자와 양측에 확인서가 확정됩니다
+    - paragraph [ref=f3e73]: 서명하면 위 작업 내용과 받을 금액에 동의하는 것이며, 법적 효력이 있는 확인 기록으로 남습니다.

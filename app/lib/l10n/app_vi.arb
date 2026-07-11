@@ -436,7 +436,9 @@
   "teamMemberCountLabel": "{count} thành viên",
   "@teamMemberCountLabel": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "teamMemberLinked": "Đã liên kết",
@@ -466,8 +468,130 @@
   "ledgerTeamDerived": "Công việc đội của {boss}",
   "@ledgerTeamDerived": {
     "placeholders": {
-      "boss": { "type": "String" }
+      "boss": {
+        "type": "String"
+      }
     }
   },
-  "ledgerDerivedReadonly": "Đây là công việc đội do đội trưởng lập (bạn chỉ có thể ghi nhận thanh toán)"
+  "ledgerDerivedReadonly": "Đây là công việc đội do đội trưởng lập (bạn chỉ có thể ghi nhận thanh toán)",
+  "lcKicker": "Hợp đồng lao động tiêu chuẩn",
+  "lcStamp": "HỢP ĐỒNG LAO ĐỘNG",
+  "lcParties": "Các bên hợp đồng",
+  "lcEmployer": "Người sử dụng lao động (bên A)",
+  "lcWorkerParty": "Người lao động (bên B)",
+  "lcBizNumber": "Mã số doanh nghiệp",
+  "lcPeriod": "Thời hạn hợp đồng",
+  "lcPeriodOpen": "Không xác định thời hạn · theo ngày",
+  "lcWorkplace": "Nơi làm việc",
+  "lcJob": "Nội dung công việc",
+  "lcWorkTime": "Thời gian làm việc",
+  "lcBreak": "Nghỉ giải lao",
+  "lcWage": "Tiền lương",
+  "lcWageDaily": "Lương ngày",
+  "lcWageHourly": "Lương giờ",
+  "lcPayday": "Ngày trả lương",
+  "lcPayMethod": "Phương thức trả",
+  "lcAllowance": "Phụ cấp",
+  "lcWeeklyHoliday": "Phụ cấp nghỉ tuần: đi làm đủ ngày quy định trong tuần sẽ được trả phụ cấp nghỉ tuần.",
+  "lcWeeklyHolidayNone": "Phụ cấp nghỉ tuần: không áp dụng (lao động ngày/bán thời gian).",
+  "lcOvertime": "Làm thêm giờ, ban đêm, ngày nghỉ được trả thêm 50% tiền lương thông thường theo luật lao động.",
+  "lcOvertimeNone": "Phụ cấp làm thêm/ban đêm/ngày nghỉ: không quy định riêng.",
+  "lcInsurance": "Áp dụng bảo hiểm xã hội",
+  "lcInsEmployment": "Bảo hiểm việc làm",
+  "lcInsHealth": "Bảo hiểm y tế",
+  "lcInsPension": "Bảo hiểm hưu trí quốc gia",
+  "lcInsAccident": "Bảo hiểm tai nạn lao động",
+  "lcApplied": "Áp dụng",
+  "lcNotApplied": "Không áp dụng",
+  "lcSpecial": "Điều khoản đặc biệt",
+  "lcMasterNote": "Bản chính của hợp đồng này là bản tiếng Hàn. Bản dịch chỉ nhằm hỗ trợ hiểu; nếu có khác biệt về giải thích, bản tiếng Hàn được ưu tiên.",
+  "lcEmployerSigned": "Người sử dụng lao động đã ký",
+  "lcMenuDesc": "Ký hợp đồng điện tử với người lao động",
+  "lcListEmptyTitle": "Chưa có hợp đồng",
+  "lcListEmptySub": "Tạo hợp đồng lao động với người lao động của bạn",
+  "lcNewContract": "Tạo hợp đồng",
+  "lcStatusDraft": "Bản nháp",
+  "lcStatusSent": "Đã gửi",
+  "lcStatusSigned": "Đã ký",
+  "lcWorkerSection": "Người lao động",
+  "lcWorkerByPhone": "Tìm theo SĐT",
+  "lcWorkerManual": "Nhập thủ công",
+  "lcWorkerNameHint": "Tên người lao động",
+  "lcWorkerPhoneHint": "SĐT người lao động (tùy chọn)",
+  "lcSearchPhoneHint": "SĐT người lao động",
+  "lcSearchHint": "Chỉ tìm được người dùng đã đồng ý tìm kiếm qua SĐT",
+  "lcSearchNoResult": "Không có kết quả",
+  "lcWorkerLinkedBadge": "Đã liên kết",
+  "lcStartDate": "Ngày bắt đầu",
+  "lcEndDate": "Ngày kết thúc (tùy chọn)",
+  "lcEndDateNotSet": "Không đặt",
+  "lcWorkplaceHint": "VD) Công trường A, Gangnam",
+  "lcJobHint": "VD) Lắp cốt thép",
+  "lcBreakHint": "VD) 12:00-13:00",
+  "lcWageAmountHint": "Số tiền",
+  "lcPaydayHint": "VD) Ngày 25 hằng tháng",
+  "lcPayMethodHint": "VD) Chuyển khoản",
+  "lcWeeklyHolidaySwitch": "Trả phụ cấp nghỉ tuần",
+  "lcOvertimeSwitch": "Phụ cấp làm thêm/đêm/ngày nghỉ",
+  "lcSpecialHint": "Điều khoản đặc biệt (tùy chọn)",
+  "lcSaveCommon": "Lưu giá trị thường dùng",
+  "lcSaveCommonSub": "Tự động điền lần sau",
+  "lcSubmit": "Tạo hợp đồng",
+  "lcCreated": "Đã tạo hợp đồng",
+  "lcDetailTitle": "Hợp đồng",
+  "lcSignEmployerTitle": "Chữ ký của tôi (NSDLĐ)",
+  "lcSignEmployerDesc": "Ký để gửi cho người lao động",
+  "lcSignerNameLabel": "Tên người ký",
+  "lcSignRedraw": "Vẽ lại",
+  "lcSignSubmit": "Ký",
+  "lcSigned": "Đã ký",
+  "lcSignErrPad": "Vui lòng ký trước",
+  "lcSignErrName": "Vui lòng nhập tên người ký",
+  "lcSend": "Gửi cho người lao động",
+  "lcSentLinked": "Đã gửi cho người lao động",
+  "lcSentShare": "Chia sẻ liên kết để gửi",
+  "lcShareBody": "Vui lòng xem và ký hợp đồng tại liên kết bên dưới",
+  "lcViewPdf": "Xem PDF",
+  "lcDeleteConfirm": "Xóa hợp đồng này?",
+  "lcDeleted": "Đã xóa",
+  "lcWaitingWorker": "Đang chờ người lao động ký",
+  "lcMyContractsTitle": "Hợp đồng của tôi",
+  "lcMyContractsSub": "Xem và ký hợp đồng đã nhận",
+  "lcMyEmptyTitle": "Chưa nhận hợp đồng",
+  "lcMyEmptySub": "Hợp đồng do NSDLĐ gửi sẽ hiện ở đây",
+  "lcWorkerSignTitle": "Chữ ký của tôi (NLĐ)",
+  "lcWorkerSignDesc": "Vui lòng xem và ký",
+  "lcAlreadySigned": "Đã ký rồi",
+  "lcCreateFailed": "Không thể lưu hợp đồng: {msg}",
+  "@lcCreateFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSignFailed": "Không thể ký: {msg}",
+  "@lcSignFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcSendFailed": "Không thể gửi: {msg}",
+  "@lcSendFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "lcPdfFailed": "Không thể mở PDF: {msg}",
+  "@lcPdfFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  }
 }

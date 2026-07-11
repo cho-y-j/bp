@@ -109,6 +109,19 @@ enum DevicePlatform {
   WEB
 }
 
+// 표준근로계약서 상태 (P2b) — 확인서와 동일 3단계 패턴
+enum LaborContractStatus {
+  DRAFT // 작성됨 (사업장 편집 가능)
+  SENT // 전송됨 (사업장 서명 완료 → 작업자 서명 대기)
+  SIGNED // 서명됨 (양측 서명 완료)
+}
+
+// 임금 유형 (일용직 표준근로계약서) — 일급/시급
+enum WageType {
+  DAILY // 일급(일당)
+  HOURLY // 시급
+}
+
 // ============================================================================
 //  profiles — 사용자 (1 사용자 = 1 프로필)
 // ============================================================================
@@ -140,6 +153,7 @@ model Profile {
   deviceTokens    DeviceToken[]
   teams           Team[]          @relation("TeamOwner") // 반장(팀장)으로서 소유한 팀
   teamMemberships TeamMember[]    @relation("TeamMemberProfile") // 가입자로서 소속된 팀원 항목
+  workerContracts LaborContract[] @relation("LaborContractWorker") // 가입 작업자로서 받은 근로계약서 (P2b)
 
   @@index([phone])
   @@map("profiles")
@@ -162,11 +176,12 @@ model Business {
 
   // 관계
   owner         Profile        @relation("BusinessOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  connections   Connection[]
-  jobs          Job[]
-  confirmations Confirmation[]
-  ledgerEntries LedgerEntry[]
-  safetyLogs    SafetyLog[]
+  connections    Connection[]
+  jobs           Job[]
+  confirmations  Confirmation[]
+  ledgerEntries  LedgerEntry[]
+  safetyLogs     SafetyLog[]
+  laborContracts LaborContract[] // 이 사업장이 발행한 표준근로계약서 (P2b)
 
   @@index([ownerId])
   @@map("businesses")
@@ -561,4 +576,75 @@ model TeamMember {
   @@index([teamId])
   @@index([profileId])
   @@map("team_members")
+}
+
+// ============================================================================
+//  labor_contracts — 표준근로계약서 (P2b)
+//   - 고용노동부 일용직 표준근로계약서 필드 기반. 사업장(발행) ↔ 작업자(서명) 양자.
+//   - 작업자: 가입자(workerProfileId 연결) 또는 수기(workerName + workerPhone).
+//   - 서명: 사업장 대표 서명(먼저) → 전송(SENT) → 작업자 서명(공개 링크 or 앱) → SIGNED.
+//   - 서명 기록(이미지 경로/서명자명/시각)은 서버 시각 기준. 양측 PDF 보관.
+//   - 정본 안내: 웹/PDF 에 "본 계약서의 정본은 한국어본입니다" 문구 렌더(다국어 열람).
+// ============================================================================
+model LaborContract {
+  id         String   @id @default(uuid())
+  businessId String // 발행 사업장 (사업장 모드 소유자가 작성)
+  title      String   @default("표준근로계약서") // 문서 제목
+
+  // 작업자(근로자) — 가입 연결 또는 수기
+  workerProfileId String? // 가입 작업자(연결)일 때만 — 서류 지갑 "내 계약서" 자동 연결
+  workerName      String // 작업자 성명 (가입자면 스냅샷, 수기면 입력값)
+  workerPhone     String? // 작업자 연락처 (수기 발송/알림톡용)
+
+  // 계약 기간 — 종료일 없으면 일 단위/기간의 정함 없음
+  startDate DateTime // 계약 시작일 (근로개시일)
+  endDate   DateTime? // 계약 종료일 (일용/단기면 시작일과 동일하거나 null)
+
+  // 근무 조건
+  workplace      String // 근무 장소
+  jobDescription String // 업무 내용
+  workStartTime  String // 시업 시각 HH:mm
+  workEndTime    String // 종업 시각 HH:mm
+  breakTime      String? // 휴게 시간 (예: "12:00~13:00 60분")
+
+  // 임금
+  wageType             WageType // 일급(DAILY) / 시급(HOURLY)
+  wageAmount           Decimal   @db.Decimal(12, 2) // 금액(일당/시급)
+  payday               String // 임금 지급일 (예: "매월 말일", "작업 종료 시")
+  payMethod            String // 지급 방법 (예: "근로자 명의 계좌 입금")
+  weeklyHolidayAllowance Boolean @default(false) // 주휴수당 지급 문구 포함
+  overtimeAllowance      Boolean @default(true) // 연장·야간·휴일근로 가산수당 문구 포함
+
+  // 4대보험 적용 체크 { employment, health, pension, industrialAccident }
+  socialInsurance Json?
+
+  specialTerms String? // 특약사항
+
+  // 사업장(사용자) 서명 — 전송 전 필수 선행
+  employerSignImagePath String? // 서명 이미지 경로
+  employerSignerName    String? // 사업장 대표자명(서명자)
+  employerSignedAt      DateTime? // 사업장 서명 시각(서버 기준)
+
+  // 작업자(근로자) 서명 — 공개 링크 or 앱 내
+  workerSignImagePath String? // 서명 이미지 경로
+  workerSignerName    String? // 작업자 서명자명
+  workerSignedAt      DateTime? // 작업자 서명 시각(서버 기준)
+
+  // 공개 링크 / 열람
+  shareToken String              @unique // 외부 링크 토큰
+  revokedAt  DateTime? // 링크 무효화 시각
+  viewLogs   Json[]              @default([]) // 공개 열람 로그 [{ at, ip, ua }] — 최근 50개만 유지
+  viewCount  Int                 @default(0) // 누적 열람 횟수
+  status     LaborContractStatus @default(DRAFT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  workerProfile Profile? @relation("LaborContractWorker", fields: [workerProfileId], references: [id], onDelete: SetNull)
+
+  @@index([businessId])
+  @@index([workerProfileId]) // 작업자 "내 계약서" 조회
+  @@index([status])
+  @@map("labor_contracts")
 }

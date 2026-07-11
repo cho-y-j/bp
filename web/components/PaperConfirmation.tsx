@@ -32,6 +32,14 @@ export interface EquipmentSection {
   spec?: string;
   guide?: boolean;
 }
+export interface TeamEntry {
+  memberId?: string;
+  name: string;
+  profileId?: string | null;
+  quantity: number; // 공수
+  rate: number;
+  amount: number;
+}
 export interface ConfirmationView {
   status: string;
   signed: boolean;
@@ -47,6 +55,9 @@ export interface ConfirmationView {
   amountCalc: AmountCalc;
   total: number;
   equipmentSection?: EquipmentSection | null;
+  // 팀(반장) 확인서 명단 (P2a) — 있으면 팀원 표 렌더.
+  teamEntries?: TeamEntry[] | null;
+  isTeam?: boolean;
   notes?: string | null;
   signerName?: string | null;
   signedAt?: string | null;
@@ -121,7 +132,69 @@ export default function PaperConfirmation({
           ) : null}
         </div>
 
-        <div className="calc">
+        {c.teamEntries && c.teamEntries.length > 0 ? (
+          <div className="calc" style={{ marginTop: 12 }}>
+            <div className="sign-head" style={{ marginBottom: 6 }}>
+              <span className="k">{t('paperTeam')}</span>
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1.4fr 0.8fr 1fr 1.2fr',
+                gap: '2px 8px',
+                fontSize: 13,
+                color: 'var(--ink-3)',
+                paddingBottom: 6,
+                borderBottom: '1px solid var(--border)',
+              }}
+            >
+              <span>{t('paperTeamName')}</span>
+              <span style={{ textAlign: 'right' }}>{t('paperTeamGongsu')}</span>
+              <span style={{ textAlign: 'right' }}>{t('paperTeamRate')}</span>
+              <span style={{ textAlign: 'right' }}>{t('paperTeamAmount')}</span>
+            </div>
+            {c.teamEntries.map((m, i) => (
+              <div
+                key={m.memberId ?? i}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1.4fr 0.8fr 1fr 1.2fr',
+                  gap: '2px 8px',
+                  fontSize: 15,
+                  padding: '7px 0',
+                  borderBottom: '1px solid var(--border)',
+                  alignItems: 'baseline',
+                }}
+              >
+                <span>{m.name}</span>
+                <span className="num" style={{ textAlign: 'right' }}>
+                  {m.quantity}
+                  {lang === 'ko' ? t('unitGongsu') : ` ${t('paperTeamGongsu')}`}
+                </span>
+                <span className="num" style={{ textAlign: 'right', color: 'var(--ink-3)' }}>
+                  {money(m.rate, lang)}
+                </span>
+                <span className="num" style={{ textAlign: 'right' }}>
+                  {money(m.amount, lang)}
+                </span>
+              </div>
+            ))}
+            <div className="total" style={{ marginTop: 4 }}>
+              <span className="k">{t('paperTeamTotal')}</span>
+              <span className="v num">{money(c.total, lang)}</span>
+            </div>
+          </div>
+        ) : null}
+
+        {/* 팀 확인서는 위 팀 명단 표에서 합계를 이미 표기하므로 하단 금액 표는 생략. */}
+        <div
+          className="calc"
+          style={
+            c.teamEntries && c.teamEntries.length > 0
+              ? { display: 'none' }
+              : undefined
+          }
+        >
           {c.amountCalc.items.map((it, i) => (
             <div className="line" key={i}>
               <span>

@@ -13,6 +13,7 @@ import 'upload_sheet.dart';
 import 'mask_editor.dart';
 import 'my_shares_screen.dart';
 import 'equipment_screen.dart';
+import 'my_contracts_screen.dart';
 
 class WalletScreen extends ConsumerStatefulWidget {
   const WalletScreen({super.key});
@@ -78,6 +79,11 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                 fontSize: 20, fontWeight: FontWeight.w800, color: c.ink)),
         actions: [
           if (!_selectMode) ...[
+            IconButton(
+                tooltip: l.lcMyContractsTitle,
+                icon: const Icon(Icons.description_outlined),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => const MyContractsScreen()))),
             IconButton(
                 tooltip: l.equipTitle,
                 icon: const Icon(Icons.agriculture_outlined),

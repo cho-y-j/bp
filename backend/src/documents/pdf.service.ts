@@ -8,6 +8,7 @@ import { promises as fs } from 'fs';
 import { AppException } from '../common/errors';
 import type {
   ConfirmationPdfData,
+  LaborContractPdfData,
   SafetyReportPdfData,
   StatementPdfData,
 } from './pdf.types';
@@ -385,7 +386,11 @@ export class PdfService {
       y -= rowH;
     }
     // 팀 확인서는 항목 라인이 없으므로 팀 합계를 금액 표에 한 줄로 표기.
-    if (data.teamEntries && data.teamEntries.length > 0 && data.lines.length === 0) {
+    if (
+      data.teamEntries &&
+      data.teamEntries.length > 0 &&
+      data.lines.length === 0
+    ) {
       text('팀 작업 합계', col.item, y, 11);
       text(`팀원 ${data.teamEntries.length}명`, col.detail, y, 10, gray);
       const a = this.krw(data.subtotal);
@@ -498,6 +503,285 @@ export class PdfService {
       }
     }
     text('(서명란)', boxX + 6, sigY + boxH + 4, 8, gray);
+
+    const bytes = await pdf.save();
+    return Buffer.from(bytes);
+  }
+
+  /**
+   * 표준근로계약서 PDF — 고용노동부 일용직 표준근로계약서 항목 + 양측 서명.
+   *  - 조항을 번호로 나열하고, 하단에 사업장/근로자 두 서명란을 둔다.
+   *  - 정본 안내(한국어본이 정본) 문구를 하단에 표기한다.
+   */
+  async renderLaborContractPdf(data: LaborContractPdfData): Promise<Buffer> {
+    const pdf = await PDFDocument.create();
+    pdf.registerFontkit(fontkit);
+    const fontBytes = await this.loadFontBytes();
+    const font = await pdf.embedFont(fontBytes, { subset: true });
+
+    const A4: [number, number] = [595.28, 841.89];
+    let page: PDFPage = pdf.addPage(A4);
+    const { width, height } = page.getSize();
+    const margin = 48;
+    let y = height - margin;
+
+    const black = rgb(0.1, 0.1, 0.1);
+    const gray = rgb(0.45, 0.45, 0.45);
+    const line = rgb(0.8, 0.8, 0.8);
+
+    const text = (
+      s: string,
+      x: number,
+      yy: number,
+      size: number,
+      color = black,
+    ) => page.drawText(s ?? '', { x, y: yy, size, font, color });
+
+    const ensureSpace = (need: number) => {
+      if (y < margin + need) {
+        page = pdf.addPage(A4);
+        y = height - margin;
+      }
+    };
+
+    // 여러 줄 래핑 렌더 (지정 폭 내에서 자동 줄바꿈)
+    const wrapped = (
+      s: string,
+      x: number,
+      size: number,
+      maxW: number,
+      color = black,
+    ) => {
+      let buf = '';
+      const flush = () => {
+        ensureSpace(40);
+        text(buf, x, y, size, color);
+        y -= size + 6;
+        buf = '';
+      };
+      for (const ch of s) {
+        if (ch === '\n') {
+          flush();
+          continue;
+        }
+        const test = buf + ch;
+        if (font.widthOfTextAtSize(test, size) > maxW) {
+          flush();
+          buf = ch;
+        } else {
+          buf = test;
+        }
+      }
+      if (buf) flush();
+    };
+
+    // 제목
+    const titleSize = 22;
+    const titleWidth = font.widthOfTextAtSize(data.title, titleSize);
+    text(data.title, (width - titleWidth) / 2, y, titleSize);
+    y -= 14;
+    text(`상태: ${data.statusLabel}`, width - margin - 90, y, 9, gray);
+    y -= 18;
+    page.drawLine({
+      start: { x: margin, y },
+      end: { x: width - margin, y },
+      thickness: 1.2,
+      color: black,
+    });
+    y -= 22;
+
+    // 당사자
+    text('■ 계약 당사자', margin, y, 12);
+    y -= 20;
+    const bizLine = [
+      `사업주(갑): ${data.businessName}`,
+      data.businessNumber ? `사업자번호 ${data.businessNumber}` : null,
+    ]
+      .filter(Boolean)
+      .join('   ');
+    wrapped(bizLine, margin, 11, width - 2 * margin);
+    if (data.businessAddress) {
+      wrapped(
+        `주소: ${data.businessAddress}`,
+        margin,
+        10,
+        width - 2 * margin,
+        gray,
+      );
+    }
+    const workerLine = [
+      `근로자(을): ${data.workerName}`,
+      data.workerPhone ? `연락처 ${data.workerPhone}` : null,
+    ]
+      .filter(Boolean)
+      .join('   ');
+    wrapped(workerLine, margin, 11, width - 2 * margin);
+    y -= 6;
+
+    // 조항 표 (라벨 | 값)
+    const rows: Array<[string, string]> = [
+      [
+        '1. 근로계약기간',
+        data.endDate
+          ? `${data.startDate} ~ ${data.endDate}`
+          : `${data.startDate} 부터 (기간의 정함 없음/일 단위)`,
+      ],
+      ['2. 근무 장소', data.workplace],
+      ['3. 업무 내용', data.jobDescription],
+      [
+        '4. 근로시간',
+        `${data.timeRange}${data.breakTime ? ` (휴게 ${data.breakTime})` : ''}`,
+      ],
+      ['5. 임금', `${data.wageTypeLabel} ${this.krw(data.wageAmount)}`],
+      ['6. 임금 지급일', data.payday],
+      ['7. 지급 방법', data.payMethod],
+    ];
+    const labelX = margin;
+    const valueX = margin + 120;
+    const valueMaxW = width - margin - valueX;
+    text('■ 계약 내용', margin, y, 12);
+    y -= 20;
+    for (const [label, value] of rows) {
+      ensureSpace(48);
+      const yStart = y;
+      text(label, labelX, y, 11, gray);
+      wrapped(value, valueX, 11, valueMaxW);
+      // 값이 한 줄이면 y 가 한 줄만 줄었을 것. 라벨-값 정렬 유지 위해 최소 rowH 확보.
+      if (yStart - y < 22) y = yStart - 22;
+      page.drawLine({
+        start: { x: margin, y: y + 8 },
+        end: { x: width - margin, y: y + 8 },
+        thickness: 0.4,
+        color: line,
+      });
+    }
+    y -= 8;
+
+    // 8. 주휴·연장수당 문구
+    ensureSpace(60);
+    text('8. 수당', margin, y, 11, gray);
+    y -= 18;
+    const allowanceNote = [
+      data.weeklyHolidayAllowance
+        ? '주휴수당: 1주 소정근로일 개근 시 주휴수당을 지급한다.'
+        : '주휴수당: 해당 없음(일용/단시간 등).',
+      data.overtimeAllowance
+        ? '연장·야간·휴일근로 시 근로기준법에 따라 통상임금의 50%를 가산하여 지급한다.'
+        : '연장·야간·휴일 가산수당: 별도 정하지 않음.',
+    ].join('\n');
+    wrapped(allowanceNote, margin + 12, 10, width - 2 * margin - 12, gray);
+    y -= 6;
+
+    // 9. 4대보험
+    ensureSpace(40);
+    text('9. 사회보험 적용', margin, y, 11, gray);
+    y -= 18;
+    const si = data.socialInsurance ?? {};
+    const check = (b?: boolean) => (b ? '[적용]' : '[미적용]');
+    const siText = [
+      `고용보험 ${check(si.employment)}`,
+      `건강보험 ${check(si.health)}`,
+      `국민연금 ${check(si.pension)}`,
+      `산재보험 ${check(si.industrialAccident)}`,
+    ].join('   ');
+    wrapped(siText, margin + 12, 10, width - 2 * margin - 12);
+    y -= 6;
+
+    // 10. 특약사항
+    if (data.specialTerms) {
+      ensureSpace(40);
+      text('10. 특약사항', margin, y, 11, gray);
+      y -= 18;
+      wrapped(data.specialTerms, margin + 12, 10, width - 2 * margin - 12);
+      y -= 6;
+    }
+
+    // 정본 안내 (한국어본이 정본)
+    ensureSpace(30);
+    y -= 6;
+    wrapped(
+      '※ 본 계약서의 정본은 한국어본입니다. 번역본은 이해를 돕기 위한 참고용입니다.',
+      margin,
+      9,
+      width - 2 * margin,
+      gray,
+    );
+    y -= 4;
+
+    // 서명란 (사업장 / 근로자 2개 박스) — 페이지 하단에 배치
+    ensureSpace(160);
+    const boxTop = Math.max(y - 10, margin + 130);
+    y = boxTop;
+    page.drawLine({
+      start: { x: margin, y: y + 6 },
+      end: { x: width - margin, y: y + 6 },
+      thickness: 0.6,
+      color: line,
+    });
+    y -= 16;
+    const halfW = (width - 2 * margin - 20) / 2;
+    const boxH = 70;
+    const drawSignBox = async (
+      x: number,
+      label: string,
+      signerName?: string | null,
+      signedAt?: string | null,
+      png?: Buffer | null,
+    ) => {
+      text(label, x, y, 11, gray);
+      const boxY = y - boxH - 6;
+      page.drawRectangle({
+        x,
+        y: boxY,
+        width: halfW,
+        height: boxH,
+        borderColor: line,
+        borderWidth: 1,
+      });
+      if (png) {
+        try {
+          const img = await pdf.embedPng(png);
+          const scale = Math.min(
+            (halfW - 12) / img.width,
+            (boxH - 12) / img.height,
+            1,
+          );
+          const w = img.width * scale;
+          const h = img.height * scale;
+          page.drawImage(img, {
+            x: x + (halfW - w) / 2,
+            y: boxY + (boxH - h) / 2,
+            width: w,
+            height: h,
+          });
+        } catch (e) {
+          this.logger.warn(`서명 이미지 삽입 실패: ${(e as Error).message}`);
+        }
+      } else {
+        text('(미서명)', x + 8, boxY + boxH / 2, 10, gray);
+      }
+      text(
+        signerName ? `성명: ${signerName}` : '성명: ____________',
+        x,
+        boxY - 14,
+        10,
+      );
+      if (signedAt) text(`서명일시: ${signedAt}`, x, boxY - 28, 8, gray);
+    };
+    await drawSignBox(
+      margin,
+      '사업주(갑)',
+      data.employerSignerName,
+      data.employerSignedAt,
+      data.employerSignPng,
+    );
+    await drawSignBox(
+      margin + halfW + 20,
+      '근로자(을)',
+      data.workerSignerName,
+      data.workerSignedAt,
+      data.workerSignPng,
+    );
 
     const bytes = await pdf.save();
     return Buffer.from(bytes);

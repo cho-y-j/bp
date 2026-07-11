@@ -80,6 +80,22 @@ final connectionsProvider =
       .toList();
 });
 
+/// 사업장(대표) 표준근로계약서 목록 — GET /biz/contracts.
+final bizContractsProvider = FutureProvider<List<LaborContract>>((ref) async {
+  final api = ref.watch(apiClientProvider);
+  final res = await api.get('/biz/contracts');
+  final items = (res as Map)['items'] as List? ?? [];
+  return items.map((e) => LaborContract.fromJson(e as Map)).toList();
+});
+
+/// 작업자(내가 근로자)에게 온 계약서 목록 — GET /contracts (내 계약서).
+final myContractsProvider = FutureProvider<List<LaborContract>>((ref) async {
+  final api = ref.watch(apiClientProvider);
+  final res = await api.get('/contracts');
+  final items = (res as Map)['items'] as List? ?? [];
+  return items.map((e) => LaborContract.fromJson(e as Map)).toList();
+});
+
 /// 데이터 무효화 유틸 — 쓰기 후 홈/캘린더/장부 새로고침.
 void invalidateAll(WidgetRef ref) {
   ref.invalidate(confirmationsProvider);
@@ -175,6 +191,58 @@ class Repo {
     final res = await api.get('/workers/search', query: {'phone': phone});
     final items = (res as Map)['items'] as List? ?? [];
     return items.map((e) => WorkerSearchItem.fromJson(e as Map)).toList();
+  }
+
+  // ── 표준근로계약서 (전자서명) ─────────────────────────────
+  /// 계약서 생성(사업장 모드). body 는 POST /biz/contracts 본문 그대로.
+  Future<LaborContract> createLaborContract(Map<String, dynamic> body) async {
+    final res = await api.post('/biz/contracts', body: body);
+    return LaborContract.fromJson(res as Map);
+  }
+
+  /// 계약서 상세(사업장 측).
+  Future<LaborContract> bizContract(String id) async {
+    final res = await api.get('/biz/contracts/$id');
+    return LaborContract.fromJson(res as Map);
+  }
+
+  /// 계약서 수정(DRAFT + 미서명일 때만). 부분 필드.
+  Future<LaborContract> updateLaborContract(
+      String id, Map<String, dynamic> body) async {
+    final res = await api.patch('/biz/contracts/$id', body: body);
+    return LaborContract.fromJson(res as Map);
+  }
+
+  /// 계약서 삭제(DRAFT 만).
+  Future<void> deleteLaborContract(String id) =>
+      api.delete('/biz/contracts/$id');
+
+  /// 사업장(대표) 서명.
+  Future<LaborContract> signEmployerContract(String id,
+      {required String signerName, required String signImageBase64}) async {
+    final res = await api.post('/biz/contracts/$id/sign-employer',
+        body: {'signerName': signerName, 'signImageBase64': signImageBase64});
+    return LaborContract.fromJson(res as Map);
+  }
+
+  /// 작업자에게 전송 → { shareToken, url, sent, linked, notified, alimtalkSent }.
+  Future<Map> sendContract(String id) async {
+    final res = await api.post('/biz/contracts/$id/send');
+    return res as Map;
+  }
+
+  /// 계약서 상세(작업자 측).
+  Future<LaborContract> workerContract(String id) async {
+    final res = await api.get('/contracts/$id');
+    return LaborContract.fromJson(res as Map);
+  }
+
+  /// 작업자 앱내 서명.
+  Future<LaborContract> signWorkerContract(String id,
+      {required String signerName, required String signImageBase64}) async {
+    final res = await api.post('/contracts/$id/sign',
+        body: {'signerName': signerName, 'signImageBase64': signImageBase64});
+    return LaborContract.fromJson(res as Map);
   }
 }
 

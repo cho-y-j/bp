@@ -1,0 +1,73 @@
+- generic [active] [ref=f1e1]:
+  - main [ref=f1e2]:
+    - button "한국어" [ref=f1e5] [cursor=pointer]
+    - paragraph [ref=f1e13]: 작업온 · 표준근로계약서
+    - generic [ref=f1e15]:
+      - generic [ref=f1e16]: 표 준 근 로 계 약 서
+      - generic [ref=f1e19]:
+        - generic [ref=f1e20]: 계약 당사자
+        - generic [ref=f1e22]:
+          - generic [ref=f1e23]: 사업주(갑)
+          - generic [ref=f1e24]:
+            - text: 대명건설
+            - generic [ref=f1e25]: · 사업자번호 305-81-55667
+          - generic [ref=f1e26]: 근로자(을)
+          - generic [ref=f1e27]: 응우옌반몽
+        - generic [ref=f1e28]:
+          - generic [ref=f1e29]: 근로계약기간
+          - generic [ref=f1e30]: 2026년 7월 13일 (월) ~ 2026년 9월 30일 (수)
+          - generic [ref=f1e31]: 근무장소
+          - generic [ref=f1e32]: 잠실 제2공구 현장
+          - generic [ref=f1e33]: 업무내용
+          - generic [ref=f1e34]: 철근 가공 및 배근 보조
+          - generic [ref=f1e35]: 근로시간
+          - generic [ref=f1e36]:
+            - text: 07:00 ~ 17:00
+            - generic [ref=f1e37]: · 휴게 12:00~13:00 (60분)
+          - generic [ref=f1e38]: 임금
+          - generic [ref=f1e39]:
+            - text: 170,000원
+            - generic [ref=f1e40]: · 일급
+          - generic [ref=f1e41]: 임금 지급일
+          - generic [ref=f1e42]: 매월 10일
+          - generic [ref=f1e43]: 지급 방법
+          - generic [ref=f1e44]: 근로자 명의 계좌 입금
+        - generic [ref=f1e45]:
+          - generic [ref=f1e46]: 수당
+          - paragraph [ref=f1e48]: "주휴수당: 1주 소정근로일을 개근하면 주휴수당을 지급합니다."
+          - paragraph [ref=f1e49]: 연장·야간·휴일근로 시 근로기준법에 따라 통상임금의 50%를 가산 지급합니다.
+        - generic [ref=f1e50]:
+          - generic [ref=f1e51]: 사회보험 적용
+          - generic [ref=f1e53]:
+            - generic [ref=f1e54]: 고용보험
+            - generic [ref=f1e55]: 적용
+          - generic [ref=f1e56]:
+            - generic [ref=f1e57]: 건강보험
+            - generic [ref=f1e58]: 적용
+          - generic [ref=f1e59]:
+            - generic [ref=f1e60]: 국민연금
+            - generic [ref=f1e61]: 미적용
+          - generic [ref=f1e62]:
+            - generic [ref=f1e63]: 산재보험
+            - generic [ref=f1e64]: 적용
+        - paragraph [ref=f1e65]: 특약사항 · 안전교육 이수 필수. 우천 시 협의.
+        - paragraph [ref=f1e66]: ※ 본 계약서의 정본은 한국어본입니다. 번역본은 이해를 돕기 위한 참고용이며, 해석상 차이가 있을 경우 한국어본이 우선합니다.
+        - generic [ref=f1e67]:
+          - generic [ref=f1e68]: 사업주(갑)
+          - generic [ref=f1e70]: 대명건설 대표 이사장 님 서명 완료2026-07-11 16:09
+    - generic [ref=f1e74]:
+      - generic [ref=f1e106]:
+        - generic [ref=f1e107]: 서명 완료
+        - generic [ref=f1e108]:
+          - text: 응우옌반몽 님이 서명했습니다
+          - generic [ref=f1e109]: · 2026-07-11 16:11
+      - link "서명된 근로계약서 PDF 보기" [ref=f1e110] [cursor=pointer]:
+        - /url: http://localhost:3040/api/public/contracts/UOUbaQZsPGaB3JMA-ABgTcF_mTBZ88jl/pdf
+    - generic [ref=f1e113]:
+      - paragraph [ref=f1e114]: 작업온
+      - heading "이 확인서를 작업온으로 관리하세요" [level=2] [ref=f1e116]
+      - paragraph [ref=f1e117]: 받은 확인서와 정산 내역이 자동으로 장부에 쌓입니다. 사업장이라면 수신·정산·안전관리까지 한 번에.
+      - link "작업온 시작하기" [ref=f1e118] [cursor=pointer]:
+        - /url: /login
+  - button "Open Next.js Dev Tools" [ref=f1e98] [cursor=pointer]
+  - alert [ref=f1e102]

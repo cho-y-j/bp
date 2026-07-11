@@ -813,6 +813,141 @@ class TaxInvoiceGroup {
       );
 }
 
+// ===========================================================================
+// 표준근로계약서 (전자서명)
+// ===========================================================================
+
+/// 표준근로계약서 DTO 매핑. GET/POST 응답의 LaborContractDto.
+class LaborContract {
+  final String id;
+  final String status; // DRAFT / SENT / SIGNED
+  final String statusLabel;
+  final String businessId;
+  final String? businessName;
+  final String title;
+  final String? workerProfileId;
+  final bool workerLinked;
+  final String workerName;
+  final String? workerPhone;
+  final String startDate; // YYYY-MM-DD
+  final String? endDate;
+  final String workplace;
+  final String jobDescription;
+  final String workStartTime; // HH:mm
+  final String workEndTime;
+  final String? breakTime;
+  final String wageType; // DAILY / HOURLY
+  final String wageTypeLabel;
+  final int wageAmount;
+  final String payday;
+  final String payMethod;
+  final bool weeklyHolidayAllowance;
+  final bool overtimeAllowance;
+  final Map? socialInsurance; // {employment, health, pension, industrialAccident}
+  final String? specialTerms;
+  final bool employerSigned;
+  final String? employerSignerName;
+  final String? employerSignedAt;
+  final bool workerSigned;
+  final String? workerSignerName;
+  final String? workerSignedAt;
+  final String shareToken;
+  final DateTime? revokedAt;
+  final int viewCount;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  LaborContract({
+    required this.id,
+    required this.status,
+    required this.statusLabel,
+    required this.businessId,
+    required this.businessName,
+    required this.title,
+    required this.workerProfileId,
+    required this.workerLinked,
+    required this.workerName,
+    required this.workerPhone,
+    required this.startDate,
+    required this.endDate,
+    required this.workplace,
+    required this.jobDescription,
+    required this.workStartTime,
+    required this.workEndTime,
+    required this.breakTime,
+    required this.wageType,
+    required this.wageTypeLabel,
+    required this.wageAmount,
+    required this.payday,
+    required this.payMethod,
+    required this.weeklyHolidayAllowance,
+    required this.overtimeAllowance,
+    required this.socialInsurance,
+    required this.specialTerms,
+    required this.employerSigned,
+    required this.employerSignerName,
+    required this.employerSignedAt,
+    required this.workerSigned,
+    required this.workerSignerName,
+    required this.workerSignedAt,
+    required this.shareToken,
+    required this.revokedAt,
+    required this.viewCount,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory LaborContract.fromJson(Map j) => LaborContract(
+        id: j['id'].toString(),
+        status: j['status']?.toString() ?? 'DRAFT',
+        statusLabel: j['statusLabel']?.toString() ?? '',
+        businessId: j['businessId']?.toString() ?? '',
+        businessName: j['businessName'] as String?,
+        title: j['title']?.toString() ?? '',
+        workerProfileId: j['workerProfileId'] as String?,
+        workerLinked: j['workerLinked'] == true,
+        workerName: j['workerName']?.toString() ?? '',
+        workerPhone: j['workerPhone'] as String?,
+        startDate: j['startDate']?.toString() ?? '',
+        endDate: j['endDate'] as String?,
+        workplace: j['workplace']?.toString() ?? '',
+        jobDescription: j['jobDescription']?.toString() ?? '',
+        workStartTime: j['workStartTime']?.toString() ?? '',
+        workEndTime: j['workEndTime']?.toString() ?? '',
+        breakTime: j['breakTime'] as String?,
+        wageType: j['wageType']?.toString() ?? 'DAILY',
+        wageTypeLabel: j['wageTypeLabel']?.toString() ?? '',
+        wageAmount: _pint(j['wageAmount']),
+        payday: j['payday']?.toString() ?? '',
+        payMethod: j['payMethod']?.toString() ?? '',
+        weeklyHolidayAllowance: j['weeklyHolidayAllowance'] == true,
+        overtimeAllowance: j['overtimeAllowance'] == true,
+        socialInsurance: j['socialInsurance'] as Map?,
+        specialTerms: j['specialTerms'] as String?,
+        employerSigned: j['employerSigned'] == true,
+        employerSignerName: j['employerSignerName'] as String?,
+        employerSignedAt: j['employerSignedAt'] as String?,
+        workerSigned: j['workerSigned'] == true,
+        workerSignerName: j['workerSignerName'] as String?,
+        workerSignedAt: j['workerSignedAt'] as String?,
+        shareToken: j['shareToken']?.toString() ?? '',
+        revokedAt: _pdate(j['revokedAt']),
+        viewCount: _pint(j['viewCount']),
+        createdAt: _pdate(j['createdAt']),
+        updatedAt: _pdate(j['updatedAt']),
+      );
+
+  bool get isDraft => status == 'DRAFT';
+  bool get isSent => status == 'SENT';
+  bool get isSigned => status == 'SIGNED';
+
+  /// 4대보험 개별 적용 여부(누락 시 false).
+  bool insEmployment() => socialInsurance?['employment'] == true;
+  bool insHealth() => socialInsurance?['health'] == true;
+  bool insPension() => socialInsurance?['pension'] == true;
+  bool insAccident() => socialInsurance?['industrialAccident'] == true;
+}
+
 /// 세금계산서 데이터 응답(월 단위).
 class TaxInvoiceData {
   final String month;

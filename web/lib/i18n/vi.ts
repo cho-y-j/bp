@@ -27,6 +27,58 @@ const vi: Record<MessageKey, string> = {
   paperSignHead: 'Chữ ký người giao việc',
   paperSignedBy: '{name} đã ký',
 
+  paperTeam: 'Danh sách tổ',
+  paperTeamName: 'Họ tên',
+  paperTeamGongsu: 'Công',
+  paperTeamRate: 'Đơn giá',
+  paperTeamAmount: 'Số tiền',
+  paperTeamTotal: 'Tổng công việc của tổ',
+
+  kickerContract: 'Hợp đồng lao động tiêu chuẩn',
+  lcStamp: 'HỢP ĐỒNG LAO ĐỘNG',
+  lcParties: 'Các bên hợp đồng',
+  lcEmployer: 'Người sử dụng lao động (bên A)',
+  lcWorker: 'Người lao động (bên B)',
+  lcBizNumber: 'Mã số doanh nghiệp',
+  lcPeriod: 'Thời hạn hợp đồng',
+  lcPeriodOpen: 'Không xác định thời hạn · theo ngày',
+  lcWorkplace: 'Nơi làm việc',
+  lcJob: 'Nội dung công việc',
+  lcWorkTime: 'Thời gian làm việc',
+  lcBreak: 'Nghỉ giải lao',
+  lcWage: 'Tiền lương',
+  lcWageDaily: 'Lương ngày',
+  lcWageHourly: 'Lương giờ',
+  lcPayday: 'Ngày trả lương',
+  lcPayMethod: 'Phương thức trả',
+  lcAllowance: 'Phụ cấp',
+  lcWeeklyHoliday:
+    'Phụ cấp nghỉ tuần: đi làm đủ ngày quy định trong tuần sẽ được trả phụ cấp nghỉ tuần.',
+  lcWeeklyHolidayNone:
+    'Phụ cấp nghỉ tuần: không áp dụng (lao động ngày/bán thời gian).',
+  lcOvertime:
+    'Làm thêm giờ, ban đêm, ngày nghỉ được trả thêm 50% tiền lương thông thường theo luật lao động.',
+  lcOvertimeNone:
+    'Phụ cấp làm thêm/ban đêm/ngày nghỉ: không quy định riêng.',
+  lcInsurance: 'Áp dụng bảo hiểm xã hội',
+  lcInsEmployment: 'Bảo hiểm việc làm',
+  lcInsHealth: 'Bảo hiểm y tế',
+  lcInsPension: 'Bảo hiểm hưu trí quốc gia',
+  lcInsAccident: 'Bảo hiểm tai nạn lao động',
+  lcApplied: 'Áp dụng',
+  lcNotApplied: 'Không áp dụng',
+  lcSpecial: 'Điều khoản đặc biệt',
+  lcMasterNote:
+    'Bản chính của hợp đồng này là bản tiếng Hàn. Bản dịch chỉ nhằm hỗ trợ hiểu; nếu có khác biệt về giải thích, bản tiếng Hàn được ưu tiên.',
+  lcEmployerSigned: 'Người sử dụng lao động đã ký',
+  lcSignHeading: 'Vui lòng ký vào hợp đồng lao động',
+  lcSignLegal:
+    'Khi ký, bạn đồng ý với các điều kiện lao động trên và chữ ký được lưu như bản ghi có hiệu lực pháp lý.',
+  lcSignFootnote:
+    'Sau khi ký, hợp đồng có hiệu lực ngay và được lưu cho cả hai bên.',
+  lcSignDoneReceived: 'Đã tiếp nhận chữ ký hợp đồng lao động',
+  lcViewPdf: 'Xem PDF hợp đồng đã ký',
+
   signHeading: 'Vui lòng ký vào đây',
   signNameLabel: 'Tên người ký',
   signNamePlaceholder: 'ví dụ) Nguyễn Văn A',

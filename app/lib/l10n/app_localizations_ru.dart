@@ -1583,4 +1583,294 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get ledgerDerivedReadonly =>
       'Это бригадная работа, оформленная бригадиром (можно только записывать оплату)';
+
+  @override
+  String get lcKicker => 'Трудовой договор';
+
+  @override
+  String get lcStamp => 'Т Р У Д О В О Й   Д О Г О В О Р';
+
+  @override
+  String get lcParties => 'Стороны договора';
+
+  @override
+  String get lcEmployer => 'Работодатель (сторона А)';
+
+  @override
+  String get lcWorkerParty => 'Работник (сторона Б)';
+
+  @override
+  String get lcBizNumber => 'Рег. номер предприятия';
+
+  @override
+  String get lcPeriod => 'Срок трудового договора';
+
+  @override
+  String get lcPeriodOpen => 'Без определённого срока · подённо';
+
+  @override
+  String get lcWorkplace => 'Место работы';
+
+  @override
+  String get lcJob => 'Содержание работы';
+
+  @override
+  String get lcWorkTime => 'Рабочее время';
+
+  @override
+  String get lcBreak => 'Перерыв';
+
+  @override
+  String get lcWage => 'Заработная плата';
+
+  @override
+  String get lcWageDaily => 'Дневная ставка';
+
+  @override
+  String get lcWageHourly => 'Почасовая ставка';
+
+  @override
+  String get lcPayday => 'День выплаты';
+
+  @override
+  String get lcPayMethod => 'Способ выплаты';
+
+  @override
+  String get lcAllowance => 'Надбавки';
+
+  @override
+  String get lcWeeklyHoliday =>
+      'Оплата еженедельного выходного: при полной отработке недели выплачивается оплата выходного дня.';
+
+  @override
+  String get lcWeeklyHolidayNone =>
+      'Оплата еженедельного выходного: не применяется (подённая/неполная занятость).';
+
+  @override
+  String get lcOvertime =>
+      'За сверхурочную, ночную и работу в выходные выплачивается надбавка 50% от обычной оплаты согласно закону.';
+
+  @override
+  String get lcOvertimeNone =>
+      'Надбавки за сверхурочную/ночную/праздничную работу: отдельно не оговорены.';
+
+  @override
+  String get lcInsurance => 'Социальное страхование';
+
+  @override
+  String get lcInsEmployment => 'Страхование занятости';
+
+  @override
+  String get lcInsHealth => 'Медицинское страхование';
+
+  @override
+  String get lcInsPension => 'Пенсионное страхование';
+
+  @override
+  String get lcInsAccident => 'Страхование от несчастных случаев';
+
+  @override
+  String get lcApplied => 'Применяется';
+
+  @override
+  String get lcNotApplied => 'Не применяется';
+
+  @override
+  String get lcSpecial => 'Особые условия';
+
+  @override
+  String get lcMasterNote =>
+      'Оригиналом договора является версия на корейском языке. Перевод предоставлен для удобства понимания; при расхождениях преимущество имеет корейская версия.';
+
+  @override
+  String get lcEmployerSigned => 'Работодатель подписал';
+
+  @override
+  String get lcMenuDesc => 'Договоры с работниками через э-подпись';
+
+  @override
+  String get lcListEmptyTitle => 'Пока нет договоров';
+
+  @override
+  String get lcListEmptySub => 'Создайте трудовой договор с работником';
+
+  @override
+  String get lcNewContract => 'Новый договор';
+
+  @override
+  String get lcStatusDraft => 'Черновик';
+
+  @override
+  String get lcStatusSent => 'Отправлен';
+
+  @override
+  String get lcStatusSigned => 'Подписан';
+
+  @override
+  String get lcWorkerSection => 'Работник';
+
+  @override
+  String get lcWorkerByPhone => 'Поиск по телефону';
+
+  @override
+  String get lcWorkerManual => 'Ввести вручную';
+
+  @override
+  String get lcWorkerNameHint => 'Имя работника';
+
+  @override
+  String get lcWorkerPhoneHint => 'Телефон работника (необязательно)';
+
+  @override
+  String get lcSearchPhoneHint => 'Телефон работника';
+
+  @override
+  String get lcSearchHint =>
+      'Найти можно только пользователей, разрешивших поиск по телефону';
+
+  @override
+  String get lcSearchNoResult => 'Ничего не найдено';
+
+  @override
+  String get lcWorkerLinkedBadge => 'Связан';
+
+  @override
+  String get lcStartDate => 'Дата начала';
+
+  @override
+  String get lcEndDate => 'Дата окончания (необязательно)';
+
+  @override
+  String get lcEndDateNotSet => 'Не задано';
+
+  @override
+  String get lcWorkplaceHint => 'напр. Объект А, Каннам';
+
+  @override
+  String get lcJobHint => 'напр. Арматурные работы';
+
+  @override
+  String get lcBreakHint => 'напр. 12:00-13:00';
+
+  @override
+  String get lcWageAmountHint => 'Сумма';
+
+  @override
+  String get lcPaydayHint => 'напр. 25-го числа';
+
+  @override
+  String get lcPayMethodHint => 'напр. Банковский перевод';
+
+  @override
+  String get lcWeeklyHolidaySwitch => 'Оплата выходного дня';
+
+  @override
+  String get lcOvertimeSwitch => 'Надбавка за сверхурочную работу';
+
+  @override
+  String get lcSpecialHint => 'Особые условия (необязательно)';
+
+  @override
+  String get lcSaveCommon => 'Сохранить частые значения';
+
+  @override
+  String get lcSaveCommonSub => 'Автозаполнение в следующий раз';
+
+  @override
+  String get lcSubmit => 'Создать договор';
+
+  @override
+  String get lcCreated => 'Договор создан';
+
+  @override
+  String get lcDetailTitle => 'Договор';
+
+  @override
+  String get lcSignEmployerTitle => 'Моя подпись (работодатель)';
+
+  @override
+  String get lcSignEmployerDesc => 'Подпишите, чтобы отправить работнику';
+
+  @override
+  String get lcSignerNameLabel => 'Имя подписавшего';
+
+  @override
+  String get lcSignRedraw => 'Перерисовать';
+
+  @override
+  String get lcSignSubmit => 'Подписать';
+
+  @override
+  String get lcSigned => 'Подписано';
+
+  @override
+  String get lcSignErrPad => 'Сначала поставьте подпись';
+
+  @override
+  String get lcSignErrName => 'Введите имя подписавшего';
+
+  @override
+  String get lcSend => 'Отправить работнику';
+
+  @override
+  String get lcSentLinked => 'Отправлено работнику';
+
+  @override
+  String get lcSentShare => 'Поделитесь ссылкой для отправки';
+
+  @override
+  String get lcShareBody => 'Ознакомьтесь и подпишите договор по ссылке ниже';
+
+  @override
+  String get lcViewPdf => 'Открыть PDF';
+
+  @override
+  String get lcDeleteConfirm => 'Удалить этот договор?';
+
+  @override
+  String get lcDeleted => 'Удалено';
+
+  @override
+  String get lcWaitingWorker => 'Ожидается подпись работника';
+
+  @override
+  String get lcMyContractsTitle => 'Мои договоры';
+
+  @override
+  String get lcMyContractsSub => 'Просмотр и подпись полученных договоров';
+
+  @override
+  String get lcMyEmptyTitle => 'Нет полученных договоров';
+
+  @override
+  String get lcMyEmptySub => 'Здесь появятся договоры от работодателей';
+
+  @override
+  String get lcWorkerSignTitle => 'Моя подпись (работник)';
+
+  @override
+  String get lcWorkerSignDesc => 'Ознакомьтесь и подпишите';
+
+  @override
+  String get lcAlreadySigned => 'Уже подписан';
+
+  @override
+  String lcCreateFailed(String msg) {
+    return 'Не удалось сохранить договор: $msg';
+  }
+
+  @override
+  String lcSignFailed(String msg) {
+    return 'Не удалось подписать: $msg';
+  }
+
+  @override
+  String lcSendFailed(String msg) {
+    return 'Не удалось отправить: $msg';
+  }
+
+  @override
+  String lcPdfFailed(String msg) {
+    return 'Не удалось открыть PDF: $msg';
+  }
 }

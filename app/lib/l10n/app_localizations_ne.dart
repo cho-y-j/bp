@@ -1579,4 +1579,293 @@ class AppLocalizationsNe extends AppLocalizations {
   @override
   String get ledgerDerivedReadonly =>
       'यो फोरम्यानले बनाएको टोली काम हो (तपाईं भुक्तानी मात्र रेकर्ड गर्न सक्नुहुन्छ)';
+
+  @override
+  String get lcKicker => 'मानक श्रम सम्झौता';
+
+  @override
+  String get lcStamp => 'मानक श्रम सम्झौता';
+
+  @override
+  String get lcParties => 'सम्झौताका पक्षहरू';
+
+  @override
+  String get lcEmployer => 'रोजगारदाता (पक्ष क)';
+
+  @override
+  String get lcWorkerParty => 'कामदार (पक्ष ख)';
+
+  @override
+  String get lcBizNumber => 'व्यवसाय दर्ता नम्बर';
+
+  @override
+  String get lcPeriod => 'श्रम सम्झौता अवधि';
+
+  @override
+  String get lcPeriodOpen => 'निश्चित अवधि नभएको · दैनिक';
+
+  @override
+  String get lcWorkplace => 'कार्यस्थल';
+
+  @override
+  String get lcJob => 'कामको विवरण';
+
+  @override
+  String get lcWorkTime => 'कार्य समय';
+
+  @override
+  String get lcBreak => 'विश्राम';
+
+  @override
+  String get lcWage => 'ज्याला';
+
+  @override
+  String get lcWageDaily => 'दैनिक ज्याला';
+
+  @override
+  String get lcWageHourly => 'घण्टा ज्याला';
+
+  @override
+  String get lcPayday => 'ज्याला भुक्तानी दिन';
+
+  @override
+  String get lcPayMethod => 'भुक्तानी विधि';
+
+  @override
+  String get lcAllowance => 'भत्ता';
+
+  @override
+  String get lcWeeklyHoliday =>
+      'साप्ताहिक बिदा भत्ता: हप्ताको तोकिएको कार्यदिन पूर्ण उपस्थित भएमा साप्ताहिक बिदा भत्ता दिइन्छ।';
+
+  @override
+  String get lcWeeklyHolidayNone =>
+      'साप्ताहिक बिदा भत्ता: लागू हुँदैन (दैनिक/अल्पकालीन)।';
+
+  @override
+  String get lcOvertime =>
+      'ओभरटाइम, रात्री र बिदाको काममा श्रम ऐन अनुसार सामान्य ज्यालाको ५०% थप दिइन्छ।';
+
+  @override
+  String get lcOvertimeNone =>
+      'ओभरटाइम/रात्री/बिदा थप भत्ता: छुट्टै तोकिएको छैन।';
+
+  @override
+  String get lcInsurance => 'सामाजिक बीमा लागू';
+
+  @override
+  String get lcInsEmployment => 'रोजगार बीमा';
+
+  @override
+  String get lcInsHealth => 'स्वास्थ्य बीमा';
+
+  @override
+  String get lcInsPension => 'राष्ट्रिय पेन्सन';
+
+  @override
+  String get lcInsAccident => 'दुर्घटना बीमा';
+
+  @override
+  String get lcApplied => 'लागू';
+
+  @override
+  String get lcNotApplied => 'लागू छैन';
+
+  @override
+  String get lcSpecial => 'विशेष सर्त';
+
+  @override
+  String get lcMasterNote =>
+      'यस सम्झौताको मूल प्रति कोरियाली भाषामा हो। अनुवाद बुझ्न सहयोगका लागि मात्र हो; व्याख्यामा भिन्नता भएमा कोरियाली प्रति मान्य हुन्छ।';
+
+  @override
+  String get lcEmployerSigned => 'रोजगारदाताले हस्ताक्षर गर्नुभयो';
+
+  @override
+  String get lcMenuDesc => 'कामदारसँग विद्युतीय हस्ताक्षरमा सम्झौता';
+
+  @override
+  String get lcListEmptyTitle => 'अहिलेसम्म कुनै सम्झौता छैन';
+
+  @override
+  String get lcListEmptySub => 'आफ्नो कामदारसँग श्रम सम्झौता बनाउनुहोस्';
+
+  @override
+  String get lcNewContract => 'नयाँ सम्झौता';
+
+  @override
+  String get lcStatusDraft => 'मस्यौदा';
+
+  @override
+  String get lcStatusSent => 'पठाइयो';
+
+  @override
+  String get lcStatusSigned => 'हस्ताक्षरित';
+
+  @override
+  String get lcWorkerSection => 'कामदार';
+
+  @override
+  String get lcWorkerByPhone => 'फोनबाट खोज्नुहोस्';
+
+  @override
+  String get lcWorkerManual => 'हातैले लेख्नुहोस्';
+
+  @override
+  String get lcWorkerNameHint => 'कामदारको नाम';
+
+  @override
+  String get lcWorkerPhoneHint => 'कामदारको फोन (वैकल्पिक)';
+
+  @override
+  String get lcSearchPhoneHint => 'कामदारको फोन';
+
+  @override
+  String get lcSearchHint => 'फोन खोजीमा सहमत भएका प्रयोगकर्ता मात्र भेटिन्छन्';
+
+  @override
+  String get lcSearchNoResult => 'कुनै परिणाम छैन';
+
+  @override
+  String get lcWorkerLinkedBadge => 'जोडिएको';
+
+  @override
+  String get lcStartDate => 'सुरु मिति';
+
+  @override
+  String get lcEndDate => 'अन्त्य मिति (वैकल्पिक)';
+
+  @override
+  String get lcEndDateNotSet => 'तोकिएको छैन';
+
+  @override
+  String get lcWorkplaceHint => 'उदा) गाङनाम A साइट';
+
+  @override
+  String get lcJobHint => 'उदा) रिबार काम';
+
+  @override
+  String get lcBreakHint => 'उदा) 12:00~13:00';
+
+  @override
+  String get lcWageAmountHint => 'रकम';
+
+  @override
+  String get lcPaydayHint => 'उदा) हरेक महिना २५';
+
+  @override
+  String get lcPayMethodHint => 'उदा) बैंक ट्रान्सफर';
+
+  @override
+  String get lcWeeklyHolidaySwitch => 'साप्ताहिक बिदा भत्ता';
+
+  @override
+  String get lcOvertimeSwitch => 'ओभरटाइम/रात्री/बिदा थप भत्ता';
+
+  @override
+  String get lcSpecialHint => 'विशेष सर्त (वैकल्पिक)';
+
+  @override
+  String get lcSaveCommon => 'बारम्बार प्रयोग हुने मान सुरक्षित';
+
+  @override
+  String get lcSaveCommonSub => 'अर्को पटक स्वतः भरिन्छ';
+
+  @override
+  String get lcSubmit => 'सम्झौता बनाउनुहोस्';
+
+  @override
+  String get lcCreated => 'सम्झौता बन्यो';
+
+  @override
+  String get lcDetailTitle => 'सम्झौता';
+
+  @override
+  String get lcSignEmployerTitle => 'मेरो हस्ताक्षर (रोजगारदाता)';
+
+  @override
+  String get lcSignEmployerDesc => 'हस्ताक्षर गरेपछि कामदारलाई पठाउन सकिन्छ';
+
+  @override
+  String get lcSignerNameLabel => 'हस्ताक्षरकर्ताको नाम';
+
+  @override
+  String get lcSignRedraw => 'फेरि कोर्नुहोस्';
+
+  @override
+  String get lcSignSubmit => 'हस्ताक्षर गर्नुहोस्';
+
+  @override
+  String get lcSigned => 'हस्ताक्षर पूरा भयो';
+
+  @override
+  String get lcSignErrPad => 'कृपया पहिले हस्ताक्षर गर्नुहोस्';
+
+  @override
+  String get lcSignErrName => 'कृपया हस्ताक्षरकर्ताको नाम लेख्नुहोस्';
+
+  @override
+  String get lcSend => 'कामदारलाई पठाउनुहोस्';
+
+  @override
+  String get lcSentLinked => 'कामदारलाई पठाइयो';
+
+  @override
+  String get lcSentShare => 'लिङ्क साझा गरेर पठाउनुहोस्';
+
+  @override
+  String get lcShareBody => 'तलको लिङ्कमा सम्झौता हेरेर हस्ताक्षर गर्नुहोस्';
+
+  @override
+  String get lcViewPdf => 'PDF हेर्नुहोस्';
+
+  @override
+  String get lcDeleteConfirm => 'यो सम्झौता मेटाउने?';
+
+  @override
+  String get lcDeleted => 'मेटाइयो';
+
+  @override
+  String get lcWaitingWorker => 'कामदारको हस्ताक्षर पर्खँदै';
+
+  @override
+  String get lcMyContractsTitle => 'मेरा सम्झौता';
+
+  @override
+  String get lcMyContractsSub => 'प्राप्त सम्झौता हेर्नुहोस्·हस्ताक्षर';
+
+  @override
+  String get lcMyEmptyTitle => 'कुनै सम्झौता प्राप्त भएको छैन';
+
+  @override
+  String get lcMyEmptySub => 'रोजगारदाताले पठाएको सम्झौता यहाँ देखिन्छ';
+
+  @override
+  String get lcWorkerSignTitle => 'मेरो हस्ताक्षर (कामदार)';
+
+  @override
+  String get lcWorkerSignDesc => 'कृपया हेरेर हस्ताक्षर गर्नुहोस्';
+
+  @override
+  String get lcAlreadySigned => 'पहिले नै हस्ताक्षर गरिएको';
+
+  @override
+  String lcCreateFailed(String msg) {
+    return 'सम्झौता सुरक्षित गर्न सकिएन: $msg';
+  }
+
+  @override
+  String lcSignFailed(String msg) {
+    return 'हस्ताक्षर गर्न सकिएन: $msg';
+  }
+
+  @override
+  String lcSendFailed(String msg) {
+    return 'पठाउन सकिएन: $msg';
+  }
+
+  @override
+  String lcPdfFailed(String msg) {
+    return 'PDF खोल्न सकिएन: $msg';
+  }
 }

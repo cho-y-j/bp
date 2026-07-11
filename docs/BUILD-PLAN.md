@@ -63,9 +63,11 @@ ref/       SKEP 참고 코드 (기존, 빌드 제외)
 - [x] 앱: 더보기→내 팀(명단 CRUD), 확인서 작성 "팀 확인서" 토글(공수 스텝퍼+실시간 합계), 장부 팀 배지·파생 표기, 6언어 ARB
 - [x] 검증: 백엔드 단위 94·e2e 95(신규 7+17, 권한 격리), pdftotext 팀 명단 표, flutter analyze 0·test 63, iOS 시뮬 E2E+스크린샷 5장. 웹 이월: 공개 API에 teamEntries 포함 → PaperConfirmation 렌더는 P2 통합 때
 
-### P2b. 표준근로계약서 전자서명
-- 고용노동부 일용직 표준근로계약서 필드 기반 템플릿 → 사업장 작성 → 작업자 서명(앱 내 or 외부 링크 — 기존 서명 인프라 재사용) → 양측 PDF 보관, 열람 페이지 6개 언어
-- 서류 지갑에 "내 계약서" 섹션
+### P2b. 표준근로계약서 전자서명 ✅ 완료 (구현+실측 검증, `worklog/2026-07-11-P2b-근로계약서.md`)
+- [x] 백엔드: `labor_contracts` 마이그레이션 1개(additive), `/biz/contracts` CRUD+사업장 서명(전송 전 필수 선행)+send, `/contracts`(작업자 "내 계약서"+앱내 서명), `/public/contracts/:token`(열람 viewLog·서명·PDF — 원자 전이·재서명 409), 양측 서명 PDF(나눔고딕, "정본은 한국어본" 문구)
+- [x] 웹: `/lc/[token]` 6언어 열람·서명(조항 라벨 번역·계약 값 원문, 기존 SignaturePad/StatusScreen/언어 스위처 재사용) + **P2a 이월: PaperConfirmation 팀 명단 표 렌더**
+- [x] 앱: 사업장 계약서 작성 폼(자주 쓰는 값 저장)→내 서명→전송(연결 알림/링크 공유)·목록·상태, 작업자 지갑 "내 계약서"(목록·PDF·받은 계약서 서명), 신규 문구 6개 ARB(조항 라벨 웹 사전과 일치, 552키×6)
+- [x] 검증: 백엔드 단위 97·e2e 111(신규 3+16, 권한 격리·지갑 자동 연결), pdftotext 조항·양측 서명, web build 0·playwright /lc ko+vi 열람·실서명·/c 팀 명단 스크린샷 4장, flutter analyze 0·test 70, iOS 시뮬 E2E+스크린샷 5장. 임시 pg 5436/백엔드 3040/web 3004만 사용, live-db(5432) 무손상
 
 ### P2c. 간편 TBM(안전점검회의) 기록
 - 사업장 모드: 참석자 체크(연결+수기), 위험요인·조치(프리셋), 사진, 참석자 확인 탭 → safety_logs 연동 → 안전 리포트에 TBM 섹션

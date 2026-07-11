@@ -1542,4 +1542,289 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get ledgerDerivedReadonly => '반장이 작성한 팀 작업이에요 (입금만 기록할 수 있어요)';
+
+  @override
+  String get lcKicker => '표준근로계약서';
+
+  @override
+  String get lcStamp => '표 준 근 로 계 약 서';
+
+  @override
+  String get lcParties => '계약 당사자';
+
+  @override
+  String get lcEmployer => '사업주(갑)';
+
+  @override
+  String get lcWorkerParty => '근로자(을)';
+
+  @override
+  String get lcBizNumber => '사업자번호';
+
+  @override
+  String get lcPeriod => '근로계약기간';
+
+  @override
+  String get lcPeriodOpen => '기간의 정함 없음 · 일 단위';
+
+  @override
+  String get lcWorkplace => '근무장소';
+
+  @override
+  String get lcJob => '업무내용';
+
+  @override
+  String get lcWorkTime => '근로시간';
+
+  @override
+  String get lcBreak => '휴게';
+
+  @override
+  String get lcWage => '임금';
+
+  @override
+  String get lcWageDaily => '일급';
+
+  @override
+  String get lcWageHourly => '시급';
+
+  @override
+  String get lcPayday => '임금 지급일';
+
+  @override
+  String get lcPayMethod => '지급 방법';
+
+  @override
+  String get lcAllowance => '수당';
+
+  @override
+  String get lcWeeklyHoliday => '주휴수당: 1주 소정근로일을 개근하면 주휴수당을 지급합니다.';
+
+  @override
+  String get lcWeeklyHolidayNone => '주휴수당: 해당 없음(일용·단시간 등).';
+
+  @override
+  String get lcOvertime => '연장·야간·휴일근로 시 근로기준법에 따라 통상임금의 50%를 가산 지급합니다.';
+
+  @override
+  String get lcOvertimeNone => '연장·야간·휴일 가산수당: 별도로 정하지 않음.';
+
+  @override
+  String get lcInsurance => '사회보험 적용';
+
+  @override
+  String get lcInsEmployment => '고용보험';
+
+  @override
+  String get lcInsHealth => '건강보험';
+
+  @override
+  String get lcInsPension => '국민연금';
+
+  @override
+  String get lcInsAccident => '산재보험';
+
+  @override
+  String get lcApplied => '적용';
+
+  @override
+  String get lcNotApplied => '미적용';
+
+  @override
+  String get lcSpecial => '특약사항';
+
+  @override
+  String get lcMasterNote =>
+      '본 계약서의 정본은 한국어본입니다. 번역본은 이해를 돕기 위한 참고용이며, 해석상 차이가 있을 경우 한국어본이 우선합니다.';
+
+  @override
+  String get lcEmployerSigned => '사업주 서명 완료';
+
+  @override
+  String get lcMenuDesc => '작업자와 전자서명으로 계약';
+
+  @override
+  String get lcListEmptyTitle => '아직 계약서가 없어요';
+
+  @override
+  String get lcListEmptySub => '작업자와 맺을 근로계약서를 작성해 보세요';
+
+  @override
+  String get lcNewContract => '계약서 작성';
+
+  @override
+  String get lcStatusDraft => '작성됨';
+
+  @override
+  String get lcStatusSent => '전송됨';
+
+  @override
+  String get lcStatusSigned => '서명됨';
+
+  @override
+  String get lcWorkerSection => '작업자';
+
+  @override
+  String get lcWorkerByPhone => '전화로 찾기';
+
+  @override
+  String get lcWorkerManual => '직접 입력';
+
+  @override
+  String get lcWorkerNameHint => '작업자 이름';
+
+  @override
+  String get lcWorkerPhoneHint => '작업자 전화번호 (선택)';
+
+  @override
+  String get lcSearchPhoneHint => '작업자 전화번호';
+
+  @override
+  String get lcSearchHint => '전화번호 검색에 동의한 가입자만 찾을 수 있어요';
+
+  @override
+  String get lcSearchNoResult => '검색 결과가 없어요';
+
+  @override
+  String get lcWorkerLinkedBadge => '연결';
+
+  @override
+  String get lcStartDate => '시작일';
+
+  @override
+  String get lcEndDate => '종료일 (선택)';
+
+  @override
+  String get lcEndDateNotSet => '정함 없음';
+
+  @override
+  String get lcWorkplaceHint => '예) 강남 A현장';
+
+  @override
+  String get lcJobHint => '예) 철근 조립';
+
+  @override
+  String get lcBreakHint => '예) 12:00~13:00';
+
+  @override
+  String get lcWageAmountHint => '금액';
+
+  @override
+  String get lcPaydayHint => '예) 매월 25일';
+
+  @override
+  String get lcPayMethodHint => '예) 계좌이체';
+
+  @override
+  String get lcWeeklyHolidaySwitch => '주휴수당 지급';
+
+  @override
+  String get lcOvertimeSwitch => '연장·야간·휴일 가산수당';
+
+  @override
+  String get lcSpecialHint => '특약사항 (선택)';
+
+  @override
+  String get lcSaveCommon => '자주 쓰는 값 저장';
+
+  @override
+  String get lcSaveCommonSub => '다음 작성 시 자동으로 채워요';
+
+  @override
+  String get lcSubmit => '계약서 만들기';
+
+  @override
+  String get lcCreated => '계약서를 만들었어요';
+
+  @override
+  String get lcDetailTitle => '계약서';
+
+  @override
+  String get lcSignEmployerTitle => '내 서명 (사업주)';
+
+  @override
+  String get lcSignEmployerDesc => '서명하면 작업자에게 보낼 수 있어요';
+
+  @override
+  String get lcSignerNameLabel => '서명자 이름';
+
+  @override
+  String get lcSignRedraw => '다시 그리기';
+
+  @override
+  String get lcSignSubmit => '서명하기';
+
+  @override
+  String get lcSigned => '서명을 완료했어요';
+
+  @override
+  String get lcSignErrPad => '서명을 입력해 주세요';
+
+  @override
+  String get lcSignErrName => '서명자 이름을 입력해 주세요';
+
+  @override
+  String get lcSend => '작업자에게 전송';
+
+  @override
+  String get lcSentLinked => '작업자에게 전송했어요';
+
+  @override
+  String get lcSentShare => '링크를 공유해 전달하세요';
+
+  @override
+  String get lcShareBody => '아래 링크에서 계약서를 확인하고 서명해 주세요';
+
+  @override
+  String get lcViewPdf => 'PDF 열람';
+
+  @override
+  String get lcDeleteConfirm => '이 계약서를 삭제할까요?';
+
+  @override
+  String get lcDeleted => '삭제했어요';
+
+  @override
+  String get lcWaitingWorker => '작업자 서명 대기 중';
+
+  @override
+  String get lcMyContractsTitle => '내 계약서';
+
+  @override
+  String get lcMyContractsSub => '받은 근로계약서 확인·서명';
+
+  @override
+  String get lcMyEmptyTitle => '받은 계약서가 없어요';
+
+  @override
+  String get lcMyEmptySub => '사업주가 보낸 계약서가 여기에 표시돼요';
+
+  @override
+  String get lcWorkerSignTitle => '내 서명 (근로자)';
+
+  @override
+  String get lcWorkerSignDesc => '내용을 확인하고 서명해 주세요';
+
+  @override
+  String get lcAlreadySigned => '이미 서명한 계약서예요';
+
+  @override
+  String lcCreateFailed(String msg) {
+    return '계약서를 저장하지 못했어요: $msg';
+  }
+
+  @override
+  String lcSignFailed(String msg) {
+    return '서명하지 못했어요: $msg';
+  }
+
+  @override
+  String lcSendFailed(String msg) {
+    return '전송하지 못했어요: $msg';
+  }
+
+  @override
+  String lcPdfFailed(String msg) {
+    return 'PDF를 열지 못했어요: $msg';
+  }
 }
