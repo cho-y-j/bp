@@ -2249,4 +2249,64 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get badgeSelfTitle => 'भुक्तानी विश्वसनीयता';
+
+  @override
+  String get qrCardMenuTitle => 'मेरो QR कार्ड';
+
+  @override
+  String get qrCardMenuSub => 'QR र लिंकबाट आफ्नो परिचय दिनुहोस्';
+
+  @override
+  String get qrCardTitle => 'मेरो QR कार्ड';
+
+  @override
+  String get qrCardScanHint => 'QR स्क्यान गर्दा मेरो सार्वजनिक प्रोफाइल खुल्छ';
+
+  @override
+  String qrCardViewCount(int count) {
+    return '$count पटक हेरिएको';
+  }
+
+  @override
+  String get qrCardIntroLabel => 'एक लाइन परिचय';
+
+  @override
+  String get qrCardIntroPlaceholder => 'जस्तै: २० वर्ष अनुभव भएको रड फोरम्यान';
+
+  @override
+  String get qrCardIntroSaved => 'परिचय सुरक्षित भयो';
+
+  @override
+  String get qrCardExposeTitle => 'कार्ड देखाउनुहोस्';
+
+  @override
+  String get qrCardExposeSub => 'अन गरेपछि QR र लिंकबाट प्रोफाइल देखिन्छ';
+
+  @override
+  String get qrCardHiddenHint =>
+      'अहिले लुकाइएको छ — लिंक खोले पनि कार्ड देखिँदैन';
+
+  @override
+  String get qrCardRotate => 'लिंक पुनः जारी गर्नुहोस्';
+
+  @override
+  String get qrCardRotateConfirm =>
+      'नयाँ लिंक बनाएपछि पुरानो QR र लिंक काम गर्दैन। जारी राख्ने?';
+
+  @override
+  String get qrCardRotateConfirmBtn => 'पुनः जारी';
+
+  @override
+  String get qrCardRotated => 'नयाँ कार्ड लिंक जारी भयो';
+
+  @override
+  String get qrCardDocValid => 'कागजात मान्य';
+
+  @override
+  String get qrCardDocProblem => 'जाँच गर्नुपर्ने कागजात';
+
+  @override
+  String qrCardDocExpiryLabel(String date) {
+    return 'म्याद $date';
+  }
 }

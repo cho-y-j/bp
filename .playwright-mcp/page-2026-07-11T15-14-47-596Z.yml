@@ -1,0 +1,30 @@
+- generic [active] [ref=f1e1]:
+  - main [ref=f1e2]:
+    - button "Tiếng Việt" [ref=f1e5] [cursor=pointer]
+    - paragraph [ref=f1e13]: 작업온 · Danh thiếp thợ
+    - generic [ref=f1e15]:
+      - heading "박기사" [level=1] [ref=f1e16]
+      - generic [ref=f1e17]: Giấy tờ hợp lệ ✓
+      - paragraph [ref=f1e18]: 20년 경력 굴삭기 기사 · 판교/분당 즉시 가능
+    - generic [ref=f1e19]:
+      - paragraph [ref=f1e20]: Ngành nghề
+      - generic [ref=f1e21]:
+        - generic [ref=f1e22]: 굴삭기
+        - generic [ref=f1e23]: 토목
+    - generic [ref=f1e24]:
+      - paragraph [ref=f1e25]: Giấy tờ hợp lệ
+      - paragraph [ref=f1e26]: Tất cả giấy tờ có ngày hết hạn đều còn hiệu lực.
+      - generic [ref=f1e27]: 건설기계조종사면허
+    - generic [ref=f1e29]:
+      - paragraph [ref=f1e30]: Thiết bị
+      - generic [ref=f1e31]: 굴삭기
+    - paragraph [ref=f1e33]: Ngày tham gia 작업온 · CN, 12 thg 7, 2026
+    - generic [ref=f1e34]:
+      - paragraph [ref=f1e35]: Kết nối với thợ này
+      - paragraph [ref=f1e36]: Tìm theo số điện thoại trong ứng dụng 작업온 và gửi yêu cầu kết nối.
+      - generic [ref=f1e37]:
+        - link "App Store" [ref=f1e38] [cursor=pointer]:
+          - /url: https://apps.apple.com/app/id0000000000
+        - link "Google Play" [ref=f1e39] [cursor=pointer]:
+          - /url: https://play.google.com/store/apps/details?id=kr.workon
+  - alert [ref=f1e40]

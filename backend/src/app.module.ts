@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { CardModule } from './card/card.module';
 import { EquipmentsModule } from './equipments/equipments.module';
 import { DocumentsModule } from './documents/documents.module';
 import { DocumentSharesModule } from './document-shares/document-shares.module';
@@ -35,6 +36,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     HealthModule,
     AuthModule,
     UsersModule,
+    CardModule,
     EquipmentsModule,
     DocumentsModule,
     DocumentSharesModule,

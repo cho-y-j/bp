@@ -39,6 +39,8 @@ export class UsersService {
       payoutBank?: string;
       payoutAccount?: string;
       payoutHolder?: string;
+      cardEnabled?: boolean;
+      cardIntro?: string;
     } = {};
     if (dto.name !== undefined) data.name = dto.name;
     if (dto.industryTags !== undefined) data.industryTags = dto.industryTags;
@@ -50,6 +52,8 @@ export class UsersService {
     if (dto.payoutBank !== undefined) data.payoutBank = dto.payoutBank;
     if (dto.payoutAccount !== undefined) data.payoutAccount = dto.payoutAccount;
     if (dto.payoutHolder !== undefined) data.payoutHolder = dto.payoutHolder;
+    if (dto.cardEnabled !== undefined) data.cardEnabled = dto.cardEnabled;
+    if (dto.cardIntro !== undefined) data.cardIntro = dto.cardIntro;
 
     const profile = await this.prisma.profile.update({
       where: { id: userId },

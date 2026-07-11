@@ -4101,6 +4101,114 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'지급 신뢰도'**
   String get badgeSelfTitle;
+
+  /// No description provided for @qrCardMenuTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 QR 명함'**
+  String get qrCardMenuTitle;
+
+  /// No description provided for @qrCardMenuSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'QR·링크로 나를 소개해요'**
+  String get qrCardMenuSub;
+
+  /// No description provided for @qrCardTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 QR 명함'**
+  String get qrCardTitle;
+
+  /// No description provided for @qrCardScanHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'QR을 찍으면 내 공개 프로필이 열려요'**
+  String get qrCardScanHint;
+
+  /// No description provided for @qrCardViewCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'조회 {count}회'**
+  String qrCardViewCount(int count);
+
+  /// No description provided for @qrCardIntroLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'한 줄 소개'**
+  String get qrCardIntroLabel;
+
+  /// No description provided for @qrCardIntroPlaceholder.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 20년 경력 철근 반장'**
+  String get qrCardIntroPlaceholder;
+
+  /// No description provided for @qrCardIntroSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'한 줄 소개를 저장했어요'**
+  String get qrCardIntroSaved;
+
+  /// No description provided for @qrCardExposeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'명함 공개'**
+  String get qrCardExposeTitle;
+
+  /// No description provided for @qrCardExposeSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'켜면 QR·링크로 프로필을 볼 수 있어요'**
+  String get qrCardExposeSub;
+
+  /// No description provided for @qrCardHiddenHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금은 비공개예요 — 링크를 열어도 명함이 보이지 않아요'**
+  String get qrCardHiddenHint;
+
+  /// No description provided for @qrCardRotate.
+  ///
+  /// In ko, this message translates to:
+  /// **'링크 재발급'**
+  String get qrCardRotate;
+
+  /// No description provided for @qrCardRotateConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 링크를 만들면 이전 QR·링크는 더 이상 열리지 않아요. 계속할까요?'**
+  String get qrCardRotateConfirm;
+
+  /// No description provided for @qrCardRotateConfirmBtn.
+  ///
+  /// In ko, this message translates to:
+  /// **'재발급'**
+  String get qrCardRotateConfirmBtn;
+
+  /// No description provided for @qrCardRotated.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 명함 링크를 발급했어요'**
+  String get qrCardRotated;
+
+  /// No description provided for @qrCardDocValid.
+  ///
+  /// In ko, this message translates to:
+  /// **'서류 유효'**
+  String get qrCardDocValid;
+
+  /// No description provided for @qrCardDocProblem.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인이 필요한 서류'**
+  String get qrCardDocProblem;
+
+  /// No description provided for @qrCardDocExpiryLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'만료 {date}'**
+  String qrCardDocExpiryLabel(String date);
 }
 
 class _AppLocalizationsDelegate

@@ -1,0 +1,8 @@
+- generic [active] [ref=f2e1]:
+  - main [ref=f2e2]:
+    - button "Tiếng Việt" [ref=f2e5] [cursor=pointer]
+    - paragraph [ref=f2e13]: 작업온
+    - generic [ref=f2e15]:
+      - paragraph [ref=f2e16]: Không tìm thấy liên kết
+      - paragraph [ref=f2e17]: Liên kết có thể đã hết hạn hoặc bị vô hiệu. Hãy hỏi người gửi để lấy liên kết mới.
+  - alert [ref=f2e18]

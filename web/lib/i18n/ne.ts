@@ -118,6 +118,19 @@ const ne: Record<MessageKey, string> = {
     'लिंकको म्याद सकिएको वा रद्द भएको हुन सक्छ। पठाउनेसँग नयाँ लिंक माग्नुहोस्।',
   statusRetry: 'फेरि प्रयास गर्नुहोस्',
 
+  // QR 명함 공개 프로필 (P3b)
+  kickerCard: 'कामदार कार्ड',
+  cardValidDocs: 'कागजात मान्य',
+  cardValidDocsDesc: 'म्याद तोकिएका सबै कागजात मान्य छन्।',
+  cardIndustryTitle: 'पेशा',
+  cardEquipmentTitle: 'उपकरण',
+  cardJoined: '작업온 सामेल मिति',
+  cardConnectTitle: 'यो कामदारसँग जोडिनुहोस्',
+  cardConnectDesc:
+    '작업온 एपमा फोन नम्बरबाट खोजेर जडान अनुरोध पठाउनुहोस्।',
+  cardStoreIos: 'App Store',
+  cardStoreAndroid: 'Google Play',
+
   langLabel: 'भाषा',
 };
 

@@ -118,6 +118,19 @@ const en: Record<MessageKey, string> = {
     'The link may have expired or been revoked. Please ask the sender for a new link.',
   statusRetry: 'Retry',
 
+  // QR 명함 공개 프로필 (P3b)
+  kickerCard: 'Worker card',
+  cardValidDocs: 'Documents valid',
+  cardValidDocsDesc: 'All documents with an expiry date are valid.',
+  cardIndustryTitle: 'Trade',
+  cardEquipmentTitle: 'Equipment',
+  cardJoined: 'Joined 작업온',
+  cardConnectTitle: 'Connect with this worker',
+  cardConnectDesc:
+    'Search by phone number in the 작업온 app and send a connection request.',
+  cardStoreIos: 'App Store',
+  cardStoreAndroid: 'Google Play',
+
   langLabel: 'Language',
 };
 

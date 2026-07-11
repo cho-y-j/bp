@@ -2257,4 +2257,65 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get badgeSelfTitle => 'Payment reliability';
+
+  @override
+  String get qrCardMenuTitle => 'My QR card';
+
+  @override
+  String get qrCardMenuSub => 'Introduce yourself with a QR and link';
+
+  @override
+  String get qrCardTitle => 'My QR card';
+
+  @override
+  String get qrCardScanHint => 'Scan the QR to open my public profile';
+
+  @override
+  String qrCardViewCount(int count) {
+    return '$count views';
+  }
+
+  @override
+  String get qrCardIntroLabel => 'One-line intro';
+
+  @override
+  String get qrCardIntroPlaceholder => 'e.g. Rebar foreman, 20 yrs experience';
+
+  @override
+  String get qrCardIntroSaved => 'Intro saved';
+
+  @override
+  String get qrCardExposeTitle => 'Show card';
+
+  @override
+  String get qrCardExposeSub =>
+      'When on, your profile is visible via QR and link';
+
+  @override
+  String get qrCardHiddenHint =>
+      'Hidden for now — the link won\'t show your card';
+
+  @override
+  String get qrCardRotate => 'Reissue link';
+
+  @override
+  String get qrCardRotateConfirm =>
+      'A new link will make the old QR and link stop working. Continue?';
+
+  @override
+  String get qrCardRotateConfirmBtn => 'Reissue';
+
+  @override
+  String get qrCardRotated => 'New card link issued';
+
+  @override
+  String get qrCardDocValid => 'Documents valid';
+
+  @override
+  String get qrCardDocProblem => 'Documents to check';
+
+  @override
+  String qrCardDocExpiryLabel(String date) {
+    return 'Expires $date';
+  }
 }

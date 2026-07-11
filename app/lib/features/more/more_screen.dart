@@ -18,6 +18,7 @@ import '../jobs/my_jobs_screen.dart';
 import '../tax/tax_invoice_screen.dart';
 import '../ledger/income_report_screen.dart';
 import '../notifications/notifications_screen.dart';
+import 'qr_card_screen.dart';
 
 class MoreScreen extends ConsumerWidget {
   const MoreScreen({super.key});
@@ -122,6 +123,12 @@ class MoreScreen extends ConsumerWidget {
               title: l.menuWallet,
               subtitle: l.menuWalletSub,
               onTap: () => _push(context, const WalletScreen()),
+            ),
+            _Tile(
+              icon: Icons.qr_code_2_rounded,
+              title: l.qrCardMenuTitle,
+              subtitle: l.qrCardMenuSub,
+              onTap: () => _push(context, const QrCardScreen()),
             ),
             _Tile(
               icon: Icons.storefront_outlined,

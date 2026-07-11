@@ -55,4 +55,14 @@ export class UpdateMeDto {
   @IsString()
   @Length(0, 40, { message: '예금주는 40자 이내입니다.' })
   payoutHolder?: string;
+
+  // QR 명함 (P3b) — 공개 노출 ON/OFF · 한 줄 소개
+  @IsOptional()
+  @IsBoolean()
+  cardEnabled?: boolean;
+
+  @IsOptional()
+  @IsString()
+  @Length(0, 80, { message: '한 줄 소개는 80자 이내입니다.' })
+  cardIntro?: string;
 }

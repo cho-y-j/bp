@@ -2254,4 +2254,66 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get badgeSelfTitle => 'Надёжность оплаты';
+
+  @override
+  String get qrCardMenuTitle => 'Моя QR-визитка';
+
+  @override
+  String get qrCardMenuSub => 'Представьтесь с помощью QR и ссылки';
+
+  @override
+  String get qrCardTitle => 'Моя QR-визитка';
+
+  @override
+  String get qrCardScanHint =>
+      'Отсканируйте QR, чтобы открыть мой публичный профиль';
+
+  @override
+  String qrCardViewCount(int count) {
+    return 'Просмотров: $count';
+  }
+
+  @override
+  String get qrCardIntroLabel => 'Краткое описание';
+
+  @override
+  String get qrCardIntroPlaceholder =>
+      'напр.: бригадир по арматуре, 20 лет опыта';
+
+  @override
+  String get qrCardIntroSaved => 'Описание сохранено';
+
+  @override
+  String get qrCardExposeTitle => 'Показывать визитку';
+
+  @override
+  String get qrCardExposeSub => 'Когда включено, профиль виден по QR и ссылке';
+
+  @override
+  String get qrCardHiddenHint =>
+      'Сейчас скрыто — по ссылке визитка не откроется';
+
+  @override
+  String get qrCardRotate => 'Обновить ссылку';
+
+  @override
+  String get qrCardRotateConfirm =>
+      'Новая ссылка сделает старый QR и ссылку недействительными. Продолжить?';
+
+  @override
+  String get qrCardRotateConfirmBtn => 'Обновить';
+
+  @override
+  String get qrCardRotated => 'Новая ссылка визитки создана';
+
+  @override
+  String get qrCardDocValid => 'Документы действительны';
+
+  @override
+  String get qrCardDocProblem => 'Документы для проверки';
+
+  @override
+  String qrCardDocExpiryLabel(String date) {
+    return 'Истекает $date';
+  }
 }

@@ -18,6 +18,8 @@ export interface ProfileDto {
   payoutBank: string | null; // 수금 안내용 입금 계좌 은행 (P3a)
   payoutAccount: string | null; // 수금 안내용 계좌번호 (P3a)
   payoutHolder: string | null; // 수금 안내용 예금주 (P3a)
+  cardEnabled: boolean; // QR 명함 공개 노출 여부 (P3b)
+  cardIntro: string | null; // QR 명함 한 줄 소개 (P3b)
   hasBusiness: boolean; // 사업장 보유 여부 (소유 사업장 존재 → 사업장 모드)
   createdAt: Date;
   updatedAt: Date;
@@ -38,6 +40,8 @@ export function toProfileDto(profile: ProfileWithCount): ProfileDto {
     payoutBank: profile.payoutBank,
     payoutAccount: profile.payoutAccount,
     payoutHolder: profile.payoutHolder,
+    cardEnabled: profile.cardEnabled,
+    cardIntro: profile.cardIntro,
     hasBusiness: (profile._count?.ownedBusinesses ?? 0) > 0,
     createdAt: profile.createdAt,
     updatedAt: profile.updatedAt,

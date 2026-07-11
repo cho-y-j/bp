@@ -120,6 +120,19 @@ const ru: Record<MessageKey, string> = {
     'Возможно, ссылка устарела или отключена. Попросите отправителя прислать новую.',
   statusRetry: 'Повторить',
 
+  // QR 명함 공개 프로필 (P3b)
+  kickerCard: 'Визитка работника',
+  cardValidDocs: 'Документы действительны',
+  cardValidDocsDesc: 'Все документы с указанным сроком действия действительны.',
+  cardIndustryTitle: 'Специализация',
+  cardEquipmentTitle: 'Техника',
+  cardJoined: 'Регистрация в 작업온',
+  cardConnectTitle: 'Связаться с работником',
+  cardConnectDesc:
+    'Найдите его по номеру телефона в приложении 작업온 и отправьте запрос на связь.',
+  cardStoreIos: 'App Store',
+  cardStoreAndroid: 'Google Play',
+
   langLabel: 'Язык',
 };
 

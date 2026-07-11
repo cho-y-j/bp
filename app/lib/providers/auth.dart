@@ -115,6 +115,15 @@ class AuthController extends StateNotifier<AuthState> {
     state = AuthState(AuthStatus.authenticated, Profile.fromJson(res as Map));
   }
 
+  /// QR 명함 공개 여부 / 한 줄 소개 저장 (PATCH /me). 제공된 키만 전송 (P3b).
+  Future<void> saveCard({bool? enabled, String? intro}) async {
+    final res = await _api.patch('/me', body: {
+      'cardEnabled': ?enabled,
+      if (intro != null) 'cardIntro': intro.trim(),
+    });
+    state = AuthState(AuthStatus.authenticated, Profile.fromJson(res as Map));
+  }
+
   Future<void> refreshProfile() async {
     try {
       final me = await _api.get('/me');

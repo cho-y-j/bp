@@ -133,6 +133,13 @@ final tbmPresetsProvider =
   return items.map((e) => TbmPreset.fromJson(e as Map)).toList();
 });
 
+/// 내 QR 명함 (GET /me/card — P3b).
+final myCardProvider = FutureProvider<CardData>((ref) async {
+  final api = ref.watch(apiClientProvider);
+  final res = await api.get('/me/card');
+  return CardData.fromJson(res as Map);
+});
+
 /// 데이터 무효화 유틸 — 쓰기 후 홈/캘린더/장부 새로고침.
 void invalidateAll(WidgetRef ref) {
   ref.invalidate(confirmationsProvider);
@@ -178,6 +185,19 @@ class Repo {
   /// 지금 수금 안내 보내기 (P3a) → {sent, channel, lastAt}. ApiException 은 그대로 전파.
   Future<Map> remindNow(String ledgerId) async {
     final res = await api.post('/ledger/$ledgerId/remind');
+    return res as Map;
+  }
+
+  /// 내 QR 명함 조회 (GET /me/card — P3b).
+  Future<CardData> fetchCard() async {
+    final res = await api.get('/me/card');
+    return CardData.fromJson(res as Map);
+  }
+
+  /// QR 명함 토큰 재발급 (POST /me/card/rotate — P3b). 이전 링크는 폐기됨.
+  /// → { token, url, enabled }.
+  Future<Map> rotateCard() async {
+    final res = await api.post('/me/card/rotate');
     return res as Map;
   }
 

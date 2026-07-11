@@ -8,7 +8,12 @@
 - `POST /auth/phone/verify` — 코드 검증 → 신규면 가입 + JWT, 기존이면 로그인 + JWT
 - `POST /auth/kakao` — 카카오 액세스토큰 검증 → 가입/로그인 (KAKAO_ENABLED=false 면 501 스텁)
 - `POST /auth/kakao/link` **(P1)** — 로그인 상태에서 카카오 토큰 제출 → 기존(전화 인증) 계정에 kakaoId 연결. 멱등, 충돌 시 409(KAKAO_ALREADY_LINKED), 비활성 501. 반환: ProfileDto
-- `GET /me` / `PATCH /me` — 프로필 조회·수정 (전화검색 동의 토글 + **P1: bizNumber/bizName/bizAddress** 세금계산서 공급자 정보 + **P3a: payoutBank/payoutAccount/payoutHolder** 수금 안내용 입금 계좌(선택 입력)). ProfileDto 에 `bizNumber/bizName/bizAddress`·`payoutBank/payoutAccount/payoutHolder` 노출
+- `GET /me` / `PATCH /me` — 프로필 조회·수정 (전화검색 동의 토글 + **P1: bizNumber/bizName/bizAddress** 세금계산서 공급자 정보 + **P3a: payoutBank/payoutAccount/payoutHolder** 수금 안내용 입금 계좌(선택 입력) + **P3b: cardEnabled(bool)·cardIntro(<=80자)** QR 명함 노출·소개). ProfileDto 에 `bizNumber/bizName/bizAddress`·`payoutBank/payoutAccount/payoutHolder`·`cardEnabled/cardIntro` 노출
+
+## QR 명함 /me/card · /public/profiles **(P3b)**
+- `GET /me/card` — 내 QR 명함(작업자 공개 프로필). 온보딩 후 **최초 조회 시 `cardToken`(nanoid 32) lazy 생성**. 반환: `{ token, url:"{PUBLIC_WEB_URL}/p/{token}", enabled, intro, viewCount, preview:{공개 프로필과 동일}, docStatus:{ valid, withExpiryCount, totalCount, types[], expiredDocs:[{type,expiryDate,dday}] } }`. **`docStatus.expiredDocs` 는 본인 전용**(만료된 내 서류 = 어떤 서류가 문제인지 소유자에게만 표시).
+- `POST /me/card/rotate` — 토큰 재발급(유출 대비). 구 토큰 즉시 무효화(→ 이후 공개 조회 404). 반환 `{ token, url, enabled }`.
+- `GET /public/profiles/:token` **(@Public)** — 공개 프로필. 반환: `{ name, industryTags[], intro, docValidity:{ valid, count, withExpiryCount, types[] }, equipments:[{type}], joinedAt, connect:{ message, appDeepLink, storeLinks:{ios,android} } }`. **비노출 절대 원칙**: 전화·계좌·서류 파일/경로·발급일 등 민감정보 미포함. 장비는 **종류(type)만**(차량번호·규격 제외). **서류 유효 배지**: 만료일 등록 서류 ≥1건 && 만료 지난 서류 0건 → `valid=true`(유형명·개수만 노출). **cardEnabled=false 또는 무효 토큰 → 404** PROFILE_CARD_NOT_FOUND. 조회 시 `cardViewCount`만 증가(IP/UA 로그 없음 — 로그 최소화).
 
 ## 서류 /documents
 - `POST /documents` — 업로드(multipart, 이미지/PDF) → PDF 정규화 저장. body: 유형, 소유자(profile|equipment), 발급일?, 만료일?

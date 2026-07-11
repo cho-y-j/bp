@@ -1306,7 +1306,7 @@
   "ledgerRemindSent": "수금 안내를 보냈어요",
   "ledgerRemindHistory": "안내 발송 이력",
   "ledgerRemindHistoryItem": "{date} · {stage}",
-  "@ledgerRemindHistoryItem":   {
+  "@ledgerRemindHistoryItem": {
     "placeholders": {
       "date": {
         "type": "String"
@@ -1328,7 +1328,7 @@
   "badgeExcellent": "우수 지급처",
   "badgeGood": "양호 지급처",
   "badgeAvgDays": "평균 {days}일",
-  "@badgeAvgDays":   {
+  "@badgeAvgDays": {
     "placeholders": {
       "days": {
         "type": "int"
@@ -1338,7 +1338,7 @@
   "badgeSelfImproveGood": "15일 내 지급 시 우수 지급처 배지를 받을 수 있어요",
   "badgeSelfImproveNone": "대금을 제때 지급하면 우수 지급처 배지를 받을 수 있어요",
   "badgeInsufficient": "지급 기록 {count}건 — 배지 산정에는 더 많은 기록이 필요해요",
-  "@badgeInsufficient":   {
+  "@badgeInsufficient": {
     "placeholders": {
       "count": {
         "type": "int"
@@ -1346,12 +1346,44 @@
     }
   },
   "badgeSampleCount": "최근 {count}건 기준",
-  "@badgeSampleCount":   {
+  "@badgeSampleCount": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "badgeSelfTitle": "지급 신뢰도"
+  "badgeSelfTitle": "지급 신뢰도",
+  "qrCardMenuTitle": "내 QR 명함",
+  "qrCardMenuSub": "QR·링크로 나를 소개해요",
+  "qrCardTitle": "내 QR 명함",
+  "qrCardScanHint": "QR을 찍으면 내 공개 프로필이 열려요",
+  "qrCardViewCount": "조회 {count}회",
+  "@qrCardViewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "qrCardIntroLabel": "한 줄 소개",
+  "qrCardIntroPlaceholder": "예: 20년 경력 철근 반장",
+  "qrCardIntroSaved": "한 줄 소개를 저장했어요",
+  "qrCardExposeTitle": "명함 공개",
+  "qrCardExposeSub": "켜면 QR·링크로 프로필을 볼 수 있어요",
+  "qrCardHiddenHint": "지금은 비공개예요 — 링크를 열어도 명함이 보이지 않아요",
+  "qrCardRotate": "링크 재발급",
+  "qrCardRotateConfirm": "새 링크를 만들면 이전 QR·링크는 더 이상 열리지 않아요. 계속할까요?",
+  "qrCardRotateConfirmBtn": "재발급",
+  "qrCardRotated": "새 명함 링크를 발급했어요",
+  "qrCardDocValid": "서류 유효",
+  "qrCardDocProblem": "확인이 필요한 서류",
+  "qrCardDocExpiryLabel": "만료 {date}",
+  "@qrCardDocExpiryLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  }
 }

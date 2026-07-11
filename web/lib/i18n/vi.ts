@@ -120,6 +120,19 @@ const vi: Record<MessageKey, string> = {
     'Liên kết có thể đã hết hạn hoặc bị vô hiệu. Hãy hỏi người gửi để lấy liên kết mới.',
   statusRetry: 'Thử lại',
 
+  // QR 명함 공개 프로필 (P3b)
+  kickerCard: 'Danh thiếp thợ',
+  cardValidDocs: 'Giấy tờ hợp lệ',
+  cardValidDocsDesc: 'Tất cả giấy tờ có ngày hết hạn đều còn hiệu lực.',
+  cardIndustryTitle: 'Ngành nghề',
+  cardEquipmentTitle: 'Thiết bị',
+  cardJoined: 'Ngày tham gia 작업온',
+  cardConnectTitle: 'Kết nối với thợ này',
+  cardConnectDesc:
+    'Tìm theo số điện thoại trong ứng dụng 작업온 và gửi yêu cầu kết nối.',
+  cardStoreIos: 'App Store',
+  cardStoreAndroid: 'Google Play',
+
   langLabel: 'Ngôn ngữ',
 };
 

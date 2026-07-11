@@ -18,6 +18,8 @@ class Profile {
   final String? payoutBank; // 수금 안내용 입금 계좌 은행 (P3a)
   final String? payoutAccount; // 수금 안내용 입금 계좌번호 (P3a)
   final String? payoutHolder; // 수금 안내용 예금주 (P3a)
+  final bool cardEnabled; // QR 명함 공개 여부 (P3b)
+  final String? cardIntro; // QR 명함 한 줄 소개 (P3b)
 
   Profile({
     required this.id,
@@ -33,6 +35,8 @@ class Profile {
     required this.payoutBank,
     required this.payoutAccount,
     required this.payoutHolder,
+    required this.cardEnabled,
+    required this.cardIntro,
   });
 
   /// 세금계산서 공급자 정보(사업자번호) 등록 여부.
@@ -56,7 +60,88 @@ class Profile {
         payoutBank: j['payoutBank'] as String?,
         payoutAccount: j['payoutAccount'] as String?,
         payoutHolder: j['payoutHolder'] as String?,
+        cardEnabled: j['cardEnabled'] == true,
+        cardIntro: j['cardIntro'] as String?,
       );
+}
+
+/// QR 명함 만료/문제 서류 1건 (소유자 본인에게만 노출 — P3b).
+class CardExpiredDoc {
+  final String type;
+  final DateTime? expiryDate;
+  final int? dday; // 만료까지 남은 일수(음수=만료됨)
+  const CardExpiredDoc(
+      {required this.type, required this.expiryDate, required this.dday});
+  factory CardExpiredDoc.fromJson(Map j) => CardExpiredDoc(
+        type: j['type']?.toString() ?? '',
+        expiryDate: _pdate(j['expiryDate']),
+        dday: j['dday'] is num ? (j['dday'] as num).round() : null,
+      );
+}
+
+/// 내 서류 상태(QR 명함 소유자 본인용 — P3b).
+class CardDocStatus {
+  final bool valid;
+  final int withExpiryCount;
+  final int totalCount;
+  final List<String> types;
+  final List<CardExpiredDoc> expiredDocs;
+  const CardDocStatus({
+    required this.valid,
+    required this.withExpiryCount,
+    required this.totalCount,
+    required this.types,
+    required this.expiredDocs,
+  });
+  factory CardDocStatus.fromJson(Map j) => CardDocStatus(
+        valid: j['valid'] == true,
+        withExpiryCount: _pint(j['withExpiryCount']),
+        totalCount: _pint(j['totalCount']),
+        types:
+            (j['types'] as List?)?.map((e) => e.toString()).toList() ?? const [],
+        expiredDocs: (j['expiredDocs'] as List?)
+                ?.map((e) => CardExpiredDoc.fromJson(e as Map))
+                .toList() ??
+            const [],
+      );
+}
+
+/// 내 QR 명함 (GET /me/card — P3b).
+class CardData {
+  final String token;
+  final String url;
+  final bool enabled;
+  final String? intro;
+  final int viewCount;
+  final String? name;
+  final List<String> industryTags;
+  final CardDocStatus docStatus;
+  const CardData({
+    required this.token,
+    required this.url,
+    required this.enabled,
+    required this.intro,
+    required this.viewCount,
+    required this.name,
+    required this.industryTags,
+    required this.docStatus,
+  });
+  factory CardData.fromJson(Map j) {
+    final preview = (j['preview'] as Map?) ?? const {};
+    return CardData(
+      token: j['token']?.toString() ?? '',
+      url: j['url']?.toString() ?? '',
+      enabled: j['enabled'] == true,
+      intro: j['intro'] as String?,
+      viewCount: _pint(j['viewCount']),
+      name: preview['name'] as String?,
+      industryTags: (preview['industryTags'] as List?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      docStatus: CardDocStatus.fromJson((j['docStatus'] as Map?) ?? const {}),
+    );
+  }
 }
 
 class AuthResult {

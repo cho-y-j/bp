@@ -127,6 +127,18 @@ const ko = {
     '링크가 만료되었거나 무효화되었을 수 있습니다. 보낸 분에게 새 링크를 요청하세요.',
   statusRetry: '다시 시도',
 
+  // QR 명함 공개 프로필 (P3b)
+  kickerCard: '작업자 명함',
+  cardValidDocs: '서류 유효',
+  cardValidDocsDesc: '유효기간이 등록된 서류가 모두 유효합니다.',
+  cardIndustryTitle: '업종',
+  cardEquipmentTitle: '보유 장비',
+  cardJoined: '작업온 가입일',
+  cardConnectTitle: '이 작업자와 연결하기',
+  cardConnectDesc: '작업온 앱에서 전화번호로 검색해 연결을 요청하세요.',
+  cardStoreIos: 'App Store',
+  cardStoreAndroid: 'Google Play',
+
   // 언어 선택
   langLabel: '언어',
 } as const;

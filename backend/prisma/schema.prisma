@@ -148,6 +148,11 @@ model Profile {
   payoutBank         String? // 은행명
   payoutAccount      String? // 계좌번호
   payoutHolder       String? // 예금주
+  // QR 명함 — 작업자 공개 프로필 (P3b)
+  cardToken          String?  @unique // 공개 프로필 토큰(nanoid 32). 온보딩 후 최초 GET /me/card 시 생성.
+  cardEnabled        Boolean  @default(true) // 공개 명함 노출 ON/OFF (false 면 공개 페이지 404)
+  cardIntro          String? // 한 줄 소개 (공개 프로필에 노출)
+  cardViewCount      Int      @default(0) // 공개 프로필 조회 수 (로그 최소화 — 카운터만)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 

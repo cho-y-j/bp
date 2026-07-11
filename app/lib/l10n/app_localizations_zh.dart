@@ -2194,4 +2194,62 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get badgeSelfTitle => '付款信誉';
+
+  @override
+  String get qrCardMenuTitle => '我的二维码名片';
+
+  @override
+  String get qrCardMenuSub => '用二维码和链接介绍自己';
+
+  @override
+  String get qrCardTitle => '我的二维码名片';
+
+  @override
+  String get qrCardScanHint => '扫描二维码即可打开我的公开资料';
+
+  @override
+  String qrCardViewCount(int count) {
+    return '浏览$count次';
+  }
+
+  @override
+  String get qrCardIntroLabel => '一句话介绍';
+
+  @override
+  String get qrCardIntroPlaceholder => '例：20年经验钢筋班长';
+
+  @override
+  String get qrCardIntroSaved => '已保存介绍';
+
+  @override
+  String get qrCardExposeTitle => '公开名片';
+
+  @override
+  String get qrCardExposeSub => '开启后可通过二维码和链接查看资料';
+
+  @override
+  String get qrCardHiddenHint => '当前未公开——即使打开链接也看不到名片';
+
+  @override
+  String get qrCardRotate => '重新生成链接';
+
+  @override
+  String get qrCardRotateConfirm => '生成新链接后，旧的二维码和链接将失效。是否继续？';
+
+  @override
+  String get qrCardRotateConfirmBtn => '重新生成';
+
+  @override
+  String get qrCardRotated => '已生成新的名片链接';
+
+  @override
+  String get qrCardDocValid => '证件有效';
+
+  @override
+  String get qrCardDocProblem => '需确认的证件';
+
+  @override
+  String qrCardDocExpiryLabel(String date) {
+    return '到期 $date';
+  }
 }

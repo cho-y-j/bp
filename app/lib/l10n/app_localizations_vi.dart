@@ -2249,4 +2249,65 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get badgeSelfTitle => 'Độ tin cậy thanh toán';
+
+  @override
+  String get qrCardMenuTitle => 'Danh thiếp QR của tôi';
+
+  @override
+  String get qrCardMenuSub => 'Giới thiệu bản thân bằng QR và liên kết';
+
+  @override
+  String get qrCardTitle => 'Danh thiếp QR của tôi';
+
+  @override
+  String get qrCardScanHint => 'Quét QR để mở hồ sơ công khai của tôi';
+
+  @override
+  String qrCardViewCount(int count) {
+    return '$count lượt xem';
+  }
+
+  @override
+  String get qrCardIntroLabel => 'Giới thiệu một dòng';
+
+  @override
+  String get qrCardIntroPlaceholder =>
+      'vd: Tổ trưởng cốt thép, 20 năm kinh nghiệm';
+
+  @override
+  String get qrCardIntroSaved => 'Đã lưu giới thiệu';
+
+  @override
+  String get qrCardExposeTitle => 'Hiển thị danh thiếp';
+
+  @override
+  String get qrCardExposeSub => 'Khi bật, hồ sơ hiển thị qua QR và liên kết';
+
+  @override
+  String get qrCardHiddenHint =>
+      'Đang ẩn — mở liên kết cũng không thấy danh thiếp';
+
+  @override
+  String get qrCardRotate => 'Cấp lại liên kết';
+
+  @override
+  String get qrCardRotateConfirm =>
+      'Liên kết mới sẽ khiến QR và liên kết cũ ngừng hoạt động. Tiếp tục?';
+
+  @override
+  String get qrCardRotateConfirmBtn => 'Cấp lại';
+
+  @override
+  String get qrCardRotated => 'Đã cấp liên kết danh thiếp mới';
+
+  @override
+  String get qrCardDocValid => 'Giấy tờ hợp lệ';
+
+  @override
+  String get qrCardDocProblem => 'Giấy tờ cần kiểm tra';
+
+  @override
+  String qrCardDocExpiryLabel(String date) {
+    return 'Hết hạn $date';
+  }
 }

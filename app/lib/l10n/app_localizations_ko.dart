@@ -2198,4 +2198,62 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get badgeSelfTitle => '지급 신뢰도';
+
+  @override
+  String get qrCardMenuTitle => '내 QR 명함';
+
+  @override
+  String get qrCardMenuSub => 'QR·링크로 나를 소개해요';
+
+  @override
+  String get qrCardTitle => '내 QR 명함';
+
+  @override
+  String get qrCardScanHint => 'QR을 찍으면 내 공개 프로필이 열려요';
+
+  @override
+  String qrCardViewCount(int count) {
+    return '조회 $count회';
+  }
+
+  @override
+  String get qrCardIntroLabel => '한 줄 소개';
+
+  @override
+  String get qrCardIntroPlaceholder => '예: 20년 경력 철근 반장';
+
+  @override
+  String get qrCardIntroSaved => '한 줄 소개를 저장했어요';
+
+  @override
+  String get qrCardExposeTitle => '명함 공개';
+
+  @override
+  String get qrCardExposeSub => '켜면 QR·링크로 프로필을 볼 수 있어요';
+
+  @override
+  String get qrCardHiddenHint => '지금은 비공개예요 — 링크를 열어도 명함이 보이지 않아요';
+
+  @override
+  String get qrCardRotate => '링크 재발급';
+
+  @override
+  String get qrCardRotateConfirm => '새 링크를 만들면 이전 QR·링크는 더 이상 열리지 않아요. 계속할까요?';
+
+  @override
+  String get qrCardRotateConfirmBtn => '재발급';
+
+  @override
+  String get qrCardRotated => '새 명함 링크를 발급했어요';
+
+  @override
+  String get qrCardDocValid => '서류 유효';
+
+  @override
+  String get qrCardDocProblem => '확인이 필요한 서류';
+
+  @override
+  String qrCardDocExpiryLabel(String date) {
+    return '만료 $date';
+  }
 }

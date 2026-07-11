@@ -113,6 +113,18 @@ const zh: Record<MessageKey, string> = {
   statusNotFoundMsg: '链接可能已过期或被作废。请向发送人索取新链接。',
   statusRetry: '重试',
 
+  // QR 명함 공개 프로필 (P3b)
+  kickerCard: '工人名片',
+  cardValidDocs: '证件有效',
+  cardValidDocsDesc: '所有已登记有效期的证件均在有效期内。',
+  cardIndustryTitle: '工种',
+  cardEquipmentTitle: '持有设备',
+  cardJoined: '작업온 加入日期',
+  cardConnectTitle: '与该工人建立连接',
+  cardConnectDesc: '在 작업온 App 中通过手机号搜索并发送连接请求。',
+  cardStoreIos: 'App Store',
+  cardStoreAndroid: 'Google Play',
+
   langLabel: '语言',
 };
 
