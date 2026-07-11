@@ -421,5 +421,53 @@
   "myjobAccept": "Accept",
   "myjobStart": "Start work",
   "myjobComplete": "Complete work",
-  "signPadHint": "Sign here with your finger"
+  "signPadHint": "Sign here with your finger",
+  "teamMenuTitle": "My Team",
+  "teamMenuSub": "Manage crew members and rates as a team lead",
+  "teamListTitle": "My Team",
+  "teamEmptyTitle": "You haven't created a team yet",
+  "teamEmptySub": "Create a team and add members to organize a team confirmation on one sheet",
+  "teamCreate": "Create team",
+  "teamNameLabel": "Team name",
+  "teamNameHint": "Team name (e.g. Park's Crew A)",
+  "teamAddMember": "Add member",
+  "teamMembersTitle": "Members",
+  "teamNoMembers": "Please add members",
+  "teamMemberCountLabel": "{count} members",
+  "@teamMemberCountLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "teamMemberLinked": "Linked",
+  "teamMemberManual": "Manual",
+  "teamDefaultRate": "Default rate",
+  "teamDefaultRateHint": "Default rate (per 1 gongsu)",
+  "teamAddByPhone": "Find by phone",
+  "teamAddManual": "Enter manually",
+  "teamMemberNameHint": "Name",
+  "teamMemberPhoneHint": "Phone (optional)",
+  "teamSearchPhoneHint": "Member's phone number",
+  "teamSearchHint": "Only registered users who consented to phone search can be found",
+  "teamSearchNoResult": "No results found",
+  "teamMemberAdded": "Member added",
+  "teamMemberExists": "This member is already in the team",
+  "teamConsentRequired": "Only registered users who consented to phone search can be linked",
+  "teamDeleteConfirm": "Delete this team? Confirmations already issued stay as they are.",
+  "teamDeleteMemberConfirm": "Delete this member?",
+  "confTeamMode": "Team confirmation",
+  "confTeamModeSub": "Organize each member's gongsu on one sheet",
+  "confTeamSelect": "Select team",
+  "confTeamPickTeam": "Please select a team",
+  "confTeamNoTeam": "First create a team in 'My Team'",
+  "confTeamTotal": "Team total",
+  "confTeamEmptyEntries": "No members have gongsu entered",
+  "ledgerTeamBadge": "Team",
+  "ledgerTeamDerived": "{boss}'s team work",
+  "@ledgerTeamDerived": {
+    "placeholders": {
+      "boss": { "type": "String" }
+    }
+  },
+  "ledgerDerivedReadonly": "This is team work created by the team lead (you can only record payments)"
 }

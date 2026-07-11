@@ -421,5 +421,53 @@
   "myjobAccept": "स्वीकार",
   "myjobStart": "काम सुरु",
   "myjobComplete": "काम पूरा",
-  "signPadHint": "यहाँ औंलाले हस्ताक्षर गर्नुहोस्"
+  "signPadHint": "यहाँ औंलाले हस्ताक्षर गर्नुहोस्",
+  "teamMenuTitle": "मेरो टोली",
+  "teamMenuSub": "फोरम्यानको रूपमा टोली सदस्य सूची र दररेट व्यवस्थापन",
+  "teamListTitle": "मेरो टोली",
+  "teamEmptyTitle": "अझै कुनै टोली बनाइएको छैन",
+  "teamEmptySub": "टोली बनाएर सदस्य थपेपछि टोली पुष्टिपत्र एउटै पानामा मिलाउन सकिन्छ",
+  "teamCreate": "टोली बनाउनुहोस्",
+  "teamNameLabel": "टोलीको नाम",
+  "teamNameHint": "टोलीको नाम (जस्तै: पार्क फोरम्यान A टोली)",
+  "teamAddMember": "सदस्य थप्नुहोस्",
+  "teamMembersTitle": "सदस्यहरू",
+  "teamNoMembers": "कृपया सदस्य थप्नुहोस्",
+  "teamMemberCountLabel": "{count} सदस्य",
+  "@teamMemberCountLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "teamMemberLinked": "जडान भएको",
+  "teamMemberManual": "म्यानुअल",
+  "teamDefaultRate": "पूर्वनिर्धारित दररेट",
+  "teamDefaultRateHint": "पूर्वनिर्धारित दररेट (१ गोङ्सु)",
+  "teamAddByPhone": "फोन नम्बरबाट खोज्नुहोस्",
+  "teamAddManual": "आफैं प्रविष्ट गर्नुहोस्",
+  "teamMemberNameHint": "नाम",
+  "teamMemberPhoneHint": "फोन नम्बर (वैकल्पिक)",
+  "teamSearchPhoneHint": "सदस्यको फोन नम्बर",
+  "teamSearchHint": "फोन खोजीमा सहमति जनाएका दर्ता प्रयोगकर्ता मात्र भेटिन्छन्",
+  "teamSearchNoResult": "कुनै नतिजा भेटिएन",
+  "teamMemberAdded": "सदस्य थपियो",
+  "teamMemberExists": "यो सदस्य पहिले नै टोलीमा छ",
+  "teamConsentRequired": "फोन खोजीमा सहमति जनाएका दर्ता प्रयोगकर्ता मात्र जडान गर्न सकिन्छ",
+  "teamDeleteConfirm": "यो टोली मेटाउने? पहिले नै जारी भएका पुष्टिपत्र यथावत् रहन्छन्।",
+  "teamDeleteMemberConfirm": "यो सदस्य मेटाउने?",
+  "confTeamMode": "टोली पुष्टिपत्र",
+  "confTeamModeSub": "प्रत्येक सदस्यको गोङ्सु एउटै पानामा मिलाउनुहोस्",
+  "confTeamSelect": "टोली छान्नुहोस्",
+  "confTeamPickTeam": "कृपया टोली छान्नुहोस्",
+  "confTeamNoTeam": "पहिले 'मेरो टोली' मा टोली बनाउनुहोस्",
+  "confTeamTotal": "टोली जम्मा",
+  "confTeamEmptyEntries": "गोङ्सु प्रविष्ट गरेको कुनै सदस्य छैन",
+  "ledgerTeamBadge": "टोली",
+  "ledgerTeamDerived": "{boss} फोरम्यान टोली काम",
+  "@ledgerTeamDerived": {
+    "placeholders": {
+      "boss": { "type": "String" }
+    }
+  },
+  "ledgerDerivedReadonly": "यो फोरम्यानले बनाएको टोली काम हो (तपाईं भुक्तानी मात्र रेकर्ड गर्न सक्नुहुन्छ)"
 }

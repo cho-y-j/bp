@@ -961,5 +961,53 @@
   "myjobAccept": "수락",
   "myjobStart": "작업 시작",
   "myjobComplete": "작업 완료",
-  "signPadHint": "여기에 손가락으로 서명하세요"
+  "signPadHint": "여기에 손가락으로 서명하세요",
+  "teamMenuTitle": "내 팀",
+  "teamMenuSub": "반장으로 팀원 명단·단가 관리",
+  "teamListTitle": "내 팀",
+  "teamEmptyTitle": "아직 만든 팀이 없어요",
+  "teamEmptySub": "팀을 만들고 팀원을 추가하면 팀 확인서를 한 장으로 정리할 수 있어요",
+  "teamCreate": "팀 만들기",
+  "teamNameLabel": "팀 이름",
+  "teamNameHint": "팀 이름 (예: 박반장 A팀)",
+  "teamAddMember": "팀원 추가",
+  "teamMembersTitle": "팀원",
+  "teamNoMembers": "팀원을 추가해 주세요",
+  "teamMemberCountLabel": "팀원 {count}명",
+  "@teamMemberCountLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "teamMemberLinked": "가입 연결",
+  "teamMemberManual": "수기",
+  "teamDefaultRate": "기본 단가",
+  "teamDefaultRateHint": "기본 단가 (공수 1일)",
+  "teamAddByPhone": "전화번호로 찾기",
+  "teamAddManual": "직접 입력",
+  "teamMemberNameHint": "이름",
+  "teamMemberPhoneHint": "전화번호 (선택)",
+  "teamSearchPhoneHint": "팀원 전화번호",
+  "teamSearchHint": "전화번호 검색에 동의한 가입자만 찾을 수 있어요",
+  "teamSearchNoResult": "검색 결과가 없어요",
+  "teamMemberAdded": "팀원을 추가했어요",
+  "teamMemberExists": "이미 팀에 있는 팀원이에요",
+  "teamConsentRequired": "전화번호 검색에 동의한 가입자만 연결할 수 있어요",
+  "teamDeleteConfirm": "이 팀을 삭제할까요? 이미 발행된 확인서는 그대로 유지돼요.",
+  "teamDeleteMemberConfirm": "이 팀원을 삭제할까요?",
+  "confTeamMode": "팀 확인서",
+  "confTeamModeSub": "팀원별 공수로 한 장에 정리",
+  "confTeamSelect": "팀 선택",
+  "confTeamPickTeam": "팀을 선택하세요",
+  "confTeamNoTeam": "먼저 '내 팀'에서 팀을 만들어 주세요",
+  "confTeamTotal": "팀 합계",
+  "confTeamEmptyEntries": "공수를 입력한 팀원이 없어요",
+  "ledgerTeamBadge": "팀",
+  "ledgerTeamDerived": "{boss} 반장 팀 작업",
+  "@ledgerTeamDerived": {
+    "placeholders": {
+      "boss": { "type": "String" }
+    }
+  },
+  "ledgerDerivedReadonly": "반장이 작성한 팀 작업이에요 (입금만 기록할 수 있어요)"
 }

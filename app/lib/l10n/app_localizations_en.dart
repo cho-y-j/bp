@@ -1461,4 +1461,127 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signPadHint => 'Sign here with your finger';
+
+  @override
+  String get teamMenuTitle => 'My Team';
+
+  @override
+  String get teamMenuSub => 'Manage crew members and rates as a team lead';
+
+  @override
+  String get teamListTitle => 'My Team';
+
+  @override
+  String get teamEmptyTitle => 'You haven\'t created a team yet';
+
+  @override
+  String get teamEmptySub =>
+      'Create a team and add members to organize a team confirmation on one sheet';
+
+  @override
+  String get teamCreate => 'Create team';
+
+  @override
+  String get teamNameLabel => 'Team name';
+
+  @override
+  String get teamNameHint => 'Team name (e.g. Park\'s Crew A)';
+
+  @override
+  String get teamAddMember => 'Add member';
+
+  @override
+  String get teamMembersTitle => 'Members';
+
+  @override
+  String get teamNoMembers => 'Please add members';
+
+  @override
+  String teamMemberCountLabel(int count) {
+    return '$count members';
+  }
+
+  @override
+  String get teamMemberLinked => 'Linked';
+
+  @override
+  String get teamMemberManual => 'Manual';
+
+  @override
+  String get teamDefaultRate => 'Default rate';
+
+  @override
+  String get teamDefaultRateHint => 'Default rate (per 1 gongsu)';
+
+  @override
+  String get teamAddByPhone => 'Find by phone';
+
+  @override
+  String get teamAddManual => 'Enter manually';
+
+  @override
+  String get teamMemberNameHint => 'Name';
+
+  @override
+  String get teamMemberPhoneHint => 'Phone (optional)';
+
+  @override
+  String get teamSearchPhoneHint => 'Member\'s phone number';
+
+  @override
+  String get teamSearchHint =>
+      'Only registered users who consented to phone search can be found';
+
+  @override
+  String get teamSearchNoResult => 'No results found';
+
+  @override
+  String get teamMemberAdded => 'Member added';
+
+  @override
+  String get teamMemberExists => 'This member is already in the team';
+
+  @override
+  String get teamConsentRequired =>
+      'Only registered users who consented to phone search can be linked';
+
+  @override
+  String get teamDeleteConfirm =>
+      'Delete this team? Confirmations already issued stay as they are.';
+
+  @override
+  String get teamDeleteMemberConfirm => 'Delete this member?';
+
+  @override
+  String get confTeamMode => 'Team confirmation';
+
+  @override
+  String get confTeamModeSub => 'Organize each member\'s gongsu on one sheet';
+
+  @override
+  String get confTeamSelect => 'Select team';
+
+  @override
+  String get confTeamPickTeam => 'Please select a team';
+
+  @override
+  String get confTeamNoTeam => 'First create a team in \'My Team\'';
+
+  @override
+  String get confTeamTotal => 'Team total';
+
+  @override
+  String get confTeamEmptyEntries => 'No members have gongsu entered';
+
+  @override
+  String get ledgerTeamBadge => 'Team';
+
+  @override
+  String ledgerTeamDerived(String boss) {
+    return '$boss\'s team work';
+  }
+
+  @override
+  String get ledgerDerivedReadonly =>
+      'This is team work created by the team lead (you can only record payments)';
 }

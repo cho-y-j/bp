@@ -10,6 +10,7 @@ import { EquipmentsModule } from './equipments/equipments.module';
 import { DocumentsModule } from './documents/documents.module';
 import { DocumentSharesModule } from './document-shares/document-shares.module';
 import { ConfirmationsModule } from './confirmations/confirmations.module';
+import { TeamsModule } from './teams/teams.module';
 import { LedgerModule } from './ledger/ledger.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ConnectionsModule } from './connections/connections.module';
@@ -36,6 +37,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     DocumentsModule,
     DocumentSharesModule,
     ConfirmationsModule,
+    TeamsModule,
     LedgerModule,
     NotificationsModule,
     ConnectionsModule,

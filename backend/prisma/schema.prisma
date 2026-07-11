@@ -138,6 +138,8 @@ model Profile {
   safetyLogs      SafetyLog[]     @relation("SafetyTarget")
   notifications   Notification[]
   deviceTokens    DeviceToken[]
+  teams           Team[]          @relation("TeamOwner") // 반장(팀장)으로서 소유한 팀
+  teamMemberships TeamMember[]    @relation("TeamMemberProfile") // 가입자로서 소속된 팀원 항목
 
   @@index([phone])
   @@map("profiles")
@@ -367,6 +369,10 @@ model Confirmation {
   equipmentSection Json? // 장비 섹션 (장비명/차량번호/규격/유도원) — 장비 사용자만
   notes            String? // 특이사항
 
+  // 팀(반장) 확인서 — teamId 있으면 팀 명단(teamEntries)로 합계 계산. 반장 장부에 합계 1건.
+  teamId      String? // 반장이 지정한 팀 (P2a)
+  teamEntries Json? // 팀원별 몫 [{ name, profileId?, quantity(공수), rate, amount }] — 서버 계산
+
   // 외부 서명 / 공개 링크
   shareToken    String             @unique // 외부 링크 토큰 (생성 시 발급)
   signImagePath String? // 서명 이미지 경로
@@ -380,15 +386,18 @@ model Confirmation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  profile     Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  job         Job?         @relation(fields: [jobId], references: [id], onDelete: SetNull)
-  business    Business?    @relation(fields: [businessId], references: [id], onDelete: SetNull)
-  ledgerEntry LedgerEntry?
+  profile              Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  job                  Job?          @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  business             Business?     @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  team                 Team?         @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  ledgerEntry          LedgerEntry?  @relation("LedgerConfirmation")
+  derivedLedgerEntries LedgerEntry[] @relation("LedgerSourceConfirmation") // 팀원 파생 장부 항목들
 
   @@index([profileId])
   @@index([status])
   @@index([profileId, date]) // 월별 캘린더 집계 (프로필 + 날짜)
   @@index([manualContact]) // 미가입 상대 승격 스캔 (manualContact 매칭)
+  @@index([teamId]) // 팀별 확인서 조회
   @@map("confirmations")
 }
 
@@ -398,26 +407,30 @@ model Confirmation {
 //   - 부분입금 허용: payments JSONB[]
 // ============================================================================
 model LedgerEntry {
-  id               String       @id @default(uuid())
-  profileId        String // 장부 소유자(작업자)
-  confirmationId   String?      @unique // 연결된 확인서 (선택)
-  businessId       String? // 상대 사업장 (가입 시)
-  counterpartyName String? // 상대 수기명 (미가입)
-  amount           Decimal      @db.Decimal(12, 2) // 받을 금액
-  dueDate          DateTime? // 수금 예정일
-  status           LedgerStatus @default(PENDING)
-  payments         Json[]       @default([]) // 입금 기록 [{ amount, paidAt, method }] (부분입금)
-  taxInvoicedAt    DateTime? // 세금계산서 발행(홈택스 입력) 완료 표시 시각 — 재집계 제외용
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  id                   String       @id @default(uuid())
+  profileId            String // 장부 소유자(작업자)
+  confirmationId       String?      @unique // 연결된 확인서 (선택, 1:1)
+  sourceConfirmationId String? // 팀원 파생 항목의 원 확인서(반장 팀 확인서) 참조 (P2a)
+  derived              Boolean      @default(false) // 팀 파생(팀원 몫) — 읽기전용(입금 기록만 가능)
+  businessId           String? // 상대 사업장 (가입 시)
+  counterpartyName     String? // 상대 수기명 (미가입) — 파생 항목은 반장 이름
+  amount               Decimal      @db.Decimal(12, 2) // 받을 금액
+  dueDate              DateTime? // 수금 예정일
+  status               LedgerStatus @default(PENDING)
+  payments             Json[]       @default([]) // 입금 기록 [{ amount, paidAt, method }] (부분입금)
+  taxInvoicedAt        DateTime? // 세금계산서 발행(홈택스 입력) 완료 표시 시각 — 재집계 제외용
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
 
-  profile      Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  confirmation Confirmation? @relation(fields: [confirmationId], references: [id], onDelete: SetNull)
-  business     Business?     @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  profile            Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  confirmation       Confirmation? @relation("LedgerConfirmation", fields: [confirmationId], references: [id], onDelete: SetNull)
+  sourceConfirmation Confirmation? @relation("LedgerSourceConfirmation", fields: [sourceConfirmationId], references: [id], onDelete: SetNull)
+  business           Business?     @relation(fields: [businessId], references: [id], onDelete: SetNull)
 
   @@index([profileId])
   @@index([businessId])
   @@index([dueDate])
+  @@index([sourceConfirmationId]) // 팀 확인서 → 팀원 파생 항목 조회
   @@map("ledger_entries")
 }
 
@@ -505,4 +518,47 @@ model DeviceToken {
 
   @@index([profileId])
   @@map("device_tokens")
+}
+
+// ============================================================================
+//  teams — 반장(팀장)의 팀 (P2a)
+//   - 반장 1명(ownerId=profile)이 여러 팀을 소유할 수 있다.
+//   - 팀원(team_members)은 가입자(연결) 또는 수기(이름+전화) 둘 다 허용.
+// ============================================================================
+model Team {
+  id        String   @id @default(uuid())
+  ownerId   String // 반장(팀장) profileId
+  name      String // 팀 이름
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner         Profile        @relation("TeamOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members       TeamMember[]
+  confirmations Confirmation[]
+
+  @@index([ownerId])
+  @@map("teams")
+}
+
+// ============================================================================
+//  team_members — 팀원 명단 (P2a)
+//   - profileId 있으면 가입자(전화 검색-동의자- 연결). 없으면 수기(name+phone).
+//   - defaultRate: 팀 확인서 작성 시 자동 채워지는 기본 단가(공수 1일 단가).
+// ============================================================================
+model TeamMember {
+  id          String   @id @default(uuid())
+  teamId      String
+  profileId   String? // 가입자(연결)일 때만
+  name        String // 표시 이름 (가입자면 이름 스냅샷, 수기면 입력값)
+  phone       String? // 수기 전화(미가입) 또는 연결 참고
+  defaultRate Decimal? @db.Decimal(12, 2) // 기본 단가(공수 1일 단가) — 확인서 작성 시 자동
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  team    Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  profile Profile? @relation("TeamMemberProfile", fields: [profileId], references: [id], onDelete: SetNull)
+
+  @@index([teamId])
+  @@index([profileId])
+  @@map("team_members")
 }

@@ -10,6 +10,7 @@ import '../../providers/auth.dart';
 import '../../providers/locale.dart';
 import '../wallet/wallet_screen.dart';
 import '../biz/business_mode_screen.dart';
+import '../team/team_screen.dart';
 import '../jobs/my_jobs_screen.dart';
 import '../tax/tax_invoice_screen.dart';
 import '../notifications/notifications_screen.dart';
@@ -123,6 +124,12 @@ class MoreScreen extends ConsumerWidget {
               title: profile?.hasBusiness == true ? l.menuBizHome : l.menuBizMode,
               subtitle: l.menuBizSub,
               onTap: () => _push(context, const BusinessModeScreen()),
+            ),
+            _Tile(
+              icon: Icons.groups_2_outlined,
+              title: l.teamMenuTitle,
+              subtitle: l.teamMenuSub,
+              onTap: () => _push(context, const TeamScreen()),
             ),
             _Tile(
               icon: Icons.assignment_turned_in_outlined,

@@ -1422,4 +1422,122 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get signPadHint => '用手指在这里签名';
+
+  @override
+  String get teamMenuTitle => '我的班组';
+
+  @override
+  String get teamMenuSub => '作为班长管理组员名单和单价';
+
+  @override
+  String get teamListTitle => '我的班组';
+
+  @override
+  String get teamEmptyTitle => '还没有创建班组';
+
+  @override
+  String get teamEmptySub => '创建班组并添加组员后，可以把班组确认书整理成一张';
+
+  @override
+  String get teamCreate => '创建班组';
+
+  @override
+  String get teamNameLabel => '班组名称';
+
+  @override
+  String get teamNameHint => '班组名称（例：朴班长A组）';
+
+  @override
+  String get teamAddMember => '添加组员';
+
+  @override
+  String get teamMembersTitle => '组员';
+
+  @override
+  String get teamNoMembers => '请添加组员';
+
+  @override
+  String teamMemberCountLabel(int count) {
+    return '组员 $count 名';
+  }
+
+  @override
+  String get teamMemberLinked => '已关联';
+
+  @override
+  String get teamMemberManual => '手动';
+
+  @override
+  String get teamDefaultRate => '默认单价';
+
+  @override
+  String get teamDefaultRateHint => '默认单价（1个工数）';
+
+  @override
+  String get teamAddByPhone => '用电话号码查找';
+
+  @override
+  String get teamAddManual => '手动输入';
+
+  @override
+  String get teamMemberNameHint => '姓名';
+
+  @override
+  String get teamMemberPhoneHint => '电话号码（可选）';
+
+  @override
+  String get teamSearchPhoneHint => '组员电话号码';
+
+  @override
+  String get teamSearchHint => '只能找到同意电话搜索的注册用户';
+
+  @override
+  String get teamSearchNoResult => '没有搜索结果';
+
+  @override
+  String get teamMemberAdded => '已添加组员';
+
+  @override
+  String get teamMemberExists => '该组员已在班组中';
+
+  @override
+  String get teamConsentRequired => '只能关联同意电话搜索的注册用户';
+
+  @override
+  String get teamDeleteConfirm => '要删除此班组吗？已发行的确认书将保持不变。';
+
+  @override
+  String get teamDeleteMemberConfirm => '要删除此组员吗？';
+
+  @override
+  String get confTeamMode => '班组确认书';
+
+  @override
+  String get confTeamModeSub => '按组员工数整理成一张';
+
+  @override
+  String get confTeamSelect => '选择班组';
+
+  @override
+  String get confTeamPickTeam => '请选择班组';
+
+  @override
+  String get confTeamNoTeam => '请先在“我的班组”中创建班组';
+
+  @override
+  String get confTeamTotal => '班组合计';
+
+  @override
+  String get confTeamEmptyEntries => '没有填写工数的组员';
+
+  @override
+  String get ledgerTeamBadge => '班组';
+
+  @override
+  String ledgerTeamDerived(String boss) {
+    return '$boss 班长班组作业';
+  }
+
+  @override
+  String get ledgerDerivedReadonly => '这是班长填写的班组作业（只能记录收款）';
 }

@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  ArrayMinSize,
   IsArray,
   IsBoolean,
   IsIn,
@@ -10,8 +11,28 @@ import {
   Matches,
   MaxLength,
   Min,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
+
+const UUID_RE =
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
+/** 팀(반장) 확인서 팀원 항목 — memberId(팀원) 별 공수·단가. 금액은 서버 계산. */
+export class TeamEntryDto {
+  @IsString()
+  @Matches(UUID_RE, { message: 'memberId 는 UUID 형식이어야 합니다.' })
+  memberId!: string;
+
+  @IsNumber()
+  @Min(0)
+  quantity!: number; // 공수(0.1 단위)
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  rate?: number; // 미지정 시 팀원 기본 단가(defaultRate) 사용
+}
 
 /** 확인서 단가 유형 (API 계약: DAILY | HOURLY | PER_CASE(건당) | GONGSU(공수)). */
 export const CONFIRMATION_RATE_TYPES = [
@@ -111,18 +132,22 @@ export class CreateConfirmationDto {
   })
   endTime!: string; // HH:mm
 
+  // 팀 확인서(teamId)면 단가 유형/단가/수량은 팀원 항목(teamEntries)이 대신하므로 선택.
+  @ValidateIf((o: CreateConfirmationDto) => !o.teamId)
   @IsIn(CONFIRMATION_RATE_TYPES, {
     message: '단가 유형은 DAILY | HOURLY | PER_CASE | GONGSU 중 하나입니다.',
   })
-  rateType!: (typeof CONFIRMATION_RATE_TYPES)[number];
+  rateType?: (typeof CONFIRMATION_RATE_TYPES)[number];
 
+  @ValidateIf((o: CreateConfirmationDto) => !o.teamId)
   @IsNumber()
   @Min(0)
-  rate!: number;
+  rate?: number;
 
+  @ValidateIf((o: CreateConfirmationDto) => !o.teamId)
   @IsNumber()
   @Min(0)
-  quantity!: number; // 일수/시간/건수
+  quantity?: number; // 일수/시간/건수
 
   @IsOptional()
   @IsArray()
@@ -153,4 +178,17 @@ export class CreateConfirmationDto {
     message: '수금 예정일은 YYYY-MM-DD 형식입니다.',
   })
   dueDate?: string;
+
+  // ---- 팀(반장) 확인서 (P2a) ----
+  @IsOptional()
+  @IsString()
+  @Matches(UUID_RE, { message: 'teamId 는 UUID 형식이어야 합니다.' })
+  teamId?: string;
+
+  @ValidateIf((o: CreateConfirmationDto) => !!o.teamId)
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => TeamEntryDto)
+  teamEntries?: TeamEntryDto[];
 }

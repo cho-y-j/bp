@@ -421,5 +421,53 @@
   "myjobAccept": "Nhận việc",
   "myjobStart": "Bắt đầu làm",
   "myjobComplete": "Hoàn thành",
-  "signPadHint": "Ký ở đây bằng ngón tay"
+  "signPadHint": "Ký ở đây bằng ngón tay",
+  "teamMenuTitle": "Đội của tôi",
+  "teamMenuSub": "Quản lý danh sách và đơn giá thành viên với tư cách đội trưởng",
+  "teamListTitle": "Đội của tôi",
+  "teamEmptyTitle": "Bạn chưa tạo đội nào",
+  "teamEmptySub": "Tạo đội và thêm thành viên để gộp phiếu xác nhận của đội vào một tờ",
+  "teamCreate": "Tạo đội",
+  "teamNameLabel": "Tên đội",
+  "teamNameHint": "Tên đội (ví dụ: Đội A của Park)",
+  "teamAddMember": "Thêm thành viên",
+  "teamMembersTitle": "Thành viên",
+  "teamNoMembers": "Vui lòng thêm thành viên",
+  "teamMemberCountLabel": "{count} thành viên",
+  "@teamMemberCountLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "teamMemberLinked": "Đã liên kết",
+  "teamMemberManual": "Thủ công",
+  "teamDefaultRate": "Đơn giá mặc định",
+  "teamDefaultRateHint": "Đơn giá mặc định (1 công)",
+  "teamAddByPhone": "Tìm bằng số điện thoại",
+  "teamAddManual": "Nhập thủ công",
+  "teamMemberNameHint": "Tên",
+  "teamMemberPhoneHint": "Số điện thoại (tùy chọn)",
+  "teamSearchPhoneHint": "Số điện thoại thành viên",
+  "teamSearchHint": "Chỉ tìm được người dùng đã đồng ý tìm kiếm bằng số điện thoại",
+  "teamSearchNoResult": "Không có kết quả",
+  "teamMemberAdded": "Đã thêm thành viên",
+  "teamMemberExists": "Thành viên này đã có trong đội",
+  "teamConsentRequired": "Chỉ liên kết được người dùng đã đồng ý tìm kiếm bằng số điện thoại",
+  "teamDeleteConfirm": "Xóa đội này? Các phiếu xác nhận đã phát hành vẫn được giữ nguyên.",
+  "teamDeleteMemberConfirm": "Xóa thành viên này?",
+  "confTeamMode": "Phiếu xác nhận đội",
+  "confTeamModeSub": "Gộp công của từng thành viên vào một tờ",
+  "confTeamSelect": "Chọn đội",
+  "confTeamPickTeam": "Vui lòng chọn đội",
+  "confTeamNoTeam": "Trước tiên hãy tạo đội trong 'Đội của tôi'",
+  "confTeamTotal": "Tổng của đội",
+  "confTeamEmptyEntries": "Chưa có thành viên nào nhập công",
+  "ledgerTeamBadge": "Đội",
+  "ledgerTeamDerived": "Công việc đội của {boss}",
+  "@ledgerTeamDerived": {
+    "placeholders": {
+      "boss": { "type": "String" }
+    }
+  },
+  "ledgerDerivedReadonly": "Đây là công việc đội do đội trưởng lập (bạn chỉ có thể ghi nhận thanh toán)"
 }

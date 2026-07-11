@@ -1453,4 +1453,128 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get signPadHint => 'Ký ở đây bằng ngón tay';
+
+  @override
+  String get teamMenuTitle => 'Đội của tôi';
+
+  @override
+  String get teamMenuSub =>
+      'Quản lý danh sách và đơn giá thành viên với tư cách đội trưởng';
+
+  @override
+  String get teamListTitle => 'Đội của tôi';
+
+  @override
+  String get teamEmptyTitle => 'Bạn chưa tạo đội nào';
+
+  @override
+  String get teamEmptySub =>
+      'Tạo đội và thêm thành viên để gộp phiếu xác nhận của đội vào một tờ';
+
+  @override
+  String get teamCreate => 'Tạo đội';
+
+  @override
+  String get teamNameLabel => 'Tên đội';
+
+  @override
+  String get teamNameHint => 'Tên đội (ví dụ: Đội A của Park)';
+
+  @override
+  String get teamAddMember => 'Thêm thành viên';
+
+  @override
+  String get teamMembersTitle => 'Thành viên';
+
+  @override
+  String get teamNoMembers => 'Vui lòng thêm thành viên';
+
+  @override
+  String teamMemberCountLabel(int count) {
+    return '$count thành viên';
+  }
+
+  @override
+  String get teamMemberLinked => 'Đã liên kết';
+
+  @override
+  String get teamMemberManual => 'Thủ công';
+
+  @override
+  String get teamDefaultRate => 'Đơn giá mặc định';
+
+  @override
+  String get teamDefaultRateHint => 'Đơn giá mặc định (1 công)';
+
+  @override
+  String get teamAddByPhone => 'Tìm bằng số điện thoại';
+
+  @override
+  String get teamAddManual => 'Nhập thủ công';
+
+  @override
+  String get teamMemberNameHint => 'Tên';
+
+  @override
+  String get teamMemberPhoneHint => 'Số điện thoại (tùy chọn)';
+
+  @override
+  String get teamSearchPhoneHint => 'Số điện thoại thành viên';
+
+  @override
+  String get teamSearchHint =>
+      'Chỉ tìm được người dùng đã đồng ý tìm kiếm bằng số điện thoại';
+
+  @override
+  String get teamSearchNoResult => 'Không có kết quả';
+
+  @override
+  String get teamMemberAdded => 'Đã thêm thành viên';
+
+  @override
+  String get teamMemberExists => 'Thành viên này đã có trong đội';
+
+  @override
+  String get teamConsentRequired =>
+      'Chỉ liên kết được người dùng đã đồng ý tìm kiếm bằng số điện thoại';
+
+  @override
+  String get teamDeleteConfirm =>
+      'Xóa đội này? Các phiếu xác nhận đã phát hành vẫn được giữ nguyên.';
+
+  @override
+  String get teamDeleteMemberConfirm => 'Xóa thành viên này?';
+
+  @override
+  String get confTeamMode => 'Phiếu xác nhận đội';
+
+  @override
+  String get confTeamModeSub => 'Gộp công của từng thành viên vào một tờ';
+
+  @override
+  String get confTeamSelect => 'Chọn đội';
+
+  @override
+  String get confTeamPickTeam => 'Vui lòng chọn đội';
+
+  @override
+  String get confTeamNoTeam => 'Trước tiên hãy tạo đội trong \'Đội của tôi\'';
+
+  @override
+  String get confTeamTotal => 'Tổng của đội';
+
+  @override
+  String get confTeamEmptyEntries => 'Chưa có thành viên nào nhập công';
+
+  @override
+  String get ledgerTeamBadge => 'Đội';
+
+  @override
+  String ledgerTeamDerived(String boss) {
+    return 'Công việc đội của $boss';
+  }
+
+  @override
+  String get ledgerDerivedReadonly =>
+      'Đây là công việc đội do đội trưởng lập (bạn chỉ có thể ghi nhận thanh toán)';
 }

@@ -421,5 +421,53 @@
   "myjobAccept": "Принять",
   "myjobStart": "Начать работу",
   "myjobComplete": "Завершить работу",
-  "signPadHint": "Распишитесь здесь пальцем"
+  "signPadHint": "Распишитесь здесь пальцем",
+  "teamMenuTitle": "Моя бригада",
+  "teamMenuSub": "Управление списком и ставками бригады как бригадир",
+  "teamListTitle": "Моя бригада",
+  "teamEmptyTitle": "Вы ещё не создали бригаду",
+  "teamEmptySub": "Создайте бригаду и добавьте участников, чтобы оформить бригадный акт одним листом",
+  "teamCreate": "Создать бригаду",
+  "teamNameLabel": "Название бригады",
+  "teamNameHint": "Название бригады (напр.: Бригада А Пака)",
+  "teamAddMember": "Добавить участника",
+  "teamMembersTitle": "Участники",
+  "teamNoMembers": "Пожалуйста, добавьте участников",
+  "teamMemberCountLabel": "Участников: {count}",
+  "@teamMemberCountLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "teamMemberLinked": "Связан",
+  "teamMemberManual": "Вручную",
+  "teamDefaultRate": "Ставка по умолчанию",
+  "teamDefaultRateHint": "Ставка по умолчанию (за 1 гонсу)",
+  "teamAddByPhone": "Найти по телефону",
+  "teamAddManual": "Ввести вручную",
+  "teamMemberNameHint": "Имя",
+  "teamMemberPhoneHint": "Телефон (необязательно)",
+  "teamSearchPhoneHint": "Телефон участника",
+  "teamSearchHint": "Найти можно только пользователей, согласившихся на поиск по телефону",
+  "teamSearchNoResult": "Ничего не найдено",
+  "teamMemberAdded": "Участник добавлен",
+  "teamMemberExists": "Этот участник уже в бригаде",
+  "teamConsentRequired": "Связать можно только пользователей, согласившихся на поиск по телефону",
+  "teamDeleteConfirm": "Удалить эту бригаду? Уже выданные акты останутся без изменений.",
+  "teamDeleteMemberConfirm": "Удалить этого участника?",
+  "confTeamMode": "Бригадный акт",
+  "confTeamModeSub": "Оформить гонсу каждого участника на одном листе",
+  "confTeamSelect": "Выбрать бригаду",
+  "confTeamPickTeam": "Пожалуйста, выберите бригаду",
+  "confTeamNoTeam": "Сначала создайте бригаду в 'Моя бригада'",
+  "confTeamTotal": "Итого по бригаде",
+  "confTeamEmptyEntries": "Нет участников с введённым гонсу",
+  "ledgerTeamBadge": "Бригада",
+  "ledgerTeamDerived": "Работа бригады {boss}",
+  "@ledgerTeamDerived": {
+    "placeholders": {
+      "boss": { "type": "String" }
+    }
+  },
+  "ledgerDerivedReadonly": "Это бригадная работа, оформленная бригадиром (можно только записывать оплату)"
 }

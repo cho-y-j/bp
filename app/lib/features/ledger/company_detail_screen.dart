@@ -124,6 +124,14 @@ class _EntryTile extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                             fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
+                    if (entry.derived) ...[
+                      const SizedBox(height: 3),
+                      Text(l.ledgerTeamDerived(entry.companyName),
+                          style: TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w700,
+                              color: c.accentText)),
+                    ],
                     const SizedBox(height: 4),
                     Row(children: [
                       Text(l.ledgerBilled(formatMoney(entry.amount, context.lang)),
@@ -141,6 +149,12 @@ class _EntryTile extends ConsumerWidget {
                                 fontFeatures: const [FontFeature.tabularFigures()])),
                       ],
                     ]),
+                    if (entry.derived)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(l.ledgerDerivedReadonly,
+                            style: TextStyle(fontSize: 12, color: c.ink3)),
+                      ),
                   ],
                 ),
               ),

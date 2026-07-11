@@ -1458,4 +1458,129 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get signPadHint => 'Распишитесь здесь пальцем';
+
+  @override
+  String get teamMenuTitle => 'Моя бригада';
+
+  @override
+  String get teamMenuSub =>
+      'Управление списком и ставками бригады как бригадир';
+
+  @override
+  String get teamListTitle => 'Моя бригада';
+
+  @override
+  String get teamEmptyTitle => 'Вы ещё не создали бригаду';
+
+  @override
+  String get teamEmptySub =>
+      'Создайте бригаду и добавьте участников, чтобы оформить бригадный акт одним листом';
+
+  @override
+  String get teamCreate => 'Создать бригаду';
+
+  @override
+  String get teamNameLabel => 'Название бригады';
+
+  @override
+  String get teamNameHint => 'Название бригады (напр.: Бригада А Пака)';
+
+  @override
+  String get teamAddMember => 'Добавить участника';
+
+  @override
+  String get teamMembersTitle => 'Участники';
+
+  @override
+  String get teamNoMembers => 'Пожалуйста, добавьте участников';
+
+  @override
+  String teamMemberCountLabel(int count) {
+    return 'Участников: $count';
+  }
+
+  @override
+  String get teamMemberLinked => 'Связан';
+
+  @override
+  String get teamMemberManual => 'Вручную';
+
+  @override
+  String get teamDefaultRate => 'Ставка по умолчанию';
+
+  @override
+  String get teamDefaultRateHint => 'Ставка по умолчанию (за 1 гонсу)';
+
+  @override
+  String get teamAddByPhone => 'Найти по телефону';
+
+  @override
+  String get teamAddManual => 'Ввести вручную';
+
+  @override
+  String get teamMemberNameHint => 'Имя';
+
+  @override
+  String get teamMemberPhoneHint => 'Телефон (необязательно)';
+
+  @override
+  String get teamSearchPhoneHint => 'Телефон участника';
+
+  @override
+  String get teamSearchHint =>
+      'Найти можно только пользователей, согласившихся на поиск по телефону';
+
+  @override
+  String get teamSearchNoResult => 'Ничего не найдено';
+
+  @override
+  String get teamMemberAdded => 'Участник добавлен';
+
+  @override
+  String get teamMemberExists => 'Этот участник уже в бригаде';
+
+  @override
+  String get teamConsentRequired =>
+      'Связать можно только пользователей, согласившихся на поиск по телефону';
+
+  @override
+  String get teamDeleteConfirm =>
+      'Удалить эту бригаду? Уже выданные акты останутся без изменений.';
+
+  @override
+  String get teamDeleteMemberConfirm => 'Удалить этого участника?';
+
+  @override
+  String get confTeamMode => 'Бригадный акт';
+
+  @override
+  String get confTeamModeSub =>
+      'Оформить гонсу каждого участника на одном листе';
+
+  @override
+  String get confTeamSelect => 'Выбрать бригаду';
+
+  @override
+  String get confTeamPickTeam => 'Пожалуйста, выберите бригаду';
+
+  @override
+  String get confTeamNoTeam => 'Сначала создайте бригаду в \'Моя бригада\'';
+
+  @override
+  String get confTeamTotal => 'Итого по бригаде';
+
+  @override
+  String get confTeamEmptyEntries => 'Нет участников с введённым гонсу';
+
+  @override
+  String get ledgerTeamBadge => 'Бригада';
+
+  @override
+  String ledgerTeamDerived(String boss) {
+    return 'Работа бригады $boss';
+  }
+
+  @override
+  String get ledgerDerivedReadonly =>
+      'Это бригадная работа, оформленная бригадиром (можно только записывать оплату)';
 }

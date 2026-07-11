@@ -60,6 +60,14 @@ final expiringDocsProvider =
   return items.map((e) => ExpiringDoc.fromJson(e as Map)).toList();
 });
 
+/// 내 팀(반장 명단) 목록.
+final teamsProvider = FutureProvider<List<Team>>((ref) async {
+  final api = ref.watch(apiClientProvider);
+  final res = await api.get('/teams');
+  final items = (res as Map)['items'] as List? ?? [];
+  return items.map((e) => Team.fromJson(e as Map)).toList();
+});
+
 /// 내 연결(사업장). 확인서 작성 시 상대 선택.
 final connectionsProvider =
     FutureProvider<List<ConnectionItem>>((ref) async {
@@ -113,6 +121,60 @@ class Repo {
     final res = await api.post('/ledger/tax-invoice-data/mark',
         body: {'ledgerIds': ledgerIds});
     return res as Map;
+  }
+
+  // ── 팀(반장) ─────────────────────────────────────────────
+  Future<Team> createTeam(String name) async {
+    final res = await api.post('/teams', body: {'name': name});
+    return Team.fromJson(res as Map);
+  }
+
+  Future<Team> updateTeam(String id, String name) async {
+    final res = await api.patch('/teams/$id', body: {'name': name});
+    return Team.fromJson(res as Map);
+  }
+
+  Future<void> deleteTeam(String id) => api.delete('/teams/$id');
+
+  /// 가입 연결로 팀원 추가(서버가 프로필에서 이름 스냅샷).
+  Future<TeamMember> addTeamMemberByProfile(String teamId, String profileId,
+      {int? defaultRate}) async {
+    final res = await api.post('/teams/$teamId/members', body: {
+      'profileId': profileId,
+      'defaultRate': ?defaultRate,
+    });
+    return TeamMember.fromJson(res as Map);
+  }
+
+  /// 수기로 팀원 추가.
+  Future<TeamMember> addTeamMemberManual(String teamId,
+      {required String name, String? phone, int? defaultRate}) async {
+    final res = await api.post('/teams/$teamId/members', body: {
+      'name': name,
+      if (phone != null && phone.isNotEmpty) 'phone': phone,
+      'defaultRate': ?defaultRate,
+    });
+    return TeamMember.fromJson(res as Map);
+  }
+
+  Future<TeamMember> updateTeamMember(String teamId, String memberId,
+      {String? name, String? phone, int? defaultRate}) async {
+    final res = await api.patch('/teams/$teamId/members/$memberId', body: {
+      'name': ?name,
+      'phone': ?phone,
+      'defaultRate': ?defaultRate,
+    });
+    return TeamMember.fromJson(res as Map);
+  }
+
+  Future<void> deleteTeamMember(String teamId, String memberId) =>
+      api.delete('/teams/$teamId/members/$memberId');
+
+  /// 전화번호로 가입 작업자 검색(동의자만).
+  Future<List<WorkerSearchItem>> searchWorkers(String phone) async {
+    final res = await api.get('/workers/search', query: {'phone': phone});
+    final items = (res as Map)['items'] as List? ?? [];
+    return items.map((e) => WorkerSearchItem.fromJson(e as Map)).toList();
   }
 }
 

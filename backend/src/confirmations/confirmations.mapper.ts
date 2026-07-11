@@ -33,6 +33,8 @@ export interface ConfirmationDto {
   amountCalc: unknown;
   total: number;
   equipmentSection: unknown;
+  teamId: string | null;
+  teamEntries: unknown;
   notes: string | null;
   shareToken: string;
   signerName: string | null;
@@ -66,6 +68,8 @@ export function toConfirmationDto(c: Confirmation): ConfirmationDto {
     amountCalc: c.amountCalc,
     total: amountTotal(c.amountCalc),
     equipmentSection: c.equipmentSection ?? null,
+    teamId: c.teamId,
+    teamEntries: c.teamEntries ?? null,
     notes: c.notes,
     shareToken: c.shareToken,
     signerName: c.signerName,

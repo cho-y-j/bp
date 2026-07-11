@@ -25,6 +25,16 @@ class _ExtraItem {
   }
 }
 
+/// 팀 확인서: 팀원 1명의 공수·단가 입력 컨트롤러.
+class _TeamRow {
+  final TextEditingController gongsu = TextEditingController(text: '1');
+  final TextEditingController rate = TextEditingController();
+  void dispose() {
+    gongsu.dispose();
+    rate.dispose();
+  }
+}
+
 class ConfirmationFormScreen extends ConsumerStatefulWidget {
   final DateTime? initialDate;
   final Confirmation? copyFrom;
@@ -54,6 +64,10 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
   bool _saving = false;
   bool _committed = false; // 저장/임시저장 완료 → 자동 초안 재저장 방지
   bool _autoRestoreDismissed = false; // 자동 초안 복원 배너 닫힘
+  // 팀(반장) 확인서 모드.
+  bool _teamMode = false;
+  String? _teamId;
+  final Map<String, _TeamRow> _teamRows = {}; // memberId → 컨트롤러
 
   @override
   void initState() {
@@ -104,6 +118,9 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
     for (final e in _extras) {
       e.dispose();
     }
+    for (final r in _teamRows.values) {
+      r.dispose();
+    }
     super.dispose();
   }
 
@@ -131,14 +148,90 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
       ? validateGongsuQuantity(_qtyValue) != null
       : _qtyValue > 0;
 
+  bool get _counterpartyOk =>
+      _useBusiness ? _businessId != null : _company.text.trim().isNotEmpty;
+
+  /// 선택된 팀의 멤버에 맞춰 입력 컨트롤러를 준비(없으면 생성, 없어진 건 정리).
+  void _syncTeamRows(Team team) {
+    final ids = team.members.map((m) => m.id).toSet();
+    for (final stale in _teamRows.keys.where((k) => !ids.contains(k)).toList()) {
+      _teamRows.remove(stale)?.dispose();
+    }
+    for (final m in team.members) {
+      _teamRows.putIfAbsent(m.id, () {
+        final row = _TeamRow();
+        if (m.defaultRate != null) row.rate.text = '${m.defaultRate}';
+        return row;
+      });
+    }
+  }
+
+  /// 유효 공수(0.1 단위, >0)를 입력한 팀원의 정규화 공수. 아니면 null.
+  double? _memberGongsu(String memberId) {
+    final row = _teamRows[memberId];
+    if (row == null) return null;
+    final q = num.tryParse(row.gongsu.text.trim()) ?? 0;
+    return validateGongsuQuantity(q);
+  }
+
+  int _memberRate(String memberId) =>
+      int.tryParse(_teamRows[memberId]?.rate.text.trim() ?? '') ?? 0;
+
+  /// 팀 합계(공수>0 인 팀원의 단가×공수 합).
+  int _teamTotal(Team? team) {
+    if (team == null) return 0;
+    var sum = 0.0;
+    for (final m in team.members) {
+      final g = _memberGongsu(m.id);
+      if (g != null) sum += _memberRate(m.id) * g;
+    }
+    return sum.round();
+  }
+
+  /// teamEntries 본문(공수>0 인 팀원만).
+  List<Map<String, dynamic>> _teamEntries(Team? team) {
+    if (team == null) return const [];
+    final out = <Map<String, dynamic>>[];
+    for (final m in team.members) {
+      final g = _memberGongsu(m.id);
+      if (g == null) continue;
+      final rate = _memberRate(m.id);
+      out.add({
+        'memberId': m.id,
+        'quantity': g,
+        if (rate > 0) 'rate': rate,
+      });
+    }
+    return out;
+  }
+
+  Team? _selectedTeam(List<Team> teams) {
+    if (_teamId == null) return null;
+    for (final t in teams) {
+      if (t.id == _teamId) return t;
+    }
+    return null;
+  }
+
+  bool _teamValid(List<Team> teams) {
+    final team = _selectedTeam(teams);
+    if (team == null) return false;
+    final hasEntry = team.members.any((m) => _memberGongsu(m.id) != null);
+    return _counterpartyOk &&
+        _site.text.trim().isNotEmpty &&
+        _work.text.trim().isNotEmpty &&
+        hasEntry;
+  }
+
   bool get _valid {
+    if (_teamMode) {
+      final teams = ref.read(teamsProvider).valueOrNull ?? const [];
+      return _teamValid(teams);
+    }
     final rate = num.tryParse(_rate.text.trim()) ?? 0;
-    final counterpartyOk = _useBusiness
-        ? _businessId != null
-        : _company.text.trim().isNotEmpty;
     return _site.text.trim().isNotEmpty &&
         _work.text.trim().isNotEmpty &&
-        counterpartyOk &&
+        _counterpartyOk &&
         rate > 0 &&
         _quantityValid;
   }
@@ -189,8 +282,35 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
     }
   }
 
+  /// 상대(사업장/수기) 정보를 본문에 채운다.
+  void _fillCounterparty(Map<String, dynamic> body) {
+    if (_useBusiness && _businessId != null) {
+      body['businessId'] = _businessId;
+    } else {
+      body['companyName'] = _company.text.trim();
+      if (_contact.text.trim().isNotEmpty) body['contact'] = _contact.text.trim();
+    }
+  }
+
   /// `POST /confirmations` 요청 본문 구성(초안 큐 저장에도 재사용).
   Map<String, dynamic> _buildBody() {
+    // 팀(반장) 확인서 — rateType/rate/quantity/부가·장비 없이 teamEntries 로.
+    if (_teamMode) {
+      final teams = ref.read(teamsProvider).valueOrNull ?? const [];
+      final team = _selectedTeam(teams);
+      final body = <String, dynamic>{
+        'date': dateParam(_date),
+        'siteName': _site.text.trim(),
+        'workDescription': _work.text.trim(),
+        'startTime': _hhmm(_start),
+        'endTime': _hhmm(_end),
+        'teamId': _teamId,
+        'teamEntries': _teamEntries(team),
+      };
+      _fillCounterparty(body);
+      if (_dueDate != null) body['dueDate'] = dateParam(_dueDate!);
+      return body;
+    }
     final body = <String, dynamic>{
       'date': dateParam(_date),
       'siteName': _site.text.trim(),
@@ -201,12 +321,7 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
       'rate': num.tryParse(_rate.text.trim()) ?? 0,
       'quantity': num.tryParse(_qty.text.trim()) ?? 0,
     };
-    if (_useBusiness && _businessId != null) {
-      body['businessId'] = _businessId;
-    } else {
-      body['companyName'] = _company.text.trim();
-      if (_contact.text.trim().isNotEmpty) body['contact'] = _contact.text.trim();
-    }
+    _fillCounterparty(body);
     final extras = _extras
         .where((e) => (num.tryParse(e.rate.text.trim()) ?? 0) > 0)
         .map((e) => {
@@ -353,6 +468,9 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
     final lang = context.lang;
     final calc = _preview();
     final connections = ref.watch(connectionsProvider);
+    final teams = ref.watch(teamsProvider).valueOrNull ?? const <Team>[];
+    final selTeam = _selectedTeam(teams);
+    if (selTeam != null) _syncTeamRows(selTeam);
     // 폼이 비어있을 때만 자동 초안 복원 배너 노출(copyFrom 없을 때).
     final autoDraft = ref.watch(autoDraftProvider);
     final showRestore = autoDraft != null &&
@@ -439,96 +557,113 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                           hint: l.confWorkHint, maxLines: 3,
                           icon: null),
                       const SizedBox(height: 6),
-                      _EquipmentToggle(
-                        on: _equipOn,
-                        name: _equipName,
-                        vehicle: _equipVehicle,
-                        onChanged: (v) => setState(() => _equipOn = v),
+                      _TeamModeToggle(
+                        on: _teamMode,
+                        onChanged: (v) => setState(() => _teamMode = v),
                       ),
                       const SizedBox(height: 12),
-                      _Label(l.confRateType),
-                      _RateSegments(
-                        value: _rateType,
-                        onChanged: (v) => setState(() {
-                          _rateType = v;
-                          // 공수로 전환 시 유효한 기본값(1공수) 보장.
-                          if (v == 'GONGSU' &&
-                              validateGongsuQuantity(_qtyValue) == null) {
-                            _qty.text = '1';
-                          }
-                        }),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(children: [
-                        Expanded(
-                          flex: 3,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _Label(_rateType == 'HOURLY'
-                                  ? l.confRateHourly
-                                  : _rateType == 'PER_CASE'
-                                      ? l.confPricePerCase
-                                      : _rateType == 'GONGSU'
-                                          ? l.confPriceGongsu
-                                          : l.confRateDaily),
-                              _numInput(_rate, hint: '0'),
-                            ],
+                      if (_teamMode)
+                        _TeamSection(
+                          teams: teams,
+                          teamId: _teamId,
+                          rows: _teamRows,
+                          total: _teamTotal(selTeam),
+                          onTeamChanged: (id) => setState(() => _teamId = id),
+                          onRowChanged: () => setState(() {}),
+                        )
+                      else ...[
+                        _EquipmentToggle(
+                          on: _equipOn,
+                          name: _equipName,
+                          vehicle: _equipVehicle,
+                          onChanged: (v) => setState(() => _equipOn = v),
+                        ),
+                        const SizedBox(height: 12),
+                        _Label(l.confRateType),
+                        _RateSegments(
+                          value: _rateType,
+                          onChanged: (v) => setState(() {
+                            _rateType = v;
+                            // 공수로 전환 시 유효한 기본값(1공수) 보장.
+                            if (v == 'GONGSU' &&
+                                validateGongsuQuantity(_qtyValue) == null) {
+                              _qty.text = '1';
+                            }
+                          }),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(children: [
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _Label(_rateType == 'HOURLY'
+                                    ? l.confRateHourly
+                                    : _rateType == 'PER_CASE'
+                                        ? l.confPricePerCase
+                                        : _rateType == 'GONGSU'
+                                            ? l.confPriceGongsu
+                                            : l.confRateDaily),
+                                _numInput(_rate, hint: '0'),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          flex: 2,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _Label(_rateType == 'HOURLY'
-                                  ? l.confQtyHours
-                                  : _rateType == 'PER_CASE'
-                                      ? l.confQtyCases
-                                      : _rateType == 'GONGSU'
-                                          ? l.unitGongsu
-                                          : l.confQtyDays),
-                              _rateType == 'GONGSU'
-                                  ? _GongsuStepper(
-                                      controller: _qty,
-                                      onChanged: () => setState(() {}),
-                                    )
-                                  : _numInput(_qty, hint: '1'),
-                            ],
+                          const SizedBox(width: 10),
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _Label(_rateType == 'HOURLY'
+                                    ? l.confQtyHours
+                                    : _rateType == 'PER_CASE'
+                                        ? l.confQtyCases
+                                        : _rateType == 'GONGSU'
+                                            ? l.unitGongsu
+                                            : l.confQtyDays),
+                                _rateType == 'GONGSU'
+                                    ? _GongsuStepper(
+                                        controller: _qty,
+                                        onChanged: () => setState(() {}),
+                                      )
+                                    : _numInput(_qty, hint: '1'),
+                              ],
+                            ),
                           ),
+                        ]),
+                        if (_rateType == 'GONGSU'
+                            ? validateGongsuQuantity(_qtyValue) == null
+                            : _qtyValue <= 0)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 6, left: 2),
+                            child: Text(
+                                _rateType == 'GONGSU'
+                                    ? l.confErrGongsu
+                                    : _rateType == 'HOURLY'
+                                        ? l.confErrHours
+                                        : _rateType == 'PER_CASE'
+                                            ? l.confErrCases
+                                            : l.confErrDays,
+                                style: TextStyle(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: c.receivable)),
+                          ),
+                        const SizedBox(height: 10),
+                        _ExtrasSection(
+                          extras: _extras,
+                          onAdd: () =>
+                              setState(() => _extras.add(_ExtraItem('OVERTIME'))),
+                          onRemove: (e) => setState(() {
+                            _extras.remove(e);
+                            e.dispose();
+                          }),
+                          onChanged: () => setState(() {}),
                         ),
-                      ]),
-                      if (_rateType == 'GONGSU'
-                          ? validateGongsuQuantity(_qtyValue) == null
-                          : _qtyValue <= 0)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 6, left: 2),
-                          child: Text(
-                              _rateType == 'GONGSU'
-                                  ? l.confErrGongsu
-                                  : _rateType == 'HOURLY'
-                                      ? l.confErrHours
-                                      : _rateType == 'PER_CASE'
-                                          ? l.confErrCases
-                                          : l.confErrDays,
-                              style: TextStyle(
-                                  fontSize: 12.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: c.receivable)),
-                        ),
-                      const SizedBox(height: 10),
-                      _ExtrasSection(
-                        extras: _extras,
-                        onAdd: () => setState(() => _extras.add(_ExtraItem('OVERTIME'))),
-                        onRemove: (e) => setState(() {
-                          _extras.remove(e);
-                          e.dispose();
-                        }),
-                        onChanged: () => setState(() {}),
-                      ),
-                      const SizedBox(height: 8),
-                      _CalcPreview(calc: calc, rateType: _rateType),
+                        const SizedBox(height: 8),
+                        _CalcPreview(calc: calc, rateType: _rateType),
+                      ],
                       const SizedBox(height: 12),
                       _FieldBox(
                         label: l.confDueDate,
@@ -1269,6 +1404,263 @@ class _RestoreDraftBanner extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w800)),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 팀(반장) 확인서 토글.
+class _TeamModeToggle extends StatelessWidget {
+  final bool on;
+  final ValueChanged<bool> onChanged;
+  const _TeamModeToggle({required this.on, required this.onChanged});
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l = context.l;
+    return Container(
+      decoration: BoxDecoration(
+        color: c.surface2,
+        border: Border.all(color: on ? c.accentText : c.border, width: on ? 1.5 : 1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+      child: Row(children: [
+        Icon(Icons.groups_2_outlined, size: 20, color: c.accentText),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l.confTeamMode,
+                  style: TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
+              Text(l.confTeamModeSub,
+                  style: TextStyle(fontSize: 13, color: c.ink3)),
+            ],
+          ),
+        ),
+        Switch(value: on, onChanged: onChanged, activeTrackColor: c.primary),
+      ]),
+    );
+  }
+}
+
+/// 팀 확인서 본문 — 팀 선택 + 팀원별 공수/단가 + 팀 합계.
+class _TeamSection extends StatelessWidget {
+  final List<Team> teams;
+  final String? teamId;
+  final Map<String, _TeamRow> rows;
+  final int total;
+  final ValueChanged<String?> onTeamChanged;
+  final VoidCallback onRowChanged;
+  const _TeamSection({
+    required this.teams,
+    required this.teamId,
+    required this.rows,
+    required this.total,
+    required this.onTeamChanged,
+    required this.onRowChanged,
+  });
+
+  Team? get _selected {
+    if (teamId == null) return null;
+    for (final t in teams) {
+      if (t.id == teamId) return t;
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l = context.l;
+    if (teams.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+        decoration: BoxDecoration(
+          color: c.surface2,
+          border: Border.all(color: c.border),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(l.confTeamNoTeam,
+            style: TextStyle(fontSize: 14, color: c.ink2)),
+      );
+    }
+    final team = _selected;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Label(l.confTeamSelect),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: c.fieldBg,
+            border: Border.all(color: c.border),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              isExpanded: true,
+              value: teamId,
+              hint: Text(l.confTeamPickTeam,
+                  style: TextStyle(color: c.ink3, fontSize: 16)),
+              icon: Icon(Icons.expand_more_rounded, color: c.ink3),
+              items: [
+                for (final t in teams)
+                  DropdownMenuItem(
+                    value: t.id,
+                    child: Text('${t.name} · ${l.teamMemberCountLabel(t.memberCount)}',
+                        style: TextStyle(
+                            color: c.ink,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600)),
+                  ),
+              ],
+              onChanged: onTeamChanged,
+            ),
+          ),
+        ),
+        if (team != null) ...[
+          const SizedBox(height: 12),
+          if (team.members.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+              child: Text(l.teamNoMembers,
+                  style: TextStyle(fontSize: 14, color: c.ink3)),
+            )
+          else
+            for (final m in team.members)
+              _TeamMemberInput(
+                member: m,
+                row: rows[m.id],
+                onChanged: onRowChanged,
+              ),
+          const SizedBox(height: 4),
+          _TeamTotalBox(total: total),
+        ],
+      ],
+    );
+  }
+}
+
+class _TeamMemberInput extends StatelessWidget {
+  final TeamMember member;
+  final _TeamRow? row;
+  final VoidCallback onChanged;
+  const _TeamMemberInput(
+      {required this.member, required this.row, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l = context.l;
+    final lang = context.lang;
+    if (row == null) return const SizedBox.shrink();
+    final g = validateGongsuQuantity(num.tryParse(row!.gongsu.text.trim()) ?? 0);
+    final rate = int.tryParse(row!.rate.text.trim()) ?? 0;
+    final amount = g == null ? 0 : (rate * g).round();
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+      decoration: BoxDecoration(
+        color: c.surface2,
+        border: Border.all(color: c.border),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Expanded(
+              child: Text(member.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
+            ),
+            Text(formatMoney(amount, lang),
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: g == null ? c.ink3 : c.ink,
+                    fontFeatures: const [FontFeature.tabularFigures()])),
+          ]),
+          const SizedBox(height: 8),
+          Row(children: [
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Label(l.unitGongsu),
+                  _GongsuStepper(controller: row!.gongsu, onChanged: onChanged),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Label(l.teamDefaultRate),
+                  TextField(
+                    controller: row!.rate,
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: false),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
+                    ],
+                    onChanged: (_) => onChanged(),
+                    style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: c.ink,
+                        fontFeatures: const [FontFeature.tabularFigures()]),
+                    decoration: const InputDecoration(hintText: '0'),
+                  ),
+                ],
+              ),
+            ),
+          ]),
+        ],
+      ),
+    );
+  }
+}
+
+class _TeamTotalBox extends StatelessWidget {
+  final int total;
+  const _TeamTotalBox({required this.total});
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l = context.l;
+    final lang = context.lang;
+    return Container(
+      decoration: BoxDecoration(
+        color: c.surface2,
+        border: Border.all(color: c.borderStrong),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Text(l.confTeamTotal,
+              style: TextStyle(
+                  fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
+          const Spacer(),
+          Text(formatMoney(total, lang),
+              style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: c.ink,
+                  fontFeatures: const [FontFeature.tabularFigures()])),
         ],
       ),
     );

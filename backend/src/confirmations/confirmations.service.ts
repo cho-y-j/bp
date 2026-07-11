@@ -28,6 +28,11 @@ import { UpdateConfirmationDto } from './dto/update-confirmation.dto';
 import { SignConfirmationDto } from './dto/sign-confirmation.dto';
 import { toConfirmationDto, RATE_TYPE_LABEL } from './confirmations.mapper';
 import {
+  computeTeamEntries,
+  type TeamEntryComputed,
+  type TeamMemberRef,
+} from '../teams/team-entries.util';
+import {
   kstDate,
   kstDateTime,
   kstMonthRange,
@@ -62,14 +67,38 @@ export class ConfirmationsService {
         dto.contact,
       );
 
-    const quantity = this.resolveQuantity(dto.rateType, dto.quantity);
-    const calc = calcAmount({
-      rateType: dto.rateType,
-      rate: dto.rate,
-      quantity,
-      additionalItems: dto.additionalItems,
-      vatRate: dto.vatRate,
-    });
+    // 팀(반장) 확인서: 팀원 몫으로 합계 계산. 일반 확인서: 기존 단가×수량.
+    let calc: AmountCalcResult;
+    let teamId: string | null = null;
+    let teamEntries: TeamEntryComputed[] | null = null;
+    let effectiveRateType: RateType;
+    if (dto.teamId) {
+      const resolved = await this.resolveTeamEntries(
+        userId,
+        dto.teamId,
+        dto.teamEntries ?? [],
+      );
+      teamId = dto.teamId;
+      teamEntries = resolved.entries;
+      effectiveRateType = RateType.GONGSU;
+      calc = {
+        items: [],
+        subtotal: resolved.total,
+        vatRate: 0,
+        vat: 0,
+        total: resolved.total,
+      };
+    } else {
+      const quantity = this.resolveQuantity(dto.rateType!, dto.quantity!);
+      effectiveRateType = dto.rateType as RateType;
+      calc = calcAmount({
+        rateType: dto.rateType!,
+        rate: dto.rate!,
+        quantity,
+        additionalItems: dto.additionalItems,
+        vatRate: dto.vatRate,
+      });
+    }
 
     const token = nanoid(TOKEN_LENGTH);
     const dueDate = dto.dueDate ? kstDate(dto.dueDate) : null;
@@ -86,7 +115,7 @@ export class ConfirmationsService {
           workContent: dto.workDescription,
           startTime: kstDateTime(dto.date, dto.startTime),
           endTime: kstDateTime(dto.date, dto.endTime),
-          rateType: dto.rateType as RateType,
+          rateType: effectiveRateType,
           amountCalc: calc as unknown as Prisma.InputJsonValue,
           equipmentSection: dto.equipmentSection
             ? (dto.equipmentSection as unknown as Prisma.InputJsonValue)
@@ -94,6 +123,10 @@ export class ConfirmationsService {
           notes: dto.notes ?? null,
           shareToken: token,
           status: ConfirmationStatus.DRAFT,
+          teamId,
+          teamEntries: teamEntries
+            ? (teamEntries as unknown as Prisma.InputJsonValue)
+            : Prisma.JsonNull,
         },
       });
 
@@ -434,6 +467,14 @@ export class ConfirmationsService {
       spec?: string;
       guide?: boolean;
     } | null;
+    const teamEntries = Array.isArray(c.teamEntries)
+      ? (c.teamEntries as unknown as TeamEntryComputed[]).map((e) => ({
+          name: e.name,
+          quantity: e.quantity,
+          rate: e.rate,
+          amount: e.amount,
+        }))
+      : null;
 
     const data: ConfirmationPdfData = {
       title: '작업확인서',
@@ -466,6 +507,7 @@ export class ConfirmationsService {
             guide: equip.guide,
           }
         : null,
+      teamEntries,
       signerName: c.signerName,
       signedAt: c.signedAt ? toKstDateTimeStr(c.signedAt) : null,
       signImagePng,
@@ -522,6 +564,9 @@ export class ConfirmationsService {
       amountCalc: calc,
       total: calc?.total ?? 0,
       equipmentSection: c.equipmentSection ?? null,
+      // 팀(반장) 확인서 명단 — 웹 PaperConfirmation(P2 통합)·PDF 렌더용.
+      teamEntries: Array.isArray(c.teamEntries) ? c.teamEntries : null,
+      isTeam: !!c.teamId,
       notes: c.notes,
       signerName: c.signerName,
       signedAt: c.signedAt ? toKstDateTimeStr(c.signedAt) : null,
@@ -685,7 +730,7 @@ export class ConfirmationsService {
       where: { id: c.id },
     });
 
-    // 발행자(작업자)에게 서명 완료 알림
+    // 발행자(작업자/반장)에게 서명 완료 알림
     await this.notifications.create({
       profileId: c.profileId,
       type: NotificationType.CONFIRMATION,
@@ -693,6 +738,11 @@ export class ConfirmationsService {
       body: `${dto.signerName} 님이 ${c.site} 현장 확인서에 서명했습니다.`,
       data: { confirmationId: c.id, signerName: dto.signerName },
     });
+
+    // 팀 확인서면 팀원별 파생 장부 생성(가입+연결 팀원) + 알림.
+    if (updated.teamId) {
+      await this.createTeamDerivedLedger(updated);
+    }
 
     return updated;
   }
@@ -718,6 +768,101 @@ export class ConfirmationsService {
       return normalized;
     }
     return quantity;
+  }
+
+  /**
+   * 팀(반장) 확인서 — 팀 소유 검증 + 팀원 명단 로드 → 서버 금액 계산.
+   * 반장 본인 소유 팀이 아니면 404. 팀원 항목 검증/공수 검증은 computeTeamEntries 재사용.
+   */
+  private async resolveTeamEntries(
+    userId: string,
+    teamId: string,
+    inputs: Array<{ memberId: string; rate?: number; quantity: number }>,
+  ) {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+      include: { members: true },
+    });
+    if (!team || team.ownerId !== userId) {
+      throw new AppException(
+        'TEAM_NOT_FOUND',
+        '팀을 찾을 수 없습니다.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const membersById = new Map<string, TeamMemberRef>(
+      team.members.map((m) => [
+        m.id,
+        {
+          id: m.id,
+          name: m.name,
+          profileId: m.profileId,
+          defaultRate: m.defaultRate !== null ? Number(m.defaultRate) : null,
+        },
+      ]),
+    );
+    return computeTeamEntries(
+      inputs.map((e) => ({
+        memberId: e.memberId,
+        rate: e.rate,
+        quantity: e.quantity,
+      })),
+      membersById,
+    );
+  }
+
+  /**
+   * 팀 확인서가 SIGNED 되는 시점에, 가입+반장과 연결된 팀원(profileId 有)에게
+   * 각자 몫의 파생 ledger_entry 를 생성한다(읽기전용) + 알림.
+   *  - 반장 자신·미가입(수기) 팀원은 제외.
+   *  - 멱등: 같은 (sourceConfirmationId, profileId) 조합이 이미 있으면 건너뜀.
+   *  - 서명 자체를 막지 않도록 실패는 로그만.
+   */
+  private async createTeamDerivedLedger(c: Confirmation): Promise<void> {
+    try {
+      const entries = Array.isArray(c.teamEntries)
+        ? (c.teamEntries as unknown as TeamEntryComputed[])
+        : [];
+      const boss = await this.prisma.profile.findUnique({
+        where: { id: c.profileId },
+        select: { name: true },
+      });
+      const bossName = boss?.name ?? '반장';
+      for (const e of entries) {
+        if (!e.profileId || e.profileId === c.profileId) continue; // 미가입/반장 자신 제외
+        const exists = await this.prisma.ledgerEntry.findFirst({
+          where: { sourceConfirmationId: c.id, profileId: e.profileId },
+          select: { id: true },
+        });
+        if (exists) continue;
+        await this.prisma.ledgerEntry.create({
+          data: {
+            profileId: e.profileId,
+            sourceConfirmationId: c.id,
+            derived: true,
+            counterpartyName: bossName,
+            amount: new Prisma.Decimal(e.amount),
+            dueDate: null,
+            status: LedgerStatus.PENDING,
+          },
+        });
+        await this.notifications.create({
+          profileId: e.profileId,
+          type: NotificationType.CONFIRMATION,
+          title: '팀 작업 몫이 장부에 반영되었습니다',
+          body: `${bossName} 반장 팀 작업(${c.site}) — ${e.amount.toLocaleString('ko-KR')}원이 내 장부에 추가되었습니다.`,
+          data: {
+            sourceConfirmationId: c.id,
+            teamDerived: true,
+            amount: e.amount,
+          },
+        });
+      }
+    } catch (err) {
+      // 파생 실패가 서명을 막지 않도록 로그만.
+      // eslint-disable-next-line no-console
+      console.warn(`[team-derive] ${c.id}: ${(err as Error).message}`);
+    }
   }
 
   private async resolveCounterparty(

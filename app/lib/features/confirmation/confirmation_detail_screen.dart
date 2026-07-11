@@ -90,6 +90,14 @@ class _BodyState extends ConsumerState<_Body> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (conf.isTeam)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: const Align(
+                          alignment: Alignment.centerLeft,
+                          child: TeamBadge(),
+                        ),
+                      ),
                     _row(context, l.paperDate, fmtShortDate(conf.dateTime, lang)),
                     _row(context, l.paperTime,
                         '${fmtAmpm(conf.startTime, lang)} ~ ${fmtAmpm(conf.endTime, lang)}'),
@@ -106,7 +114,33 @@ class _BodyState extends ConsumerState<_Body> {
                     const SizedBox(height: 8),
                     Divider(color: c.border),
                     const SizedBox(height: 8),
-                    if (conf.baseUnit != null)
+                    if (conf.isTeam)
+                      for (final raw in (conf.teamEntries ?? const []))
+                        if (raw is Map)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                      '${raw['name'] ?? ''} · ${l.qtyGongsu(formatGongsu((raw['quantity'] as num?) ?? 0))}',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: c.ink2)),
+                                ),
+                                Text(formatMoney((raw['amount'] as num?) ?? 0, lang),
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: c.ink,
+                                        fontFeatures: const [
+                                          FontFeature.tabularFigures()
+                                        ])),
+                              ],
+                            ),
+                          ),
+                    if (!conf.isTeam && conf.baseUnit != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Row(

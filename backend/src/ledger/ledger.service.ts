@@ -39,6 +39,7 @@ import {
 
 type EntryWithRefs = LedgerEntry & {
   confirmation: Confirmation | null;
+  sourceConfirmation: Confirmation | null;
   business: Business | null;
 };
 
@@ -75,7 +76,7 @@ export class LedgerService {
       totalOutstanding += outstanding;
       totalPaid += paid;
       workDates.add(toKstDateStr(this.effectiveDate(e)));
-      totalGongsu += this.gongsuOf(e.confirmation);
+      totalGongsu += this.gongsuOf(e);
     }
     return {
       month,
@@ -179,12 +180,13 @@ export class LedgerService {
     const items = rows
       .filter((e) => !businessId || e.businessId === businessId)
       .map((e) => {
+        const ref = e.confirmation ?? e.sourceConfirmation;
         const dto = toLedgerDto(e, now);
         return {
           ...dto,
           companyName: e.business?.name ?? e.counterpartyName ?? '(미지정)',
-          siteName: e.confirmation?.site ?? null,
-          date: e.confirmation ? toKstDateStr(e.confirmation.date) : null,
+          siteName: ref?.site ?? null,
+          date: ref ? toKstDateStr(ref.date) : null,
         };
       });
     return { month, count: items.length, items };
@@ -225,6 +227,14 @@ export class LedgerService {
   // --------------------------------------------------------------------------
   async updateLedger(userId: string, id: string, dto: UpdateLedgerDto) {
     const entry = await this.ownedOrThrow(userId, id);
+    // 팀 파생 항목(팀원 몫)은 읽기전용 — 수금예정일 수정 불가(입금 기록만 가능).
+    if (entry.derived) {
+      throw new AppException(
+        'LEDGER_DERIVED_READONLY',
+        '팀 작업 파생 항목은 수정할 수 없습니다 (입금 기록만 가능).',
+        HttpStatus.CONFLICT,
+      );
+    }
     const dueDate =
       dto.dueDate === undefined
         ? entry.dueDate
@@ -400,19 +410,47 @@ export class LedgerService {
   // --------------------------------------------------------------------------
   // 내부 헬퍼
   // --------------------------------------------------------------------------
-  /** 장부 항목의 기준 날짜: 연결 확인서의 작업일 우선, 없으면 생성일. */
+  /** 장부 항목의 기준 날짜: 연결 확인서(또는 팀 파생 원 확인서)의 작업일 우선, 없으면 생성일. */
   private effectiveDate(e: EntryWithRefs): Date {
-    return e.confirmation?.date ?? e.createdAt;
+    return e.confirmation?.date ?? e.sourceConfirmation?.date ?? e.createdAt;
   }
 
-  /** 연결 확인서가 공수(GONGSU) 유형이면 기본항목 공수 수량, 아니면 0. */
-  private gongsuOf(confirmation: Confirmation | null): number {
-    if (!confirmation || confirmation.rateType !== 'GONGSU') return 0;
+  /**
+   * 장부 항목의 공수 합계 기여분.
+   *  - 반장 팀 확인서(teamEntries): 팀원 공수 합계.
+   *  - 팀 파생 항목(팀원 몫, sourceConfirmation): 자기 몫의 공수.
+   *  - 일반 GONGSU 확인서: 기본항목 공수 수량.
+   */
+  private gongsuOf(e: EntryWithRefs): number {
+    // 팀 파생 항목: 원 확인서 teamEntries 에서 이 사람 몫 공수 합.
+    if (e.derived && e.sourceConfirmation) {
+      const te = this.teamEntriesOf(e.sourceConfirmation);
+      return te
+        .filter((x) => x.profileId === e.profileId)
+        .reduce((s, x) => s + (x.quantity ?? 0), 0);
+    }
+    const confirmation = e.confirmation;
+    if (!confirmation) return 0;
+    // 반장 팀 확인서: 팀원 공수 합계.
+    const teamEntries = this.teamEntriesOf(confirmation);
+    if (teamEntries.length > 0) {
+      return teamEntries.reduce((s, x) => s + (x.quantity ?? 0), 0);
+    }
+    if (confirmation.rateType !== 'GONGSU') return 0;
     const calc = confirmation.amountCalc as unknown as {
       items?: Array<{ type: string; quantity?: number }>;
     } | null;
     const base = calc?.items?.find((i) => i.type === 'BASE');
     return typeof base?.quantity === 'number' ? base.quantity : 0;
+  }
+
+  private teamEntriesOf(
+    confirmation: Confirmation,
+  ): Array<{ profileId?: string | null; quantity?: number }> {
+    const te = confirmation.teamEntries as unknown;
+    return Array.isArray(te)
+      ? (te as Array<{ profileId?: string | null; quantity?: number }>)
+      : [];
   }
 
   private groupStatus(
@@ -437,13 +475,16 @@ export class LedgerService {
         profileId: userId,
         OR: [
           { confirmation: { date: { gte: start, lt: end } } },
+          // 팀 파생 항목: 원 확인서(반장 팀 확인서)의 작업일 기준으로 월 집계.
+          { sourceConfirmation: { date: { gte: start, lt: end } } },
           {
             confirmationId: null,
+            sourceConfirmationId: null,
             createdAt: { gte: start, lt: end },
           },
         ],
       },
-      include: { confirmation: true, business: true },
+      include: { confirmation: true, sourceConfirmation: true, business: true },
       orderBy: { createdAt: 'asc' },
     });
   }

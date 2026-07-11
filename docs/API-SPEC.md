@@ -34,12 +34,22 @@
 - `GET /public/confirmations/:token` — 외부 열람
 - `POST /public/confirmations/:token/sign` — 외부 서명(서명자명 + 서명 이미지 base64) → SIGNED, 양측 알림
 
+## 팀(반장) /teams **(P2a)**
+- `GET /teams` — 내(반장) 팀 목록(+팀원 명단). `POST /teams { name }` — 팀 생성(여러 개 가능, 반장 본인만).
+- `GET /teams/:id` / `PATCH /teams/:id { name }` / `DELETE /teams/:id` — 반장 본인만. 삭제 시 팀원은 cascade, 이미 발행된 확인서의 `teamId` 는 SetNull(장부·기록 보존).
+- `POST /teams/:id/members` — 팀원 추가. **가입 연결**: `{ profileId, defaultRate? }`(전화 검색-동의자-, 미동의 시 403 CONSENT_REQUIRED, 중복 409 TEAM_MEMBER_EXISTS, 서버가 프로필명 스냅샷). **수기**: `{ name, phone?, defaultRate? }`.
+- `PATCH /teams/:id/members/:memberId { name?, phone?, defaultRate? }` / `DELETE /teams/:id/members/:memberId`.
+- **팀 확인서**: `POST /confirmations` 에 `teamId` + `teamEntries:[{ memberId, quantity(공수), rate? }]` 허용(있으면 `rateType/rate/quantity` 불필요). 서버가 팀원별 금액(rate×공수)·팀 합계 계산(공수 0.1 단위 검증 재사용), `rateType=GONGSU` 저장, `amountCalc.total`=팀 합계, **반장 장부에 합계 1건**. 응답·목록에 `teamId`, `teamEntries:[{name,profileId,quantity,rate,amount}]` 포함. 소유 아님 → 404 TEAM_NOT_FOUND.
+- **팀원 장부 파생**: 팀 확인서가 **SIGNED** 되는 시점에, 가입+연결된 팀원(profileId 有, 반장 자신 제외)에게 각자 몫 `ledger_entry` 자동 생성(`derived=true`, `sourceConfirmationId`=원 확인서, `counterpartyName`=반장 이름) + 알림. 멱등(같은 원확인서·팀원 중복 방지). 미가입(수기) 팀원은 파생 없음.
+- **공개 열람**(`GET /public/confirmations/:token`): 응답에 `teamEntries`·`isTeam` 포함(웹 PaperConfirmation P2 통합용). **PDF**: 팀 명단 표(이름/공수/단가/금액 + 합계) 렌더.
+
 ## 장부 /ledger
 - `GET /ledger/summary?month=` — 월 합계(미수/입금/일한 날 + **P1 `totalGongsu`** 공수 합계)
 - `GET /ledger/tax-invoice-data?month=&businessId?=` **(P1)** — 홈택스 세금계산서 작성 데이터. SIGNED·미발행 확인서만 상대별 집계: 공급자(내 프로필 bizNumber 등), 공급받는자(사업장 상호·사업자번호), 작성일자, 공급가액 합계, 세액(10%), 품목(일자·내용·금액). `{ supplier, supplierReady, groups[{ buyerName, buyerBizNumber, supplyTotal, taxTotal, grandTotal, items[], ledgerIds[] }], text }` — JSON + **복사용 텍스트**.
 - `POST /ledger/tax-invoice-data/mark` **(P1)** — `{ ledgerIds:[] }` 발행 완료 표시(taxInvoicedAt). 이후 tax-invoice-data 에서 제외. 반환 `{ marked, alreadyMarked, taxInvoicedAt }`
-- `GET /ledger/by-company?month=` — 회사별 미수 집계 + 수금 D-day
-- `POST /ledger/:id/payments` — 입금 기록(부분입금 허용) / `PATCH /ledger/:id` — 수금예정일 수정
+- `GET /ledger/by-company?month=` — 회사별 미수 집계 + 수금 D-day. **P2a**: 팀 파생 항목은 반장 이름 그룹으로 집계, 월 기준일은 원 확인서(팀 확인서) 작업일.
+- `POST /ledger/:id/payments` — 입금 기록(부분입금 허용). **P2a**: 팀 파생 항목(`derived=true`)도 입금 기록 가능. `PATCH /ledger/:id` — 수금예정일 수정. **P2a**: 파생 항목은 읽기전용 → 409 LEDGER_DERIVED_READONLY.
+  - 장부 항목 응답에 **P2a** `derived`(팀 파생 여부)·`sourceConfirmationId` 포함.
 - `GET /ledger/statement?month=` — 월간 명세서 PDF
 
 ## 연동 /connections, /businesses

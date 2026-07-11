@@ -315,6 +315,51 @@ export class PdfService {
       y -= rowH;
     }
 
+    // 팀(반장) 명단 표 — 팀 확인서면 이름/공수/단가/금액 렌더
+    if (data.teamEntries && data.teamEntries.length > 0) {
+      y -= 8;
+      text('■ 팀 명단', margin, y, 12);
+      y -= 20;
+      const tcol = {
+        name: margin,
+        gongsu: margin + 220,
+        rate: margin + 320,
+        amount: width - margin,
+      };
+      text('이름', tcol.name, y, 10, gray);
+      const gHdr = '공수';
+      text(gHdr, tcol.gongsu - font.widthOfTextAtSize(gHdr, 10), y, 10, gray);
+      const rHdr = '단가';
+      text(rHdr, tcol.rate - font.widthOfTextAtSize(rHdr, 10), y, 10, gray);
+      const aHdr = '금액';
+      text(aHdr, tcol.amount - font.widthOfTextAtSize(aHdr, 10), y, 10, gray);
+      y -= 6;
+      page.drawLine({
+        start: { x: margin, y },
+        end: { x: width - margin, y },
+        thickness: 0.6,
+        color: line,
+      });
+      y -= 18;
+      for (const m of data.teamEntries) {
+        text(m.name, tcol.name, y, 11);
+        const g = `${m.quantity}공수`;
+        text(g, tcol.gongsu - font.widthOfTextAtSize(g, 10), y, 10, gray);
+        const r = m.rate.toLocaleString('ko-KR');
+        text(r, tcol.rate - font.widthOfTextAtSize(r, 10), y, 10, gray);
+        const a = this.krw(m.amount);
+        text(a, tcol.amount - font.widthOfTextAtSize(a, 11), y, 11);
+        y -= rowH;
+      }
+      page.drawLine({
+        start: { x: margin, y: y + 8 },
+        end: { x: width - margin, y: y + 8 },
+        thickness: 0.6,
+        color: line,
+      });
+      y -= 4;
+    }
+
     // 금액 표
     y -= 8;
     text('■ 금액', margin, y, 12);
@@ -336,6 +381,14 @@ export class PdfService {
       text(li.label, col.item, y, 11);
       text(li.detail, col.detail, y, 10, gray);
       const a = this.krw(li.amount);
+      text(a, col.amount - font.widthOfTextAtSize(a, 11), y, 11);
+      y -= rowH;
+    }
+    // 팀 확인서는 항목 라인이 없으므로 팀 합계를 금액 표에 한 줄로 표기.
+    if (data.teamEntries && data.teamEntries.length > 0 && data.lines.length === 0) {
+      text('팀 작업 합계', col.item, y, 11);
+      text(`팀원 ${data.teamEntries.length}명`, col.detail, y, 10, gray);
+      const a = this.krw(data.subtotal);
       text(a, col.amount - font.widthOfTextAtSize(a, 11), y, 11);
       y -= rowH;
     }

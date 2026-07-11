@@ -421,5 +421,53 @@
   "myjobAccept": "接受",
   "myjobStart": "开始作业",
   "myjobComplete": "完成作业",
-  "signPadHint": "用手指在这里签名"
+  "signPadHint": "用手指在这里签名",
+  "teamMenuTitle": "我的班组",
+  "teamMenuSub": "作为班长管理组员名单和单价",
+  "teamListTitle": "我的班组",
+  "teamEmptyTitle": "还没有创建班组",
+  "teamEmptySub": "创建班组并添加组员后，可以把班组确认书整理成一张",
+  "teamCreate": "创建班组",
+  "teamNameLabel": "班组名称",
+  "teamNameHint": "班组名称（例：朴班长A组）",
+  "teamAddMember": "添加组员",
+  "teamMembersTitle": "组员",
+  "teamNoMembers": "请添加组员",
+  "teamMemberCountLabel": "组员 {count} 名",
+  "@teamMemberCountLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "teamMemberLinked": "已关联",
+  "teamMemberManual": "手动",
+  "teamDefaultRate": "默认单价",
+  "teamDefaultRateHint": "默认单价（1个工数）",
+  "teamAddByPhone": "用电话号码查找",
+  "teamAddManual": "手动输入",
+  "teamMemberNameHint": "姓名",
+  "teamMemberPhoneHint": "电话号码（可选）",
+  "teamSearchPhoneHint": "组员电话号码",
+  "teamSearchHint": "只能找到同意电话搜索的注册用户",
+  "teamSearchNoResult": "没有搜索结果",
+  "teamMemberAdded": "已添加组员",
+  "teamMemberExists": "该组员已在班组中",
+  "teamConsentRequired": "只能关联同意电话搜索的注册用户",
+  "teamDeleteConfirm": "要删除此班组吗？已发行的确认书将保持不变。",
+  "teamDeleteMemberConfirm": "要删除此组员吗？",
+  "confTeamMode": "班组确认书",
+  "confTeamModeSub": "按组员工数整理成一张",
+  "confTeamSelect": "选择班组",
+  "confTeamPickTeam": "请选择班组",
+  "confTeamNoTeam": "请先在“我的班组”中创建班组",
+  "confTeamTotal": "班组合计",
+  "confTeamEmptyEntries": "没有填写工数的组员",
+  "ledgerTeamBadge": "班组",
+  "ledgerTeamDerived": "{boss} 班长班组作业",
+  "@ledgerTeamDerived": {
+    "placeholders": {
+      "boss": { "type": "String" }
+    }
+  },
+  "ledgerDerivedReadonly": "这是班长填写的班组作业（只能记录收款）"
 }

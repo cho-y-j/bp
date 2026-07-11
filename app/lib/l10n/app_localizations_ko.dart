@@ -1424,4 +1424,122 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get signPadHint => '여기에 손가락으로 서명하세요';
+
+  @override
+  String get teamMenuTitle => '내 팀';
+
+  @override
+  String get teamMenuSub => '반장으로 팀원 명단·단가 관리';
+
+  @override
+  String get teamListTitle => '내 팀';
+
+  @override
+  String get teamEmptyTitle => '아직 만든 팀이 없어요';
+
+  @override
+  String get teamEmptySub => '팀을 만들고 팀원을 추가하면 팀 확인서를 한 장으로 정리할 수 있어요';
+
+  @override
+  String get teamCreate => '팀 만들기';
+
+  @override
+  String get teamNameLabel => '팀 이름';
+
+  @override
+  String get teamNameHint => '팀 이름 (예: 박반장 A팀)';
+
+  @override
+  String get teamAddMember => '팀원 추가';
+
+  @override
+  String get teamMembersTitle => '팀원';
+
+  @override
+  String get teamNoMembers => '팀원을 추가해 주세요';
+
+  @override
+  String teamMemberCountLabel(int count) {
+    return '팀원 $count명';
+  }
+
+  @override
+  String get teamMemberLinked => '가입 연결';
+
+  @override
+  String get teamMemberManual => '수기';
+
+  @override
+  String get teamDefaultRate => '기본 단가';
+
+  @override
+  String get teamDefaultRateHint => '기본 단가 (공수 1일)';
+
+  @override
+  String get teamAddByPhone => '전화번호로 찾기';
+
+  @override
+  String get teamAddManual => '직접 입력';
+
+  @override
+  String get teamMemberNameHint => '이름';
+
+  @override
+  String get teamMemberPhoneHint => '전화번호 (선택)';
+
+  @override
+  String get teamSearchPhoneHint => '팀원 전화번호';
+
+  @override
+  String get teamSearchHint => '전화번호 검색에 동의한 가입자만 찾을 수 있어요';
+
+  @override
+  String get teamSearchNoResult => '검색 결과가 없어요';
+
+  @override
+  String get teamMemberAdded => '팀원을 추가했어요';
+
+  @override
+  String get teamMemberExists => '이미 팀에 있는 팀원이에요';
+
+  @override
+  String get teamConsentRequired => '전화번호 검색에 동의한 가입자만 연결할 수 있어요';
+
+  @override
+  String get teamDeleteConfirm => '이 팀을 삭제할까요? 이미 발행된 확인서는 그대로 유지돼요.';
+
+  @override
+  String get teamDeleteMemberConfirm => '이 팀원을 삭제할까요?';
+
+  @override
+  String get confTeamMode => '팀 확인서';
+
+  @override
+  String get confTeamModeSub => '팀원별 공수로 한 장에 정리';
+
+  @override
+  String get confTeamSelect => '팀 선택';
+
+  @override
+  String get confTeamPickTeam => '팀을 선택하세요';
+
+  @override
+  String get confTeamNoTeam => '먼저 \'내 팀\'에서 팀을 만들어 주세요';
+
+  @override
+  String get confTeamTotal => '팀 합계';
+
+  @override
+  String get confTeamEmptyEntries => '공수를 입력한 팀원이 없어요';
+
+  @override
+  String get ledgerTeamBadge => '팀';
+
+  @override
+  String ledgerTeamDerived(String boss) {
+    return '$boss 반장 팀 작업';
+  }
+
+  @override
+  String get ledgerDerivedReadonly => '반장이 작성한 팀 작업이에요 (입금만 기록할 수 있어요)';
 }

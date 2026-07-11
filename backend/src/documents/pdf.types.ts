@@ -32,6 +32,13 @@ export interface ConfirmationPdfData {
     spec?: string;
     guide?: boolean; // 유도원 여부
   } | null;
+  // 팀(반장) 확인서 명단 — 있으면 팀원별 표(이름/공수/단가/금액)를 렌더한다.
+  teamEntries?: Array<{
+    name: string;
+    quantity: number; // 공수
+    rate: number;
+    amount: number;
+  }> | null;
   signerName?: string | null;
   signedAt?: string | null; // 서명 시각 표시용
   signImagePng?: Buffer | null; // 서명 이미지(PNG) — 있으면 서명란에 삽입

@@ -1454,4 +1454,129 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get signPadHint => 'यहाँ औंलाले हस्ताक्षर गर्नुहोस्';
+
+  @override
+  String get teamMenuTitle => 'मेरो टोली';
+
+  @override
+  String get teamMenuSub =>
+      'फोरम्यानको रूपमा टोली सदस्य सूची र दररेट व्यवस्थापन';
+
+  @override
+  String get teamListTitle => 'मेरो टोली';
+
+  @override
+  String get teamEmptyTitle => 'अझै कुनै टोली बनाइएको छैन';
+
+  @override
+  String get teamEmptySub =>
+      'टोली बनाएर सदस्य थपेपछि टोली पुष्टिपत्र एउटै पानामा मिलाउन सकिन्छ';
+
+  @override
+  String get teamCreate => 'टोली बनाउनुहोस्';
+
+  @override
+  String get teamNameLabel => 'टोलीको नाम';
+
+  @override
+  String get teamNameHint => 'टोलीको नाम (जस्तै: पार्क फोरम्यान A टोली)';
+
+  @override
+  String get teamAddMember => 'सदस्य थप्नुहोस्';
+
+  @override
+  String get teamMembersTitle => 'सदस्यहरू';
+
+  @override
+  String get teamNoMembers => 'कृपया सदस्य थप्नुहोस्';
+
+  @override
+  String teamMemberCountLabel(int count) {
+    return '$count सदस्य';
+  }
+
+  @override
+  String get teamMemberLinked => 'जडान भएको';
+
+  @override
+  String get teamMemberManual => 'म्यानुअल';
+
+  @override
+  String get teamDefaultRate => 'पूर्वनिर्धारित दररेट';
+
+  @override
+  String get teamDefaultRateHint => 'पूर्वनिर्धारित दररेट (१ गोङ्सु)';
+
+  @override
+  String get teamAddByPhone => 'फोन नम्बरबाट खोज्नुहोस्';
+
+  @override
+  String get teamAddManual => 'आफैं प्रविष्ट गर्नुहोस्';
+
+  @override
+  String get teamMemberNameHint => 'नाम';
+
+  @override
+  String get teamMemberPhoneHint => 'फोन नम्बर (वैकल्पिक)';
+
+  @override
+  String get teamSearchPhoneHint => 'सदस्यको फोन नम्बर';
+
+  @override
+  String get teamSearchHint =>
+      'फोन खोजीमा सहमति जनाएका दर्ता प्रयोगकर्ता मात्र भेटिन्छन्';
+
+  @override
+  String get teamSearchNoResult => 'कुनै नतिजा भेटिएन';
+
+  @override
+  String get teamMemberAdded => 'सदस्य थपियो';
+
+  @override
+  String get teamMemberExists => 'यो सदस्य पहिले नै टोलीमा छ';
+
+  @override
+  String get teamConsentRequired =>
+      'फोन खोजीमा सहमति जनाएका दर्ता प्रयोगकर्ता मात्र जडान गर्न सकिन्छ';
+
+  @override
+  String get teamDeleteConfirm =>
+      'यो टोली मेटाउने? पहिले नै जारी भएका पुष्टिपत्र यथावत् रहन्छन्।';
+
+  @override
+  String get teamDeleteMemberConfirm => 'यो सदस्य मेटाउने?';
+
+  @override
+  String get confTeamMode => 'टोली पुष्टिपत्र';
+
+  @override
+  String get confTeamModeSub =>
+      'प्रत्येक सदस्यको गोङ्सु एउटै पानामा मिलाउनुहोस्';
+
+  @override
+  String get confTeamSelect => 'टोली छान्नुहोस्';
+
+  @override
+  String get confTeamPickTeam => 'कृपया टोली छान्नुहोस्';
+
+  @override
+  String get confTeamNoTeam => 'पहिले \'मेरो टोली\' मा टोली बनाउनुहोस्';
+
+  @override
+  String get confTeamTotal => 'टोली जम्मा';
+
+  @override
+  String get confTeamEmptyEntries => 'गोङ्सु प्रविष्ट गरेको कुनै सदस्य छैन';
+
+  @override
+  String get ledgerTeamBadge => 'टोली';
+
+  @override
+  String ledgerTeamDerived(String boss) {
+    return '$boss फोरम्यान टोली काम';
+  }
+
+  @override
+  String get ledgerDerivedReadonly =>
+      'यो फोरम्यानले बनाएको टोली काम हो (तपाईं भुक्तानी मात्र रेकर्ड गर्न सक्नुहुन्छ)';
 }

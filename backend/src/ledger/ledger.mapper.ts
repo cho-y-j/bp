@@ -11,6 +11,8 @@ const STATUS_LABEL: Record<LedgerStatus, string> = {
 export interface LedgerDto {
   id: string;
   confirmationId: string | null;
+  sourceConfirmationId: string | null; // 팀 파생 항목의 원 확인서(반장 팀 확인서)
+  derived: boolean; // 팀 파생(팀원 몫) — 읽기전용(입금 기록만 가능)
   businessId: string | null;
   counterpartyName: string | null;
   amount: number;
@@ -37,6 +39,8 @@ export function toLedgerDto(e: LedgerEntry, now: Date = new Date()): LedgerDto {
   return {
     id: e.id,
     confirmationId: e.confirmationId,
+    sourceConfirmationId: e.sourceConfirmationId,
+    derived: e.derived,
     businessId: e.businessId,
     counterpartyName: e.counterpartyName,
     amount,

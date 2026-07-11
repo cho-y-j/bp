@@ -385,11 +385,21 @@ class _WeekItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(conf.siteName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
+                    Row(children: [
+                      Flexible(
+                        child: Text(conf.siteName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: c.ink)),
+                      ),
+                      if (conf.isTeam) ...[
+                        const SizedBox(width: 6),
+                        const TeamBadge(),
+                      ],
+                    ]),
                     const SizedBox(height: 2),
                     Text(
                         '${conf.companyName} · ${fmtAmpm(conf.startTime, context.lang)}~${fmtAmpm(conf.endTime, context.lang)}'

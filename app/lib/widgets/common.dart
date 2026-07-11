@@ -255,6 +255,32 @@ class DdayBadge extends StatelessWidget {
   }
 }
 
+/// 팀(반장) 확인서 배지.
+class TeamBadge extends StatelessWidget {
+  const TeamBadge({super.key});
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+      decoration: BoxDecoration(
+        color: c.primary.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.groups_2_outlined, size: 13, color: c.accentText),
+          const SizedBox(width: 3),
+          Text(context.l.ledgerTeamBadge,
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w800, color: c.accentText)),
+        ],
+      ),
+    );
+  }
+}
+
 /// 미수/입금 금액 라인 (색+아이콘+텍스트 병행 — 색맹 대응).
 class MoneyLine extends StatelessWidget {
   final num amount;

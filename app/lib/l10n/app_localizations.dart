@@ -2637,6 +2637,234 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'여기에 손가락으로 서명하세요'**
   String get signPadHint;
+
+  /// No description provided for @teamMenuTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 팀'**
+  String get teamMenuTitle;
+
+  /// No description provided for @teamMenuSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'반장으로 팀원 명단·단가 관리'**
+  String get teamMenuSub;
+
+  /// No description provided for @teamListTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 팀'**
+  String get teamListTitle;
+
+  /// No description provided for @teamEmptyTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 만든 팀이 없어요'**
+  String get teamEmptyTitle;
+
+  /// No description provided for @teamEmptySub.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀을 만들고 팀원을 추가하면 팀 확인서를 한 장으로 정리할 수 있어요'**
+  String get teamEmptySub;
+
+  /// No description provided for @teamCreate.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 만들기'**
+  String get teamCreate;
+
+  /// No description provided for @teamNameLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 이름'**
+  String get teamNameLabel;
+
+  /// No description provided for @teamNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 이름 (예: 박반장 A팀)'**
+  String get teamNameHint;
+
+  /// No description provided for @teamAddMember.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원 추가'**
+  String get teamAddMember;
+
+  /// No description provided for @teamMembersTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원'**
+  String get teamMembersTitle;
+
+  /// No description provided for @teamNoMembers.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원을 추가해 주세요'**
+  String get teamNoMembers;
+
+  /// No description provided for @teamMemberCountLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원 {count}명'**
+  String teamMemberCountLabel(int count);
+
+  /// No description provided for @teamMemberLinked.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입 연결'**
+  String get teamMemberLinked;
+
+  /// No description provided for @teamMemberManual.
+  ///
+  /// In ko, this message translates to:
+  /// **'수기'**
+  String get teamMemberManual;
+
+  /// No description provided for @teamDefaultRate.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 단가'**
+  String get teamDefaultRate;
+
+  /// No description provided for @teamDefaultRateHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 단가 (공수 1일)'**
+  String get teamDefaultRateHint;
+
+  /// No description provided for @teamAddByPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화번호로 찾기'**
+  String get teamAddByPhone;
+
+  /// No description provided for @teamAddManual.
+  ///
+  /// In ko, this message translates to:
+  /// **'직접 입력'**
+  String get teamAddManual;
+
+  /// No description provided for @teamMemberNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름'**
+  String get teamMemberNameHint;
+
+  /// No description provided for @teamMemberPhoneHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화번호 (선택)'**
+  String get teamMemberPhoneHint;
+
+  /// No description provided for @teamSearchPhoneHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원 전화번호'**
+  String get teamSearchPhoneHint;
+
+  /// No description provided for @teamSearchHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화번호 검색에 동의한 가입자만 찾을 수 있어요'**
+  String get teamSearchHint;
+
+  /// No description provided for @teamSearchNoResult.
+  ///
+  /// In ko, this message translates to:
+  /// **'검색 결과가 없어요'**
+  String get teamSearchNoResult;
+
+  /// No description provided for @teamMemberAdded.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원을 추가했어요'**
+  String get teamMemberAdded;
+
+  /// No description provided for @teamMemberExists.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 팀에 있는 팀원이에요'**
+  String get teamMemberExists;
+
+  /// No description provided for @teamConsentRequired.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화번호 검색에 동의한 가입자만 연결할 수 있어요'**
+  String get teamConsentRequired;
+
+  /// No description provided for @teamDeleteConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 팀을 삭제할까요? 이미 발행된 확인서는 그대로 유지돼요.'**
+  String get teamDeleteConfirm;
+
+  /// No description provided for @teamDeleteMemberConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 팀원을 삭제할까요?'**
+  String get teamDeleteMemberConfirm;
+
+  /// No description provided for @confTeamMode.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 확인서'**
+  String get confTeamMode;
+
+  /// No description provided for @confTeamModeSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원별 공수로 한 장에 정리'**
+  String get confTeamModeSub;
+
+  /// No description provided for @confTeamSelect.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 선택'**
+  String get confTeamSelect;
+
+  /// No description provided for @confTeamPickTeam.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀을 선택하세요'**
+  String get confTeamPickTeam;
+
+  /// No description provided for @confTeamNoTeam.
+  ///
+  /// In ko, this message translates to:
+  /// **'먼저 \'내 팀\'에서 팀을 만들어 주세요'**
+  String get confTeamNoTeam;
+
+  /// No description provided for @confTeamTotal.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 합계'**
+  String get confTeamTotal;
+
+  /// No description provided for @confTeamEmptyEntries.
+  ///
+  /// In ko, this message translates to:
+  /// **'공수를 입력한 팀원이 없어요'**
+  String get confTeamEmptyEntries;
+
+  /// No description provided for @ledgerTeamBadge.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀'**
+  String get ledgerTeamBadge;
+
+  /// No description provided for @ledgerTeamDerived.
+  ///
+  /// In ko, this message translates to:
+  /// **'{boss} 반장 팀 작업'**
+  String ledgerTeamDerived(String boss);
+
+  /// No description provided for @ledgerDerivedReadonly.
+  ///
+  /// In ko, this message translates to:
+  /// **'반장이 작성한 팀 작업이에요 (입금만 기록할 수 있어요)'**
+  String get ledgerDerivedReadonly;
 }
 
 class _AppLocalizationsDelegate

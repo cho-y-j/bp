@@ -81,6 +81,8 @@ class Confirmation {
   final Map? amountCalc;
   final String shareToken;
   final String? signerName;
+  final String? teamId; // 팀(반장) 확인서면 팀 id
+  final List? teamEntries; // [{name, profileId, quantity, rate, amount}]
 
   Confirmation({
     required this.id,
@@ -101,6 +103,8 @@ class Confirmation {
     required this.amountCalc,
     required this.shareToken,
     required this.signerName,
+    required this.teamId,
+    required this.teamEntries,
   });
 
   factory Confirmation.fromJson(Map j) => Confirmation(
@@ -122,7 +126,12 @@ class Confirmation {
         amountCalc: j['amountCalc'] as Map?,
         shareToken: j['shareToken']?.toString() ?? '',
         signerName: j['signerName'] as String?,
+        teamId: j['teamId'] as String?,
+        teamEntries: j['teamEntries'] as List?,
       );
+
+  /// 팀(반장) 확인서 여부.
+  bool get isTeam => teamId != null && teamId!.isNotEmpty;
 
   DateTime get dateTime => DateTime.parse(date);
 
@@ -259,6 +268,8 @@ class LedgerEntry {
   final int? dday;
   final DateTime? dueDate;
   final List payments;
+  final bool derived; // 팀원 몫(반장이 발행) — 읽기전용(입금만 가능)
+  final String? sourceConfirmationId;
   LedgerEntry({
     required this.id,
     required this.companyName,
@@ -273,6 +284,8 @@ class LedgerEntry {
     required this.dday,
     required this.dueDate,
     required this.payments,
+    required this.derived,
+    required this.sourceConfirmationId,
   });
   factory LedgerEntry.fromJson(Map j) => LedgerEntry(
         id: j['id'].toString(),
@@ -288,6 +301,65 @@ class LedgerEntry {
         dday: j['dday'] == null ? null : _pint(j['dday']),
         dueDate: _pdate(j['dueDate']),
         payments: j['payments'] as List? ?? const [],
+        derived: j['derived'] == true,
+        sourceConfirmationId: j['sourceConfirmationId'] as String?,
+      );
+}
+
+/// 팀원(반장 팀 명단의 1명).
+class TeamMember {
+  final String id;
+  final String name;
+  final String? profileId; // 가입 연결된 경우
+  final bool linked;
+  final String? phone;
+  final int? defaultRate; // 기본 단가(공수 1일)
+  final DateTime? createdAt;
+  TeamMember({
+    required this.id,
+    required this.name,
+    required this.profileId,
+    required this.linked,
+    required this.phone,
+    required this.defaultRate,
+    required this.createdAt,
+  });
+  factory TeamMember.fromJson(Map j) => TeamMember(
+        id: j['id'].toString(),
+        name: j['name']?.toString() ?? '',
+        profileId: j['profileId'] as String?,
+        linked: j['linked'] == true,
+        phone: j['phone'] as String?,
+        defaultRate: j['defaultRate'] == null ? null : _pint(j['defaultRate']),
+        createdAt: _pdate(j['createdAt']),
+      );
+}
+
+/// 팀(반장 명단).
+class Team {
+  final String id;
+  final String name;
+  final int memberCount;
+  final List<TeamMember> members;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  Team({
+    required this.id,
+    required this.name,
+    required this.memberCount,
+    required this.members,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  factory Team.fromJson(Map j) => Team(
+        id: j['id'].toString(),
+        name: j['name']?.toString() ?? '',
+        memberCount: _pint(j['memberCount']),
+        members: (j['members'] as List? ?? [])
+            .map((e) => TeamMember.fromJson(e as Map))
+            .toList(),
+        createdAt: _pdate(j['createdAt']),
+        updatedAt: _pdate(j['updatedAt']),
       );
 }
 
