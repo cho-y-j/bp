@@ -16,6 +16,7 @@ const en: Record<MessageKey, string> = {
   paperEquipment: 'Equipment',
   paperGuide: 'Signal guide',
   amtBase: 'Base pay',
+  unitGongsu: 'gongsu',
   amtOvertime: 'Overtime',
   amtEarly: 'Early start',
   amtNight: 'Night',

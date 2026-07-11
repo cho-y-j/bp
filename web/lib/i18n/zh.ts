@@ -16,6 +16,7 @@ const zh: Record<MessageKey, string> = {
   paperEquipment: '设备',
   paperGuide: '引导员',
   amtBase: '基本',
+  unitGongsu: '工数',
   amtOvertime: '加班',
   amtEarly: '早班',
   amtNight: '夜班',

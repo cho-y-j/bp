@@ -20,6 +20,8 @@ const ko = {
   paperEquipment: '장비',
   paperGuide: '유도원',
   amtBase: '기본',
+  // 공수(GONGSU) 수량 단위. 앱 ARB unitGongsu 와 일치(현장 통용 표기).
+  unitGongsu: '공수',
   amtOvertime: '연장',
   amtEarly: '조출',
   amtNight: '야간',

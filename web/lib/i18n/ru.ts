@@ -16,6 +16,7 @@ const ru: Record<MessageKey, string> = {
   paperEquipment: 'Техника',
   paperGuide: 'Сигнальщик',
   amtBase: 'Основная оплата',
+  unitGongsu: 'гонсу',
   amtOvertime: 'Сверхурочные',
   amtEarly: 'Ранний выход',
   amtNight: 'Ночная смена',

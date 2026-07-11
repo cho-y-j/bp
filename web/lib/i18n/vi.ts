@@ -16,6 +16,7 @@ const vi: Record<MessageKey, string> = {
   paperEquipment: 'Thiết bị',
   paperGuide: 'Người hướng dẫn',
   amtBase: 'Cơ bản',
+  unitGongsu: 'gongsu',
   amtOvertime: 'Tăng ca',
   amtEarly: 'Vào sớm',
   amtNight: 'Làm đêm',

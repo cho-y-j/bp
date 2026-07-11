@@ -1,9 +1,0 @@
-- generic [active] [ref=f14e1]:
-  - button "Open Next.js Dev Tools" [ref=f14e7] [cursor=pointer]
-  - main [ref=f14e11]:
-    - button "Русский" [ref=f14e49] [cursor=pointer]
-    - paragraph [ref=f14e22]: 작업온
-    - generic [ref=f14e24]:
-      - paragraph [ref=f14e25]: Ссылка не найдена
-      - paragraph [ref=f14e26]: Возможно, ссылка устарела или отключена. Попросите отправителя прислать новую.
-  - alert [ref=f14e27]

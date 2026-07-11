@@ -71,6 +71,13 @@ export default function PaperConfirmation({
     const key = AMOUNT_TYPE_KEY[it.type];
     return key ? t(key) : it.label;
   };
+  // 수량 뒤 단위 표기. 한국어는 서버 라벨(예: "기본(공수)")이 이미 단위를 담으므로 미표기(회귀 방지).
+  // 비한국어는 번역 단위 + 한국어 '공수' 병기(서명자가 한국 원본 서류와 대조 가능하도록).
+  const unitSuffix = (it: AmountItem): string => {
+    if (lang === 'ko' || !it.unit) return '';
+    if (it.unit === '공수') return ` ${t('unitGongsu')} (${it.unit})`;
+    return ` ${it.unit}`; // 미지의 단위는 서버 표기 그대로 병기
+  };
   return (
     <div className="paper">
       <div className="perf">
@@ -123,6 +130,7 @@ export default function PaperConfirmation({
                   <span className="num" style={{ color: 'var(--ink-3)' }}>
                     {'  '}
                     {money(it.rate, lang)} × {it.quantity}
+                    {unitSuffix(it)}
                   </span>
                 ) : null}
               </span>

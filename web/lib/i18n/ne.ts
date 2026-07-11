@@ -16,6 +16,7 @@ const ne: Record<MessageKey, string> = {
   paperEquipment: 'उपकरण',
   paperGuide: 'निर्देशक',
   amtBase: 'आधार',
+  unitGongsu: 'gongsu',
   amtOvertime: 'ओभरटाइम',
   amtEarly: 'बिहान जल्दी',
   amtNight: 'रात',
