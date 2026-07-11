@@ -1,0 +1,23 @@
+- generic [ref=f14e1]:
+  - button "Open Next.js Dev Tools" [ref=f14e7] [cursor=pointer]
+  - main [ref=f14e11]:
+    - generic [ref=f14e13]:
+      - button "नेपाली" [expanded] [active] [ref=f14e14] [cursor=pointer]
+      - listbox [ref=f14e28]:
+        - listitem [ref=f14e29]:
+          - option "한국어" [ref=f14e30] [cursor=pointer]
+        - listitem [ref=f14e32]:
+          - option "简体中文" [ref=f14e33] [cursor=pointer]
+        - listitem [ref=f14e35]:
+          - option "Русский" [ref=f14e36] [cursor=pointer]
+        - listitem [ref=f14e38]:
+          - option "Tiếng Việt" [ref=f14e39] [cursor=pointer]
+        - listitem [ref=f14e41]:
+          - option "नेपाली" [selected] [ref=f14e42] [cursor=pointer]
+        - listitem [ref=f14e46]:
+          - option "English" [ref=f14e47] [cursor=pointer]
+    - paragraph [ref=f14e22]: 작업온
+    - generic [ref=f14e24]:
+      - paragraph [ref=f14e25]: लिंक भेटिएन
+      - paragraph [ref=f14e26]: लिंकको म्याद सकिएको वा रद्द भएको हुन सक्छ। पठाउनेसँग नयाँ लिंक माग्नुहोस्।
+  - alert [ref=f14e27]

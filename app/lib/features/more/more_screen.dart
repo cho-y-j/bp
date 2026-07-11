@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
+import '../../core/api_client.dart';
+import '../../core/env.dart';
+import '../../core/kakao_auth.dart';
 import '../../providers/auth.dart';
 import '../wallet/wallet_screen.dart';
 import '../biz/business_mode_screen.dart';
 import '../jobs/my_jobs_screen.dart';
+import '../tax/tax_invoice_screen.dart';
 import '../notifications/notifications_screen.dart';
 
 class MoreScreen extends ConsumerWidget {
@@ -122,6 +126,12 @@ class MoreScreen extends ConsumerWidget {
               subtitle: '작업 지시 수락·시작·완료',
               onTap: () => _push(context, const MyJobsScreen()),
             ),
+            _Tile(
+              icon: Icons.request_quote_outlined,
+              title: '세금계산서 준비',
+              subtitle: '서명 완료 확인서 → 홈택스 입력용 데이터 정리',
+              onTap: () => _push(context, const TaxInvoiceScreen()),
+            ),
             const SizedBox(height: 20),
             _SectionLabel('설정'),
             _Tile(
@@ -135,6 +145,8 @@ class MoreScreen extends ConsumerWidget {
               onChanged: (v) =>
                   ref.read(authControllerProvider.notifier).setPhoneSearchConsent(v),
             ),
+            // 카카오 계정 연결 — KAKAO_APP_KEY 주입 시에만 노출.
+            if (Env.kakaoEnabled) const _KakaoLinkTile(),
             _Tile(
               icon: Icons.logout_rounded,
               title: '로그아웃',
@@ -161,7 +173,7 @@ class MoreScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             Center(
-              child: Text('작업온 v1.0.0 (S4b)',
+              child: Text('작업온 v1.0.0 (P1)',
                   style: TextStyle(fontSize: 12, color: c.ink3)),
             ),
           ],
@@ -214,6 +226,101 @@ class _ConsentTile extends StatelessWidget {
                 onChanged: onChanged,
                 activeTrackColor: c.primary),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 카카오 계정 연결 타일(조건부). 연결됨이면 상태 표시, 아니면 연결 시도.
+class _KakaoLinkTile extends ConsumerStatefulWidget {
+  const _KakaoLinkTile();
+  @override
+  ConsumerState<_KakaoLinkTile> createState() => _KakaoLinkTileState();
+}
+
+class _KakaoLinkTileState extends ConsumerState<_KakaoLinkTile> {
+  bool _linking = false;
+
+  Future<void> _link() async {
+    setState(() => _linking = true);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final token = await KakaoAuth.obtainAccessToken();
+      await ref.read(authControllerProvider.notifier).linkKakao(token);
+      if (!mounted) return;
+      messenger.showSnackBar(
+          const SnackBar(content: Text('카카오 계정을 연결했어요.')));
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      final msg = e.code == 'NOT_IMPLEMENTED'
+          ? '카카오 로그인 준비 중이에요.'
+          : e.code == 'KAKAO_ALREADY_LINKED'
+              ? '이미 다른 계정에 연결된 카카오예요.'
+              : '연결 실패: ${e.message}';
+      messenger.showSnackBar(SnackBar(content: Text(msg)));
+    } catch (_) {
+      if (mounted) {
+        messenger.showSnackBar(
+            const SnackBar(content: Text('카카오 연결이 취소되었어요.')));
+      }
+    } finally {
+      if (mounted) setState(() => _linking = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final linked =
+        ref.watch(authControllerProvider).profile?.kakaoLinked ?? false;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: (linked || _linking) ? null : _link,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            decoration: BoxDecoration(
+              border: Border.all(color: c.border),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.chat_bubble_outline_rounded, size: 22, color: c.ink2),
+                const SizedBox(width: 13),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('카카오 계정 연결',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: c.ink)),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                            linked ? '연결됨' : '카카오로도 로그인할 수 있게 연결해요',
+                            style: TextStyle(fontSize: 13, color: c.ink2)),
+                      ),
+                    ],
+                  ),
+                ),
+                if (_linking)
+                  SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: c.primary))
+                else if (linked)
+                  Icon(Icons.check_circle_rounded, color: c.deposited, size: 22),
+              ],
+            ),
+          ),
         ),
       ),
     );

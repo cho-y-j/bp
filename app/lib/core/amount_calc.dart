@@ -6,6 +6,12 @@ const baseRateLabels = {
   'DAILY': '기본(일당)',
   'HOURLY': '기본(시급)',
   'PER_CASE': '기본(건당)',
+  'GONGSU': '기본(공수)',
+};
+
+/// 기본항목 수량 단위(있으면 "1.5공수" 처럼 표기). 공수(GONGSU)만 '공수'.
+const baseRateUnits = {
+  'GONGSU': '공수',
 };
 
 const additionalItemLabels = {
@@ -22,7 +28,9 @@ class AmountLineItem {
   final int rate;
   final num quantity;
   final int amount;
-  const AmountLineItem(this.type, this.label, this.rate, this.quantity, this.amount);
+  final String? unit; // 수량 단위(있으면 "1.5공수"). 공수 기본항목만 '공수'.
+  const AmountLineItem(this.type, this.label, this.rate, this.quantity, this.amount,
+      {this.unit});
 }
 
 class AmountCalcResult {
@@ -52,6 +60,24 @@ int _money(num n) {
   return n.round();
 }
 
+/// 수량을 사람이 읽는 문자열로. 정수면 소수점 없이. (예: 1.5 → "1.5", 2 → "2")
+String formatQty(num n) => n == n.roundToDouble() ? '${n.round()}' : '$n';
+
+/// 수량 + 단위 표기. 공수면 "1.5공수", 아니면 그냥 수량. (백엔드 PDF 라벨과 동일)
+String formatQtyUnit(num n, String? unit) =>
+    unit != null && unit.isNotEmpty ? '${formatQty(n)}$unit' : formatQty(n);
+
+/// 공수(GONGSU) 수량 유효성 검사 — 백엔드 `validateGongsuQuantity` 와 동일 로직.
+/// 0보다 크고 0.1 단위여야 한다. 유효하면 0.1로 정규화한 값, 아니면 null.
+double? validateGongsuQuantity(num quantity) {
+  final q = quantity.toDouble();
+  if (q.isNaN || q.isInfinite || q <= 0) return null;
+  final scaled = (q * 10).round();
+  if (scaled <= 0) return null;
+  if ((q * 10 - scaled).abs() > 1e-6) return null; // 0.1 단위가 아님
+  return scaled / 10;
+}
+
 AmountCalcResult calcAmount({
   required String rateType,
   required num rate,
@@ -68,6 +94,7 @@ AmountCalcResult calcAmount({
     _money(baseRate),
     baseQty,
     _money(baseRate * baseQty),
+    unit: baseRateUnits[rateType],
   ));
 
   for (final raw in additionalItems) {

@@ -74,6 +74,37 @@ class AuthController extends StateNotifier<AuthState> {
     state = AuthState(AuthStatus.authenticated, Profile.fromJson(res as Map));
   }
 
+  /// 세금계산서 공급자(내 사업자) 정보 저장 (PATCH /me).
+  Future<void> saveBusinessInfo({
+    required String bizNumber,
+    required String bizName,
+    required String bizAddress,
+  }) async {
+    final res = await _api.patch('/me', body: {
+      'bizNumber': bizNumber.trim(),
+      'bizName': bizName.trim(),
+      'bizAddress': bizAddress.trim(),
+    });
+    state = AuthState(AuthStatus.authenticated, Profile.fromJson(res as Map));
+  }
+
+  /// 카카오 로그인 (POST /auth/kakao). accessToken 은 카카오 SDK 로 발급받은 값.
+  Future<AuthResult> kakaoLogin(String kakaoAccessToken) async {
+    final res =
+        await _api.post('/auth/kakao', body: {'accessToken': kakaoAccessToken});
+    final auth = AuthResult.fromJson(res as Map);
+    await _api.tokens.write(auth.accessToken);
+    state = AuthState(AuthStatus.authenticated, auth.profile);
+    return auth;
+  }
+
+  /// 로그인 상태에서 카카오 계정 연결 (POST /auth/kakao/link) → ProfileDto 반환.
+  Future<void> linkKakao(String kakaoAccessToken) async {
+    final res = await _api
+        .post('/auth/kakao/link', body: {'accessToken': kakaoAccessToken});
+    state = AuthState(AuthStatus.authenticated, Profile.fromJson(res as Map));
+  }
+
   Future<void> refreshProfile() async {
     try {
       final me = await _api.get('/me');

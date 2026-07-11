@@ -5,8 +5,10 @@ import '../../core/format.dart';
 import '../../models/models.dart';
 import '../../providers/auth.dart';
 import '../../providers/data.dart';
+import '../../providers/drafts.dart';
 import '../../providers/notifications.dart';
 import '../../widgets/common.dart';
+import '../drafts/draft_list_screen.dart';
 import '../notifications/notifications_screen.dart';
 import '../wallet/wallet_screen.dart';
 
@@ -71,6 +73,9 @@ class HomeScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+
+              // 전송 대기 초안 배너(오프라인 임시저장)
+              const _DraftsBanner(),
 
               // 오늘 일정
               const SectionTitle('오늘 일정'),
@@ -143,6 +148,65 @@ class HomeScreen extends ConsumerWidget {
                 },
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 전송 대기 중인 오프라인 초안 배너(N건). 탭 → 초안 목록.
+class _DraftsBanner extends ConsumerWidget {
+  const _DraftsBanner();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final drafts = ref.watch(draftQueueProvider);
+    if (drafts.isEmpty) return const SizedBox.shrink();
+    final c = context.c;
+    final hasError = drafts.any((d) => d.lastError != null);
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const DraftListScreen())),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+            decoration: BoxDecoration(
+              color: c.primary.withValues(alpha: 0.08),
+              border: Border.all(color: c.borderStrong),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                Icon(hasError ? Icons.error_outline_rounded : Icons.cloud_upload_outlined,
+                    color: c.accentText, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('임시저장 ${drafts.length}건 전송 대기',
+                          style: TextStyle(
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w800,
+                              color: c.ink)),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 1),
+                        child: Text(
+                            hasError
+                                ? '일부 초안은 확인이 필요해요 · 탭하여 보기'
+                                : '연결되면 자동으로 전송돼요 · 탭하여 보기',
+                            style: TextStyle(fontSize: 13, color: c.ink2)),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: c.ink3),
+              ],
+            ),
           ),
         ),
       ),
@@ -329,6 +393,21 @@ class _SummaryCard extends ConsumerWidget {
               Text(' 일',
                   style: TextStyle(
                       fontSize: 15, fontWeight: FontWeight.w700, color: c.ink2)),
+              if (summary.totalGongsu > 0) ...[
+                Text('  ·  ',
+                    style: TextStyle(fontSize: 15, color: c.ink3)),
+                Text(formatGongsu(summary.totalGongsu),
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: c.ink,
+                        fontFeatures: const [FontFeature.tabularFigures()])),
+                Text(' 공수',
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: c.ink2)),
+              ],
             ],
           ),
           Padding(

@@ -1,0 +1,55 @@
+- main [ref=f5e2]:
+  - button "English" [ref=f5e5] [cursor=pointer]
+  - paragraph [ref=f5e13]: 작업온 · Work Confirmation
+  - generic [ref=f5e15]:
+    - generic [ref=f5e16]: WORK CONFIRMATION
+    - generic [ref=f5e19]:
+      - generic [ref=f5e20]:
+        - generic [ref=f5e21]: Work date
+        - generic [ref=f5e22]: Sat, Jul 11, 2026
+        - generic [ref=f5e23]: Time
+        - generic [ref=f5e24]: 08:00 ~ 17:00
+        - generic [ref=f5e25]: Site
+        - generic [ref=f5e26]: 강남 현장 A동
+        - generic [ref=f5e27]: Worker
+        - generic [ref=f5e28]: 박민수
+        - generic [ref=f5e29]: Requester
+        - generic [ref=f5e30]:
+          - text: 대한건설
+          - generic [ref=f5e31]: · 010-9876-5432
+        - generic [ref=f5e32]: Work details
+        - generic [ref=f5e33]: 굴착기 상차 및 정리작업
+        - generic [ref=f5e34]: Equipment
+        - generic [ref=f5e35]: 굴착기 06W · 서울12가3456 · Signal guide
+      - generic [ref=f5e36]:
+        - generic [ref=f5e37]:
+          - generic [ref=f5e38]:
+            - text: 기본(일당)
+            - generic [ref=f5e39]: ₩200,000 × 1
+          - generic [ref=f5e40]: ₩200,000
+        - generic [ref=f5e41]:
+          - generic [ref=f5e42]:
+            - text: 연장
+            - generic [ref=f5e43]: ₩30,000 × 2
+          - generic [ref=f5e44]: ₩60,000
+        - generic [ref=f5e45]:
+          - generic [ref=f5e46]: VAT (10%)
+          - generic [ref=f5e47]: ₩26,000
+        - generic [ref=f5e48]:
+          - generic [ref=f5e49]: Amount due
+          - generic [ref=f5e50]: ₩286,000
+      - paragraph [ref=f5e51]: Note · 자재 반입 지연으로 1시간 연장
+  - generic [ref=f5e52]:
+    - generic [ref=f5e53]: Please sign here
+    - generic [ref=f5e57]:
+      - generic [ref=f5e58]: Signer name
+      - textbox "Signer name" [ref=f5e59]:
+        - /placeholder: e.g. John Smith
+    - generic [ref=f5e60]: Signature
+    - generic [ref=f5e61]:
+      - generic "서명 입력 영역" [ref=f5e62]
+      - generic: 여기에 손가락 또는 마우스로 서명하세요
+    - button "Redraw" [disabled] [ref=f5e64]
+    - button "Sign & confirm" [ref=f5e65] [cursor=pointer]
+    - paragraph [ref=f5e69]: Once signed, the confirmation takes effect for both parties
+    - paragraph [ref=f5e70]: By signing, you agree to the work and amount above. This is a legally valid confirmation record.

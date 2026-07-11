@@ -11,6 +11,10 @@ class Profile {
   final bool phoneSearchConsent;
   final List<String> industryTags;
   final bool hasBusiness;
+  final String? kakaoId; // 카카오 연결 여부
+  final String? bizNumber; // 세금계산서 공급자 사업자번호
+  final String? bizName; // 세금계산서 공급자 상호
+  final String? bizAddress; // 세금계산서 공급자 주소
 
   Profile({
     required this.id,
@@ -19,7 +23,17 @@ class Profile {
     required this.phoneSearchConsent,
     required this.industryTags,
     required this.hasBusiness,
+    required this.kakaoId,
+    required this.bizNumber,
+    required this.bizName,
+    required this.bizAddress,
   });
+
+  /// 세금계산서 공급자 정보(사업자번호) 등록 여부.
+  bool get supplierReady => (bizNumber ?? '').trim().isNotEmpty;
+
+  /// 카카오 계정 연결 여부.
+  bool get kakaoLinked => (kakaoId ?? '').trim().isNotEmpty;
 
   factory Profile.fromJson(Map j) => Profile(
         id: j['id'].toString(),
@@ -29,6 +43,10 @@ class Profile {
         industryTags:
             (j['industryTags'] as List?)?.map((e) => e.toString()).toList() ?? [],
         hasBusiness: j['hasBusiness'] == true,
+        kakaoId: j['kakaoId'] as String?,
+        bizNumber: j['bizNumber'] as String?,
+        bizName: j['bizName'] as String?,
+        bizAddress: j['bizAddress'] as String?,
       );
 }
 
@@ -107,6 +125,36 @@ class Confirmation {
       );
 
   DateTime get dateTime => DateTime.parse(date);
+
+  /// 기본항목(BASE) 정보 — amountCalc.items[0]. 공수 라벨 등에 사용.
+  Map? get _baseItem {
+    final items = amountCalc?['items'];
+    if (items is List && items.isNotEmpty && items.first is Map) {
+      return items.first as Map;
+    }
+    return null;
+  }
+
+  /// 기본항목 수량 단위(공수면 '공수', 아니면 null).
+  String? get baseUnit {
+    final u = _baseItem?['unit'];
+    return (u is String && u.isNotEmpty) ? u : null;
+  }
+
+  /// 기본항목 수량.
+  num get baseQuantity {
+    final q = _baseItem?['quantity'];
+    return q is num ? q : 0;
+  }
+
+  /// 기본항목 단가.
+  int get baseRate {
+    final r = _baseItem?['rate'];
+    return r is num ? r.round() : 0;
+  }
+
+  /// 공수 확인서 여부.
+  bool get isGongsu => rateType == 'GONGSU';
 }
 
 class DayAggregate {
@@ -146,8 +194,9 @@ class LedgerSummary {
   final int totalOutstanding;
   final int totalPaid;
   final int entryCount;
+  final double totalGongsu; // 그 달 공수(GONGSU) 확인서 공수 합계
   LedgerSummary(this.month, this.daysWorked, this.totalBilled,
-      this.totalOutstanding, this.totalPaid, this.entryCount);
+      this.totalOutstanding, this.totalPaid, this.entryCount, this.totalGongsu);
   factory LedgerSummary.fromJson(Map j) => LedgerSummary(
         j['month']?.toString() ?? '',
         _pint(j['daysWorked']),
@@ -155,6 +204,7 @@ class LedgerSummary {
         _pint(j['totalOutstanding']),
         _pint(j['totalPaid']),
         _pint(j['entryCount']),
+        (j['totalGongsu'] as num?)?.toDouble() ?? 0,
       );
 }
 
@@ -616,5 +666,108 @@ class NotificationList {
         (j['items'] as List? ?? [])
             .map((e) => NotificationItem.fromJson(e as Map))
             .toList(),
+      );
+}
+
+// ===========================================================================
+// P1: 세금계산서 1단계 (홈택스 입력용 데이터)
+// ===========================================================================
+
+/// 세금계산서 공급자(나) 정보.
+class TaxInvoiceSupplier {
+  final String? name;
+  final String? bizNumber;
+  final String? bizName;
+  final String? bizAddress;
+  TaxInvoiceSupplier(this.name, this.bizNumber, this.bizName, this.bizAddress);
+  factory TaxInvoiceSupplier.fromJson(Map j) => TaxInvoiceSupplier(
+        j['name'] as String?,
+        j['bizNumber'] as String?,
+        j['bizName'] as String?,
+        j['bizAddress'] as String?,
+      );
+}
+
+/// 세금계산서 품목(확인서 1건).
+class TaxInvoiceItem {
+  final String ledgerId;
+  final String date;
+  final String content;
+  final int supplyAmount;
+  TaxInvoiceItem(this.ledgerId, this.date, this.content, this.supplyAmount);
+  factory TaxInvoiceItem.fromJson(Map j) => TaxInvoiceItem(
+        j['ledgerId'].toString(),
+        j['date']?.toString() ?? '',
+        j['content']?.toString() ?? '',
+        _pint(j['supplyAmount']),
+      );
+}
+
+/// 세금계산서 상대별 그룹(공급받는자).
+class TaxInvoiceGroup {
+  final String buyerName;
+  final String? buyerBizNumber;
+  final bool buyerRegistered;
+  final String writeDate;
+  final int supplyTotal;
+  final int taxTotal;
+  final int grandTotal;
+  final List<TaxInvoiceItem> items;
+  final List<String> ledgerIds;
+  TaxInvoiceGroup({
+    required this.buyerName,
+    required this.buyerBizNumber,
+    required this.buyerRegistered,
+    required this.writeDate,
+    required this.supplyTotal,
+    required this.taxTotal,
+    required this.grandTotal,
+    required this.items,
+    required this.ledgerIds,
+  });
+  factory TaxInvoiceGroup.fromJson(Map j) => TaxInvoiceGroup(
+        buyerName: j['buyerName']?.toString() ?? '(미지정)',
+        buyerBizNumber: j['buyerBizNumber'] as String?,
+        buyerRegistered: j['buyerRegistered'] == true,
+        writeDate: j['writeDate']?.toString() ?? '',
+        supplyTotal: _pint(j['supplyTotal']),
+        taxTotal: _pint(j['taxTotal']),
+        grandTotal: _pint(j['grandTotal']),
+        items: (j['items'] as List? ?? [])
+            .map((e) => TaxInvoiceItem.fromJson(e as Map))
+            .toList(),
+        ledgerIds:
+            (j['ledgerIds'] as List? ?? []).map((e) => e.toString()).toList(),
+      );
+}
+
+/// 세금계산서 데이터 응답(월 단위).
+class TaxInvoiceData {
+  final String month;
+  final String writeDate;
+  final TaxInvoiceSupplier supplier;
+  final bool supplierReady;
+  final int groupCount;
+  final List<TaxInvoiceGroup> groups;
+  final String text; // 홈택스 입력용 복사 텍스트
+  TaxInvoiceData({
+    required this.month,
+    required this.writeDate,
+    required this.supplier,
+    required this.supplierReady,
+    required this.groupCount,
+    required this.groups,
+    required this.text,
+  });
+  factory TaxInvoiceData.fromJson(Map j) => TaxInvoiceData(
+        month: j['month']?.toString() ?? '',
+        writeDate: j['writeDate']?.toString() ?? '',
+        supplier: TaxInvoiceSupplier.fromJson(j['supplier'] as Map? ?? const {}),
+        supplierReady: j['supplierReady'] == true,
+        groupCount: _pint(j['groupCount']),
+        groups: (j['groups'] as List? ?? [])
+            .map((e) => TaxInvoiceGroup.fromJson(e as Map))
+            .toList(),
+        text: j['text']?.toString() ?? '',
       );
 }

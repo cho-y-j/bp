@@ -22,7 +22,7 @@ void main() {
       await tester.pumpWidget(_app(const LedgerScreen(), [
         ledgerByCompanyProvider(mp).overrideWith((ref) async => <LedgerCompany>[]),
         ledgerSummaryProvider(mp)
-            .overrideWith((ref) async => LedgerSummary(mp, 0, 0, 0, 0, 0)),
+            .overrideWith((ref) async => LedgerSummary(mp, 0, 0, 0, 0, 0, 0)),
       ]));
       await tester.pumpAndSettle();
 

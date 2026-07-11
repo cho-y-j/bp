@@ -1,0 +1,55 @@
+- main [ref=e2]:
+  - button "한국어" [ref=e5] [cursor=pointer]
+  - paragraph [ref=e13]: 작업온 · 작업확인서
+  - generic [ref=e15]:
+    - generic [ref=e16]: 작 업 확 인 서
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - generic [ref=e21]: 작업일
+        - generic [ref=e22]: 2026년 7월 11일 (토)
+        - generic [ref=e23]: 시간
+        - generic [ref=e24]: 08:00 ~ 17:00
+        - generic [ref=e25]: 현장
+        - generic [ref=e26]: 강남 현장 A동
+        - generic [ref=e27]: 작업자
+        - generic [ref=e28]: 박민수
+        - generic [ref=e29]: 지시자
+        - generic [ref=e30]:
+          - text: 대한건설
+          - generic [ref=e31]: · 010-9876-5432
+        - generic [ref=e32]: 작업내용
+        - generic [ref=e33]: 굴착기 상차 및 정리작업
+        - generic [ref=e34]: 장비
+        - generic [ref=e35]: 굴착기 06W · 서울12가3456 · 유도원
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - text: 기본(일당)
+            - generic [ref=e39]: 200,000원 × 1
+          - generic [ref=e40]: 200,000원
+        - generic [ref=e41]:
+          - generic [ref=e42]:
+            - text: 연장
+            - generic [ref=e43]: 30,000원 × 2
+          - generic [ref=e44]: 60,000원
+        - generic [ref=e45]:
+          - generic [ref=e46]: 부가세 (10%)
+          - generic [ref=e47]: 26,000원
+        - generic [ref=e48]:
+          - generic [ref=e49]: 받을 금액
+          - generic [ref=e50]: 286,000원
+      - paragraph [ref=e51]: 메모 · 자재 반입 지연으로 1시간 연장
+  - generic [ref=e52]:
+    - generic [ref=e53]: 여기에 서명해 주세요
+    - generic [ref=e57]:
+      - generic [ref=e58]: 서명자 이름
+      - textbox "서명자 이름" [ref=e59]:
+        - /placeholder: 예) 이현수
+    - generic [ref=e60]: 서명
+    - generic [ref=e61]:
+      - generic "서명 입력 영역" [ref=e62]
+      - generic: 여기에 손가락 또는 마우스로 서명하세요
+    - button "다시 그리기" [disabled] [ref=e64]
+    - button "서명하고 확인 완료" [ref=e65] [cursor=pointer]
+    - paragraph [ref=e69]: 서명 즉시 작업자와 양측에 확인서가 확정됩니다
+    - paragraph [ref=e70]: 서명하면 위 작업 내용과 받을 금액에 동의하는 것이며, 법적 효력이 있는 확인 기록으로 남습니다.

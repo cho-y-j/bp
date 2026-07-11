@@ -101,6 +101,29 @@ class _BodyState extends ConsumerState<_Body> {
                     const SizedBox(height: 8),
                     Divider(color: c.border),
                     const SizedBox(height: 8),
+                    if (conf.baseUnit != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          children: [
+                            Text('단가',
+                                style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: c.ink2)),
+                            const Spacer(),
+                            Text(
+                                '${formatWon(conf.baseRate)} × ${formatGongsu(conf.baseQuantity)}${conf.baseUnit}',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: c.ink2,
+                                    fontFeatures: const [
+                                      FontFeature.tabularFigures()
+                                    ])),
+                          ],
+                        ),
+                      ),
                     Row(
                       children: [
                         Text('받을 금액',

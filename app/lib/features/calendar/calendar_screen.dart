@@ -381,7 +381,9 @@ class _WeekItem extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
                     const SizedBox(height: 2),
-                    Text('${conf.companyName} · ${ampm(conf.startTime)}~${ampm(conf.endTime)}',
+                    Text(
+                        '${conf.companyName} · ${ampm(conf.startTime)}~${ampm(conf.endTime)}'
+                        '${conf.baseUnit != null ? ' · ${formatGongsu(conf.baseQuantity)}${conf.baseUnit}' : ''}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontSize: 13, color: c.ink2)),

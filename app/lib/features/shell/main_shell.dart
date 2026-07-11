@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../core/push.dart';
+import '../../providers/drafts.dart';
 import '../home/home_screen.dart';
 import '../calendar/calendar_screen.dart';
 import '../ledger/ledger_screen.dart';
@@ -44,6 +45,18 @@ class _MainShellState extends ConsumerState<MainShell> {
   @override
   Widget build(BuildContext context) {
     final index = ref.watch(shellTabProvider);
+    // 초안 자동 전송 결과 → 전역 스낵바 알림.
+    ref.listen(draftFlushEventProvider, (prev, ev) {
+      if (ev == null || !mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
+      if (ev.sent > 0) {
+        messenger.showSnackBar(SnackBar(
+            content: Text('임시저장 ${ev.sent}건이 자동 전송되었어요.')));
+      } else if (ev.failed > 0) {
+        messenger.showSnackBar(const SnackBar(
+            content: Text('임시저장 초안 전송에 실패했어요. 홈에서 확인해 주세요.')));
+      }
+    });
     return Scaffold(
       body: IndexedStack(index: index, children: _tabs),
       bottomNavigationBar: _WonTabBar(

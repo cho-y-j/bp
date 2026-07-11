@@ -43,6 +43,14 @@ final ledgerEntriesProvider =
   return items.map((e) => LedgerEntry.fromJson(e as Map)).toList();
 });
 
+/// 세금계산서 1단계 데이터 (월 파라미터 family).
+final taxInvoiceDataProvider =
+    FutureProvider.family<TaxInvoiceData, String>((ref, month) async {
+  final api = ref.watch(apiClientProvider);
+  final res = await api.get('/ledger/tax-invoice-data', query: {'month': month});
+  return TaxInvoiceData.fromJson(res as Map);
+});
+
 /// 만료 임박 서류 (홈 배너용).
 final expiringDocsProvider =
     FutureProvider<List<ExpiringDoc>>((ref) async {
@@ -71,6 +79,7 @@ void invalidateAll(WidgetRef ref) {
   ref.invalidate(ledgerByCompanyProvider);
   ref.invalidate(ledgerEntriesProvider);
   ref.invalidate(expiringDocsProvider);
+  ref.invalidate(taxInvoiceDataProvider);
 }
 
 /// 쓰기 액션 모음 (확인서/입금).
@@ -97,6 +106,13 @@ class Repo {
   Future<void> addPayment(String ledgerId, int amount, {String? memo}) async {
     await api.post('/ledger/$ledgerId/payments',
         body: {'amount': amount, if (memo != null && memo.isNotEmpty) 'memo': memo});
+  }
+
+  /// 세금계산서 발행 완료 표시 → { marked, alreadyMarked, taxInvoicedAt }.
+  Future<Map> markTaxInvoiced(List<String> ledgerIds) async {
+    final res = await api.post('/ledger/tax-invoice-data/mark',
+        body: {'ledgerIds': ledgerIds});
+    return res as Map;
   }
 }
 

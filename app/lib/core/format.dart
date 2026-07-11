@@ -41,6 +41,16 @@ String ddayLabel(int? dday) {
   return dday > 0 ? 'D-$dday' : 'D+${-dday}';
 }
 
+/// 공수 수량 표기. 정수면 소수점 없이. (예: 19.5 → "19.5", 18 → "18")
+String formatGongsu(num g) => g == g.roundToDouble() ? '${g.round()}' : '$g';
+
+/// 일한 날 요약 라벨. 공수가 있으면 "18일 · 19.5공수", 없으면 "18일".
+String daysWithGongsu(int days, num gongsu) {
+  final base = '$days일';
+  if (gongsu <= 0) return base;
+  return '$base · ${formatGongsu(gongsu)}공수';
+}
+
 /// 알림 뱃지 텍스트. 0 이면 빈 문자열(뱃지 숨김), 9 초과면 "9+".
 String badgeCount(int count) {
   if (count <= 0) return '';

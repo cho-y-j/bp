@@ -7,6 +7,7 @@ import '../../core/amount_calc.dart';
 import '../../core/api_client.dart';
 import '../../models/models.dart';
 import '../../providers/data.dart';
+import '../../providers/drafts.dart';
 import '../../widgets/common.dart';
 import 'share_helper.dart';
 
@@ -50,6 +51,8 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
   final _equipVehicle = TextEditingController();
   DateTime? _dueDate;
   bool _saving = false;
+  bool _committed = false; // 저장/임시저장 완료 → 자동 초안 재저장 방지
+  bool _autoRestoreDismissed = false; // 자동 초안 복원 배너 닫힘
 
   @override
   void initState() {
@@ -123,6 +126,10 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
 
   num get _qtyValue => num.tryParse(_qty.text.trim()) ?? 0;
 
+  bool get _quantityValid => _rateType == 'GONGSU'
+      ? validateGongsuQuantity(_qtyValue) != null
+      : _qtyValue > 0;
+
   bool get _valid {
     final rate = num.tryParse(_rate.text.trim()) ?? 0;
     final counterpartyOk = _useBusiness
@@ -132,7 +139,7 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
         _work.text.trim().isNotEmpty &&
         counterpartyOk &&
         rate > 0 &&
-        _qtyValue > 0;
+        _quantityValid;
   }
 
   Future<void> _pickCopyFrom() async {
@@ -180,56 +187,68 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
     }
   }
 
+  /// `POST /confirmations` 요청 본문 구성(초안 큐 저장에도 재사용).
+  Map<String, dynamic> _buildBody() {
+    final body = <String, dynamic>{
+      'date': dateParam(_date),
+      'siteName': _site.text.trim(),
+      'workDescription': _work.text.trim(),
+      'startTime': _hhmm(_start),
+      'endTime': _hhmm(_end),
+      'rateType': _rateType,
+      'rate': num.tryParse(_rate.text.trim()) ?? 0,
+      'quantity': num.tryParse(_qty.text.trim()) ?? 0,
+    };
+    if (_useBusiness && _businessId != null) {
+      body['businessId'] = _businessId;
+    } else {
+      body['companyName'] = _company.text.trim();
+      if (_contact.text.trim().isNotEmpty) body['contact'] = _contact.text.trim();
+    }
+    final extras = _extras
+        .where((e) => (num.tryParse(e.rate.text.trim()) ?? 0) > 0)
+        .map((e) => {
+              'type': e.type,
+              if (e.type == 'OTHER' && e.label.text.trim().isNotEmpty)
+                'label': e.label.text.trim(),
+              'rate': num.tryParse(e.rate.text.trim()) ?? 0,
+              'quantity': num.tryParse(e.qty.text.trim()) ?? 0,
+            })
+        .toList();
+    if (extras.isNotEmpty) body['additionalItems'] = extras;
+    if (_equipOn && _equipName.text.trim().isNotEmpty) {
+      body['equipmentSection'] = {
+        'name': _equipName.text.trim(),
+        if (_equipVehicle.text.trim().isNotEmpty)
+          'vehicleNumber': _equipVehicle.text.trim(),
+      };
+    }
+    if (_dueDate != null) body['dueDate'] = dateParam(_dueDate!);
+    return body;
+  }
+
   Future<void> _submit() async {
     setState(() => _saving = true);
+    final body = _buildBody();
+    final repo = ref.read(repoProvider);
+    // 루트 메신저/네비게이터를 pop 이전에 캡처 → pop 후에도 안전하게 표시.
+    final messenger = ScaffoldMessenger.of(context);
     try {
-      final body = <String, dynamic>{
-        'date': dateParam(_date),
-        'siteName': _site.text.trim(),
-        'workDescription': _work.text.trim(),
-        'startTime': _hhmm(_start),
-        'endTime': _hhmm(_end),
-        'rateType': _rateType,
-        'rate': num.tryParse(_rate.text.trim()) ?? 0,
-        'quantity': num.tryParse(_qty.text.trim()) ?? 0,
-      };
-      if (_useBusiness && _businessId != null) {
-        body['businessId'] = _businessId;
-      } else {
-        body['companyName'] = _company.text.trim();
-        if (_contact.text.trim().isNotEmpty) body['contact'] = _contact.text.trim();
-      }
-      final extras = _extras
-          .where((e) => (num.tryParse(e.rate.text.trim()) ?? 0) > 0)
-          .map((e) => {
-                'type': e.type,
-                if (e.type == 'OTHER' && e.label.text.trim().isNotEmpty)
-                  'label': e.label.text.trim(),
-                'rate': num.tryParse(e.rate.text.trim()) ?? 0,
-                'quantity': num.tryParse(e.qty.text.trim()) ?? 0,
-              })
-          .toList();
-      if (extras.isNotEmpty) body['additionalItems'] = extras;
-      if (_equipOn && _equipName.text.trim().isNotEmpty) {
-        body['equipmentSection'] = {
-          'name': _equipName.text.trim(),
-          if (_equipVehicle.text.trim().isNotEmpty)
-            'vehicleNumber': _equipVehicle.text.trim(),
-        };
-      }
-      if (_dueDate != null) body['dueDate'] = dateParam(_dueDate!);
-
-      final repo = ref.read(repoProvider);
       final created = await repo.createConfirmation(body);
-      final sendRes = await repo.send(created.id);
+      _committed = true; // 자동 초안 재저장 방지
+      await ref.read(autoDraftProvider.notifier).clear();
+      Map sendRes = const {};
+      try {
+        sendRes = await repo.send(created.id);
+      } on ApiException {
+        // 전송(공유 링크·알림)만 실패 — 확인서는 이미 저장·장부 반영됨.
+      }
       invalidateAll(ref);
       if (!mounted) return;
       final linked = sendRes['linked'] == true;
       final url = sendRes['url']?.toString() ?? '';
-      // 루트 메신저를 pop 이전에 캡처 → pop 후에도 안전하게 스낵바 표시.
-      final messenger = ScaffoldMessenger.of(context);
       // 공유 시트는 화면이 살아있는 동안(pop 이전) 띄운다.
-      if (!linked) {
+      if (!linked && url.isNotEmpty) {
         await shareConfirmationLink(context, created, url);
       }
       if (!mounted) return;
@@ -239,12 +258,91 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
               ? '저장 완료 · 연결된 사업장에 전송했어요.'
               : '저장 완료 · 장부에 반영되었어요.')));
     } on ApiException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('저장 실패: ${e.message}')));
+      if (!mounted) return;
+      // 공수 수량 검증 실패 — 화면에 머무르며 안내.
+      if (e.code == 'INVALID_GONGSU_QUANTITY') {
+        setState(() => _saving = false);
+        messenger.showSnackBar(const SnackBar(
+            content: Text('공수는 0.1 단위로 입력해 주세요 (예: 0.5 · 1.5).')));
+        return;
       }
-    } finally {
-      if (mounted) setState(() => _saving = false);
+      // 네트워크/서버 문제 → 로컬 초안 큐에 임시저장(연결 복구 시 자동 전송).
+      if (isRetriableFailure(e)) {
+        await ref.read(draftQueueProvider.notifier).enqueue(body);
+        _committed = true;
+        await ref.read(autoDraftProvider.notifier).clear();
+        if (!mounted) return;
+        Navigator.of(context).pop();
+        messenger.showSnackBar(const SnackBar(
+            content: Text('임시저장됨 — 연결되면 자동 전송돼요.'),
+            duration: Duration(seconds: 4)));
+        return;
+      }
+      setState(() => _saving = false);
+      messenger.showSnackBar(SnackBar(content: Text('저장 실패: ${e.message}')));
+    }
+  }
+
+  /// 작성 중인 의미 있는 내용이 있는가(자동 초안 보존 판단용).
+  bool get _isDirty =>
+      _site.text.trim().isNotEmpty ||
+      _work.text.trim().isNotEmpty ||
+      (num.tryParse(_rate.text.trim()) ?? 0) > 0 ||
+      _company.text.trim().isNotEmpty;
+
+  /// 폼 이탈 시 자동 초안 1건 보존(저장/임시저장으로 커밋되지 않은 경우만).
+  void _maybeSaveAutoDraft() {
+    if (_committed || !_isDirty) return;
+    ref.read(autoDraftProvider.notifier).save(_buildBody());
+  }
+
+  /// 저장/자동 초안 본문을 폼에 복원.
+  void _applyBody(Map body) {
+    _date = DateTime.tryParse(body['date']?.toString() ?? '') ?? _date;
+    _site.text = body['siteName']?.toString() ?? '';
+    _work.text = body['workDescription']?.toString() ?? '';
+    _rateType = body['rateType']?.toString() ?? 'DAILY';
+    _rate.text = body['rate'] == null ? '' : '${body['rate']}';
+    _qty.text = '${body['quantity'] ?? 1}';
+    final st = (body['startTime']?.toString() ?? '').split(':');
+    if (st.length == 2) {
+      _start = TimeOfDay(
+          hour: int.tryParse(st[0]) ?? 8, minute: int.tryParse(st[1]) ?? 0);
+    }
+    final et = (body['endTime']?.toString() ?? '').split(':');
+    if (et.length == 2) {
+      _end = TimeOfDay(
+          hour: int.tryParse(et[0]) ?? 17, minute: int.tryParse(et[1]) ?? 0);
+    }
+    if (body['businessId'] != null) {
+      _useBusiness = true;
+      _businessId = body['businessId'].toString();
+    } else {
+      _useBusiness = false;
+      _company.text = body['companyName']?.toString() ?? '';
+      _contact.text = body['contact']?.toString() ?? '';
+    }
+    final eq = body['equipmentSection'];
+    if (eq is Map && (eq['name'] ?? '').toString().isNotEmpty) {
+      _equipOn = true;
+      _equipName.text = eq['name']?.toString() ?? '';
+      _equipVehicle.text = eq['vehicleNumber']?.toString() ?? '';
+    }
+    final due = body['dueDate'];
+    if (due != null) _dueDate = DateTime.tryParse(due.toString());
+    for (final e in _extras) {
+      e.dispose();
+    }
+    _extras.clear();
+    final extras = body['additionalItems'];
+    if (extras is List) {
+      for (final raw in extras.whereType<Map>()) {
+        final item = _ExtraItem(raw['type']?.toString() ?? 'OVERTIME');
+        item.rate.text = raw['rate'] == null ? '' : '${raw['rate']}';
+        item.qty.text = '${raw['quantity'] ?? 1}';
+        item.label.text = raw['label']?.toString() ?? '';
+        _extras.add(item);
+      }
     }
   }
 
@@ -253,8 +351,19 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
     final c = context.c;
     final calc = _preview();
     final connections = ref.watch(connectionsProvider);
+    // 폼이 비어있을 때만 자동 초안 복원 배너 노출(copyFrom 없을 때).
+    final autoDraft = ref.watch(autoDraftProvider);
+    final showRestore = autoDraft != null &&
+        !_autoRestoreDismissed &&
+        !_committed &&
+        widget.copyFrom == null;
 
-    return Scaffold(
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) _maybeSaveAutoDraft();
+      },
+      child: Scaffold(
       backgroundColor: c.bg,
       appBar: AppBar(
         leading: IconButton(
@@ -268,6 +377,19 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(18, 8, 18, 20),
               children: [
+                if (showRestore) ...[
+                  _RestoreDraftBanner(
+                    onRestore: () => setState(() {
+                      _applyBody(autoDraft.body);
+                      _autoRestoreDismissed = true;
+                    }),
+                    onDiscard: () {
+                      ref.read(autoDraftProvider.notifier).clear();
+                      setState(() => _autoRestoreDismissed = true);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 // 이전 확인서 복사
                 _CopyButton(onTap: _pickCopyFrom),
                 const SizedBox(height: 14),
@@ -325,7 +447,14 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                       _Label('단가 유형'),
                       _RateSegments(
                         value: _rateType,
-                        onChanged: (v) => setState(() => _rateType = v),
+                        onChanged: (v) => setState(() {
+                          _rateType = v;
+                          // 공수로 전환 시 유효한 기본값(1공수) 보장.
+                          if (v == 'GONGSU' &&
+                              validateGongsuQuantity(_qtyValue) == null) {
+                            _qty.text = '1';
+                          }
+                        }),
                       ),
                       const SizedBox(height: 12),
                       Row(children: [
@@ -338,7 +467,9 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                                   ? '시급'
                                   : _rateType == 'PER_CASE'
                                       ? '건당 단가'
-                                      : '일당'),
+                                      : _rateType == 'GONGSU'
+                                          ? '공수 단가 (1공수=하루)'
+                                          : '일당'),
                               _numInput(_rate, hint: '0'),
                             ],
                           ),
@@ -353,21 +484,32 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                                   ? '시간'
                                   : _rateType == 'PER_CASE'
                                       ? '건수'
-                                      : '일수'),
-                              _numInput(_qty, hint: '1'),
+                                      : _rateType == 'GONGSU'
+                                          ? '공수'
+                                          : '일수'),
+                              _rateType == 'GONGSU'
+                                  ? _GongsuStepper(
+                                      controller: _qty,
+                                      onChanged: () => setState(() {}),
+                                    )
+                                  : _numInput(_qty, hint: '1'),
                             ],
                           ),
                         ),
                       ]),
-                      if (_qtyValue <= 0)
+                      if (_rateType == 'GONGSU'
+                          ? validateGongsuQuantity(_qtyValue) == null
+                          : _qtyValue <= 0)
                         Padding(
                           padding: const EdgeInsets.only(top: 6, left: 2),
                           child: Text(
-                              _rateType == 'HOURLY'
-                                  ? '시간을 1 이상 입력해 주세요.'
-                                  : _rateType == 'PER_CASE'
-                                      ? '건수를 1 이상 입력해 주세요.'
-                                      : '일수를 1 이상 입력해 주세요.',
+                              _rateType == 'GONGSU'
+                                  ? '공수는 0.1 단위로 입력해 주세요 (예: 0.5 · 1.5).'
+                                  : _rateType == 'HOURLY'
+                                      ? '시간을 1 이상 입력해 주세요.'
+                                      : _rateType == 'PER_CASE'
+                                          ? '건수를 1 이상 입력해 주세요.'
+                                          : '일수를 1 이상 입력해 주세요.',
                               style: TextStyle(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w600,
@@ -422,6 +564,7 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -793,11 +936,84 @@ class _RateSegments extends StatelessWidget {
 
     return Row(children: [
       seg('DAILY', '일당'),
-      const SizedBox(width: 8),
+      const SizedBox(width: 6),
+      seg('GONGSU', '공수'),
+      const SizedBox(width: 6),
       seg('HOURLY', '시급'),
-      const SizedBox(width: 8),
+      const SizedBox(width: 6),
       seg('PER_CASE', '건당'),
     ]);
+  }
+}
+
+/// 공수(품) 0.5 스텝퍼 — −/값/+ 로 0.5 단위 조절(0.5~5.0), 직접 입력도 허용(0.1 단위).
+class _GongsuStepper extends StatelessWidget {
+  final TextEditingController controller;
+  final VoidCallback onChanged;
+  const _GongsuStepper({required this.controller, required this.onChanged});
+
+  static const double _min = 0.5;
+  static const double _max = 5.0;
+
+  void _step(double delta) {
+    final cur = double.tryParse(controller.text.trim()) ?? 1.0;
+    var next = ((cur + delta) * 2).round() / 2; // 0.5 격자에 스냅
+    if (next < _min) next = _min;
+    if (next > _max) next = _max;
+    controller.text = formatQty(next);
+    onChanged();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    Widget btn(IconData icon, VoidCallback onTap, bool enabled) => InkResponse(
+          onTap: enabled ? onTap : null,
+          radius: 24,
+          child: Container(
+            width: 44,
+            height: 44,
+            alignment: Alignment.center,
+            child: Icon(icon,
+                size: 24, color: enabled ? c.accentText : c.ink3.withValues(alpha: 0.4)),
+          ),
+        );
+    final cur = double.tryParse(controller.text.trim()) ?? 0;
+    return Container(
+      height: 52,
+      decoration: BoxDecoration(
+        color: c.fieldBg,
+        border: Border.all(color: c.border),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          btn(Icons.remove_rounded, () => _step(-0.5), cur > _min),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              textAlign: TextAlign.center,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+              onChanged: (_) => onChanged(),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: c.ink,
+                  fontFeatures: const [FontFeature.tabularFigures()]),
+              decoration: const InputDecoration(
+                hintText: '1',
+                isDense: true,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+              ),
+            ),
+          ),
+          btn(Icons.add_rounded, () => _step(0.5), cur < _max),
+        ],
+      ),
+    );
   }
 }
 
@@ -919,7 +1135,7 @@ class _CalcPreview extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 13.5, fontWeight: FontWeight.w600, color: c.ink2)),
                 const Spacer(),
-                Text('${formatWon(it.rate)} × ${_q(it.quantity)}',
+                Text('${formatWon(it.rate)} × ${formatQtyUnit(it.quantity, it.unit)}',
                     style: TextStyle(
                         fontSize: 13,
                         color: c.ink3,
@@ -967,6 +1183,46 @@ class _CalcPreview extends StatelessWidget {
       ),
     );
   }
+}
 
-  String _q(num n) => n == n.roundToDouble() ? '${n.round()}' : n.toString();
+/// 자동 보존된 초안 복원 배너(폼 이탈 후 재진입 시).
+class _RestoreDraftBanner extends StatelessWidget {
+  final VoidCallback onRestore;
+  final VoidCallback onDiscard;
+  const _RestoreDraftBanner({required this.onRestore, required this.onDiscard});
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+      decoration: BoxDecoration(
+        color: c.primary.withValues(alpha: 0.08),
+        border: Border.all(color: c.borderStrong),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.history_rounded, size: 20, color: c.accentText),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text('작성 중이던 내용이 있어요.',
+                style: TextStyle(
+                    fontSize: 14, fontWeight: FontWeight.w700, color: c.ink)),
+          ),
+          TextButton(
+            onPressed: onDiscard,
+            child: Text('삭제', style: TextStyle(color: c.ink3, fontSize: 14)),
+          ),
+          TextButton(
+            onPressed: onRestore,
+            child: Text('불러오기',
+                style: TextStyle(
+                    color: c.accentText,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800)),
+          ),
+        ],
+      ),
+    );
+  }
 }

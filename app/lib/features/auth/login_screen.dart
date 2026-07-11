@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../core/api_client.dart';
+import '../../core/env.dart';
+import '../../core/kakao_auth.dart';
 import '../../providers/auth.dart';
 import '../../widgets/common.dart';
 
@@ -17,7 +19,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _code = TextEditingController();
   bool _codeSent = false;
   bool _loading = false;
+  bool _kakaoLoading = false;
   String? _error;
+
+  Future<void> _kakaoLogin() async {
+    setState(() {
+      _kakaoLoading = true;
+      _error = null;
+    });
+    try {
+      final token = await KakaoAuth.obtainAccessToken();
+      await ref.read(authControllerProvider.notifier).kakaoLogin(token);
+      // 라우터 redirect 가 온보딩/홈으로 이동
+    } on ApiException catch (e) {
+      setState(() => _error = e.code == 'NOT_IMPLEMENTED'
+          ? '카카오 로그인 준비 중이에요. 전화번호로 시작해 주세요.'
+          : e.message);
+    } catch (_) {
+      // 사용자가 카카오 로그인을 취소한 경우 등 — 조용히 무시.
+    } finally {
+      if (mounted) setState(() => _kakaoLoading = false);
+    }
+  }
 
   @override
   void initState() {
@@ -164,9 +187,64 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ],
                 ),
+              // 카카오 로그인 — KAKAO_APP_KEY 주입 시에만 노출(없으면 전화 인증만).
+              if (Env.kakaoEnabled && !_codeSent) ...[
+                const SizedBox(height: 20),
+                Row(children: [
+                  Expanded(child: Divider(color: c.border)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text('또는',
+                        style: TextStyle(fontSize: 13, color: c.ink3)),
+                  ),
+                  Expanded(child: Divider(color: c.border)),
+                ]),
+                const SizedBox(height: 20),
+                _KakaoButton(loading: _kakaoLoading, onPressed: _kakaoLogin),
+              ],
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// 카카오 로그인 버튼(카카오 브랜드 색). 조건부 노출.
+class _KakaoButton extends StatelessWidget {
+  final bool loading;
+  final VoidCallback onPressed;
+  const _KakaoButton({required this.loading, required this.onPressed});
+  @override
+  Widget build(BuildContext context) {
+    const kakaoYellow = Color(0xFFFEE500);
+    const kakaoBrown = Color(0xFF191600);
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: FilledButton(
+        onPressed: loading ? null : onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: kakaoYellow,
+          foregroundColor: kakaoBrown,
+          disabledBackgroundColor: kakaoYellow.withValues(alpha: 0.6),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+        ),
+        child: loading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2.4, color: kakaoBrown))
+            : const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.chat_bubble_rounded, size: 20),
+                  SizedBox(width: 8),
+                  Text('카카오로 시작하기'),
+                ],
+              ),
       ),
     );
   }

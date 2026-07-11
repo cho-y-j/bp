@@ -1,0 +1,17 @@
+- main [ref=f12e2]:
+  - button "नेपाली" [ref=f12e5] [cursor=pointer]
+  - generic [ref=f12e12]:
+    - paragraph [ref=f12e13]: 작업온 · कागजात सेट
+    - heading "साझा गरिएका कागजात 1 वटा" [level=1] [ref=f12e15]
+    - paragraph [ref=f12e16]: २०२६ जुलाई २५, शनि सम्म हेर्न मिल्ने
+  - generic [ref=f12e18]:
+    - generic [ref=f12e19]:
+      - generic [ref=f12e24]:
+        - generic [ref=f12e25]: 자격증
+        - generic [ref=f12e26]: म्याद २०२७ मार्च १, सोम
+      - generic [ref=f12e27]: D-233
+    - generic [ref=f12e28]:
+      - link "हेर्नुहोस्" [ref=f12e29] [cursor=pointer]:
+        - /url: http://localhost:3050/api/public/shares/3KaF1IAdgBHyuR0PCBQCYGHuVy9veWxY/files/8f2ba0d2-8198-4cd8-9434-3cb4411c3519
+      - link "डाउनलोड" [ref=f12e33] [cursor=pointer]:
+        - /url: http://localhost:3050/api/public/shares/3KaF1IAdgBHyuR0PCBQCYGHuVy9veWxY/files/8f2ba0d2-8198-4cd8-9434-3cb4411c3519?download=1

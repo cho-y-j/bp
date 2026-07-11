@@ -87,6 +87,27 @@ class LedgerScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+              summary.when(
+                loading: () => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
+                data: (s) => s.daysWorked == 0
+                    ? const SizedBox.shrink()
+                    : Padding(
+                        padding: const EdgeInsets.fromLTRB(4, 10, 4, 0),
+                        child: Row(
+                          children: [
+                            Icon(Icons.event_available_outlined,
+                                size: 16, color: c.ink3),
+                            const SizedBox(width: 6),
+                            Text('이번 달 ${daysWithGongsu(s.daysWorked, s.totalGongsu)} 일함',
+                                style: TextStyle(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: c.ink2)),
+                          ],
+                        ),
+                      ),
+              ),
               companies.when(
                 loading: () => const Padding(
                     padding: EdgeInsets.only(top: 40),
