@@ -8,4 +8,5 @@
     <color name="workon_ink2">#5A6474</color>            <!-- 보조 텍스트 -->
     <color name="workon_orange">#F4770C</color>          <!-- 안전 오렌지 포인트 -->
     <color name="workon_receivable">#C2410C</color>      <!-- 미수 빨강 -->
+	<color name="ic_launcher_background">#F4770C</color>
 </resources>

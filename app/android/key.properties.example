@@ -1,0 +1,12 @@
+# 작업온 Android 릴리스 서명 키 설정 템플릿
+# 사용법:
+#   1) 키스토어 생성(사용자 직접, 1회):
+#      keytool -genkey -v -keystore ~/workon-release.jks \
+#        -keyalg RSA -keysize 2048 -validity 10000 -alias workon
+#   2) 이 파일을 복사해 android/key.properties 로 저장하고 값 채우기
+#      (android/key.properties 와 *.jks 는 .gitignore 처리되어 커밋되지 않음)
+#   3) flutter build appbundle --release --dart-define=BASE_URL=https://도메인/api
+storeFile=/절대경로/workon-release.jks
+storePassword=키스토어_비밀번호
+keyAlias=workon
+keyPassword=키_비밀번호

@@ -1,6 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 네트워크: API 통신(dio) + 연결 상태 감지(connectivity_plus) -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!-- 푸시 알림(Android 13+). 위치/카메라/사진 권한은 각 플러그인(geolocator·image_picker)이 병합. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
     <application
-        android:label="workon"
+        android:label="작업온"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
