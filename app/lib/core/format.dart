@@ -8,6 +8,59 @@ String formatWon(num v) => _won.format(v.round());
 /// "1,234,500 원"
 String formatWonUnit(num v) => '${formatWon(v)} 원';
 
+// ─── 로케일 대응 포맷 (다국어) ──────────────────────────────────────────────
+// 앱 언어 코드(ko/zh/ru/vi/ne/en) → Intl 로케일. 웹 LANG_LOCALE 와 동일 규칙.
+const Map<String, String> _langLocale = {
+  'ko': 'ko_KR',
+  'zh': 'zh_CN',
+  'ru': 'ru_RU',
+  'vi': 'vi_VN',
+  'ne': 'ne_NP',
+  'en': 'en_US',
+};
+
+String localeName(String lang) => _langLocale[lang] ?? 'ko_KR';
+
+final Map<String, NumberFormat> _numFmt = {};
+NumberFormat _grouped(String lang) =>
+    _numFmt[lang] ??= NumberFormat.decimalPattern(localeName(lang));
+
+/// 로케일 천단위 그룹핑. (ru 공백·ne 데바나가리/라크 등 로케일 규칙 그대로)
+String formatGrouped(num v, String lang) => _grouped(lang).format(v.round());
+
+/// 금액 표기 — 원화 고정. ko 는 "1,234원", 그 외는 "₩1,234". (웹 money 규칙 동일)
+String formatMoney(num v, String lang) {
+  final n = formatGrouped(v, lang);
+  return lang == 'ko' ? '$n원' : '₩$n';
+}
+
+/// 날짜 — 요일 포함 로케일 표기. ko "7월 11일 (토)", en "Sat, Jul 11".
+String fmtDate(DateTime d, String lang) =>
+    DateFormat.MMMEd(localeName(lang)).format(d);
+
+/// 짧은 날짜 + 요일. ko "7. 11. (토)" 형태(로케일).
+String fmtShortDate(DateTime d, String lang) {
+  final loc = localeName(lang);
+  return '${DateFormat.Md(loc).format(d)} (${DateFormat.E(loc).format(d)})';
+}
+
+/// 연·월·일·요일 전체. ko "2026년 7월 11일 토요일".
+String fmtFullDate(DateTime d, String lang) =>
+    DateFormat.yMMMMEEEEd(localeName(lang)).format(d);
+
+/// 연·월. ko "2026년 7월".
+String fmtMonth(DateTime d, String lang) =>
+    DateFormat.yMMMM(localeName(lang)).format(d);
+
+/// HH:mm → 로케일 시간 표기. ko "오전 8:00", en "8:00 AM".
+String fmtAmpm(String hhmm, String lang) {
+  final parts = hhmm.split(':');
+  if (parts.length != 2) return hhmm;
+  final h = int.tryParse(parts[0]) ?? 0;
+  final m = int.tryParse(parts[1]) ?? 0;
+  return DateFormat.jm(localeName(lang)).format(DateTime(2000, 1, 1, h, m));
+}
+
 const _weekdays = ['월', '화', '수', '목', '금', '토', '일'];
 
 /// "2026-07-11" -> "7월 11일 (토)"

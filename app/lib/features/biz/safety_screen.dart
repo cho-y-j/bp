@@ -7,6 +7,7 @@ import '../../theme/app_colors.dart';
 import '../../core/format.dart';
 import '../../providers/biz.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 
 class SafetyScreen extends ConsumerStatefulWidget {
   const SafetyScreen({super.key});
@@ -29,7 +30,7 @@ class _SafetyScreenState extends ConsumerState<SafetyScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('리포트 열기 실패: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l.safetyReportOpenFailed('$e'))));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -39,9 +40,10 @@ class _SafetyScreenState extends ConsumerState<SafetyScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('안전')),
+      appBar: AppBar(title: Text(l.safetyTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(18, 16, 18, 32),
@@ -60,7 +62,7 @@ class _SafetyScreenState extends ConsumerState<SafetyScreen> {
                       Icon(Icons.health_and_safety_outlined,
                           color: c.accentText),
                       const SizedBox(width: 10),
-                      Text('안전관리 이행 리포트',
+                      Text(l.safetyReportTitle,
                           style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w800,
@@ -68,11 +70,11 @@ class _SafetyScreenState extends ConsumerState<SafetyScreen> {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Text('컨디션 체크·서류 유효성·폭염 알림 기록을 월별 PDF로 확인하세요.',
+                  Text(l.safetyReportDesc,
                       style: TextStyle(fontSize: 14, color: c.ink2)),
                   const SizedBox(height: 16),
                   PrimaryButton(
-                      label: '${formatMonthK(DateTime.now())} 리포트 열기',
+                      label: l.safetyOpenReport(fmtMonth(DateTime.now(), context.lang)),
                       icon: Icons.picture_as_pdf_rounded,
                       loading: _loading,
                       onPressed: _openReport),
@@ -91,7 +93,7 @@ class _SafetyScreenState extends ConsumerState<SafetyScreen> {
                   Icon(Icons.info_outline_rounded, size: 18, color: c.ink3),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text('폭염특보 시 연결된 작업자에게 자동으로 안전 알림이 발송되고 확인 기록이 남습니다.',
+                    child: Text(l.safetyHeatNotice,
                         style: TextStyle(fontSize: 13, color: c.ink2)),
                   ),
                 ],

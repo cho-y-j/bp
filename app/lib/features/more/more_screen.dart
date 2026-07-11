@@ -4,7 +4,9 @@ import '../../theme/app_colors.dart';
 import '../../core/api_client.dart';
 import '../../core/env.dart';
 import '../../core/kakao_auth.dart';
+import '../../l10n/l10n_ext.dart';
 import '../../providers/auth.dart';
+import '../../providers/locale.dart';
 import '../wallet/wallet_screen.dart';
 import '../biz/business_mode_screen.dart';
 import '../jobs/my_jobs_screen.dart';
@@ -20,6 +22,7 @@ class MoreScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
     final profile = ref.watch(authControllerProvider).profile;
     return Scaffold(
       backgroundColor: c.bg,
@@ -30,7 +33,7 @@ class MoreScreen extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(2, 8, 2, 14),
-              child: Text('더보기',
+              child: Text(l.moreTitle,
                   style: TextStyle(
                       fontSize: 22, fontWeight: FontWeight.w800, color: c.ink)),
             ),
@@ -65,7 +68,7 @@ class MoreScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(profile?.name ?? '이름 없음',
+                        Text(profile?.name ?? l.noName,
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
@@ -107,39 +110,40 @@ class MoreScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 20),
-            _SectionLabel('관리'),
+            _SectionLabel(l.sectionManage),
             _Tile(
               icon: Icons.folder_outlined,
-              title: '서류 지갑',
-              subtitle: '자격증·보험·검사증 만료 관리 · 묶음 전송',
+              title: l.menuWallet,
+              subtitle: l.menuWalletSub,
               onTap: () => _push(context, const WalletScreen()),
             ),
             _Tile(
               icon: Icons.storefront_outlined,
-              title: profile?.hasBusiness == true ? '사업장 홈' : '사업장 모드',
-              subtitle: '작업 지시·수신 확인서·정산·안전 리포트',
+              title: profile?.hasBusiness == true ? l.menuBizHome : l.menuBizMode,
+              subtitle: l.menuBizSub,
               onTap: () => _push(context, const BusinessModeScreen()),
             ),
             _Tile(
               icon: Icons.assignment_turned_in_outlined,
-              title: '받은 작업',
-              subtitle: '작업 지시 수락·시작·완료',
+              title: l.menuJobs,
+              subtitle: l.menuJobsSub,
               onTap: () => _push(context, const MyJobsScreen()),
             ),
             _Tile(
               icon: Icons.request_quote_outlined,
-              title: '세금계산서 준비',
-              subtitle: '서명 완료 확인서 → 홈택스 입력용 데이터 정리',
+              title: l.menuTax,
+              subtitle: l.menuTaxSub,
               onTap: () => _push(context, const TaxInvoiceScreen()),
             ),
             const SizedBox(height: 20),
-            _SectionLabel('설정'),
+            _SectionLabel(l.sectionSettings),
             _Tile(
               icon: Icons.notifications_none_rounded,
-              title: '알림',
-              subtitle: '수금·서류 만료·작업 예약·폭염 안전',
+              title: l.menuNotifications,
+              subtitle: l.menuNotificationsSub,
               onTap: () => _push(context, const NotificationsScreen()),
             ),
+            const _LanguageTile(),
             _ConsentTile(
               value: profile?.phoneSearchConsent ?? false,
               onChanged: (v) =>
@@ -149,20 +153,20 @@ class MoreScreen extends ConsumerWidget {
             if (Env.kakaoEnabled) const _KakaoLinkTile(),
             _Tile(
               icon: Icons.logout_rounded,
-              title: '로그아웃',
+              title: l.logout,
               danger: true,
               onTap: () async {
                 final ok = await showDialog<bool>(
                   context: context,
                   builder: (ctx) => AlertDialog(
-                    title: const Text('로그아웃 하시겠어요?'),
+                    title: Text(l.logoutConfirm),
                     actions: [
                       TextButton(
                           onPressed: () => Navigator.pop(ctx, false),
-                          child: const Text('취소')),
+                          child: Text(l.cancel)),
                       TextButton(
                           onPressed: () => Navigator.pop(ctx, true),
-                          child: const Text('로그아웃')),
+                          child: Text(l.logout)),
                     ],
                   ),
                 );
@@ -208,14 +212,14 @@ class _ConsentTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('전화번호 검색 허용',
+                  Text(context.l.consentTitle,
                       style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: c.ink)),
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
-                    child: Text('사업장이 내 번호로 나를 찾아 연결할 수 있어요',
+                    child: Text(context.l.consentSub,
                         style: TextStyle(fontSize: 13, color: c.ink2)),
                   ),
                 ],
@@ -249,20 +253,20 @@ class _KakaoLinkTileState extends ConsumerState<_KakaoLinkTile> {
       final token = await KakaoAuth.obtainAccessToken();
       await ref.read(authControllerProvider.notifier).linkKakao(token);
       if (!mounted) return;
-      messenger.showSnackBar(
-          const SnackBar(content: Text('카카오 계정을 연결했어요.')));
+      messenger.showSnackBar(SnackBar(content: Text(context.l.kakaoLinked)));
     } on ApiException catch (e) {
       if (!mounted) return;
+      final l = context.l;
       final msg = e.code == 'NOT_IMPLEMENTED'
-          ? '카카오 로그인 준비 중이에요.'
+          ? l.kakaoNotReady
           : e.code == 'KAKAO_ALREADY_LINKED'
-              ? '이미 다른 계정에 연결된 카카오예요.'
-              : '연결 실패: ${e.message}';
+              ? l.kakaoAlreadyLinked
+              : l.kakaoLinkFailed(e.message);
       messenger.showSnackBar(SnackBar(content: Text(msg)));
     } catch (_) {
       if (mounted) {
         messenger.showSnackBar(
-            const SnackBar(content: Text('카카오 연결이 취소되었어요.')));
+            SnackBar(content: Text(context.l.kakaoLinkCanceled)));
       }
     } finally {
       if (mounted) setState(() => _linking = false);
@@ -296,7 +300,7 @@ class _KakaoLinkTileState extends ConsumerState<_KakaoLinkTile> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('카카오 계정 연결',
+                      Text(context.l.kakaoLinkTitle,
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -304,7 +308,7 @@ class _KakaoLinkTileState extends ConsumerState<_KakaoLinkTile> {
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
                         child: Text(
-                            linked ? '연결됨' : '카카오로도 로그인할 수 있게 연결해요',
+                            linked ? context.l.kakaoLinkedSub : context.l.kakaoLinkSub,
                             style: TextStyle(fontSize: 13, color: c.ink2)),
                       ),
                     ],
@@ -323,6 +327,109 @@ class _KakaoLinkTileState extends ConsumerState<_KakaoLinkTile> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// 언어 선택 타일 — 시스템 따름 + 6개 언어(자국어 표기). 선택은 shared_preferences 저장.
+class _LanguageTile extends ConsumerWidget {
+  const _LanguageTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = context.c;
+    final l = context.l;
+    final saved = ref.watch(localeControllerProvider);
+    final current = saved == null ? l.languageSystem : langNative[saved.languageCode]!;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => _pick(context, ref),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            decoration: BoxDecoration(
+              border: Border.all(color: c.border),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.language_rounded, size: 22, color: c.ink2),
+                const SizedBox(width: 13),
+                Expanded(
+                  child: Text(l.language,
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: c.ink)),
+                ),
+                Text(current,
+                    style: TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w600, color: c.ink2)),
+                const SizedBox(width: 4),
+                Icon(Icons.chevron_right_rounded, color: c.ink3),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pick(BuildContext context, WidgetRef ref) async {
+    final c = context.c;
+    final l = context.l;
+    final saved = ref.read(localeControllerProvider);
+    final currentCode = saved?.languageCode;
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: c.surface,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(18))),
+      builder: (ctx) {
+        Widget row(String? code, String label) {
+          final selected = code == currentCode;
+          return ListTile(
+            title: Text(label,
+                style: TextStyle(
+                    fontSize: 16,
+                    color: c.ink,
+                    fontWeight: selected ? FontWeight.w800 : FontWeight.w500)),
+            trailing: selected
+                ? Icon(Icons.check_rounded, color: c.primary)
+                : null,
+            onTap: () {
+              ref.read(localeControllerProvider.notifier).setLang(code);
+              Navigator.pop(ctx);
+            },
+          );
+        }
+
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(l.language,
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: c.ink)),
+                ),
+              ),
+              row(null, l.languageSystem),
+              for (final code in supportedLangs) row(code, langNative[code]!),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
     );
   }
 }

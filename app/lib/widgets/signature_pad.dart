@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/signature.dart';
+import '../l10n/l10n_ext.dart';
 import '../theme/app_colors.dart';
 
 /// 서명 상태(획 벡터) 보관 + PNG 내보내기 컨트롤러.
@@ -81,7 +82,7 @@ class SignaturePad extends StatelessWidget {
               size: size,
               child: controller.isEmpty
                   ? Center(
-                      child: Text('여기에 손가락으로 서명하세요',
+                      child: Text(context.l.signPadHint,
                           style: TextStyle(color: c.ink3, fontSize: 14)))
                   : const SizedBox.expand(),
             ),

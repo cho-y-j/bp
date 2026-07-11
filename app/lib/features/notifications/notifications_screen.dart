@@ -4,6 +4,7 @@ import '../../theme/app_colors.dart';
 import '../../models/models.dart';
 import '../../providers/notifications.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 
 IconData _iconFor(String type) {
   switch (type) {
@@ -26,10 +27,11 @@ class NotificationsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
     final notis = ref.watch(notificationsProvider);
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('알림')),
+      appBar: AppBar(title: Text(l.notiTitle)),
       body: SafeArea(
         child: notis.when(
           loading: () =>
@@ -42,7 +44,7 @@ class NotificationsScreen extends ConsumerWidget {
                       onRetry: () => ref.invalidate(notificationsProvider)))),
           data: (list) => list.items.isEmpty
               ? Center(
-                  child: Text('알림이 없어요',
+                  child: Text(l.notiEmpty,
                       style: TextStyle(color: c.ink2, fontSize: 15)))
               : RefreshIndicator(
                   color: c.primary,
@@ -68,6 +70,7 @@ class _NotiTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
     final isHeat = noti.type == 'HEAT_ALERT';
     return Material(
       color: noti.read ? c.surface : c.primary.withValues(alpha: 0.06),
@@ -141,13 +144,14 @@ class _NotiTile extends ConsumerWidget {
                               ref.invalidate(notificationsProvider);
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('확인 처리되었습니다.')));
+                                    SnackBar(
+                                        content: Text(l.notiAckDone)));
                               }
                             } catch (e) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('확인 실패: $e')));
+                                    SnackBar(
+                                        content: Text(l.notiAckFailed('$e'))));
                               }
                             }
                           },
@@ -155,7 +159,7 @@ class _NotiTile extends ConsumerWidget {
                               backgroundColor: c.warnInk,
                               foregroundColor: Colors.white),
                           icon: const Icon(Icons.check_rounded, size: 18),
-                          label: const Text('확인'),
+                          label: Text(l.confirm),
                         ),
                       ),
                     ],

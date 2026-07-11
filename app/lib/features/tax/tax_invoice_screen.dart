@@ -7,6 +7,7 @@ import '../../core/api_client.dart';
 import '../../models/models.dart';
 import '../../providers/data.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 import 'business_info_screen.dart';
 import 'tax_invoice_text.dart';
 
@@ -30,11 +31,12 @@ class _TaxInvoiceScreenState extends ConsumerState<TaxInvoiceScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     final mp = monthParam(_month);
     final data = ref.watch(taxInvoiceDataProvider(mp));
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('세금계산서 준비')),
+      appBar: AppBar(title: Text(l.taxTitle)),
       body: RefreshIndicator(
         color: c.primary,
         onRefresh: () async {
@@ -60,7 +62,7 @@ class _TaxInvoiceScreenState extends ConsumerState<TaxInvoiceScreen> {
                       () => setState(() => _month = DateTime(_month.year, _month.month - 1))),
                   Expanded(
                     child: Center(
-                      child: Text(formatMonthK(_month),
+                      child: Text(fmtMonth(_month, context.lang),
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
@@ -105,6 +107,7 @@ class _Content extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
     if (!data.supplierReady) {
       return _SupplierPrompt();
     }
@@ -127,12 +130,14 @@ class _Content extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('공급자 · ${data.supplier.bizName ?? '(상호 미등록)'}',
+                    Text(
+                        l.taxSupplierPrefix(
+                            data.supplier.bizName ?? l.taxNoBizName),
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: c.ink)),
-                    Text('사업자번호 ${data.supplier.bizNumber ?? '-'}',
+                    Text(l.taxBizNumberLine(data.supplier.bizNumber ?? '-'),
                         style: TextStyle(fontSize: 13, color: c.ink2)),
                   ],
                 ),
@@ -140,7 +145,7 @@ class _Content extends ConsumerWidget {
               TextButton(
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => const BusinessInfoScreen())),
-                child: Text('수정',
+                child: Text(l.edit,
                     style: TextStyle(
                         color: c.accentText, fontWeight: FontWeight.w700)),
               ),
@@ -161,8 +166,7 @@ class _Content extends ConsumerWidget {
               Icon(Icons.info_outline_rounded, size: 18, color: c.accentText),
               const SizedBox(width: 9),
               Expanded(
-                child: Text(
-                    '복사한 내용을 홈택스(hometax.go.kr) 세금계산서 발행에 붙여넣으세요. 발행 후 "발행 완료 표시"를 누르면 목록에서 빠져요.',
+                child: Text(l.taxHometaxGuide,
                     style: TextStyle(fontSize: 12.5, color: c.ink2, height: 1.35)),
               ),
             ],
@@ -176,11 +180,11 @@ class _Content extends ConsumerWidget {
               children: [
                 Icon(Icons.receipt_long_outlined, size: 44, color: c.ink3),
                 const SizedBox(height: 12),
-                Text('발행 대상 확인서가 없어요.',
+                Text(l.taxEmptyTitle,
                     style: TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w700, color: c.ink)),
                 const SizedBox(height: 4),
-                Text('서명 완료(SIGNED)·미발행 확인서만 여기 모여요.',
+                Text(l.taxEmptySubtitle,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 13.5, color: c.ink2)),
               ],
@@ -198,25 +202,26 @@ class _SupplierPrompt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return Column(
       children: [
         PaperCard(
-          stamp: '세금계산서 · WORKON',
+          stamp: l.taxStamp,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('먼저 사업자 정보를 입력하세요',
+              Text(l.taxSupplierPromptTitle,
                   style: TextStyle(
                       fontSize: 17, fontWeight: FontWeight.w700, color: c.ink)),
               const SizedBox(height: 4),
-              Text('세금계산서 공급자(나)의 사업자등록번호·상호가 필요해요.',
+              Text(l.taxSupplierPromptDesc,
                   style: TextStyle(fontSize: 14, color: c.ink2)),
             ],
           ),
         ),
         const SizedBox(height: 16),
         PrimaryButton(
-          label: '사업자 정보 입력',
+          label: l.taxEnterBizInfo,
           icon: Icons.badge_outlined,
           onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const BusinessInfoScreen())),
@@ -244,12 +249,13 @@ class _GroupCardState extends ConsumerState<_GroupCard> {
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('복사됐어요 · 홈택스에 붙여넣으세요.')));
+        SnackBar(content: Text(context.l.taxCopiedSnack)));
   }
 
   Future<void> _mark() async {
     setState(() => _marking = true);
     final messenger = ScaffoldMessenger.of(context);
+    final l = context.l;
     try {
       final res =
           await ref.read(repoProvider).markTaxInvoiced(widget.group.ledgerIds);
@@ -258,12 +264,13 @@ class _GroupCardState extends ConsumerState<_GroupCard> {
       final marked = (res['marked'] as num?)?.toInt() ?? 0;
       messenger.showSnackBar(SnackBar(
           content: Text(marked > 0
-              ? '발행 완료로 표시했어요 · 목록에서 제외돼요.'
-              : '이미 발행 표시된 항목이에요.')));
+              ? l.taxMarkedSnack
+              : l.taxAlreadyMarkedSnack)));
     } on ApiException catch (e) {
       if (mounted) {
         setState(() => _marking = false);
-        messenger.showSnackBar(SnackBar(content: Text('표시 실패: ${e.message}')));
+        messenger.showSnackBar(
+            SnackBar(content: Text(l.taxMarkFailed(e.message))));
       }
     }
   }
@@ -271,6 +278,7 @@ class _GroupCardState extends ConsumerState<_GroupCard> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     final g = widget.group;
     return Container(
       margin: const EdgeInsets.only(top: 12),
@@ -294,16 +302,18 @@ class _GroupCardState extends ConsumerState<_GroupCard> {
             ],
           ),
           const SizedBox(height: 2),
-          Text('사업자번호 ${g.buyerBizNumber ?? '(미등록)'} · 품목 ${g.items.length}건',
+          Text(
+              l.taxBuyerBizLine(
+                  g.buyerBizNumber ?? l.taxNotRegistered, g.items.length),
               style: TextStyle(fontSize: 13, color: c.ink2)),
           const SizedBox(height: 12),
-          _amountRow(context, '공급가액', g.supplyTotal, bold: false),
+          _amountRow(context, l.taxSupplyAmount, g.supplyTotal, bold: false),
           const SizedBox(height: 4),
-          _amountRow(context, '세액 (10%)', g.taxTotal, bold: false),
+          _amountRow(context, l.vatLabel('10'), g.taxTotal, bold: false),
           const SizedBox(height: 6),
           Divider(color: c.border, height: 1),
           const SizedBox(height: 8),
-          _amountRow(context, '합계금액', g.grandTotal, bold: true),
+          _amountRow(context, l.taxGrandTotal, g.grandTotal, bold: true),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -311,7 +321,7 @@ class _GroupCardState extends ConsumerState<_GroupCard> {
                 child: OutlinedButton.icon(
                   onPressed: _copy,
                   icon: Icon(Icons.copy_rounded, size: 18, color: c.ink),
-                  label: Text('복사',
+                  label: Text(l.taxCopy,
                       style: TextStyle(
                           color: c.ink,
                           fontSize: 15,
@@ -335,7 +345,7 @@ class _GroupCardState extends ConsumerState<_GroupCard> {
                           child: CircularProgressIndicator(
                               strokeWidth: 2, color: c.primaryInk))
                       : Icon(Icons.check_rounded, size: 18, color: c.primaryInk),
-                  label: Text('발행 완료 표시',
+                  label: Text(l.taxMarkIssued,
                       style: TextStyle(
                           color: c.primaryInk,
                           fontSize: 15,
@@ -366,7 +376,7 @@ class _GroupCardState extends ConsumerState<_GroupCard> {
                 fontWeight: bold ? FontWeight.w800 : FontWeight.w600,
                 color: bold ? c.ink : c.ink2)),
         const Spacer(),
-        Text('${formatWon(amount)} 원',
+        Text(formatMoney(amount, context.lang),
             style: TextStyle(
                 fontSize: bold ? 18 : 14.5,
                 fontWeight: bold ? FontWeight.w800 : FontWeight.w700,
@@ -383,6 +393,7 @@ class _RegBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     final bg = registered
         ? c.deposited.withValues(alpha: 0.12)
         : c.warnBg;
@@ -400,7 +411,7 @@ class _RegBadge extends StatelessWidget {
           Icon(registered ? Icons.verified_outlined : Icons.help_outline_rounded,
               size: 13, color: fg),
           const SizedBox(width: 3),
-          Text(registered ? '등록 상대' : '확인 필요',
+          Text(registered ? l.taxRegisteredBadge : l.taxCheckNeeded,
               style: TextStyle(
                   fontSize: 12, fontWeight: FontWeight.w800, color: fg)),
         ],

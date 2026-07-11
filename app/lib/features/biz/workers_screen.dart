@@ -5,6 +5,7 @@ import '../../core/format.dart';
 import '../../models/models.dart';
 import '../../providers/biz.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 
 class WorkersScreen extends ConsumerStatefulWidget {
   final BusinessItem business;
@@ -33,7 +34,7 @@ class _WorkersScreenState extends ConsumerState<WorkersScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('검색 실패: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l.workerSearchFailed('$e'))));
       }
     } finally {
       if (mounted) setState(() => _searching = false);
@@ -47,12 +48,12 @@ class _WorkersScreenState extends ConsumerState<WorkersScreen> {
       ref.invalidate(allConnectionsProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${w.maskedName}님에게 연결을 요청했어요.')));
+            SnackBar(content: Text(context.l.workerConnectRequested(w.maskedName))));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('요청 실패: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l.workerRequestFailed('$e'))));
       }
     }
   }
@@ -60,10 +61,11 @@ class _WorkersScreenState extends ConsumerState<WorkersScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     final connections = ref.watch(allConnectionsProvider);
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('작업자·지시')),
+      appBar: AppBar(title: Text(l.workerTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
@@ -76,7 +78,7 @@ class _WorkersScreenState extends ConsumerState<WorkersScreen> {
                     controller: _phoneCtl,
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
-                      hintText: '작업자 전화번호로 검색',
+                      hintText: l.workerSearchHint,
                       filled: true,
                       fillColor: c.fieldBg,
                       border: OutlineInputBorder(
@@ -96,7 +98,7 @@ class _WorkersScreenState extends ConsumerState<WorkersScreen> {
                     style: FilledButton.styleFrom(
                         backgroundColor: c.primary,
                         foregroundColor: c.primaryInk),
-                    child: const Text('검색'),
+                    child: Text(l.workerSearchButton),
                   ),
                 ),
               ],
@@ -109,10 +111,10 @@ class _WorkersScreenState extends ConsumerState<WorkersScreen> {
                     subtitle: w.industryTags.join(', '),
                     trailing: TextButton(
                         onPressed: () => _connect(w),
-                        child: const Text('연결 요청'))),
+                        child: Text(l.workerConnectButton))),
             ],
             const SizedBox(height: 20),
-            Text('연결된 작업자',
+            Text(l.workerConnectedHeading,
                 style: TextStyle(
                     fontSize: 15, fontWeight: FontWeight.w800, color: c.ink)),
             const SizedBox(height: 10),
@@ -129,7 +131,7 @@ class _WorkersScreenState extends ConsumerState<WorkersScreen> {
                         x.businessId == widget.business.id)
                     .toList();
                 if (workers.isEmpty) {
-                  return Text('아직 연결된 작업자가 없어요',
+                  return Text(l.workerNoneConnected,
                       style: TextStyle(color: c.ink2, fontSize: 14));
                 }
                 return Column(
@@ -138,8 +140,8 @@ class _WorkersScreenState extends ConsumerState<WorkersScreen> {
                       _card(context,
                           title: conn.workerName,
                           subtitle: conn.status == 'ACCEPTED'
-                              ? '연결됨'
-                              : '요청 대기중',
+                              ? l.workerStatusConnected
+                              : l.workerStatusPending,
                           trailing: conn.status == 'ACCEPTED'
                               ? FilledButton(
                                   onPressed: () =>
@@ -147,7 +149,7 @@ class _WorkersScreenState extends ConsumerState<WorkersScreen> {
                                   style: FilledButton.styleFrom(
                                       backgroundColor: c.primary,
                                       foregroundColor: c.primaryInk),
-                                  child: const Text('작업 지시'),
+                                  child: Text(l.workerJobButton),
                                 )
                               : (conn.status == 'REQUESTED'
                                   ? TextButton(
@@ -157,7 +159,7 @@ class _WorkersScreenState extends ConsumerState<WorkersScreen> {
                                             .acceptConnection(conn.id);
                                         ref.invalidate(allConnectionsProvider);
                                       },
-                                      child: const Text('수락'))
+                                      child: Text(l.workerAccept))
                                   : null)),
                   ],
                 );
@@ -222,7 +224,7 @@ class _WorkersScreenState extends ConsumerState<WorkersScreen> {
       ref.invalidate(jobsProvider);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('작업 지시를 보냈어요. 작업자에게 알림이 전송됩니다.')));
+            SnackBar(content: Text(context.l.workerJobSent)));
       }
     }
   }
@@ -272,7 +274,7 @@ class _JobFormState extends ConsumerState<_JobForm> {
       if (mounted) {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('지시 실패: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l.jobCreateFailed('$e'))));
       }
     }
   }
@@ -280,6 +282,7 @@ class _JobFormState extends ConsumerState<_JobForm> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(
@@ -291,11 +294,11 @@ class _JobFormState extends ConsumerState<_JobForm> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${widget.workerName}님에게 작업 지시',
+            Text(l.jobFormTitle(widget.workerName),
                 style: TextStyle(
                     fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
             const SizedBox(height: 14),
-            _field(_siteCtl, '현장 (예: 반포자이 리모델링)'),
+            _field(_siteCtl, l.jobFormSiteHint),
             const SizedBox(height: 10),
             InkWell(
               onTap: () async {
@@ -324,7 +327,7 @@ class _JobFormState extends ConsumerState<_JobForm> {
                     Icon(Icons.schedule_rounded, size: 20, color: c.ink3),
                     const SizedBox(width: 10),
                     Text(
-                        '${formatShortDate(_scheduled)} ${ampm('${_scheduled.hour.toString().padLeft(2, '0')}:${_scheduled.minute.toString().padLeft(2, '0')}')}',
+                        '${fmtShortDate(_scheduled, context.lang)} ${fmtAmpm('${_scheduled.hour.toString().padLeft(2, '0')}:${_scheduled.minute.toString().padLeft(2, '0')}', context.lang)}',
                         style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -336,10 +339,10 @@ class _JobFormState extends ConsumerState<_JobForm> {
             const SizedBox(height: 10),
             Row(
               children: [
-                for (final rt in const [
-                  ['DAILY', '일당'],
-                  ['HOURLY', '시급'],
-                  ['PER_CASE', '건당']
+                for (final rt in [
+                  ['DAILY', l.jobRateDaily],
+                  ['HOURLY', l.jobRateHourly],
+                  ['PER_CASE', l.jobRatePerCase]
                 ])
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
@@ -353,10 +356,10 @@ class _JobFormState extends ConsumerState<_JobForm> {
               ],
             ),
             const SizedBox(height: 10),
-            _field(_rateCtl, '단가 (원)', number: true),
+            _field(_rateCtl, l.jobFormRateHint, number: true),
             const SizedBox(height: 18),
             PrimaryButton(
-                label: '작업 지시 보내기',
+                label: l.jobFormSubmit,
                 icon: Icons.send_rounded,
                 loading: _saving,
                 onPressed: _submit),

@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../providers/wallet.dart';
 import '../../models/models.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 
 const kDocTypes = [
   '신분증',
@@ -80,7 +81,7 @@ Future<UploadResult?> runUploadFlow(BuildContext context, WidgetRef ref,
   } catch (e) {
     if (context.mounted) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('업로드 실패: $e')));
+          .showSnackBar(SnackBar(content: Text(context.l.docUploadFailed('$e'))));
     }
     return null;
   }
@@ -90,6 +91,7 @@ class _SourceSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     Widget tile(IconData icon, String label, String value) => ListTile(
           leading: Icon(icon, color: c.accentText),
           title: Text(label,
@@ -108,9 +110,9 @@ class _SourceSheet extends StatelessWidget {
               decoration: BoxDecoration(
                   color: c.border, borderRadius: BorderRadius.circular(2))),
           const SizedBox(height: 6),
-          tile(Icons.photo_camera_outlined, '카메라로 촬영', 'camera'),
-          tile(Icons.photo_library_outlined, '갤러리에서 선택', 'gallery'),
-          tile(Icons.picture_as_pdf_outlined, 'PDF 파일 선택', 'pdf'),
+          tile(Icons.photo_camera_outlined, l.docSourceCamera, 'camera'),
+          tile(Icons.photo_library_outlined, l.docSourceGallery, 'gallery'),
+          tile(Icons.picture_as_pdf_outlined, l.docSourcePdf, 'pdf'),
           const SizedBox(height: 10),
         ],
       ),
@@ -142,6 +144,7 @@ class _MetaSheetState extends ConsumerState<_MetaSheet> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     final equipments = ref.watch(equipmentsProvider);
     return SafeArea(
       child: Padding(
@@ -150,16 +153,16 @@ class _MetaSheetState extends ConsumerState<_MetaSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('서류 정보',
+            Text(l.docInfoTitle,
                 style: TextStyle(
                     fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
             const SizedBox(height: 4),
             Text(widget.picked.mime == 'application/pdf'
-                ? 'PDF · ${widget.picked.filename}'
-                : '이미지 · ${(widget.picked.bytes.length / 1024).round()}KB',
+                ? l.docFilePdf(widget.picked.filename)
+                : l.docFileImage((widget.picked.bytes.length / 1024).round()),
                 style: TextStyle(fontSize: 13, color: c.ink3)),
             const SizedBox(height: 16),
-            Text('유형',
+            Text(l.docTypeLabel,
                 style: TextStyle(
                     fontSize: 13, fontWeight: FontWeight.w700, color: c.ink2)),
             const SizedBox(height: 8),
@@ -188,7 +191,7 @@ class _MetaSheetState extends ConsumerState<_MetaSheet> {
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('장비 연결 (선택)',
+                        Text(l.docLinkEquip,
                             style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
@@ -198,7 +201,7 @@ class _MetaSheetState extends ConsumerState<_MetaSheet> {
                           spacing: 8,
                           children: [
                             ChoiceChip(
-                                label: const Text('개인'),
+                                label: Text(l.docPersonal),
                                 selected: _equipmentId == null,
                                 onSelected: (_) =>
                                     setState(() => _equipmentId = null)),
@@ -239,8 +242,8 @@ class _MetaSheetState extends ConsumerState<_MetaSheet> {
                     const SizedBox(width: 10),
                     Text(
                         _expiry == null
-                            ? '만료일 선택 (선택)'
-                            : '${_expiry!.year}-${_expiry!.month.toString().padLeft(2, '0')}-${_expiry!.day.toString().padLeft(2, '0')} 만료',
+                            ? l.docPickExpiry
+                            : l.shareExpiry(dateParam(_expiry!)),
                         style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -256,7 +259,7 @@ class _MetaSheetState extends ConsumerState<_MetaSheet> {
             ),
             const SizedBox(height: 20),
             PrimaryButton(
-              label: '업로드',
+              label: l.docUpload,
               icon: Icons.upload_rounded,
               onPressed: () => Navigator.pop(
                   context,

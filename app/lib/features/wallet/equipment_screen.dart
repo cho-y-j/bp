@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../providers/wallet.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 import 'upload_sheet.dart';
 
 class EquipmentScreen extends ConsumerWidget {
@@ -11,17 +12,18 @@ class EquipmentScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
     final equipments = ref.watch(equipmentsProvider);
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('장비 관리')),
+      appBar: AppBar(title: Text(l.equipTitle)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _addEquipment(context, ref),
         backgroundColor: c.primary,
         foregroundColor: c.primaryInk,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('장비 추가',
-            style: TextStyle(fontWeight: FontWeight.w700)),
+        label: Text(l.equipAdd,
+            style: const TextStyle(fontWeight: FontWeight.w700)),
       ),
       body: SafeArea(
         child: equipments.when(
@@ -40,13 +42,13 @@ class EquipmentScreen extends ConsumerWidget {
                     children: [
                       Icon(Icons.agriculture_outlined, size: 64, color: c.ink3),
                       const SizedBox(height: 12),
-                      Text('등록된 장비가 없어요',
+                      Text(l.equipEmptyTitle,
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                               color: c.ink)),
                       const SizedBox(height: 4),
-                      Text('굴삭기·지게차 등 장비를 등록하고 서류를 묶으세요',
+                      Text(l.equipEmptySub,
                           style: TextStyle(fontSize: 14, color: c.ink2)),
                     ],
                   ),
@@ -87,7 +89,7 @@ class EquipmentScreen extends ConsumerWidget {
                                         color: c.ink)),
                                 const SizedBox(height: 2),
                                 Text(
-                                    '${eq.type}${eq.spec != null ? ' · ${eq.spec}' : ''} · 서류 ${eq.documentCount}건',
+                                    '${eq.type}${eq.spec != null ? ' · ${eq.spec}' : ''} · ${l.equipDocCount(eq.documentCount)}',
                                     style:
                                         TextStyle(fontSize: 13, color: c.ink2)),
                               ],
@@ -97,7 +99,7 @@ class EquipmentScreen extends ConsumerWidget {
                             onPressed: () async {
                               await runUploadFlow(context, ref);
                             },
-                            child: const Text('서류'),
+                            child: Text(l.equipDocs),
                           ),
                           IconButton(
                             icon: Icon(Icons.delete_outline_rounded,
@@ -124,6 +126,7 @@ class EquipmentScreen extends ConsumerWidget {
     final vnoCtl = TextEditingController();
     final specCtl = TextEditingController();
     final c = context.c;
+    final l = context.l;
     try {
       final ok = await showModalBottomSheet<bool>(
       context: context,
@@ -141,18 +144,18 @@ class EquipmentScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('장비 추가',
+            Text(l.equipAdd,
                 style: TextStyle(
                     fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
             const SizedBox(height: 14),
-            _field(ctx, typeCtl, '장비 종류 (예: 굴삭기)'),
+            _field(ctx, typeCtl, l.equipTypeHint),
             const SizedBox(height: 10),
-            _field(ctx, vnoCtl, '차량번호 (선택)'),
+            _field(ctx, vnoCtl, l.equipVehicleHint),
             const SizedBox(height: 10),
-            _field(ctx, specCtl, '규격 (예: 06W) (선택)'),
+            _field(ctx, specCtl, l.equipSpecHint),
             const SizedBox(height: 18),
             PrimaryButton(
-                label: '추가',
+                label: l.equipSubmit,
                 onPressed: () => Navigator.pop(ctx, true)),
             const SizedBox(height: 12),
           ],

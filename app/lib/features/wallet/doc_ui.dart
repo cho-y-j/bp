@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../core/format.dart';
 import '../../models/models.dart';
+import '../../l10n/l10n_ext.dart';
 
 /// 서류 유형별 아이콘.
 IconData docTypeIcon(String type) {
@@ -40,8 +41,9 @@ class DocStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     if (doc.expiryDate == null) {
-      return _pill(c.ink2.withValues(alpha: 0.12), c.ink2, '만료일 없음', null);
+      return _pill(c.ink2.withValues(alpha: 0.12), c.ink2, l.shareNoExpiry, null);
     }
     final status = doc.derivedStatus;
     Color bg, fg;
@@ -59,7 +61,7 @@ class DocStatusBadge extends StatelessWidget {
       fg = c.depositedBadge;
       icon = Icons.check_rounded;
     }
-    final label = status == 'EXPIRED' ? '만료됨' : ddayLabel(doc.dday);
+    final label = status == 'EXPIRED' ? l.docExpired : ddayLabel(doc.dday);
     return _pill(bg, fg, label, icon);
   }
 

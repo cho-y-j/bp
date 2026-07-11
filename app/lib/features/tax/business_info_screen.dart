@@ -4,6 +4,7 @@ import '../../theme/app_colors.dart';
 import '../../core/api_client.dart';
 import '../../providers/auth.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 
 /// 세금계산서 공급자(내 사업자) 정보 입력 — bizNumber/bizName/bizAddress (PATCH /me).
 class BusinessInfoScreen extends ConsumerStatefulWidget {
@@ -43,6 +44,7 @@ class _BusinessInfoScreenState extends ConsumerState<BusinessInfoScreen> {
   Future<void> _save() async {
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
+    final l = context.l;
     try {
       await ref.read(authControllerProvider.notifier).saveBusinessInfo(
             bizNumber: _bizNumber.text,
@@ -51,11 +53,13 @@ class _BusinessInfoScreenState extends ConsumerState<BusinessInfoScreen> {
           );
       if (!mounted) return;
       Navigator.of(context).pop();
-      messenger.showSnackBar(const SnackBar(content: Text('사업자 정보를 저장했어요.')));
+      messenger.showSnackBar(
+          SnackBar(content: Text(l.bizinfoSavedSnack)));
     } on ApiException catch (e) {
       if (mounted) {
         setState(() => _saving = false);
-        messenger.showSnackBar(SnackBar(content: Text('저장 실패: ${e.message}')));
+        messenger.showSnackBar(
+            SnackBar(content: Text(l.bizinfoSaveFailed(e.message))));
       }
     }
   }
@@ -63,27 +67,28 @@ class _BusinessInfoScreenState extends ConsumerState<BusinessInfoScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('사업자 정보')),
+      appBar: AppBar(title: Text(l.bizinfoTitle)),
       body: Column(
         children: [
           Expanded(
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
               children: [
-                Text('세금계산서 발행에 쓰이는 공급자(나) 정보예요.',
+                Text(l.bizinfoDesc,
                     style: TextStyle(fontSize: 14, color: c.ink2, height: 1.4)),
                 const SizedBox(height: 20),
-                _Label('사업자등록번호'),
+                _Label(l.bizinfoBizNumberLabel),
                 _field(_bizNumber,
                     hint: '000-00-00000', keyboard: TextInputType.text),
                 const SizedBox(height: 16),
-                _Label('상호'),
-                _field(_bizName, hint: '상호(회사명)'),
+                _Label(l.bizinfoBizNameLabel),
+                _field(_bizName, hint: l.bizinfoBizNameHint),
                 const SizedBox(height: 16),
-                _Label('사업장 주소 (선택)'),
-                _field(_bizAddress, hint: '사업장 주소', maxLines: 2),
+                _Label(l.bizinfoAddressLabel),
+                _field(_bizAddress, hint: l.bizinfoAddressHint, maxLines: 2),
               ],
             ),
           ),
@@ -96,7 +101,7 @@ class _BusinessInfoScreenState extends ConsumerState<BusinessInfoScreen> {
             child: SafeArea(
               top: false,
               child: PrimaryButton(
-                label: '저장',
+                label: l.save,
                 icon: Icons.check_rounded,
                 loading: _saving,
                 onPressed: _valid ? _save : null,

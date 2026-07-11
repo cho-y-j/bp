@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:workon/l10n/app_localizations.dart';
 import 'package:workon/theme/app_theme.dart';
 import 'package:workon/theme/app_colors.dart';
 import 'package:workon/widgets/common.dart';
 
 Widget _host(Widget child) => MaterialApp(
       theme: AppTheme.light(),
+      locale: const Locale('ko'),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: Scaffold(body: Center(child: child)),
     );
 

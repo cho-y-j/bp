@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../core/format.dart';
+import '../../l10n/l10n_ext.dart';
 import '../../models/models.dart';
 import '../../providers/auth.dart';
 import '../../providers/data.dart';
@@ -18,6 +19,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
     final now = DateTime.now();
     final month = monthParam(now);
     final today = dateParam(now);
@@ -52,19 +54,13 @@ class HomeScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text.rich(TextSpan(children: [
-                            const TextSpan(text: '반갑습니다, '),
-                            TextSpan(
-                                text: '${profile?.name ?? ''}님',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w800, color: c.ink)),
-                          ]),
+                          Text(l.homeGreeting(profile?.name ?? ''),
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
-                                  color: c.ink2)),
+                                  color: c.ink)),
                           const SizedBox(height: 3),
-                          Text(formatFullDateK(now),
+                          Text(fmtFullDate(now, context.lang),
                               style: TextStyle(fontSize: 13.5, color: c.ink2)),
                         ],
                       ),
@@ -78,7 +74,7 @@ class HomeScreen extends ConsumerWidget {
               const _DraftsBanner(),
 
               // 오늘 일정
-              const SectionTitle('오늘 일정'),
+              SectionTitle(l.homeToday),
               confirmations.when(
                 loading: () => const _CardSkeleton(height: 120),
                 error: (e, _) =>
@@ -102,7 +98,7 @@ class HomeScreen extends ConsumerWidget {
               ),
 
               // 이번 달 요약
-              SectionTitle('이번 달 요약',
+              SectionTitle(l.homeMonthSummary,
                   trailing: Text('${now.year}.${now.month.toString().padLeft(2, '0')} ›',
                       style: TextStyle(
                           fontSize: 13, fontWeight: FontWeight.w600, color: c.accentText))),
@@ -129,15 +125,15 @@ class HomeScreen extends ConsumerWidget {
                       children: [
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
-                          child: Text('확인 필요',
+                          child: Text(l.homeCheckNeeded,
                               style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                   color: c.ink2)),
                         ),
                         WarnBanner(
-                          title: '${d.type} 만료 ${ddayLabel(d.dday)}',
-                          subtitle: '서류 지갑에서 갱신하고 다시 등록하세요',
+                          title: l.homeDocExpiry(d.type, ddayLabel(d.dday)),
+                          subtitle: l.homeDocExpirySub,
                           onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
                                   builder: (_) => const WalletScreen())),
@@ -163,6 +159,7 @@ class _DraftsBanner extends ConsumerWidget {
     final drafts = ref.watch(draftQueueProvider);
     if (drafts.isEmpty) return const SizedBox.shrink();
     final c = context.c;
+    final l = context.l;
     final hasError = drafts.any((d) => d.lastError != null);
     return Padding(
       padding: const EdgeInsets.only(top: 12),
@@ -188,7 +185,7 @@ class _DraftsBanner extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('임시저장 ${drafts.length}건 전송 대기',
+                      Text(l.homeDraftsPending(drafts.length),
                           style: TextStyle(
                               fontSize: 14.5,
                               fontWeight: FontWeight.w800,
@@ -197,8 +194,8 @@ class _DraftsBanner extends ConsumerWidget {
                         padding: const EdgeInsets.only(top: 1),
                         child: Text(
                             hasError
-                                ? '일부 초안은 확인이 필요해요 · 탭하여 보기'
-                                : '연결되면 자동으로 전송돼요 · 탭하여 보기',
+                                ? l.homeDraftsError
+                                : l.homeDraftsAuto,
                             style: TextStyle(fontSize: 13, color: c.ink2)),
                       ),
                     ],
@@ -272,9 +269,10 @@ class _TodayCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     final equip = conf.equipmentSection;
     return PaperCard(
-      stamp: conf.status == 'DRAFT' ? '작 성 됨 · WORKON' : '작업 예정 · WORKON',
+      stamp: conf.status == 'DRAFT' ? l.homeStampDraft : l.homeStampScheduled,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -302,7 +300,7 @@ class _TodayCard extends StatelessWidget {
                 decoration: BoxDecoration(
                     color: c.primary.withValues(alpha: 0.13),
                     borderRadius: BorderRadius.circular(999)),
-                child: Text('오늘',
+                child: Text(l.homeTodayBadge,
                     style: TextStyle(
                         fontSize: 13, fontWeight: FontWeight.w800, color: c.accentText)),
               ),
@@ -310,7 +308,7 @@ class _TodayCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _metaRow(context, Icons.schedule_rounded,
-              '${ampm(conf.startTime)} ~ ${ampm(conf.endTime)}'),
+              '${fmtAmpm(conf.startTime, context.lang)} ~ ${fmtAmpm(conf.endTime, context.lang)}'),
           const SizedBox(height: 7),
           _metaRow(context, Icons.business_rounded,
               conf.contact != null && conf.contact!.isNotEmpty
@@ -345,15 +343,16 @@ class _EmptyToday extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return PaperCard(
-      stamp: '오늘 · WORKON',
+      stamp: l.homeStampToday,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('오늘 예정된 일정이 없어요',
+          Text(l.homeEmptyToday,
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: c.ink)),
           const SizedBox(height: 4),
-          Text('하단 + 버튼으로 오늘 작업을 30초에 기록하세요.',
+          Text(l.homeEmptyTodaySub,
               style: TextStyle(fontSize: 14, color: c.ink2)),
         ],
       ),
@@ -367,6 +366,10 @@ class _SummaryCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
+    final worked = summary.totalGongsu > 0
+        ? l.daysWithGongsu(summary.daysWorked, formatGongsu(summary.totalGongsu))
+        : l.daysCount(summary.daysWorked);
     return Container(
       decoration: BoxDecoration(
         color: c.surface,
@@ -380,34 +383,16 @@ class _SummaryCard extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text('일한 날',
+              Text(l.homeDaysWorked,
                   style: TextStyle(
                       fontSize: 14, fontWeight: FontWeight.w600, color: c.ink2)),
               const Spacer(),
-              Text('${summary.daysWorked}',
+              Text(worked,
                   style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: c.ink,
                       fontFeatures: const [FontFeature.tabularFigures()])),
-              Text(' 일',
-                  style: TextStyle(
-                      fontSize: 15, fontWeight: FontWeight.w700, color: c.ink2)),
-              if (summary.totalGongsu > 0) ...[
-                Text('  ·  ',
-                    style: TextStyle(fontSize: 15, color: c.ink3)),
-                Text(formatGongsu(summary.totalGongsu),
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: c.ink,
-                        fontFeatures: const [FontFeature.tabularFigures()])),
-                Text(' 공수',
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: c.ink2)),
-              ],
             ],
           ),
           Padding(
@@ -419,7 +404,7 @@ class _SummaryCard extends ConsumerWidget {
               Expanded(
                 child: _SumCell(
                   received: false,
-                  caption: '받을 돈 (미수)',
+                  caption: l.homeReceivable,
                   amount: summary.totalOutstanding,
                 ),
               ),
@@ -427,7 +412,7 @@ class _SummaryCard extends ConsumerWidget {
               Expanded(
                 child: _SumCell(
                   received: true,
-                  caption: '받은 돈 (입금)',
+                  caption: l.homeReceived,
                   amount: summary.totalPaid,
                 ),
               ),
@@ -472,15 +457,18 @@ class _SumCell extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text.rich(TextSpan(children: [
-            TextSpan(text: formatWon(amount)),
-            const TextSpan(text: ' 원', style: TextStyle(fontSize: 14)),
-          ]),
-              style: TextStyle(
-                  fontSize: 21,
-                  fontWeight: FontWeight.w800,
-                  color: color,
-                  fontFeatures: const [FontFeature.tabularFigures()])),
+          // 금액은 줄바꿈/잘림 없이 한 줄 축소(scaleDown) — 긴 로케일 표기 대응.
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(formatMoney(amount, context.lang),
+                maxLines: 1,
+                style: TextStyle(
+                    fontSize: 21,
+                    fontWeight: FontWeight.w800,
+                    color: color,
+                    fontFeatures: const [FontFeature.tabularFigures()])),
+          ),
         ],
       ),
     );

@@ -6,6 +6,7 @@ import '../../core/format.dart';
 import '../../models/models.dart';
 import '../../providers/wallet.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 import 'doc_ui.dart';
 import 'document_detail_screen.dart';
 import 'upload_sheet.dart';
@@ -36,19 +37,20 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   Future<void> _upload() async {
     final result = await runUploadFlow(context, ref);
     if (result != null && result.doc.isImage && mounted) {
+      final l = context.l;
       // 업로드 직후 마스킹 편집 제안(방금 고른 이미지 바이트 재사용).
       final go = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('개인정보를 가릴까요?'),
-          content: const Text('주민번호·주소 등 민감정보를 마스킹하면 안전하게 공유할 수 있어요.'),
+          title: Text(l.walletMaskPromptTitle),
+          content: Text(l.walletMaskPromptBody),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('나중에')),
+                child: Text(l.walletLater)),
             TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('마스킹 편집')),
+                child: Text(l.walletMaskEdit)),
           ],
         ),
       );
@@ -64,24 +66,25 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     final docs = ref.watch(documentsProvider);
     return Scaffold(
       backgroundColor: c.bg,
       appBar: AppBar(
         backgroundColor: c.bg,
         elevation: 0,
-        title: Text(_selectMode ? '${_selected.length}개 선택' : '서류 지갑',
+        title: Text(_selectMode ? l.walletSelectedCount(_selected.length) : l.walletTitle,
             style: TextStyle(
                 fontSize: 20, fontWeight: FontWeight.w800, color: c.ink)),
         actions: [
           if (!_selectMode) ...[
             IconButton(
-                tooltip: '장비 관리',
+                tooltip: l.equipTitle,
                 icon: const Icon(Icons.agriculture_outlined),
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => const EquipmentScreen()))),
             IconButton(
-                tooltip: '내 공유',
+                tooltip: l.wshareTitle,
                 icon: const Icon(Icons.link_rounded),
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => const MySharesScreen()))),
@@ -92,7 +95,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                       _selectMode = false;
                       _selected.clear();
                     }),
-                child: const Text('취소')),
+                child: Text(l.cancel)),
         ],
       ),
       floatingActionButton: _selectMode
@@ -102,8 +105,8 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
               backgroundColor: c.primary,
               foregroundColor: c.primaryInk,
               icon: const Icon(Icons.add_rounded),
-              label: const Text('서류 추가',
-                  style: TextStyle(fontWeight: FontWeight.w700)),
+              label: Text(l.walletAddDoc,
+                  style: const TextStyle(fontWeight: FontWeight.w700)),
             ),
       body: SafeArea(
         child: docs.when(
@@ -128,16 +131,17 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
                     child: WarnBanner(
                       title: expiring.first.derivedStatus == 'EXPIRED'
-                          ? '${expiring.first.type} 만료됨'
-                          : '${expiring.first.type} 만료 ${ddayLabel(expiring.first.dday)}',
+                          ? l.walletExpiredTitle(expiring.first.type)
+                          : l.walletExpiringTitle(expiring.first.type,
+                              ddayLabel(expiring.first.dday)),
                       subtitle: expiring.length > 1
-                          ? '만료 임박 서류 ${expiring.length}건 — 갱신 후 다시 등록하세요'
-                          : '갱신 후 다시 등록하세요',
+                          ? l.walletExpiringMultiSub(expiring.length)
+                          : l.walletRenewHint,
                     ),
                   ),
                 Expanded(
                   child: list.isEmpty
-                      ? _empty(c)
+                      ? _empty(context)
                       : GridView.builder(
                           padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
                           gridDelegate:
@@ -182,21 +186,25 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     );
   }
 
-  Widget _empty(AppColors c) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.folder_open_outlined, size: 64, color: c.ink3),
-            const SizedBox(height: 12),
-            Text('아직 등록한 서류가 없어요',
-                style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w700, color: c.ink)),
-            const SizedBox(height: 4),
-            Text('자격증·보험·검사증을 등록하고 만료를 관리하세요',
-                style: TextStyle(fontSize: 14, color: c.ink2)),
-          ],
-        ),
-      );
+  Widget _empty(BuildContext context) {
+    final c = context.c;
+    final l = context.l;
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.folder_open_outlined, size: 64, color: c.ink3),
+          const SizedBox(height: 12),
+          Text(l.walletEmptyTitle,
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.w700, color: c.ink)),
+          const SizedBox(height: 4),
+          Text(l.walletEmptySub,
+              style: TextStyle(fontSize: 14, color: c.ink2)),
+        ],
+      ),
+    );
+  }
 
   Future<void> _openShareFlow({required List<DocumentItem> list}) async {
     final selectedDocs =
@@ -222,17 +230,18 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
         _selected.clear();
       });
       final box = context.findRenderObject() as RenderBox?;
+      if (!mounted) return;
+      final l = context.l;
       await Share.share(
-        '[작업온] 서류 ${result.documentCount}건을 보냅니다.\n'
-        '아래 링크에서 확인하세요 (유효 $days일).\n${result.url}',
-        subject: '작업온 서류 공유',
+        l.walletShareMessage(result.documentCount, days, result.url),
+        subject: l.walletShareSubject,
         sharePositionOrigin:
             box != null ? box.localToGlobal(Offset.zero) & box.size : null,
       );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('공유 실패: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l.walletShareFailed('$e'))));
       }
     }
   }
@@ -308,7 +317,7 @@ class _SendBar extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
         child: PrimaryButton(
-          label: '$count건 묶어 보내기',
+          label: context.l.walletSendBundle(count),
           icon: Icons.send_rounded,
           onPressed: onSend,
         ),
@@ -329,6 +338,7 @@ class _ShareOptionsSheetState extends State<_ShareOptionsSheet> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
@@ -336,11 +346,11 @@ class _ShareOptionsSheetState extends State<_ShareOptionsSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('묶음 보내기',
+            Text(l.walletBundleSend,
                 style: TextStyle(
                     fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
             const SizedBox(height: 12),
-            Text('유효기간',
+            Text(l.walletValidPeriod,
                 style: TextStyle(
                     fontSize: 13, fontWeight: FontWeight.w700, color: c.ink2)),
             const SizedBox(height: 8),
@@ -350,7 +360,7 @@ class _ShareOptionsSheetState extends State<_ShareOptionsSheet> {
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: ChoiceChip(
-                      label: Text('$d일'),
+                      label: Text(l.daysCount(d)),
                       selected: _days == d,
                       onSelected: (_) => setState(() => _days = d),
                       selectedColor: c.primary.withValues(alpha: 0.18),
@@ -380,8 +390,8 @@ class _ShareOptionsSheetState extends State<_ShareOptionsSheet> {
                   Expanded(
                     child: Text(
                         widget.anyMasked
-                            ? '마스킹본이 있는 서류는 개인정보가 가려진 상태로 전송됩니다.'
-                            : '마스킹본이 없으면 원본이 그대로 전송됩니다. 상세에서 마스킹할 수 있어요.',
+                            ? l.walletMaskedInfo
+                            : l.walletUnmaskedInfo,
                         style: TextStyle(fontSize: 13, color: c.ink2)),
                   ),
                 ],
@@ -389,7 +399,7 @@ class _ShareOptionsSheetState extends State<_ShareOptionsSheet> {
             ),
             const SizedBox(height: 18),
             PrimaryButton(
-              label: '링크 만들고 공유',
+              label: l.walletMakeLinkShare,
               icon: Icons.share_rounded,
               onPressed: () => Navigator.pop(context, _days),
             ),

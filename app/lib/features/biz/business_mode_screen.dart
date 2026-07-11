@@ -5,6 +5,7 @@ import '../../providers/auth.dart';
 import '../../providers/biz.dart';
 import '../../models/models.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 import 'inbox_screen.dart';
 import 'settlement_screen.dart';
 import 'workers_screen.dart';
@@ -18,10 +19,11 @@ class BusinessModeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
     final businesses = ref.watch(myBusinessesProvider);
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('사업장 모드')),
+      appBar: AppBar(title: Text(l.bizModeTitle)),
       body: SafeArea(
         child: businesses.when(
           loading: () =>
@@ -70,7 +72,7 @@ class _CreateFlowState extends ConsumerState<_CreateFlow> {
       if (mounted) {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('생성 실패: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l.bizCreateFailed('$e'))));
       }
     }
   }
@@ -78,24 +80,25 @@ class _CreateFlowState extends ConsumerState<_CreateFlow> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       children: [
         Icon(Icons.storefront_rounded, size: 56, color: c.accentText),
         const SizedBox(height: 16),
-        Text('사업장을 만들어 시작하세요',
+        Text(l.bizCreateHeading,
             style: TextStyle(
                 fontSize: 22, fontWeight: FontWeight.w800, color: c.ink)),
         const SizedBox(height: 6),
-        Text('작업자 연결·작업 지시·수신 확인서 서명·정산·안전 리포트를 한 곳에서.',
+        Text(l.bizCreateDesc,
             style: TextStyle(fontSize: 15, color: c.ink2)),
         const SizedBox(height: 24),
-        _field(_nameCtl, '상호 (예: 대성건설)'),
+        _field(_nameCtl, l.bizNameHint),
         const SizedBox(height: 12),
-        _field(_bnoCtl, '사업자번호 (선택)'),
+        _field(_bnoCtl, l.bizBnoHint),
         const SizedBox(height: 24),
         PrimaryButton(
-            label: '사업장 만들기',
+            label: l.bizCreateButton,
             icon: Icons.add_business_rounded,
             loading: _saving,
             onPressed: _create),
@@ -128,6 +131,7 @@ class _BizHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return ListView(
       padding: const EdgeInsets.fromLTRB(18, 12, 18, 32),
       children: [
@@ -152,7 +156,7 @@ class _BizHome extends StatelessWidget {
                             fontWeight: FontWeight.w800,
                             color: c.ink)),
                     if (business.inviteCode != null)
-                      Text('초대코드 ${business.inviteCode}',
+                      Text(l.bizInviteCode(business.inviteCode!),
                           style: TextStyle(
                               fontSize: 13,
                               color: c.ink2,
@@ -166,33 +170,33 @@ class _BizHome extends StatelessWidget {
         const SizedBox(height: 18),
         _MenuCard(
           icon: Icons.inbox_rounded,
-          title: '수신함',
-          subtitle: '받은 작업확인서 확인·앱내 서명',
+          title: l.inboxTitle,
+          subtitle: l.bizMenuInboxDesc,
           onTap: () => _push(context, const InboxScreen()),
         ),
         _MenuCard(
           icon: Icons.payments_outlined,
-          title: '정산',
-          subtitle: '작업자별 미지급 집계·지급 처리',
+          title: l.settleTitle,
+          subtitle: l.bizMenuSettleDesc,
           onTap: () => _push(context, const SettlementScreen()),
         ),
         _MenuCard(
           icon: Icons.groups_outlined,
-          title: '작업자·지시',
-          subtitle: '작업자 검색·연결·작업 지시 생성',
+          title: l.workerTitle,
+          subtitle: l.bizMenuWorkerDesc,
           onTap: () =>
               _push(context, WorkersScreen(business: business)),
         ),
         _MenuCard(
           icon: Icons.assignment_outlined,
-          title: '작업 지시 목록',
-          subtitle: '예약·진행·완료 상태 조회',
+          title: l.jobTitle,
+          subtitle: l.bizMenuJobDesc,
           onTap: () => _push(context, const JobsScreen()),
         ),
         _MenuCard(
           icon: Icons.health_and_safety_outlined,
-          title: '안전',
-          subtitle: '안전관리 리포트 PDF·최근 안전 기록',
+          title: l.safetyTitle,
+          subtitle: l.bizMenuSafetyDesc,
           onTap: () => _push(context, const SafetyScreen()),
         ),
       ],

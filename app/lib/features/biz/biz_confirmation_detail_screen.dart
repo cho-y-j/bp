@@ -7,6 +7,7 @@ import '../../providers/biz.dart';
 import '../../providers/auth.dart';
 import '../../widgets/common.dart';
 import '../../widgets/signature_pad.dart';
+import '../../l10n/l10n_ext.dart';
 
 class BizConfirmationDetailScreen extends ConsumerStatefulWidget {
   final String id;
@@ -62,12 +63,12 @@ class _BizConfirmationDetailScreenState
   Future<void> _sign() async {
     if (_sig.isEmpty) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('서명을 입력해 주세요.')));
+          .showSnackBar(SnackBar(content: Text(context.l.bizSignErrSign)));
       return;
     }
     if (_nameCtl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('서명자 이름을 입력해 주세요.')));
+          .showSnackBar(SnackBar(content: Text(context.l.bizSignErrName)));
       return;
     }
     setState(() => _signing = true);
@@ -82,11 +83,11 @@ class _BizConfirmationDetailScreenState
       if (!mounted) return;
       setState(() => _signing = false);
       messenger.showSnackBar(
-          const SnackBar(content: Text('서명이 완료되었습니다. (SIGNED)')));
+          SnackBar(content: Text(context.l.bizSignDone)));
     } catch (e) {
       if (mounted) {
         setState(() => _signing = false);
-        messenger.showSnackBar(SnackBar(content: Text('서명 실패: $e')));
+        messenger.showSnackBar(SnackBar(content: Text(context.l.bizSignFailed('$e'))));
       }
     }
   }
@@ -96,7 +97,7 @@ class _BizConfirmationDetailScreenState
     final c = context.c;
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('작업확인서')),
+      appBar: AppBar(title: Text(context.l.bizConfirmTitle)),
       body: SafeArea(
         child: _loading
             ? Center(child: CircularProgressIndicator(color: c.primary))
@@ -120,13 +121,14 @@ class _BizConfirmationDetailScreenState
 
   Widget _content(BuildContext context, BizConfirmationDetail d) {
     final c = context.c;
+    final l = context.l;
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(18, 14, 18, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
         PaperCard(
-          stamp: d.signed ? '서 명 완 료 · WORKON' : '작업확인서 · WORKON',
+          stamp: d.signed ? l.bizStampSigned : l.bizStampDefault,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -138,21 +140,22 @@ class _BizConfirmationDetailScreenState
                   style: TextStyle(
                       fontSize: 14, fontWeight: FontWeight.w600, color: c.ink2)),
               const SizedBox(height: 14),
-              _line(context, '작업자', d.workerName),
-              _line(context, '날짜', d.date),
-              _line(context, '시간', '${ampm(d.startTime)} ~ ${ampm(d.endTime)}'),
-              _line(context, '상대', d.companyName),
-              _line(context, '단가유형', d.rateTypeLabel),
+              _line(context, l.paperWorker, d.workerName),
+              _line(context, l.paperDate, d.date),
+              _line(context, l.paperTime,
+                  '${fmtAmpm(d.startTime, context.lang)} ~ ${fmtAmpm(d.endTime, context.lang)}'),
+              _line(context, l.bizLineCounterpart, d.companyName),
+              _line(context, l.bizLineRateType, d.rateTypeLabel),
               const Divider(height: 24),
               Row(
                 children: [
-                  Text('받을 금액',
+                  Text(l.paperTotal,
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: c.ink2)),
                   const Spacer(),
-                  Text(formatWonUnit(d.total),
+                  Text(formatMoney(d.total, context.lang),
                       style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
@@ -172,7 +175,7 @@ class _BizConfirmationDetailScreenState
                       Icon(Icons.verified_rounded,
                           color: c.depositedBadge, size: 20),
                       const SizedBox(width: 8),
-                      Text('${d.signerName} 서명 · ${d.signedAt ?? ''}',
+                      Text(l.bizSignedBadge(d.signerName ?? '', d.signedAt ?? ''),
                           style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -186,17 +189,17 @@ class _BizConfirmationDetailScreenState
         ),
         const SizedBox(height: 20),
         if (!d.signed) ...[
-          Text('앱에서 바로 서명',
+          Text(l.bizSignInAppTitle,
               style: TextStyle(
                   fontSize: 15, fontWeight: FontWeight.w800, color: c.ink)),
           const SizedBox(height: 4),
-          Text('아래에 서명하면 작업자에게 즉시 전달되고 확인서가 확정됩니다.',
+          Text(l.bizSignInAppDesc,
               style: TextStyle(fontSize: 13, color: c.ink2)),
           const SizedBox(height: 12),
           TextField(
             controller: _nameCtl,
             decoration: InputDecoration(
-              labelText: '서명자 이름',
+              labelText: l.bizSignerNameLabel,
               filled: true,
               fillColor: c.fieldBg,
               border: OutlineInputBorder(
@@ -215,11 +218,11 @@ class _BizConfirmationDetailScreenState
             child: TextButton.icon(
                 onPressed: () => setState(() => _sig.clear()),
                 icon: const Icon(Icons.refresh_rounded, size: 18),
-                label: const Text('다시 서명')),
+                label: Text(l.bizSignRedraw)),
           ),
           const SizedBox(height: 8),
           PrimaryButton(
-              label: '서명하고 확정',
+              label: l.bizSignSubmit,
               icon: Icons.draw_rounded,
               loading: _signing,
               onPressed: _sign),

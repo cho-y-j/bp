@@ -1,0 +1,955 @@
+{
+  "@@locale": "ko",
+  "cancel": "취소",
+  "confirm": "확인",
+  "save": "저장",
+  "delete": "삭제",
+  "retry": "다시 시도",
+  "close": "닫기",
+  "edit": "편집",
+  "share": "공유",
+  "download": "다운로드",
+  "view": "보기",
+  "loading": "불러오는 중…",
+  "errorConnTitle": "연결에 문제가 있어요",
+  "errorConnSubtitle": "인터넷 연결을 확인하고 다시 시도해 주세요.",
+  "statusDeposited": "입금완료",
+  "statusOverdue": "기한 지남",
+  "collectDday": "수금 {dday}",
+  "@collectDday": {
+    "placeholders": {
+      "dday": {
+        "type": "String"
+      }
+    }
+  },
+  "amtBase": "기본",
+  "amtOvertime": "연장",
+  "amtEarly": "조출",
+  "amtNight": "야간",
+  "amtAllnight": "철야",
+  "itemOther": "기타",
+  "baseDaily": "기본(일당)",
+  "baseHourly": "기본(시급)",
+  "basePerCase": "기본(건당)",
+  "baseGongsu": "기본(공수)",
+  "unitGongsu": "공수",
+  "qtyGongsu": "{qty}공수",
+  "@qtyGongsu": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "vatLabel": "부가세 ({rate}%)",
+  "@vatLabel": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "daysCount": "{days}일",
+  "@daysCount": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "daysWithGongsu": "{days}일 · {gongsu}공수",
+  "@daysWithGongsu": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "gongsu": {
+        "type": "String"
+      }
+    }
+  },
+  "moreTitle": "더보기",
+  "sectionManage": "관리",
+  "sectionSettings": "설정",
+  "menuWallet": "서류 지갑",
+  "menuWalletSub": "자격증·보험·검사증 만료 관리 · 묶음 전송",
+  "menuBizHome": "사업장 홈",
+  "menuBizMode": "사업장 모드",
+  "menuBizSub": "작업 지시·수신 확인서·정산·안전 리포트",
+  "menuJobs": "받은 작업",
+  "menuJobsSub": "작업 지시 수락·시작·완료",
+  "menuTax": "세금계산서 준비",
+  "menuTaxSub": "서명 완료 확인서 → 홈택스 입력용 데이터 정리",
+  "menuNotifications": "알림",
+  "menuNotificationsSub": "수금·서류 만료·작업 예약·폭염 안전",
+  "consentTitle": "전화번호 검색 허용",
+  "consentSub": "사업장이 내 번호로 나를 찾아 연결할 수 있어요",
+  "kakaoLinkTitle": "카카오 계정 연결",
+  "kakaoLinkedSub": "연결됨",
+  "kakaoLinkSub": "카카오로도 로그인할 수 있게 연결해요",
+  "kakaoLinked": "카카오 계정을 연결했어요.",
+  "kakaoNotReady": "카카오 로그인 준비 중이에요.",
+  "kakaoAlreadyLinked": "이미 다른 계정에 연결된 카카오예요.",
+  "kakaoLinkFailed": "연결 실패: {message}",
+  "@kakaoLinkFailed": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "kakaoLinkCanceled": "카카오 연결이 취소되었어요.",
+  "logout": "로그아웃",
+  "logoutConfirm": "로그아웃 하시겠어요?",
+  "noName": "이름 없음",
+  "language": "언어",
+  "languageSystem": "시스템 따름",
+  "paperStamp": "작 업 확 인 서",
+  "paperDate": "작업일",
+  "paperTime": "시간",
+  "paperSite": "현장",
+  "paperWorker": "작업자",
+  "paperOrderer": "지시자",
+  "paperWork": "작업내용",
+  "paperEquipment": "장비",
+  "paperGuide": "유도원",
+  "paperTotal": "받을 금액",
+  "paperMemo": "메모",
+  "paperSignHead": "지시자 서명",
+  "paperSignedBy": "{name} 님 서명 완료",
+  "@paperSignedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shareCount": "공유된 서류 {n}건",
+  "@shareCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "shareValidUntil": "유효기간 {date}까지 열람 가능",
+  "@shareValidUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "shareExpiry": "만료 {date}",
+  "@shareExpiry": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "shareNoExpiry": "만료일 없음",
+  "shareMasked": "마스킹본",
+  "statusTransientTitle": "일시적인 오류입니다",
+  "statusTransientMsg": "잠시 후 다시 시도해 주세요.",
+  "statusNotFoundTitle": "찾을 수 없는 링크입니다",
+  "statusNotFoundMsg": "링크가 만료되었거나 무효화되었을 수 있습니다. 보낸 분에게 새 링크를 요청하세요.",
+  "authStartWithPhone": "전화번호로 시작하기",
+  "authTagline": "일한 것을 30초에 기록하고 확인서·장부·정산을 자동으로 관리하세요.",
+  "authPhoneLabel": "전화번호",
+  "authCodeLabel": "인증번호",
+  "authCodeHint": "6자리 인증번호",
+  "authDevAutofill": "개발 환경: 인증번호가 자동으로 채워집니다.",
+  "authRequestCode": "인증번호 받기",
+  "authVerifyStart": "인증하고 시작하기",
+  "authReenterPhone": "전화번호 다시 입력",
+  "authOr": "또는",
+  "authKakaoStart": "카카오로 시작하기",
+  "authKakaoPreparing": "카카오 로그인 준비 중이에요. 전화번호로 시작해 주세요.",
+  "onbWelcome": "반가워요!",
+  "onbNamePrompt": "확인서에 표시될 이름을 알려주세요.",
+  "onbNameLabel": "이름",
+  "onbNameHint": "예) 김기사",
+  "onbStart": "시작하기",
+  "navHome": "홈",
+  "navCalendar": "캘린더",
+  "navLedger": "장부",
+  "navMore": "더보기",
+  "navWrite": "작성",
+  "navDraftsSent": "임시저장 {n}건이 자동 전송되었어요.",
+  "@navDraftsSent": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "navDraftsFailed": "임시저장 초안 {n}건 전송에 실패했어요. 홈에서 확인해 주세요.",
+  "@navDraftsFailed": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "notiTitle": "알림",
+  "notiEmpty": "알림이 없어요",
+  "notiAckDone": "확인 처리되었습니다.",
+  "notiAckFailed": "확인 실패: {error}",
+  "@notiAckFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "bizModeTitle": "사업장 모드",
+  "bizCreateFailed": "생성 실패: {error}",
+  "@bizCreateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "bizCreateHeading": "사업장을 만들어 시작하세요",
+  "bizCreateDesc": "작업자 연결·작업 지시·수신 확인서 서명·정산·안전 리포트를 한 곳에서.",
+  "bizNameHint": "상호 (예: 대성건설)",
+  "bizBnoHint": "사업자번호 (선택)",
+  "bizCreateButton": "사업장 만들기",
+  "bizInviteCode": "초대코드 {code}",
+  "@bizInviteCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "inboxTitle": "수신함",
+  "bizMenuInboxDesc": "받은 작업확인서 확인·앱내 서명",
+  "settleTitle": "정산",
+  "bizMenuSettleDesc": "작업자별 미지급 집계·지급 처리",
+  "workerTitle": "작업자·지시",
+  "bizMenuWorkerDesc": "작업자 검색·연결·작업 지시 생성",
+  "jobTitle": "작업 지시 목록",
+  "bizMenuJobDesc": "예약·진행·완료 상태 조회",
+  "safetyTitle": "안전",
+  "bizMenuSafetyDesc": "안전관리 리포트 PDF·최근 안전 기록",
+  "bizLoadFailed": "불러오지 못했습니다: {error}",
+  "@bizLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "inboxEmpty": "받은 확인서가 없어요",
+  "inboxStatusSigned": "서명완료",
+  "inboxStatusPending": "서명대기",
+  "jobStatusScheduled": "예약",
+  "jobStatusInProgress": "진행중",
+  "jobStatusDone": "완료",
+  "jobEmpty": "이번 달 작업 지시가 없어요",
+  "jobAccepted": "수락됨",
+  "jobAcceptPending": "수락 대기",
+  "safetyReportOpenFailed": "리포트 열기 실패: {error}",
+  "@safetyReportOpenFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "safetyReportTitle": "안전관리 이행 리포트",
+  "safetyReportDesc": "컨디션 체크·서류 유효성·폭염 알림 기록을 월별 PDF로 확인하세요.",
+  "safetyOpenReport": "{month} 리포트 열기",
+  "@safetyOpenReport": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "safetyHeatNotice": "폭염특보 시 연결된 작업자에게 자동으로 안전 알림이 발송되고 확인 기록이 남습니다.",
+  "settlePaidSnack": "{name}님에게 {amount} 지급 처리",
+  "@settlePaidSnack": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "settlePayFailed": "지급 실패: {error}",
+  "@settlePayFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "settleEmpty": "이번 달 미지급 내역이 없어요",
+  "settleEntryCount": "{count}건",
+  "@settleEntryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settlePaidDone": "지급 완료",
+  "settlePayAmount": "{amount} 지급",
+  "@settlePayAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "workerSearchFailed": "검색 실패: {error}",
+  "@workerSearchFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "workerConnectRequested": "{name}님에게 연결을 요청했어요.",
+  "@workerConnectRequested": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "workerRequestFailed": "요청 실패: {error}",
+  "@workerRequestFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "workerSearchHint": "작업자 전화번호로 검색",
+  "workerSearchButton": "검색",
+  "workerConnectButton": "연결 요청",
+  "workerConnectedHeading": "연결된 작업자",
+  "workerNoneConnected": "아직 연결된 작업자가 없어요",
+  "workerStatusConnected": "연결됨",
+  "workerStatusPending": "요청 대기중",
+  "workerJobButton": "작업 지시",
+  "workerAccept": "수락",
+  "workerJobSent": "작업 지시를 보냈어요. 작업자에게 알림이 전송됩니다.",
+  "jobFormTitle": "{name}님에게 작업 지시",
+  "@jobFormTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "jobFormSiteHint": "현장 (예: 반포자이 리모델링)",
+  "jobRateDaily": "일당",
+  "jobRateHourly": "시급",
+  "jobRatePerCase": "건당",
+  "jobFormRateHint": "단가 (원)",
+  "jobFormSubmit": "작업 지시 보내기",
+  "jobCreateFailed": "지시 실패: {error}",
+  "@jobCreateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "bizConfirmTitle": "작업확인서",
+  "bizSignErrSign": "서명을 입력해 주세요.",
+  "bizSignErrName": "서명자 이름을 입력해 주세요.",
+  "bizSignDone": "서명이 완료되었습니다. (SIGNED)",
+  "bizSignFailed": "서명 실패: {error}",
+  "@bizSignFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "bizStampDefault": "작업확인서 · WORKON",
+  "bizStampSigned": "서 명 완 료 · WORKON",
+  "bizLineCounterpart": "상대",
+  "bizLineRateType": "단가유형",
+  "bizSignedBadge": "{name} 서명 · {at}",
+  "@bizSignedBadge": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "at": {
+        "type": "String"
+      }
+    }
+  },
+  "bizSignInAppTitle": "앱에서 바로 서명",
+  "bizSignInAppDesc": "아래에 서명하면 작업자에게 즉시 전달되고 확인서가 확정됩니다.",
+  "bizSignerNameLabel": "서명자 이름",
+  "bizSignRedraw": "다시 서명",
+  "bizSignSubmit": "서명하고 확정",
+  "confNoCopySource": "복사할 이전 확인서가 없어요.",
+  "confCopyPrevious": "이전 확인서 복사",
+  "confFormTitle": "작업확인서 작성",
+  "confSiteHint": "예) 래미안 원펜타스 3공구",
+  "confWorkHint": "작업한 내용을 적어주세요",
+  "confRateType": "단가 유형",
+  "confRateDaily": "일당",
+  "confRateHourly": "시급",
+  "confRatePerCase": "건당",
+  "confPricePerCase": "건당 단가",
+  "confPriceGongsu": "공수 단가 (1공수=하루)",
+  "confQtyHours": "시간",
+  "confQtyCases": "건수",
+  "confQtyDays": "일수",
+  "confErrGongsu": "공수는 0.1 단위로 입력해 주세요 (예: 0.5 · 1.5).",
+  "confErrHours": "시간을 1 이상 입력해 주세요.",
+  "confErrCases": "건수를 1 이상 입력해 주세요.",
+  "confErrDays": "일수를 1 이상 입력해 주세요.",
+  "confDueDate": "수금 예정일 (선택)",
+  "confNotSet": "미설정",
+  "confSaveSend": "저장하고 보내기",
+  "confSaveHint": "저장 즉시 장부에 반영됩니다 · 링크로 전송",
+  "confStartTime": "시작 시각",
+  "confEndTime": "종료 시각",
+  "confOrdererCompany": "지시자 (회사)",
+  "confLinkedBiz": "연결 사업장",
+  "confManualEntry": "직접 입력",
+  "confSelectBiz": "연결 사업장 선택",
+  "confCompanyHint": "회사/현장 담당 상호",
+  "confContactHint": "담당자/연락처 (선택)",
+  "confEquipSection": "장비 섹션",
+  "confEquipAutoInclude": "확인서에 자동 포함",
+  "confEquipName": "장비명",
+  "confVehicleNo": "차량번호",
+  "confUnitPrice": "단가",
+  "confQuantity": "수량",
+  "confAddExtra": "연장·야간 항목 추가",
+  "confSavedLinked": "저장 완료 · 연결된 사업장에 전송했어요.",
+  "confSavedBook": "저장 완료 · 장부에 반영되었어요.",
+  "confDraftQueued": "임시저장됨 — 연결되면 자동 전송돼요.",
+  "confSaveFailed": "저장 실패: {message}",
+  "@confSaveFailed": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "confRestoreTitle": "작성 중이던 내용이 있어요.",
+  "confRestore": "불러오기",
+  "confDetailTitle": "작업확인서",
+  "confSentLinked": "연결된 사업장에 전송했어요.",
+  "confSendFailed": "전송 실패: {message}",
+  "@confSendFailed": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "confReshare": "다시 공유하기",
+  "confSendToLinked": "연결된 사업장으로 전송됩니다",
+  "confSendViaShare": "공유 시트(카카오톡 등)로 링크를 보낼 수 있어요",
+  "confCounterparty": "상대",
+  "confSentWaitingSign": "전송됨 · 상대 서명 대기 중",
+  "confDraftBeforeSend": "작성됨 · 전송 전",
+  "confShareHeader": "[작업확인서] {site}",
+  "@confShareHeader": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "confShareBody": "아래 링크에서 내용을 확인하고 서명해 주세요.",
+  "confShareSubject": "작업확인서 · {site}",
+  "@confShareSubject": {
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "draftFlushNone": "아직 전송하지 못했어요. 연결을 확인해 주세요.",
+  "draftFlushSent": "{n}건 전송 완료 · 장부에 반영되었어요.",
+  "@draftFlushSent": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "draftFlushFailed": "전송에 실패한 초안이 있어요. 내용을 확인해 주세요.",
+  "draftTitle": "임시저장 초안",
+  "draftEmpty": "전송 대기 중인 초안이 없어요.",
+  "draftHint": "연결이 복구되면 자동으로 전송돼요. 지금 바로 보내려면 아래에서 다시 시도하세요.",
+  "draftSendAll": "지금 모두 전송",
+  "draftNoSite": "(현장 미입력)",
+  "draftCheckNeeded": "확인 필요: {error}",
+  "@draftCheckNeeded": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "homeGreeting": "반갑습니다, {name}님",
+  "@homeGreeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeToday": "오늘 일정",
+  "homeMonthSummary": "이번 달 요약",
+  "homeCheckNeeded": "확인 필요",
+  "homeDocExpiry": "{type} 만료 {dday}",
+  "@homeDocExpiry": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "dday": {
+        "type": "String"
+      }
+    }
+  },
+  "homeDocExpirySub": "서류 지갑에서 갱신하고 다시 등록하세요",
+  "homeDraftsPending": "임시저장 {n}건 전송 대기",
+  "@homeDraftsPending": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "homeDraftsError": "일부 초안은 확인이 필요해요 · 탭하여 보기",
+  "homeDraftsAuto": "연결되면 자동으로 전송돼요 · 탭하여 보기",
+  "homeStampDraft": "작 성 됨 · WORKON",
+  "homeStampScheduled": "작업 예정 · WORKON",
+  "homeTodayBadge": "오늘",
+  "homeStampToday": "오늘 · WORKON",
+  "homeEmptyToday": "오늘 예정된 일정이 없어요",
+  "homeEmptyTodaySub": "하단 + 버튼으로 오늘 작업을 30초에 기록하세요.",
+  "homeDaysWorked": "일한 날",
+  "homeReceivable": "받을 돈 (미수)",
+  "homeReceived": "받은 돈 (입금)",
+  "calViewMonth": "월",
+  "calViewWeek": "주",
+  "calWorkCount": "작업 {n}건",
+  "@calWorkCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "calManUnit": "만",
+  "calEmptyMonth": "이 달에 기록된 작업이 없어요.",
+  "calEmptyDay": "이 날 기록된 작업이 없어요.",
+  "calRecordThisDay": "이 날 작업 기록하기",
+  "ledgerTitle": "장부",
+  "ledgerOutstandingTotal": "이번 달 미수 합계",
+  "ledgerWorkedThisMonth": "이번 달 {summary} 일함",
+  "@ledgerWorkedThisMonth": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerByCompany": "회사별",
+  "ledgerCompanyCount": "{n}곳",
+  "@ledgerCompanyCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "ledgerStamp": "장부 · WORKON",
+  "ledgerEmptyTitle": "이 달의 장부 기록이 없어요",
+  "ledgerEmptySub": "확인서를 작성하면 장부가 자동으로 채워져요.",
+  "ledgerWriteConfirmation": "확인서 작성하기",
+  "ledgerDaysWorked": "{days}일 작업",
+  "@ledgerDaysWorked": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "ledgerPaidAmount": "{amount} 입금",
+  "@ledgerPaidAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerStatementFail": "명세서 열기 실패: {error}",
+  "@ledgerStatementFail": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerMonthlyStatement": "월간 명세서 PDF",
+  "ledgerRemaining": "남은 미수",
+  "ledgerWorkHistory": "작업 내역",
+  "ledgerBilled": "청구 {amount}",
+  "@ledgerBilled": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerDeposited": "입금 {amount}",
+  "@ledgerDeposited": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerPaymentSaved": "입금이 기록되었어요.",
+  "ledgerPaymentFail": "실패: {message}",
+  "@ledgerPaymentFail": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerRecordPayment": "입금 기록",
+  "ledgerRemainingAmount": "남은 미수 {amount}",
+  "@ledgerRemainingAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "ledgerPaymentAmount": "입금액",
+  "ledgerWonSuffix": "원",
+  "ledgerFull": "전액",
+  "ledgerHalf": "절반",
+  "ledgerRecordPaymentBtn": "입금 기록하기",
+  "taxTitle": "세금계산서 준비",
+  "taxSupplierPrefix": "공급자 · {name}",
+  "@taxSupplierPrefix": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "taxNoBizName": "(상호 미등록)",
+  "taxBizNumberLine": "사업자번호 {number}",
+  "@taxBizNumberLine": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "taxHometaxGuide": "복사한 내용을 홈택스(hometax.go.kr) 세금계산서 발행에 붙여넣으세요. 발행 후 \"발행 완료 표시\"를 누르면 목록에서 빠져요.",
+  "taxEmptyTitle": "발행 대상 확인서가 없어요.",
+  "taxEmptySubtitle": "서명 완료(SIGNED)·미발행 확인서만 여기 모여요.",
+  "taxStamp": "세금계산서 · WORKON",
+  "taxSupplierPromptTitle": "먼저 사업자 정보를 입력하세요",
+  "taxSupplierPromptDesc": "세금계산서 공급자(나)의 사업자등록번호·상호가 필요해요.",
+  "taxEnterBizInfo": "사업자 정보 입력",
+  "taxCopiedSnack": "복사됐어요 · 홈택스에 붙여넣으세요.",
+  "taxMarkedSnack": "발행 완료로 표시했어요 · 목록에서 제외돼요.",
+  "taxAlreadyMarkedSnack": "이미 발행 표시된 항목이에요.",
+  "taxMarkFailed": "표시 실패: {msg}",
+  "@taxMarkFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "taxBuyerBizLine": "사업자번호 {number} · 품목 {count}건",
+  "@taxBuyerBizLine": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "taxNotRegistered": "(미등록)",
+  "taxSupplyAmount": "공급가액",
+  "taxGrandTotal": "합계금액",
+  "taxCopy": "복사",
+  "taxMarkIssued": "발행 완료 표시",
+  "taxRegisteredBadge": "등록 상대",
+  "taxCheckNeeded": "확인 필요",
+  "bizinfoTitle": "사업자 정보",
+  "bizinfoDesc": "세금계산서 발행에 쓰이는 공급자(나) 정보예요.",
+  "bizinfoBizNumberLabel": "사업자등록번호",
+  "bizinfoBizNameLabel": "상호",
+  "bizinfoBizNameHint": "상호(회사명)",
+  "bizinfoAddressLabel": "사업장 주소 (선택)",
+  "bizinfoAddressHint": "사업장 주소",
+  "bizinfoSavedSnack": "사업자 정보를 저장했어요.",
+  "bizinfoSaveFailed": "저장 실패: {msg}",
+  "@bizinfoSaveFailed": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "walletTitle": "서류 지갑",
+  "walletSelectedCount": "{n}개 선택",
+  "@walletSelectedCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "walletAddDoc": "서류 추가",
+  "walletMaskPromptTitle": "개인정보를 가릴까요?",
+  "walletMaskPromptBody": "주민번호·주소 등 민감정보를 마스킹하면 안전하게 공유할 수 있어요.",
+  "walletLater": "나중에",
+  "walletMaskEdit": "마스킹 편집",
+  "walletExpiredTitle": "{type} 만료됨",
+  "@walletExpiredTitle": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "walletExpiringTitle": "{type} 만료 {dday}",
+  "@walletExpiringTitle": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "dday": {
+        "type": "String"
+      }
+    }
+  },
+  "walletExpiringMultiSub": "만료 임박 서류 {n}건 — 갱신 후 다시 등록하세요",
+  "@walletExpiringMultiSub": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "walletRenewHint": "갱신 후 다시 등록하세요",
+  "walletEmptyTitle": "아직 등록한 서류가 없어요",
+  "walletEmptySub": "자격증·보험·검사증을 등록하고 만료를 관리하세요",
+  "walletShareMessage": "[작업온] 서류 {count}건을 보냅니다.\n아래 링크에서 확인하세요 (유효 {days}일).\n{url}",
+  "@walletShareMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      },
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "walletShareSubject": "작업온 서류 공유",
+  "walletShareFailed": "공유 실패: {error}",
+  "@walletShareFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "walletSendBundle": "{count}건 묶어 보내기",
+  "@walletSendBundle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletBundleSend": "묶음 보내기",
+  "walletValidPeriod": "유효기간",
+  "walletMaskedInfo": "마스킹본이 있는 서류는 개인정보가 가려진 상태로 전송됩니다.",
+  "walletUnmaskedInfo": "마스킹본이 없으면 원본이 그대로 전송됩니다. 상세에서 마스킹할 수 있어요.",
+  "walletMakeLinkShare": "링크 만들고 공유",
+  "docOpenFailed": "열기 실패: {error}",
+  "@docOpenFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "docUpdateFailed": "수정 실패: {error}",
+  "@docUpdateFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "docDeleteConfirmTitle": "서류를 삭제할까요?",
+  "docDeleteConfirmBody": "이 서류와 공유 링크가 함께 삭제됩니다.",
+  "docDeleteFailed": "삭제 실패: {error}",
+  "@docDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "docOpenPdf": "PDF 열기",
+  "docHasMask": "마스킹본 있음",
+  "docExpiryDate": "만료일",
+  "docNone": "없음",
+  "docIssuedDate": "발급일",
+  "docReMask": "마스킹 다시 편집",
+  "docMaskEdit": "개인정보 마스킹 편집",
+  "docModify": "수정",
+  "docExpired": "만료됨",
+  "docUploadFailed": "업로드 실패: {error}",
+  "@docUploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "docSourceCamera": "카메라로 촬영",
+  "docSourceGallery": "갤러리에서 선택",
+  "docSourcePdf": "PDF 파일 선택",
+  "docInfoTitle": "서류 정보",
+  "docFilePdf": "PDF · {name}",
+  "@docFilePdf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "docFileImage": "이미지 · {kb}KB",
+  "@docFileImage": {
+    "placeholders": {
+      "kb": {
+        "type": "int"
+      }
+    }
+  },
+  "docTypeLabel": "유형",
+  "docLinkEquip": "장비 연결 (선택)",
+  "docPersonal": "개인",
+  "docPickExpiry": "만료일 선택 (선택)",
+  "docUpload": "업로드",
+  "equipTitle": "장비 관리",
+  "equipAdd": "장비 추가",
+  "equipEmptyTitle": "등록된 장비가 없어요",
+  "equipEmptySub": "굴삭기·지게차 등 장비를 등록하고 서류를 묶으세요",
+  "equipDocCount": "서류 {n}건",
+  "@equipDocCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "equipDocs": "서류",
+  "equipTypeHint": "장비 종류 (예: 굴삭기)",
+  "equipVehicleHint": "차량번호 (선택)",
+  "equipSpecHint": "규격 (예: 06W) (선택)",
+  "equipSubmit": "추가",
+  "maskDoneToast": "마스킹본을 만들었어요. 공유 시 개인정보가 가려집니다.",
+  "maskFailed": "마스킹 실패: {error}",
+  "@maskFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "maskTitle": "개인정보 마스킹",
+  "maskReset": "초기화",
+  "maskGuide": "가릴 영역을 손가락으로 드래그해 사각형으로 지정하세요. (예: 주민번호·주소)",
+  "maskRegionCount": "지정한 영역 {n}개",
+  "@maskRegionCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "maskSave": "마스킹본 저장",
+  "wshareTitle": "내 공유",
+  "wshareLoadFailed": "불러오지 못했습니다: {error}",
+  "@wshareLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "wshareEmpty": "아직 공유한 서류 묶음이 없어요",
+  "wshareActive": "활성",
+  "wshareInactive": "만료/무효",
+  "wshareViewCount": "열람 {n}회",
+  "@wshareViewCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "wshareReshare": "다시 공유",
+  "wshareRevoke": "무효화",
+  "myjobFailed": "실패: {error}",
+  "@myjobFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "myjobConditionTitle": "컨디션 체크",
+  "myjobConditionBody": "오늘 몸 상태는 어떤가요? 안전한 작업을 위해 확인합니다.",
+  "myjobConditionBad": "안 좋아요",
+  "myjobConditionGood": "좋아요",
+  "myjobConditionReported": "사업장에 컨디션 이상이 전달되었습니다. 무리하지 마세요.",
+  "myjobLoadFailed": "불러오지 못했습니다: {error}",
+  "@myjobLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "myjobEmpty": "받은 작업 지시가 없어요",
+  "myjobAccept": "수락",
+  "myjobStart": "작업 시작",
+  "myjobComplete": "작업 완료",
+  "signPadHint": "여기에 손가락으로 서명하세요"
+}

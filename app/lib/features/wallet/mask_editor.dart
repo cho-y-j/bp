@@ -6,6 +6,7 @@ import '../../theme/app_colors.dart';
 import '../../core/mask_geometry.dart';
 import '../../providers/wallet.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 
 /// 마스킹 편집기 — 문서 미리보기 위에 드래그로 사각형 영역 지정 →
 /// 정규화 좌표(0~1)로 `POST /documents/:id/mask`.
@@ -40,6 +41,7 @@ class _MaskEditorScreenState extends ConsumerState<MaskEditorScreen> {
     if (_regions.isEmpty) return;
     setState(() => _saving = true);
     // 루트 메신저/네비게이터를 await 이전에 캡처 → pop 후에도 안전.
+    final l = context.l;
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
     try {
@@ -50,11 +52,11 @@ class _MaskEditorScreenState extends ConsumerState<MaskEditorScreen> {
       if (!mounted) return;
       navigator.pop(true);
       messenger.showSnackBar(
-          const SnackBar(content: Text('마스킹본을 만들었어요. 공유 시 개인정보가 가려집니다.')));
+          SnackBar(content: Text(l.maskDoneToast)));
     } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
-        messenger.showSnackBar(SnackBar(content: Text('마스킹 실패: $e')));
+        messenger.showSnackBar(SnackBar(content: Text(l.maskFailed('$e'))));
       }
     }
   }
@@ -62,17 +64,18 @@ class _MaskEditorScreenState extends ConsumerState<MaskEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return Scaffold(
       backgroundColor: c.bg,
       appBar: AppBar(
-        title: const Text('개인정보 마스킹'),
+        title: Text(l.maskTitle),
         actions: [
           if (_regions.isNotEmpty)
             TextButton(
                 onPressed: () => setState(() {
                       _regions.clear();
                     }),
-                child: const Text('초기화')),
+                child: Text(l.maskReset)),
         ],
       ),
       body: SafeArea(
@@ -80,7 +83,7 @@ class _MaskEditorScreenState extends ConsumerState<MaskEditorScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(18, 12, 18, 8),
-              child: Text('가릴 영역을 손가락으로 드래그해 사각형으로 지정하세요. (예: 주민번호·주소)',
+              child: Text(l.maskGuide,
                   style: TextStyle(fontSize: 14, color: c.ink2)),
             ),
             Expanded(
@@ -143,11 +146,11 @@ class _MaskEditorScreenState extends ConsumerState<MaskEditorScreen> {
               padding: const EdgeInsets.all(18),
               child: Column(
                 children: [
-                  Text('지정한 영역 ${_regions.length}개',
+                  Text(l.maskRegionCount(_regions.length),
                       style: TextStyle(fontSize: 13, color: c.ink3)),
                   const SizedBox(height: 10),
                   PrimaryButton(
-                    label: '마스킹본 저장',
+                    label: l.maskSave,
                     icon: Icons.security_rounded,
                     loading: _saving,
                     onPressed: _regions.isEmpty ? null : _save,

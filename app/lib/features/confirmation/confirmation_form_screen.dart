@@ -5,6 +5,7 @@ import '../../theme/app_colors.dart';
 import '../../core/format.dart';
 import '../../core/amount_calc.dart';
 import '../../core/api_client.dart';
+import '../../l10n/l10n_ext.dart';
 import '../../models/models.dart';
 import '../../providers/data.dart';
 import '../../providers/drafts.dart';
@@ -143,12 +144,13 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
   }
 
   Future<void> _pickCopyFrom() async {
+    final l = context.l;
     final month = monthParam(DateTime.now());
     final list = await ref.read(confirmationsProvider(month).future);
     if (!mounted) return;
     if (list.items.isEmpty) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('복사할 이전 확인서가 없어요.')));
+          .showSnackBar(SnackBar(content: Text(l.confNoCopySource)));
       return;
     }
     final recent = list.items.reversed.take(10).toList();
@@ -162,7 +164,7 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
           shrinkWrap: true,
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
           children: [
-            Text('이전 확인서 복사',
+            Text(l.confCopyPrevious,
                 style: TextStyle(
                     fontSize: 17, fontWeight: FontWeight.w800, color: ctx.c.ink)),
             const SizedBox(height: 12),
@@ -173,7 +175,7 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                     style: TextStyle(
                         fontWeight: FontWeight.w700, color: ctx.c.ink, fontSize: 15)),
                 subtitle: Text(
-                    '${formatShortDate(conf.dateTime)} · ${conf.companyName} · ${formatWonUnit(conf.total)}',
+                    '${fmtShortDate(conf.dateTime, ctx.lang)} · ${conf.companyName} · ${formatMoney(conf.total, ctx.lang)}',
                     style: TextStyle(color: ctx.c.ink2, fontSize: 13)),
                 trailing: Icon(Icons.copy_rounded, color: ctx.c.accentText, size: 20),
                 onTap: () => Navigator.of(ctx).pop(conf),
@@ -231,6 +233,7 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
     setState(() => _saving = true);
     final body = _buildBody();
     final repo = ref.read(repoProvider);
+    final l = context.l;
     // 루트 메신저/네비게이터를 pop 이전에 캡처 → pop 후에도 안전하게 표시.
     final messenger = ScaffoldMessenger.of(context);
     try {
@@ -254,16 +257,13 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
       if (!mounted) return;
       Navigator.of(context).pop();
       messenger.showSnackBar(SnackBar(
-          content: Text(linked
-              ? '저장 완료 · 연결된 사업장에 전송했어요.'
-              : '저장 완료 · 장부에 반영되었어요.')));
+          content: Text(linked ? l.confSavedLinked : l.confSavedBook)));
     } on ApiException catch (e) {
       if (!mounted) return;
       // 공수 수량 검증 실패 — 화면에 머무르며 안내.
       if (e.code == 'INVALID_GONGSU_QUANTITY') {
         setState(() => _saving = false);
-        messenger.showSnackBar(const SnackBar(
-            content: Text('공수는 0.1 단위로 입력해 주세요 (예: 0.5 · 1.5).')));
+        messenger.showSnackBar(SnackBar(content: Text(l.confErrGongsu)));
         return;
       }
       // 네트워크/서버 문제 → 로컬 초안 큐에 임시저장(연결 복구 시 자동 전송).
@@ -273,13 +273,13 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
         await ref.read(autoDraftProvider.notifier).clear();
         if (!mounted) return;
         Navigator.of(context).pop();
-        messenger.showSnackBar(const SnackBar(
-            content: Text('임시저장됨 — 연결되면 자동 전송돼요.'),
-            duration: Duration(seconds: 4)));
+        messenger.showSnackBar(SnackBar(
+            content: Text(l.confDraftQueued),
+            duration: const Duration(seconds: 4)));
         return;
       }
       setState(() => _saving = false);
-      messenger.showSnackBar(SnackBar(content: Text('저장 실패: ${e.message}')));
+      messenger.showSnackBar(SnackBar(content: Text(l.confSaveFailed(e.message))));
     }
   }
 
@@ -349,6 +349,8 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
+    final lang = context.lang;
     final calc = _preview();
     final connections = ref.watch(connectionsProvider);
     // 폼이 비어있을 때만 자동 초안 복원 배너 노출(copyFrom 없을 때).
@@ -369,7 +371,7 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
         leading: IconButton(
             icon: const Icon(Icons.close_rounded),
             onPressed: () => Navigator.of(context).maybePop()),
-        title: const Text('작업확인서 작성'),
+        title: Text(l.confFormTitle),
       ),
       body: Column(
         children: [
@@ -394,32 +396,32 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                 _CopyButton(onTap: _pickCopyFrom),
                 const SizedBox(height: 14),
                 PaperCard(
-                  stamp: '작 업 확 인 서',
+                  stamp: l.paperStamp,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(children: [
                         Expanded(
                           child: _FieldBox(
-                            label: '작업일',
+                            label: l.paperDate,
                             icon: Icons.calendar_today_outlined,
-                            value: formatShortDate(_date),
+                            value: fmtShortDate(_date, lang),
                             onTap: _pickDate,
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: _FieldBox(
-                            label: '시간',
+                            label: l.paperTime,
                             icon: Icons.schedule_rounded,
-                            value: '${_hhmm(_start)}~${_hhmm(_end)}',
+                            value: '${fmtAmpm(_hhmm(_start), lang)}~${fmtAmpm(_hhmm(_end), lang)}',
                             onTap: _pickTimes,
                           ),
                         ),
                       ]),
                       const SizedBox(height: 12),
-                      _Label('현장'),
-                      _input(_site, hint: '예) 래미안 원펜타스 3공구',
+                      _Label(l.paperSite),
+                      _input(_site, hint: l.confSiteHint,
                           icon: Icons.location_on_outlined),
                       const SizedBox(height: 12),
                       _CounterpartySection(
@@ -432,9 +434,9 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                         onBusinessChanged: (id) => setState(() => _businessId = id),
                       ),
                       const SizedBox(height: 12),
-                      _Label('작업 내용'),
+                      _Label(l.paperWork),
                       _input(_work,
-                          hint: '작업한 내용을 적어주세요', maxLines: 3,
+                          hint: l.confWorkHint, maxLines: 3,
                           icon: null),
                       const SizedBox(height: 6),
                       _EquipmentToggle(
@@ -444,7 +446,7 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                         onChanged: (v) => setState(() => _equipOn = v),
                       ),
                       const SizedBox(height: 12),
-                      _Label('단가 유형'),
+                      _Label(l.confRateType),
                       _RateSegments(
                         value: _rateType,
                         onChanged: (v) => setState(() {
@@ -464,12 +466,12 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _Label(_rateType == 'HOURLY'
-                                  ? '시급'
+                                  ? l.confRateHourly
                                   : _rateType == 'PER_CASE'
-                                      ? '건당 단가'
+                                      ? l.confPricePerCase
                                       : _rateType == 'GONGSU'
-                                          ? '공수 단가 (1공수=하루)'
-                                          : '일당'),
+                                          ? l.confPriceGongsu
+                                          : l.confRateDaily),
                               _numInput(_rate, hint: '0'),
                             ],
                           ),
@@ -481,12 +483,12 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _Label(_rateType == 'HOURLY'
-                                  ? '시간'
+                                  ? l.confQtyHours
                                   : _rateType == 'PER_CASE'
-                                      ? '건수'
+                                      ? l.confQtyCases
                                       : _rateType == 'GONGSU'
-                                          ? '공수'
-                                          : '일수'),
+                                          ? l.unitGongsu
+                                          : l.confQtyDays),
                               _rateType == 'GONGSU'
                                   ? _GongsuStepper(
                                       controller: _qty,
@@ -504,12 +506,12 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                           padding: const EdgeInsets.only(top: 6, left: 2),
                           child: Text(
                               _rateType == 'GONGSU'
-                                  ? '공수는 0.1 단위로 입력해 주세요 (예: 0.5 · 1.5).'
+                                  ? l.confErrGongsu
                                   : _rateType == 'HOURLY'
-                                      ? '시간을 1 이상 입력해 주세요.'
+                                      ? l.confErrHours
                                       : _rateType == 'PER_CASE'
-                                          ? '건수를 1 이상 입력해 주세요.'
-                                          : '일수를 1 이상 입력해 주세요.',
+                                          ? l.confErrCases
+                                          : l.confErrDays,
                               style: TextStyle(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w600,
@@ -529,9 +531,11 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                       _CalcPreview(calc: calc, rateType: _rateType),
                       const SizedBox(height: 12),
                       _FieldBox(
-                        label: '수금 예정일 (선택)',
+                        label: l.confDueDate,
                         icon: Icons.event_available_outlined,
-                        value: _dueDate == null ? '미설정' : formatShortDate(_dueDate!),
+                        value: _dueDate == null
+                            ? l.confNotSet
+                            : fmtShortDate(_dueDate!, lang),
                         onTap: _pickDueDate,
                       ),
                     ],
@@ -551,13 +555,13 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
               child: Column(
                 children: [
                   PrimaryButton(
-                    label: '저장하고 보내기',
+                    label: l.confSaveSend,
                     icon: Icons.send_rounded,
                     loading: _saving,
                     onPressed: _valid ? _submit : null,
                   ),
                   const SizedBox(height: 8),
-                  Text('저장 즉시 장부에 반영됩니다 · 링크로 전송',
+                  Text(l.confSaveHint,
                       style: TextStyle(fontSize: 13, color: c.ink3)),
                 ],
               ),
@@ -590,12 +594,13 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
   }
 
   Future<void> _pickTimes() async {
+    final l = context.l;
     final s = await showTimePicker(
-        context: context, initialTime: _start, helpText: '시작 시각');
+        context: context, initialTime: _start, helpText: l.confStartTime);
     if (s == null) return;
     if (!mounted) return;
     final e = await showTimePicker(
-        context: context, initialTime: _end, helpText: '종료 시각');
+        context: context, initialTime: _end, helpText: l.confEndTime);
     setState(() {
       _start = s;
       if (e != null) _end = e;
@@ -667,7 +672,7 @@ class _CopyButton extends StatelessWidget {
           child: Row(children: [
             Icon(Icons.content_copy_rounded, size: 20, color: c.accentText),
             const SizedBox(width: 11),
-            Text('이전 확인서 복사',
+            Text(context.l.confCopyPrevious,
                 style: TextStyle(
                     fontSize: 16, fontWeight: FontWeight.w700, color: c.ink)),
             const Spacer(),
@@ -711,13 +716,18 @@ class _FieldBox extends StatelessWidget {
               Icon(icon, size: 18, color: c.ink3),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(value,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: c.ink,
-                        fontFeatures: const [FontFeature.tabularFigures()])),
+                // 날짜/시간 값은 잘림 대신 한 줄 축소(scaleDown) — ru 등 긴 표기 대응.
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(value,
+                      maxLines: 1,
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: c.ink,
+                          fontFeatures: const [FontFeature.tabularFigures()])),
+                ),
               ),
             ]),
           ),
@@ -748,19 +758,20 @@ class _CounterpartySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     final conns = connections.valueOrNull ?? const [];
     final hasConns = conns.isNotEmpty;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _Label('지시자 (회사)'),
+        _Label(l.confOrdererCompany),
         if (hasConns)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Row(children: [
-              _modeChip(context, '연결 사업장', useBusiness, () => onModeChanged(true)),
-              const SizedBox(width: 8),
-              _modeChip(context, '직접 입력', !useBusiness, () => onModeChanged(false)),
+            // 긴 번역(ru/vi)에서도 넘치지 않게 Wrap 으로 줄바꿈 허용.
+            child: Wrap(spacing: 8, runSpacing: 8, children: [
+              _modeChip(context, l.confLinkedBiz, useBusiness, () => onModeChanged(true)),
+              _modeChip(context, l.confManualEntry, !useBusiness, () => onModeChanged(false)),
             ]),
           ),
         if (useBusiness && hasConns)
@@ -775,7 +786,7 @@ class _CounterpartySection extends StatelessWidget {
               child: DropdownButton<String>(
                 isExpanded: true,
                 value: businessId,
-                hint: Text('연결 사업장 선택',
+                hint: Text(l.confSelectBiz,
                     style: TextStyle(color: c.ink3, fontSize: 16)),
                 icon: Icon(Icons.expand_more_rounded, color: c.ink3),
                 items: [
@@ -797,7 +808,7 @@ class _CounterpartySection extends StatelessWidget {
               controller: company,
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: c.ink),
               decoration: InputDecoration(
-                hintText: '회사/현장 담당 상호',
+                hintText: l.confCompanyHint,
                 prefixIcon: Icon(Icons.business_rounded, size: 20, color: c.ink3),
               ),
             ),
@@ -806,7 +817,7 @@ class _CounterpartySection extends StatelessWidget {
               controller: contact,
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: c.ink),
               decoration: InputDecoration(
-                hintText: '담당자/연락처 (선택)',
+                hintText: l.confContactHint,
                 prefixIcon: Icon(Icons.person_outline_rounded, size: 20, color: c.ink3),
               ),
             ),
@@ -849,6 +860,7 @@ class _EquipmentToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return Container(
       decoration: BoxDecoration(
         color: c.surface2,
@@ -864,10 +876,10 @@ class _EquipmentToggle extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('장비 섹션',
+                Text(l.confEquipSection,
                     style: TextStyle(
                         fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
-                Text('확인서에 자동 포함',
+                Text(l.confEquipAutoInclude,
                     style: TextStyle(fontSize: 13, color: c.ink3)),
               ],
             ),
@@ -885,7 +897,7 @@ class _EquipmentToggle extends StatelessWidget {
                 child: TextField(
                   controller: name,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: c.ink),
-                  decoration: const InputDecoration(hintText: '장비명', isDense: true),
+                  decoration: InputDecoration(hintText: l.confEquipName, isDense: true),
                 ),
               ),
               const SizedBox(width: 10),
@@ -893,7 +905,7 @@ class _EquipmentToggle extends StatelessWidget {
                 child: TextField(
                   controller: vehicle,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: c.ink),
-                  decoration: const InputDecoration(hintText: '차량번호', isDense: true),
+                  decoration: InputDecoration(hintText: l.confVehicleNo, isDense: true),
                 ),
               ),
             ]),
@@ -934,14 +946,15 @@ class _RateSegments extends StatelessWidget {
       );
     }
 
+    final l = context.l;
     return Row(children: [
-      seg('DAILY', '일당'),
+      seg('DAILY', l.confRateDaily),
       const SizedBox(width: 6),
-      seg('GONGSU', '공수'),
+      seg('GONGSU', l.unitGongsu),
       const SizedBox(width: 6),
-      seg('HOURLY', '시급'),
+      seg('HOURLY', l.confRateHourly),
       const SizedBox(width: 6),
-      seg('PER_CASE', '건당'),
+      seg('PER_CASE', l.confRatePerCase),
     ]);
   }
 }
@@ -1030,6 +1043,7 @@ class _ExtrasSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1044,11 +1058,11 @@ class _ExtrasSection extends StatelessWidget {
                     isExpanded: true,
                     value: e.type,
                     icon: Icon(Icons.expand_more_rounded, color: c.ink3, size: 20),
-                    items: const [
-                      DropdownMenuItem(value: 'OVERTIME', child: Text('연장')),
-                      DropdownMenuItem(value: 'NIGHT', child: Text('야간')),
-                      DropdownMenuItem(value: 'EARLY', child: Text('조출')),
-                      DropdownMenuItem(value: 'OTHER', child: Text('기타')),
+                    items: [
+                      DropdownMenuItem(value: 'OVERTIME', child: Text(l.amtOvertime)),
+                      DropdownMenuItem(value: 'NIGHT', child: Text(l.amtNight)),
+                      DropdownMenuItem(value: 'EARLY', child: Text(l.amtEarly)),
+                      DropdownMenuItem(value: 'OTHER', child: Text(l.itemOther)),
                     ],
                     onChanged: (v) {
                       if (v != null) {
@@ -1071,7 +1085,7 @@ class _ExtrasSection extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       color: c.ink,
                       fontFeatures: const [FontFeature.tabularFigures()]),
-                  decoration: const InputDecoration(hintText: '단가', isDense: true),
+                  decoration: InputDecoration(hintText: l.confUnitPrice, isDense: true),
                 ),
               ),
               const SizedBox(width: 8),
@@ -1087,7 +1101,7 @@ class _ExtrasSection extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       color: c.ink,
                       fontFeatures: const [FontFeature.tabularFigures()]),
-                  decoration: const InputDecoration(hintText: '수량', isDense: true),
+                  decoration: InputDecoration(hintText: l.confQuantity, isDense: true),
                 ),
               ),
               IconButton(
@@ -1101,7 +1115,7 @@ class _ExtrasSection extends StatelessWidget {
           child: TextButton.icon(
             onPressed: onAdd,
             icon: Icon(Icons.add_rounded, size: 18, color: c.accentText),
-            label: Text('연장·야간 항목 추가',
+            label: Text(l.confAddExtra,
                 style: TextStyle(color: c.accentText, fontSize: 14, fontWeight: FontWeight.w700)),
             style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 4)),
           ),
@@ -1115,9 +1129,44 @@ class _CalcPreview extends StatelessWidget {
   final AmountCalcResult calc;
   final String rateType;
   const _CalcPreview({required this.calc, required this.rateType});
+
+  /// 계산 항목 라벨을 공유 번역 키로 매핑(사용자 지정 OTHER 라벨은 그대로 유지).
+  String _itemLabel(BuildContext context, AmountLineItem it) {
+    final l = context.l;
+    switch (it.type) {
+      case 'BASE':
+        switch (rateType) {
+          case 'HOURLY':
+            return l.baseHourly;
+          case 'PER_CASE':
+            return l.basePerCase;
+          case 'GONGSU':
+            return l.baseGongsu;
+          default:
+            return l.baseDaily;
+        }
+      case 'OVERTIME':
+        return l.amtOvertime;
+      case 'EARLY':
+        return l.amtEarly;
+      case 'NIGHT':
+        return l.amtNight;
+      case 'ALLNIGHT':
+        return l.amtAllnight;
+      case 'OTHER':
+        return it.label == (additionalItemLabels['OTHER'] ?? '기타')
+            ? l.itemOther
+            : it.label;
+      default:
+        return it.label;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
+    final lang = context.lang;
     return Container(
       decoration: BoxDecoration(
         color: c.surface2,
@@ -1131,17 +1180,18 @@ class _CalcPreview extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Row(children: [
-                Text(it.label,
+                Text(_itemLabel(context, it),
                     style: TextStyle(
                         fontSize: 13.5, fontWeight: FontWeight.w600, color: c.ink2)),
                 const Spacer(),
-                Text('${formatWon(it.rate)} × ${formatQtyUnit(it.quantity, it.unit)}',
+                Text(
+                    '${formatMoney(it.rate, lang)} × ${it.unit != null && it.unit!.isNotEmpty ? l.qtyGongsu(formatGongsu(it.quantity)) : formatGongsu(it.quantity)}',
                     style: TextStyle(
                         fontSize: 13,
                         color: c.ink3,
                         fontFeatures: const [FontFeature.tabularFigures()])),
                 const SizedBox(width: 8),
-                Text(formatWon(it.amount),
+                Text(formatMoney(it.amount, lang),
                     style: TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w700,
@@ -1161,14 +1211,11 @@ class _CalcPreview extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
                   children: [
-                    Text('받을 금액',
+                    Text(l.paperTotal,
                         style: TextStyle(
                             fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
                     const Spacer(),
-                    Text.rich(TextSpan(children: [
-                      TextSpan(text: formatWon(calc.total)),
-                      const TextSpan(text: ' 원', style: TextStyle(fontSize: 17)),
-                    ]),
+                    Text(formatMoney(calc.total, lang),
                         style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.w800,
@@ -1193,6 +1240,7 @@ class _RestoreDraftBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
       decoration: BoxDecoration(
@@ -1205,17 +1253,17 @@ class _RestoreDraftBanner extends StatelessWidget {
           Icon(Icons.history_rounded, size: 20, color: c.accentText),
           const SizedBox(width: 10),
           Expanded(
-            child: Text('작성 중이던 내용이 있어요.',
+            child: Text(l.confRestoreTitle,
                 style: TextStyle(
                     fontSize: 14, fontWeight: FontWeight.w700, color: c.ink)),
           ),
           TextButton(
             onPressed: onDiscard,
-            child: Text('삭제', style: TextStyle(color: c.ink3, fontSize: 14)),
+            child: Text(l.delete, style: TextStyle(color: c.ink3, fontSize: 14)),
           ),
           TextButton(
             onPressed: onRestore,
-            child: Text('불러오기',
+            child: Text(l.confRestore,
                 style: TextStyle(
                     color: c.accentText,
                     fontSize: 14,

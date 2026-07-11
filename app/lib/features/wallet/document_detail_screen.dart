@@ -9,6 +9,7 @@ import '../../core/format.dart';
 import '../../models/models.dart';
 import '../../providers/wallet.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 import 'doc_ui.dart';
 import 'mask_editor.dart';
 
@@ -56,7 +57,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('열기 실패: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l.docOpenFailed('$e'))));
       }
     }
   }
@@ -78,7 +79,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('수정 실패: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l.docUpdateFailed('$e'))));
       }
     }
   }
@@ -115,18 +116,19 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
       };
 
   Future<void> _delete() async {
+    final l = context.l;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('서류를 삭제할까요?'),
-        content: const Text('이 서류와 공유 링크가 함께 삭제됩니다.'),
+        title: Text(l.docDeleteConfirmTitle),
+        content: Text(l.docDeleteConfirmBody),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('취소')),
+              child: Text(l.cancel)),
           TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('삭제')),
+              child: Text(l.delete)),
         ],
       ),
     );
@@ -138,7 +140,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('삭제 실패: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l.docDeleteFailed('$e'))));
       }
     }
   }
@@ -146,6 +148,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return Scaffold(
       backgroundColor: c.bg,
       appBar: AppBar(
@@ -188,7 +191,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                               TextButton.icon(
                                 onPressed: _openPdf,
                                 icon: const Icon(Icons.open_in_new_rounded),
-                                label: const Text('PDF 열기'),
+                                label: Text(l.docOpenPdf),
                               ),
                             ],
                           ),
@@ -207,7 +210,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                     decoration: BoxDecoration(
                         color: c.deposited.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(999)),
-                    child: Text('마스킹본 있음',
+                    child: Text(l.docHasMask,
                         style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
@@ -216,15 +219,15 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            _row(context, '만료일',
-                _doc.expiryDate == null ? '없음' : dateParam(_doc.expiryDate!),
+            _row(context, l.docExpiryDate,
+                _doc.expiryDate == null ? l.docNone : dateParam(_doc.expiryDate!),
                 onEdit: _editExpiry),
             if (_doc.issuedDate != null)
-              _row(context, '발급일', dateParam(_doc.issuedDate!)),
+              _row(context, l.docIssuedDate, dateParam(_doc.issuedDate!)),
             const SizedBox(height: 20),
             if (_doc.isImage)
               PrimaryButton(
-                label: _doc.hasMask ? '마스킹 다시 편집' : '개인정보 마스킹 편집',
+                label: _doc.hasMask ? l.docReMask : l.docMaskEdit,
                 icon: Icons.security_rounded,
                 onPressed: _openMaskEditor,
               ),
@@ -250,7 +253,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                   fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
           const Spacer(),
           if (onEdit != null)
-            TextButton(onPressed: onEdit, child: const Text('수정')),
+            TextButton(onPressed: onEdit, child: Text(context.l.docModify)),
         ],
       ),
     );

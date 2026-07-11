@@ -4,6 +4,7 @@ import '../../theme/app_colors.dart';
 import '../../core/api_client.dart';
 import '../../providers/auth.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -47,6 +48,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return Scaffold(
       backgroundColor: c.bg,
       body: SafeArea(
@@ -55,16 +57,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('반가워요!',
+              Text(l.onbWelcome,
                   style: TextStyle(
                       fontSize: 26, fontWeight: FontWeight.w800, color: c.ink)),
               const SizedBox(height: 8),
-              Text('확인서에 표시될 이름을 알려주세요.',
+              Text(l.onbNamePrompt,
                   style: TextStyle(fontSize: 16, color: c.ink2)),
               const SizedBox(height: 28),
               Padding(
                 padding: const EdgeInsets.only(left: 2, bottom: 6),
-                child: Text('이름',
+                child: Text(l.onbNameLabel,
                     style: TextStyle(
                         fontSize: 13, fontWeight: FontWeight.w700, color: c.ink2)),
               ),
@@ -72,7 +74,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 controller: _name,
                 textInputAction: TextInputAction.done,
                 style: TextStyle(fontSize: 17, color: c.ink, fontWeight: FontWeight.w600),
-                decoration: const InputDecoration(hintText: '예) 김기사'),
+                decoration: InputDecoration(hintText: l.onbNameHint),
                 onSubmitted: (_) => _name.text.trim().isNotEmpty ? _save() : null,
               ),
               if (_error != null) ...[
@@ -81,7 +83,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               ],
               const Spacer(),
               PrimaryButton(
-                label: '시작하기',
+                label: l.onbStart,
                 icon: Icons.check_rounded,
                 loading: _loading,
                 onPressed: _name.text.trim().isNotEmpty ? _save : null,

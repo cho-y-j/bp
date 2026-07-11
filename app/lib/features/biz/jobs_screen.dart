@@ -4,15 +4,17 @@ import '../../theme/app_colors.dart';
 import '../../core/format.dart';
 import '../../models/models.dart';
 import '../../providers/biz.dart';
+import '../../l10n/l10n_ext.dart';
+import '../../l10n/app_localizations.dart';
 
-String jobStatusLabel(String s) {
+String jobStatusLabel(String s, [AppLocalizations? l]) {
   switch (s) {
     case 'SCHEDULED':
-      return '예약';
+      return l?.jobStatusScheduled ?? '예약';
     case 'IN_PROGRESS':
-      return '진행중';
+      return l?.jobStatusInProgress ?? '진행중';
     case 'DONE':
-      return '완료';
+      return l?.jobStatusDone ?? '완료';
     default:
       return s;
   }
@@ -23,21 +25,22 @@ class JobsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
     final month = monthParam(DateTime.now());
     final jobs = ref.watch(jobsProvider(month));
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('작업 지시 목록')),
+      appBar: AppBar(title: Text(l.jobTitle)),
       body: SafeArea(
         child: jobs.when(
           loading: () =>
               Center(child: CircularProgressIndicator(color: c.primary)),
-          error: (e, _) => Center(child: Text('불러오지 못했습니다: $e')),
+          error: (e, _) => Center(child: Text(l.bizLoadFailed('$e'))),
           data: (list) {
             final bizJobs = list.where((j) => j.role == 'BUSINESS').toList();
             if (bizJobs.isEmpty) {
               return Center(
-                  child: Text('이번 달 작업 지시가 없어요',
+                  child: Text(l.jobEmpty,
                       style: TextStyle(color: c.ink2, fontSize: 15)));
             }
             return ListView.separated(
@@ -59,6 +62,7 @@ class _JobTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     Color badgeColor;
     switch (job.status) {
       case 'DONE':
@@ -90,7 +94,7 @@ class _JobTile extends StatelessWidget {
                 decoration: BoxDecoration(
                     color: badgeColor.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(999)),
-                child: Text(jobStatusLabel(job.status),
+                child: Text(jobStatusLabel(job.status, l),
                     style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
@@ -100,8 +104,8 @@ class _JobTile extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-              '${formatShortDate(job.scheduledAt)} · ${formatWonUnit(job.rate)}'
-              '${job.acceptedAt != null ? ' · 수락됨' : ' · 수락 대기'}',
+              '${fmtShortDate(job.scheduledAt, context.lang)} · ${formatMoney(job.rate, context.lang)}'
+              ' · ${job.acceptedAt != null ? l.jobAccepted : l.jobAcceptPending}',
               style: TextStyle(fontSize: 13, color: c.ink2)),
         ],
       ),

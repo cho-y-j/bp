@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../theme/app_colors.dart';
 import '../../core/format.dart';
+import '../../l10n/l10n_ext.dart';
 import '../../models/models.dart';
 import '../../providers/data.dart';
 import '../../widgets/common.dart';
@@ -35,7 +37,7 @@ class CalendarScreen extends ConsumerWidget {
                     ref.read(selectedMonthProvider.notifier).state =
                         DateTime(month.year, month.month - 1);
                   }),
-                  Text(formatMonthK(month),
+                  Text(fmtMonth(month, context.lang),
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
                   _monthNav(context, Icons.chevron_right_rounded, () {
@@ -120,8 +122,8 @@ class _ViewToggle extends StatelessWidget {
         borderRadius: BorderRadius.circular(11),
       ),
       child: Row(children: [
-        seg(true, Icons.calendar_view_month_rounded, '월'),
-        seg(false, Icons.view_agenda_outlined, '주'),
+        seg(true, Icons.calendar_view_month_rounded, context.l.calViewMonth),
+        seg(false, Icons.view_agenda_outlined, context.l.calViewWeek),
       ]),
     );
   }
@@ -152,7 +154,11 @@ class _MonthGrid extends StatelessWidget {
       cells.add(null);
     }
 
-    const weekdayLabels = ['일', '월', '화', '수', '목', '금', '토'];
+    final loc = localeName(context.lang);
+    final weekdayLabels = [
+      for (var i = 0; i < 7; i++)
+        DateFormat.E(loc).format(DateTime(2024, 1, 7 + i)), // 2024-01-07 = 일요일
+    ];
     final today = DateTime.now();
 
     return ListView(
@@ -163,11 +169,11 @@ class _MonthGrid extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(6, 0, 6, 8),
           child: Row(
             children: [
-              Text('작업 ${list.count}건',
+              Text(context.l.calWorkCount(list.count),
                   style: TextStyle(
                       fontSize: 14, fontWeight: FontWeight.w700, color: c.ink2)),
               const Spacer(),
-              Text(formatWonUnit(list.totalAmount),
+              Text(formatMoney(list.totalAmount, context.lang),
                   style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
@@ -263,7 +269,8 @@ class _DayCell extends StatelessWidget {
               const Spacer(),
               FittedBox(
                 fit: BoxFit.scaleDown,
-                child: Text(_compact(agg!.totalAmount),
+                child: Text(
+                    _compact(agg!.totalAmount, context.lang, context.l.calManUnit),
                     style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -277,12 +284,15 @@ class _DayCell extends StatelessWidget {
     );
   }
 
-  static String _compact(int won) {
-    if (won >= 10000) {
-      final man = won / 10000;
-      return man == man.roundToDouble()
-          ? '${man.round()}만'
-          : '${man.toStringAsFixed(1)}만';
+  // 셀 안 좁은 폭용 축약 금액. CJK(ko/zh)는 만/万 단위(÷10000),
+  // 그 외 언어는 천 단위(÷1000)로 축약하고 단위 라벨(calManUnit)을 붙인다.
+  static String _compact(int won, String lang, String unit) {
+    final cjk = lang == 'ko' || lang == 'zh';
+    final div = cjk ? 10000 : 1000;
+    if (won >= div) {
+      final u = won / div;
+      final s = u == u.roundToDouble() ? '${u.round()}' : u.toStringAsFixed(1);
+      return '$s$unit';
     }
     return '$won';
   }
@@ -306,7 +316,7 @@ class _WeekList extends StatelessWidget {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: Text('이 달에 기록된 작업이 없어요.',
+          child: Text(context.l.calEmptyMonth,
               style: TextStyle(fontSize: 16, color: c.ink2)),
         ),
       );
@@ -325,11 +335,11 @@ class _WeekList extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(2, 14, 2, 8),
               child: Row(
                 children: [
-                  Text(formatShortDate(date),
+                  Text(fmtShortDate(date, context.lang),
                       style: TextStyle(
                           fontSize: 14, fontWeight: FontWeight.w800, color: c.ink)),
                   const Spacer(),
-                  Text(formatWonUnit(dayTotal),
+                  Text(formatMoney(dayTotal, context.lang),
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
@@ -382,8 +392,8 @@ class _WeekItem extends StatelessWidget {
                             fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
                     const SizedBox(height: 2),
                     Text(
-                        '${conf.companyName} · ${ampm(conf.startTime)}~${ampm(conf.endTime)}'
-                        '${conf.baseUnit != null ? ' · ${formatGongsu(conf.baseQuantity)}${conf.baseUnit}' : ''}',
+                        '${conf.companyName} · ${fmtAmpm(conf.startTime, context.lang)}~${fmtAmpm(conf.endTime, context.lang)}'
+                        '${conf.baseUnit != null ? ' · ${conf.baseUnit == '공수' ? context.l.qtyGongsu(formatGongsu(conf.baseQuantity)) : '${formatGongsu(conf.baseQuantity)}${conf.baseUnit}'}' : ''}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontSize: 13, color: c.ink2)),
@@ -391,7 +401,7 @@ class _WeekItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(formatWon(conf.total),
+              Text(formatMoney(conf.total, context.lang),
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -431,14 +441,14 @@ void _openDay(BuildContext context, DateTime day, ConfirmationList list) {
                 ),
               ),
               const SizedBox(height: 14),
-              Text(formatDateK(day),
+              Text(fmtDate(day, ctx.lang),
                   style: TextStyle(
                       fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
               const SizedBox(height: 12),
               if (confs.isEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Text('이 날 기록된 작업이 없어요.',
+                  child: Text(ctx.l.calEmptyDay,
                       style: TextStyle(fontSize: 15, color: c.ink2)),
                 )
               else
@@ -448,7 +458,7 @@ void _openDay(BuildContext context, DateTime day, ConfirmationList list) {
                     )),
               const SizedBox(height: 8),
               PrimaryButton(
-                label: '이 날 작업 기록하기',
+                label: ctx.l.calRecordThisDay,
                 icon: Icons.add_rounded,
                 onPressed: () {
                   Navigator.of(ctx).pop();

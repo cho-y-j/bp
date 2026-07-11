@@ -1,5 +1,7 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:workon/core/format.dart';
+import 'package:workon/l10n/app_localizations.dart';
 import 'package:workon/widgets/common.dart';
 
 void main() {
@@ -7,6 +9,12 @@ void main() {
     test('천단위 콤마', () {
       expect(formatWon(1234500), '1,234,500');
       expect(formatWonUnit(550000), '550,000 원');
+    });
+    test('로케일 통화 (l10n) — ko 는 원, 그 외 ₩', () {
+      expect(formatMoney(550000, 'ko'), '550,000원');
+      expect(formatMoney(550000, 'en'), '₩550,000');
+      // 베트남어는 로케일 규칙대로 점(.) 천단위.
+      expect(formatMoney(286000, 'vi'), '₩286.000');
     });
   });
 
@@ -18,10 +26,11 @@ void main() {
       expect(ddayLabel(null), '');
     });
 
-    test('ddayText (상태별)', () {
-      expect(ddayText(3, 'PENDING'), '수금 D-3');
-      expect(ddayText(-6, 'OVERDUE'), '기한 지남');
-      expect(ddayText(null, 'PAID'), '입금완료');
+    test('ddayText (상태별, l10n)', () {
+      final l = lookupAppLocalizations(const Locale('ko'));
+      expect(ddayText(l, 3, 'PENDING'), '수금 D-3');
+      expect(ddayText(l, -6, 'OVERDUE'), '기한 지남');
+      expect(ddayText(l, null, 'PAID'), '입금완료');
     });
   });
 

@@ -6,6 +6,7 @@ import '../../models/models.dart';
 import '../../providers/biz.dart';
 import '../../providers/data.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 
 class SettlementScreen extends ConsumerStatefulWidget {
   const SettlementScreen({super.key});
@@ -25,12 +26,13 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
       invalidateAll(ref); // 작업자 장부 대칭 반영
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('${w.workerName}님에게 ${formatWonUnit(w.outstanding)} 지급 처리')));
+            content: Text(context.l.settlePaidSnack(
+                w.workerName, formatMoney(w.outstanding, context.lang)))));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('지급 실패: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l.settlePayFailed('$e'))));
       }
     } finally {
       if (mounted) setState(() => _payingWorkers.remove(w.workerProfileId));
@@ -40,11 +42,12 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     final month = monthParam(_month);
     final workers = ref.watch(settlementsProvider(month));
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('정산')),
+      appBar: AppBar(title: Text(l.settleTitle)),
       body: SafeArea(
         child: Column(
           children: [
@@ -56,7 +59,7 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
                       onPressed: () => setState(() =>
                           _month = DateTime(_month.year, _month.month - 1)),
                       icon: const Icon(Icons.chevron_left_rounded)),
-                  Text(formatMonthK(_month),
+                  Text(fmtMonth(_month, context.lang),
                       style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
@@ -72,10 +75,10 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
               child: workers.when(
                 loading: () =>
                     Center(child: CircularProgressIndicator(color: c.primary)),
-                error: (e, _) => Center(child: Text('불러오지 못했습니다: $e')),
+                error: (e, _) => Center(child: Text(l.bizLoadFailed('$e'))),
                 data: (list) => list.isEmpty
                     ? Center(
-                        child: Text('이번 달 미지급 내역이 없어요',
+                        child: Text(l.settleEmpty,
                             style: TextStyle(color: c.ink2, fontSize: 15)))
                     : ListView.separated(
                         padding: const EdgeInsets.all(16),
@@ -109,7 +112,7 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w800,
                                                   color: c.ink)),
-                                          Text('${w.entryCount}건',
+                                          Text(l.settleEntryCount(w.entryCount),
                                               style: TextStyle(
                                                   fontSize: 13,
                                                   color: c.ink2)),
@@ -143,8 +146,9 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
                                                 color: c.primaryInk))
                                         : Text(
                                             w.outstanding <= 0
-                                                ? '지급 완료'
-                                                : '${formatWonUnit(w.outstanding)} 지급',
+                                                ? l.settlePaidDone
+                                                : l.settlePayAmount(formatMoney(
+                                                    w.outstanding, context.lang)),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.w700)),
                                   ),

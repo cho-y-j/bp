@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:workon/core/format.dart';
+import 'package:workon/l10n/app_localizations.dart';
 import 'package:workon/models/models.dart';
 import 'package:workon/providers/data.dart';
 import 'package:workon/theme/app_theme.dart';
@@ -11,7 +13,18 @@ import 'package:workon/features/confirmation/confirmation_form_screen.dart';
 
 Widget _app(Widget home, List<Override> overrides) => ProviderScope(
       overrides: overrides,
-      child: MaterialApp(theme: AppTheme.light(), home: home),
+      child: MaterialApp(
+        theme: AppTheme.light(),
+        locale: const Locale('ko'),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: home,
+      ),
     );
 
 void main() {

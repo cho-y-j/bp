@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../theme/app_colors.dart';
 import '../../core/env.dart';
+import '../../core/format.dart';
 import '../../models/models.dart';
 import '../../providers/wallet.dart';
+import '../../l10n/l10n_ext.dart';
 
 class MySharesScreen extends ConsumerWidget {
   const MySharesScreen({super.key});
@@ -18,18 +20,19 @@ class MySharesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
     final shares = ref.watch(mySharesProvider);
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('내 공유')),
+      appBar: AppBar(title: Text(l.wshareTitle)),
       body: SafeArea(
         child: shares.when(
           loading: () =>
               Center(child: CircularProgressIndicator(color: c.primary)),
-          error: (e, _) => Center(child: Text('불러오지 못했습니다: $e')),
+          error: (e, _) => Center(child: Text(l.wshareLoadFailed('$e'))),
           data: (list) => list.isEmpty
               ? Center(
-                  child: Text('아직 공유한 서류 묶음이 없어요',
+                  child: Text(l.wshareEmpty,
                       style: TextStyle(color: c.ink2, fontSize: 15)))
               : ListView.separated(
                   padding: const EdgeInsets.all(16),
@@ -57,7 +60,7 @@ class MySharesScreen extends ConsumerWidget {
                                         ? c.deposited.withValues(alpha: 0.12)
                                         : c.ink2.withValues(alpha: 0.12),
                                     borderRadius: BorderRadius.circular(999)),
-                                child: Text(s.active ? '활성' : '만료/무효',
+                                child: Text(s.active ? l.wshareActive : l.wshareInactive,
                                     style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
@@ -71,7 +74,7 @@ class MySharesScreen extends ConsumerWidget {
                                   Icon(Icons.visibility_outlined,
                                       size: 15, color: c.ink3),
                                   const SizedBox(width: 4),
-                                  Text('열람 ${s.viewCount}회',
+                                  Text(l.wshareViewCount(s.viewCount),
                                       style: TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w700,
@@ -90,7 +93,7 @@ class MySharesScreen extends ConsumerWidget {
                           Text(
                               s.expiresAt == null
                                   ? ''
-                                  : '${s.expiresAt!.year}-${s.expiresAt!.month.toString().padLeft(2, '0')}-${s.expiresAt!.day.toString().padLeft(2, '0')} 만료',
+                                  : l.shareExpiry(dateParam(s.expiresAt!)),
                               style: TextStyle(fontSize: 13, color: c.ink3)),
                           const SizedBox(height: 8),
                           Row(
@@ -107,7 +110,7 @@ class MySharesScreen extends ConsumerWidget {
                                             : null);
                                   },
                                   icon: const Icon(Icons.share_rounded, size: 18),
-                                  label: const Text('다시 공유'),
+                                  label: Text(l.wshareReshare),
                                 ),
                               const Spacer(),
                               if (s.active)
@@ -118,7 +121,7 @@ class MySharesScreen extends ConsumerWidget {
                                         .revokeShare(s.id);
                                     ref.invalidate(mySharesProvider);
                                   },
-                                  child: Text('무효화',
+                                  child: Text(l.wshareRevoke,
                                       style: TextStyle(color: c.receivable)),
                                 ),
                             ],

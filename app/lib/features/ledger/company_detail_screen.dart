@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../core/format.dart';
 import '../../core/api_client.dart';
+import '../../l10n/l10n_ext.dart';
 import '../../models/models.dart';
 import '../../providers/data.dart';
 import '../../widgets/common.dart';
@@ -16,6 +17,7 @@ class CompanyDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
     final entries = ref.watch(ledgerEntriesProvider(month));
     return Scaffold(
       backgroundColor: c.bg,
@@ -56,9 +58,9 @@ class CompanyDetailScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('남은 미수',
+                          Text(l.ledgerRemaining,
                               style: TextStyle(fontSize: 13, color: c.ink2)),
-                          Text(formatWonUnit(outstanding),
+                          Text(formatMoney(outstanding, context.lang),
                               style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w800,
@@ -70,11 +72,11 @@ class CompanyDetailScreen extends ConsumerWidget {
                     DdayBadge(
                         dday: company.dday,
                         status: company.status,
-                        label: ddayText(company.dday, company.status)),
+                        label: ddayText(l, company.dday, company.status)),
                   ],
                 ),
               ),
-              const SectionTitle('작업 내역'),
+              SectionTitle(l.ledgerWorkHistory),
               for (final e in items)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
@@ -95,6 +97,7 @@ class _EntryTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
     final paid = entry.status == 'PAID';
     return Material(
       color: c.surface,
@@ -115,7 +118,7 @@ class _EntryTile extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                        '${entry.date != null ? formatShortDate(DateTime.parse(entry.date!)) : ''}'
+                        '${entry.date != null ? fmtShortDate(DateTime.parse(entry.date!), context.lang) : ''}'
                         '${entry.siteName != null ? ' · ${entry.siteName}' : ''}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -123,14 +126,14 @@ class _EntryTile extends ConsumerWidget {
                             fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
                     const SizedBox(height: 4),
                     Row(children: [
-                      Text('청구 ${formatWon(entry.amount)}',
+                      Text(l.ledgerBilled(formatMoney(entry.amount, context.lang)),
                           style: TextStyle(
                               fontSize: 13,
                               color: c.ink2,
                               fontFeatures: const [FontFeature.tabularFigures()])),
                       if (entry.paid > 0) ...[
                         Text('  ·  ', style: TextStyle(color: c.ink3)),
-                        Text('입금 ${formatWon(entry.paid)}',
+                        Text(l.ledgerDeposited(formatMoney(entry.paid, context.lang)),
                             style: TextStyle(
                                 fontSize: 13,
                                 color: c.deposited,
@@ -145,7 +148,7 @@ class _EntryTile extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(formatWon(paid ? entry.amount : entry.outstanding),
+                  Text(formatMoney(paid ? entry.amount : entry.outstanding, context.lang),
                       style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
@@ -193,14 +196,14 @@ void _openPaymentSheet(BuildContext context, WidgetRef ref, LedgerEntry entry) {
             invalidateAll(ref);
             if (ctx.mounted) Navigator.of(ctx).pop();
             if (context.mounted) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text('입금이 기록되었어요.')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(context.l.ledgerPaymentSaved)));
             }
           } on ApiException catch (e) {
             setSheet(() => saving = false);
             if (ctx.mounted) {
-              ScaffoldMessenger.of(ctx)
-                  .showSnackBar(SnackBar(content: Text('실패: ${e.message}')));
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                  SnackBar(content: Text(ctx.l.ledgerPaymentFail(e.message))));
             }
           }
         }
@@ -224,14 +227,15 @@ void _openPaymentSheet(BuildContext context, WidgetRef ref, LedgerEntry entry) {
                 ),
               ),
               const SizedBox(height: 16),
-              Text('입금 기록',
+              Text(ctx.l.ledgerRecordPayment,
                   style: TextStyle(
                       fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
               const SizedBox(height: 4),
-              Text('${entry.companyName} · 남은 미수 ${formatWonUnit(entry.outstanding)}',
+              Text(
+                  '${entry.companyName} · ${ctx.l.ledgerRemainingAmount(formatMoney(entry.outstanding, ctx.lang))}',
                   style: TextStyle(fontSize: 14, color: c.ink2)),
               const SizedBox(height: 16),
-              Text('입금액',
+              Text(ctx.l.ledgerPaymentAmount,
                   style: TextStyle(
                       fontSize: 13, fontWeight: FontWeight.w700, color: c.ink2)),
               const SizedBox(height: 6),
@@ -244,17 +248,17 @@ void _openPaymentSheet(BuildContext context, WidgetRef ref, LedgerEntry entry) {
                     fontWeight: FontWeight.w800,
                     color: c.ink,
                     fontFeatures: const [FontFeature.tabularFigures()]),
-                decoration: const InputDecoration(suffixText: '원'),
+                decoration: InputDecoration(suffixText: ctx.l.ledgerWonSuffix),
               ),
               const SizedBox(height: 8),
               Row(children: [
-                _quick(ctx, amountCtl, '전액', entry.outstanding),
+                _quick(ctx, amountCtl, ctx.l.ledgerFull, entry.outstanding),
                 const SizedBox(width: 8),
-                _quick(ctx, amountCtl, '절반', (entry.outstanding / 2).round()),
+                _quick(ctx, amountCtl, ctx.l.ledgerHalf, (entry.outstanding / 2).round()),
               ]),
               const SizedBox(height: 18),
               PrimaryButton(
-                label: '입금 기록하기',
+                label: ctx.l.ledgerRecordPaymentBtn,
                 icon: Icons.check_rounded,
                 loading: saving,
                 onPressed: save,
@@ -278,7 +282,7 @@ Widget _quick(BuildContext context, TextEditingController ctl, String label, int
         border: Border.all(color: c.border),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Text('$label ${formatWon(value)}',
+      child: Text('$label ${formatMoney(value, context.lang)}',
           style: TextStyle(
               fontSize: 13, fontWeight: FontWeight.w700, color: c.accentText)),
     ),

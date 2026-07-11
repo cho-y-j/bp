@@ -7,6 +7,7 @@ import '../../core/env.dart';
 import '../../core/kakao_auth.dart';
 import '../../providers/auth.dart';
 import '../../widgets/common.dart';
+import '../../l10n/l10n_ext.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -23,6 +24,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   String? _error;
 
   Future<void> _kakaoLogin() async {
+    final kakaoPreparingMsg = context.l.authKakaoPreparing;
     setState(() {
       _kakaoLoading = true;
       _error = null;
@@ -32,9 +34,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       await ref.read(authControllerProvider.notifier).kakaoLogin(token);
       // 라우터 redirect 가 온보딩/홈으로 이동
     } on ApiException catch (e) {
-      setState(() => _error = e.code == 'NOT_IMPLEMENTED'
-          ? '카카오 로그인 준비 중이에요. 전화번호로 시작해 주세요.'
-          : e.message);
+      setState(() => _error =
+          e.code == 'NOT_IMPLEMENTED' ? kakaoPreparingMsg : e.message);
     } catch (_) {
       // 사용자가 카카오 로그인을 취소한 경우 등 — 조용히 무시.
     } finally {
@@ -97,6 +98,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return Scaffold(
       backgroundColor: c.bg,
       body: SafeArea(
@@ -119,14 +121,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         fontSize: 26, fontWeight: FontWeight.w800, color: c.ink)),
               ]),
               const SizedBox(height: 28),
-              Text('전화번호로 시작하기',
+              Text(l.authStartWithPhone,
                   style: TextStyle(
                       fontSize: 22, fontWeight: FontWeight.w800, color: c.ink)),
               const SizedBox(height: 8),
-              Text('일한 것을 30초에 기록하고 확인서·장부·정산을 자동으로 관리하세요.',
+              Text(l.authTagline,
                   style: TextStyle(fontSize: 15, color: c.ink2, height: 1.4)),
               const SizedBox(height: 28),
-              _Label('전화번호'),
+              _Label(l.authPhoneLabel),
               TextField(
                 controller: _phone,
                 keyboardType: TextInputType.phone,
@@ -137,7 +139,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               if (_codeSent) ...[
                 const SizedBox(height: 16),
-                _Label('인증번호'),
+                _Label(l.authCodeLabel),
                 TextField(
                   controller: _code,
                   keyboardType: TextInputType.number,
@@ -147,10 +149,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       fontWeight: FontWeight.w700,
                       fontFeatures: const [FontFeature.tabularFigures()]),
                   inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
-                  decoration: const InputDecoration(hintText: '6자리 인증번호'),
+                  decoration: InputDecoration(hintText: l.authCodeHint),
                 ),
                 const SizedBox(height: 6),
-                Text('개발 환경: 인증번호가 자동으로 채워집니다.',
+                Text(l.authDevAutofill,
                     style: TextStyle(fontSize: 13, color: c.ink3)),
               ],
               if (_error != null) ...[
@@ -160,7 +162,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 26),
               if (!_codeSent)
                 PrimaryButton(
-                  label: '인증번호 받기',
+                  label: l.authRequestCode,
                   icon: Icons.sms_outlined,
                   loading: _loading,
                   onPressed: _phone.text.trim().length >= 10 ? _requestCode : null,
@@ -169,7 +171,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Column(
                   children: [
                     PrimaryButton(
-                      label: '인증하고 시작하기',
+                      label: l.authVerifyStart,
                       icon: Icons.arrow_forward_rounded,
                       loading: _loading,
                       onPressed: _code.text.trim().length >= 4 ? _verify : null,
@@ -182,7 +184,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 _codeSent = false;
                                 _code.clear();
                               }),
-                      child: Text('전화번호 다시 입력',
+                      child: Text(l.authReenterPhone,
                           style: TextStyle(color: c.accentText, fontSize: 15)),
                     ),
                   ],
@@ -194,13 +196,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Expanded(child: Divider(color: c.border)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text('또는',
+                    child: Text(l.authOr,
                         style: TextStyle(fontSize: 13, color: c.ink3)),
                   ),
                   Expanded(child: Divider(color: c.border)),
                 ]),
                 const SizedBox(height: 20),
-                _KakaoButton(loading: _kakaoLoading, onPressed: _kakaoLogin),
+                _KakaoButton(
+                    loading: _kakaoLoading,
+                    onPressed: _kakaoLogin,
+                    label: l.authKakaoStart),
               ],
             ],
           ),
@@ -214,7 +219,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 class _KakaoButton extends StatelessWidget {
   final bool loading;
   final VoidCallback onPressed;
-  const _KakaoButton({required this.loading, required this.onPressed});
+  final String label;
+  const _KakaoButton(
+      {required this.loading, required this.onPressed, required this.label});
   @override
   Widget build(BuildContext context) {
     const kakaoYellow = Color(0xFFFEE500);
@@ -237,12 +244,12 @@ class _KakaoButton extends StatelessWidget {
                 height: 22,
                 child: CircularProgressIndicator(
                     strokeWidth: 2.4, color: kakaoBrown))
-            : const Row(
+            : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.chat_bubble_rounded, size: 20),
-                  SizedBox(width: 8),
-                  Text('카카오로 시작하기'),
+                  const Icon(Icons.chat_bubble_rounded, size: 20),
+                  const SizedBox(width: 8),
+                  Text(label),
                 ],
               ),
       ),

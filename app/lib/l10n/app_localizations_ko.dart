@@ -1,0 +1,1410 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Korean (`ko`).
+class AppLocalizationsKo extends AppLocalizations {
+  AppLocalizationsKo([String locale = 'ko']) : super(locale);
+
+  @override
+  String get cancel => '취소';
+
+  @override
+  String get confirm => '확인';
+
+  @override
+  String get save => '저장';
+
+  @override
+  String get delete => '삭제';
+
+  @override
+  String get retry => '다시 시도';
+
+  @override
+  String get close => '닫기';
+
+  @override
+  String get edit => '편집';
+
+  @override
+  String get share => '공유';
+
+  @override
+  String get download => '다운로드';
+
+  @override
+  String get view => '보기';
+
+  @override
+  String get loading => '불러오는 중…';
+
+  @override
+  String get errorConnTitle => '연결에 문제가 있어요';
+
+  @override
+  String get errorConnSubtitle => '인터넷 연결을 확인하고 다시 시도해 주세요.';
+
+  @override
+  String get statusDeposited => '입금완료';
+
+  @override
+  String get statusOverdue => '기한 지남';
+
+  @override
+  String collectDday(String dday) {
+    return '수금 $dday';
+  }
+
+  @override
+  String get amtBase => '기본';
+
+  @override
+  String get amtOvertime => '연장';
+
+  @override
+  String get amtEarly => '조출';
+
+  @override
+  String get amtNight => '야간';
+
+  @override
+  String get amtAllnight => '철야';
+
+  @override
+  String get itemOther => '기타';
+
+  @override
+  String get baseDaily => '기본(일당)';
+
+  @override
+  String get baseHourly => '기본(시급)';
+
+  @override
+  String get basePerCase => '기본(건당)';
+
+  @override
+  String get baseGongsu => '기본(공수)';
+
+  @override
+  String get unitGongsu => '공수';
+
+  @override
+  String qtyGongsu(String qty) {
+    return '$qty공수';
+  }
+
+  @override
+  String vatLabel(String rate) {
+    return '부가세 ($rate%)';
+  }
+
+  @override
+  String daysCount(int days) {
+    return '$days일';
+  }
+
+  @override
+  String daysWithGongsu(int days, String gongsu) {
+    return '$days일 · $gongsu공수';
+  }
+
+  @override
+  String get moreTitle => '더보기';
+
+  @override
+  String get sectionManage => '관리';
+
+  @override
+  String get sectionSettings => '설정';
+
+  @override
+  String get menuWallet => '서류 지갑';
+
+  @override
+  String get menuWalletSub => '자격증·보험·검사증 만료 관리 · 묶음 전송';
+
+  @override
+  String get menuBizHome => '사업장 홈';
+
+  @override
+  String get menuBizMode => '사업장 모드';
+
+  @override
+  String get menuBizSub => '작업 지시·수신 확인서·정산·안전 리포트';
+
+  @override
+  String get menuJobs => '받은 작업';
+
+  @override
+  String get menuJobsSub => '작업 지시 수락·시작·완료';
+
+  @override
+  String get menuTax => '세금계산서 준비';
+
+  @override
+  String get menuTaxSub => '서명 완료 확인서 → 홈택스 입력용 데이터 정리';
+
+  @override
+  String get menuNotifications => '알림';
+
+  @override
+  String get menuNotificationsSub => '수금·서류 만료·작업 예약·폭염 안전';
+
+  @override
+  String get consentTitle => '전화번호 검색 허용';
+
+  @override
+  String get consentSub => '사업장이 내 번호로 나를 찾아 연결할 수 있어요';
+
+  @override
+  String get kakaoLinkTitle => '카카오 계정 연결';
+
+  @override
+  String get kakaoLinkedSub => '연결됨';
+
+  @override
+  String get kakaoLinkSub => '카카오로도 로그인할 수 있게 연결해요';
+
+  @override
+  String get kakaoLinked => '카카오 계정을 연결했어요.';
+
+  @override
+  String get kakaoNotReady => '카카오 로그인 준비 중이에요.';
+
+  @override
+  String get kakaoAlreadyLinked => '이미 다른 계정에 연결된 카카오예요.';
+
+  @override
+  String kakaoLinkFailed(String message) {
+    return '연결 실패: $message';
+  }
+
+  @override
+  String get kakaoLinkCanceled => '카카오 연결이 취소되었어요.';
+
+  @override
+  String get logout => '로그아웃';
+
+  @override
+  String get logoutConfirm => '로그아웃 하시겠어요?';
+
+  @override
+  String get noName => '이름 없음';
+
+  @override
+  String get language => '언어';
+
+  @override
+  String get languageSystem => '시스템 따름';
+
+  @override
+  String get paperStamp => '작 업 확 인 서';
+
+  @override
+  String get paperDate => '작업일';
+
+  @override
+  String get paperTime => '시간';
+
+  @override
+  String get paperSite => '현장';
+
+  @override
+  String get paperWorker => '작업자';
+
+  @override
+  String get paperOrderer => '지시자';
+
+  @override
+  String get paperWork => '작업내용';
+
+  @override
+  String get paperEquipment => '장비';
+
+  @override
+  String get paperGuide => '유도원';
+
+  @override
+  String get paperTotal => '받을 금액';
+
+  @override
+  String get paperMemo => '메모';
+
+  @override
+  String get paperSignHead => '지시자 서명';
+
+  @override
+  String paperSignedBy(String name) {
+    return '$name 님 서명 완료';
+  }
+
+  @override
+  String shareCount(int n) {
+    return '공유된 서류 $n건';
+  }
+
+  @override
+  String shareValidUntil(String date) {
+    return '유효기간 $date까지 열람 가능';
+  }
+
+  @override
+  String shareExpiry(String date) {
+    return '만료 $date';
+  }
+
+  @override
+  String get shareNoExpiry => '만료일 없음';
+
+  @override
+  String get shareMasked => '마스킹본';
+
+  @override
+  String get statusTransientTitle => '일시적인 오류입니다';
+
+  @override
+  String get statusTransientMsg => '잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get statusNotFoundTitle => '찾을 수 없는 링크입니다';
+
+  @override
+  String get statusNotFoundMsg =>
+      '링크가 만료되었거나 무효화되었을 수 있습니다. 보낸 분에게 새 링크를 요청하세요.';
+
+  @override
+  String get authStartWithPhone => '전화번호로 시작하기';
+
+  @override
+  String get authTagline => '일한 것을 30초에 기록하고 확인서·장부·정산을 자동으로 관리하세요.';
+
+  @override
+  String get authPhoneLabel => '전화번호';
+
+  @override
+  String get authCodeLabel => '인증번호';
+
+  @override
+  String get authCodeHint => '6자리 인증번호';
+
+  @override
+  String get authDevAutofill => '개발 환경: 인증번호가 자동으로 채워집니다.';
+
+  @override
+  String get authRequestCode => '인증번호 받기';
+
+  @override
+  String get authVerifyStart => '인증하고 시작하기';
+
+  @override
+  String get authReenterPhone => '전화번호 다시 입력';
+
+  @override
+  String get authOr => '또는';
+
+  @override
+  String get authKakaoStart => '카카오로 시작하기';
+
+  @override
+  String get authKakaoPreparing => '카카오 로그인 준비 중이에요. 전화번호로 시작해 주세요.';
+
+  @override
+  String get onbWelcome => '반가워요!';
+
+  @override
+  String get onbNamePrompt => '확인서에 표시될 이름을 알려주세요.';
+
+  @override
+  String get onbNameLabel => '이름';
+
+  @override
+  String get onbNameHint => '예) 김기사';
+
+  @override
+  String get onbStart => '시작하기';
+
+  @override
+  String get navHome => '홈';
+
+  @override
+  String get navCalendar => '캘린더';
+
+  @override
+  String get navLedger => '장부';
+
+  @override
+  String get navMore => '더보기';
+
+  @override
+  String get navWrite => '작성';
+
+  @override
+  String navDraftsSent(int n) {
+    return '임시저장 $n건이 자동 전송되었어요.';
+  }
+
+  @override
+  String navDraftsFailed(int n) {
+    return '임시저장 초안 $n건 전송에 실패했어요. 홈에서 확인해 주세요.';
+  }
+
+  @override
+  String get notiTitle => '알림';
+
+  @override
+  String get notiEmpty => '알림이 없어요';
+
+  @override
+  String get notiAckDone => '확인 처리되었습니다.';
+
+  @override
+  String notiAckFailed(String error) {
+    return '확인 실패: $error';
+  }
+
+  @override
+  String get bizModeTitle => '사업장 모드';
+
+  @override
+  String bizCreateFailed(String error) {
+    return '생성 실패: $error';
+  }
+
+  @override
+  String get bizCreateHeading => '사업장을 만들어 시작하세요';
+
+  @override
+  String get bizCreateDesc => '작업자 연결·작업 지시·수신 확인서 서명·정산·안전 리포트를 한 곳에서.';
+
+  @override
+  String get bizNameHint => '상호 (예: 대성건설)';
+
+  @override
+  String get bizBnoHint => '사업자번호 (선택)';
+
+  @override
+  String get bizCreateButton => '사업장 만들기';
+
+  @override
+  String bizInviteCode(String code) {
+    return '초대코드 $code';
+  }
+
+  @override
+  String get inboxTitle => '수신함';
+
+  @override
+  String get bizMenuInboxDesc => '받은 작업확인서 확인·앱내 서명';
+
+  @override
+  String get settleTitle => '정산';
+
+  @override
+  String get bizMenuSettleDesc => '작업자별 미지급 집계·지급 처리';
+
+  @override
+  String get workerTitle => '작업자·지시';
+
+  @override
+  String get bizMenuWorkerDesc => '작업자 검색·연결·작업 지시 생성';
+
+  @override
+  String get jobTitle => '작업 지시 목록';
+
+  @override
+  String get bizMenuJobDesc => '예약·진행·완료 상태 조회';
+
+  @override
+  String get safetyTitle => '안전';
+
+  @override
+  String get bizMenuSafetyDesc => '안전관리 리포트 PDF·최근 안전 기록';
+
+  @override
+  String bizLoadFailed(String error) {
+    return '불러오지 못했습니다: $error';
+  }
+
+  @override
+  String get inboxEmpty => '받은 확인서가 없어요';
+
+  @override
+  String get inboxStatusSigned => '서명완료';
+
+  @override
+  String get inboxStatusPending => '서명대기';
+
+  @override
+  String get jobStatusScheduled => '예약';
+
+  @override
+  String get jobStatusInProgress => '진행중';
+
+  @override
+  String get jobStatusDone => '완료';
+
+  @override
+  String get jobEmpty => '이번 달 작업 지시가 없어요';
+
+  @override
+  String get jobAccepted => '수락됨';
+
+  @override
+  String get jobAcceptPending => '수락 대기';
+
+  @override
+  String safetyReportOpenFailed(String error) {
+    return '리포트 열기 실패: $error';
+  }
+
+  @override
+  String get safetyReportTitle => '안전관리 이행 리포트';
+
+  @override
+  String get safetyReportDesc => '컨디션 체크·서류 유효성·폭염 알림 기록을 월별 PDF로 확인하세요.';
+
+  @override
+  String safetyOpenReport(String month) {
+    return '$month 리포트 열기';
+  }
+
+  @override
+  String get safetyHeatNotice =>
+      '폭염특보 시 연결된 작업자에게 자동으로 안전 알림이 발송되고 확인 기록이 남습니다.';
+
+  @override
+  String settlePaidSnack(String name, String amount) {
+    return '$name님에게 $amount 지급 처리';
+  }
+
+  @override
+  String settlePayFailed(String error) {
+    return '지급 실패: $error';
+  }
+
+  @override
+  String get settleEmpty => '이번 달 미지급 내역이 없어요';
+
+  @override
+  String settleEntryCount(int count) {
+    return '$count건';
+  }
+
+  @override
+  String get settlePaidDone => '지급 완료';
+
+  @override
+  String settlePayAmount(String amount) {
+    return '$amount 지급';
+  }
+
+  @override
+  String workerSearchFailed(String error) {
+    return '검색 실패: $error';
+  }
+
+  @override
+  String workerConnectRequested(String name) {
+    return '$name님에게 연결을 요청했어요.';
+  }
+
+  @override
+  String workerRequestFailed(String error) {
+    return '요청 실패: $error';
+  }
+
+  @override
+  String get workerSearchHint => '작업자 전화번호로 검색';
+
+  @override
+  String get workerSearchButton => '검색';
+
+  @override
+  String get workerConnectButton => '연결 요청';
+
+  @override
+  String get workerConnectedHeading => '연결된 작업자';
+
+  @override
+  String get workerNoneConnected => '아직 연결된 작업자가 없어요';
+
+  @override
+  String get workerStatusConnected => '연결됨';
+
+  @override
+  String get workerStatusPending => '요청 대기중';
+
+  @override
+  String get workerJobButton => '작업 지시';
+
+  @override
+  String get workerAccept => '수락';
+
+  @override
+  String get workerJobSent => '작업 지시를 보냈어요. 작업자에게 알림이 전송됩니다.';
+
+  @override
+  String jobFormTitle(String name) {
+    return '$name님에게 작업 지시';
+  }
+
+  @override
+  String get jobFormSiteHint => '현장 (예: 반포자이 리모델링)';
+
+  @override
+  String get jobRateDaily => '일당';
+
+  @override
+  String get jobRateHourly => '시급';
+
+  @override
+  String get jobRatePerCase => '건당';
+
+  @override
+  String get jobFormRateHint => '단가 (원)';
+
+  @override
+  String get jobFormSubmit => '작업 지시 보내기';
+
+  @override
+  String jobCreateFailed(String error) {
+    return '지시 실패: $error';
+  }
+
+  @override
+  String get bizConfirmTitle => '작업확인서';
+
+  @override
+  String get bizSignErrSign => '서명을 입력해 주세요.';
+
+  @override
+  String get bizSignErrName => '서명자 이름을 입력해 주세요.';
+
+  @override
+  String get bizSignDone => '서명이 완료되었습니다. (SIGNED)';
+
+  @override
+  String bizSignFailed(String error) {
+    return '서명 실패: $error';
+  }
+
+  @override
+  String get bizStampDefault => '작업확인서 · WORKON';
+
+  @override
+  String get bizStampSigned => '서 명 완 료 · WORKON';
+
+  @override
+  String get bizLineCounterpart => '상대';
+
+  @override
+  String get bizLineRateType => '단가유형';
+
+  @override
+  String bizSignedBadge(String name, String at) {
+    return '$name 서명 · $at';
+  }
+
+  @override
+  String get bizSignInAppTitle => '앱에서 바로 서명';
+
+  @override
+  String get bizSignInAppDesc => '아래에 서명하면 작업자에게 즉시 전달되고 확인서가 확정됩니다.';
+
+  @override
+  String get bizSignerNameLabel => '서명자 이름';
+
+  @override
+  String get bizSignRedraw => '다시 서명';
+
+  @override
+  String get bizSignSubmit => '서명하고 확정';
+
+  @override
+  String get confNoCopySource => '복사할 이전 확인서가 없어요.';
+
+  @override
+  String get confCopyPrevious => '이전 확인서 복사';
+
+  @override
+  String get confFormTitle => '작업확인서 작성';
+
+  @override
+  String get confSiteHint => '예) 래미안 원펜타스 3공구';
+
+  @override
+  String get confWorkHint => '작업한 내용을 적어주세요';
+
+  @override
+  String get confRateType => '단가 유형';
+
+  @override
+  String get confRateDaily => '일당';
+
+  @override
+  String get confRateHourly => '시급';
+
+  @override
+  String get confRatePerCase => '건당';
+
+  @override
+  String get confPricePerCase => '건당 단가';
+
+  @override
+  String get confPriceGongsu => '공수 단가 (1공수=하루)';
+
+  @override
+  String get confQtyHours => '시간';
+
+  @override
+  String get confQtyCases => '건수';
+
+  @override
+  String get confQtyDays => '일수';
+
+  @override
+  String get confErrGongsu => '공수는 0.1 단위로 입력해 주세요 (예: 0.5 · 1.5).';
+
+  @override
+  String get confErrHours => '시간을 1 이상 입력해 주세요.';
+
+  @override
+  String get confErrCases => '건수를 1 이상 입력해 주세요.';
+
+  @override
+  String get confErrDays => '일수를 1 이상 입력해 주세요.';
+
+  @override
+  String get confDueDate => '수금 예정일 (선택)';
+
+  @override
+  String get confNotSet => '미설정';
+
+  @override
+  String get confSaveSend => '저장하고 보내기';
+
+  @override
+  String get confSaveHint => '저장 즉시 장부에 반영됩니다 · 링크로 전송';
+
+  @override
+  String get confStartTime => '시작 시각';
+
+  @override
+  String get confEndTime => '종료 시각';
+
+  @override
+  String get confOrdererCompany => '지시자 (회사)';
+
+  @override
+  String get confLinkedBiz => '연결 사업장';
+
+  @override
+  String get confManualEntry => '직접 입력';
+
+  @override
+  String get confSelectBiz => '연결 사업장 선택';
+
+  @override
+  String get confCompanyHint => '회사/현장 담당 상호';
+
+  @override
+  String get confContactHint => '담당자/연락처 (선택)';
+
+  @override
+  String get confEquipSection => '장비 섹션';
+
+  @override
+  String get confEquipAutoInclude => '확인서에 자동 포함';
+
+  @override
+  String get confEquipName => '장비명';
+
+  @override
+  String get confVehicleNo => '차량번호';
+
+  @override
+  String get confUnitPrice => '단가';
+
+  @override
+  String get confQuantity => '수량';
+
+  @override
+  String get confAddExtra => '연장·야간 항목 추가';
+
+  @override
+  String get confSavedLinked => '저장 완료 · 연결된 사업장에 전송했어요.';
+
+  @override
+  String get confSavedBook => '저장 완료 · 장부에 반영되었어요.';
+
+  @override
+  String get confDraftQueued => '임시저장됨 — 연결되면 자동 전송돼요.';
+
+  @override
+  String confSaveFailed(String message) {
+    return '저장 실패: $message';
+  }
+
+  @override
+  String get confRestoreTitle => '작성 중이던 내용이 있어요.';
+
+  @override
+  String get confRestore => '불러오기';
+
+  @override
+  String get confDetailTitle => '작업확인서';
+
+  @override
+  String get confSentLinked => '연결된 사업장에 전송했어요.';
+
+  @override
+  String confSendFailed(String message) {
+    return '전송 실패: $message';
+  }
+
+  @override
+  String get confReshare => '다시 공유하기';
+
+  @override
+  String get confSendToLinked => '연결된 사업장으로 전송됩니다';
+
+  @override
+  String get confSendViaShare => '공유 시트(카카오톡 등)로 링크를 보낼 수 있어요';
+
+  @override
+  String get confCounterparty => '상대';
+
+  @override
+  String get confSentWaitingSign => '전송됨 · 상대 서명 대기 중';
+
+  @override
+  String get confDraftBeforeSend => '작성됨 · 전송 전';
+
+  @override
+  String confShareHeader(String site) {
+    return '[작업확인서] $site';
+  }
+
+  @override
+  String get confShareBody => '아래 링크에서 내용을 확인하고 서명해 주세요.';
+
+  @override
+  String confShareSubject(String site) {
+    return '작업확인서 · $site';
+  }
+
+  @override
+  String get draftFlushNone => '아직 전송하지 못했어요. 연결을 확인해 주세요.';
+
+  @override
+  String draftFlushSent(int n) {
+    return '$n건 전송 완료 · 장부에 반영되었어요.';
+  }
+
+  @override
+  String get draftFlushFailed => '전송에 실패한 초안이 있어요. 내용을 확인해 주세요.';
+
+  @override
+  String get draftTitle => '임시저장 초안';
+
+  @override
+  String get draftEmpty => '전송 대기 중인 초안이 없어요.';
+
+  @override
+  String get draftHint => '연결이 복구되면 자동으로 전송돼요. 지금 바로 보내려면 아래에서 다시 시도하세요.';
+
+  @override
+  String get draftSendAll => '지금 모두 전송';
+
+  @override
+  String get draftNoSite => '(현장 미입력)';
+
+  @override
+  String draftCheckNeeded(String error) {
+    return '확인 필요: $error';
+  }
+
+  @override
+  String homeGreeting(String name) {
+    return '반갑습니다, $name님';
+  }
+
+  @override
+  String get homeToday => '오늘 일정';
+
+  @override
+  String get homeMonthSummary => '이번 달 요약';
+
+  @override
+  String get homeCheckNeeded => '확인 필요';
+
+  @override
+  String homeDocExpiry(String type, String dday) {
+    return '$type 만료 $dday';
+  }
+
+  @override
+  String get homeDocExpirySub => '서류 지갑에서 갱신하고 다시 등록하세요';
+
+  @override
+  String homeDraftsPending(int n) {
+    return '임시저장 $n건 전송 대기';
+  }
+
+  @override
+  String get homeDraftsError => '일부 초안은 확인이 필요해요 · 탭하여 보기';
+
+  @override
+  String get homeDraftsAuto => '연결되면 자동으로 전송돼요 · 탭하여 보기';
+
+  @override
+  String get homeStampDraft => '작 성 됨 · WORKON';
+
+  @override
+  String get homeStampScheduled => '작업 예정 · WORKON';
+
+  @override
+  String get homeTodayBadge => '오늘';
+
+  @override
+  String get homeStampToday => '오늘 · WORKON';
+
+  @override
+  String get homeEmptyToday => '오늘 예정된 일정이 없어요';
+
+  @override
+  String get homeEmptyTodaySub => '하단 + 버튼으로 오늘 작업을 30초에 기록하세요.';
+
+  @override
+  String get homeDaysWorked => '일한 날';
+
+  @override
+  String get homeReceivable => '받을 돈 (미수)';
+
+  @override
+  String get homeReceived => '받은 돈 (입금)';
+
+  @override
+  String get calViewMonth => '월';
+
+  @override
+  String get calViewWeek => '주';
+
+  @override
+  String calWorkCount(int n) {
+    return '작업 $n건';
+  }
+
+  @override
+  String get calManUnit => '만';
+
+  @override
+  String get calEmptyMonth => '이 달에 기록된 작업이 없어요.';
+
+  @override
+  String get calEmptyDay => '이 날 기록된 작업이 없어요.';
+
+  @override
+  String get calRecordThisDay => '이 날 작업 기록하기';
+
+  @override
+  String get ledgerTitle => '장부';
+
+  @override
+  String get ledgerOutstandingTotal => '이번 달 미수 합계';
+
+  @override
+  String ledgerWorkedThisMonth(String summary) {
+    return '이번 달 $summary 일함';
+  }
+
+  @override
+  String get ledgerByCompany => '회사별';
+
+  @override
+  String ledgerCompanyCount(int n) {
+    return '$n곳';
+  }
+
+  @override
+  String get ledgerStamp => '장부 · WORKON';
+
+  @override
+  String get ledgerEmptyTitle => '이 달의 장부 기록이 없어요';
+
+  @override
+  String get ledgerEmptySub => '확인서를 작성하면 장부가 자동으로 채워져요.';
+
+  @override
+  String get ledgerWriteConfirmation => '확인서 작성하기';
+
+  @override
+  String ledgerDaysWorked(int days) {
+    return '$days일 작업';
+  }
+
+  @override
+  String ledgerPaidAmount(String amount) {
+    return '$amount 입금';
+  }
+
+  @override
+  String ledgerStatementFail(String error) {
+    return '명세서 열기 실패: $error';
+  }
+
+  @override
+  String get ledgerMonthlyStatement => '월간 명세서 PDF';
+
+  @override
+  String get ledgerRemaining => '남은 미수';
+
+  @override
+  String get ledgerWorkHistory => '작업 내역';
+
+  @override
+  String ledgerBilled(String amount) {
+    return '청구 $amount';
+  }
+
+  @override
+  String ledgerDeposited(String amount) {
+    return '입금 $amount';
+  }
+
+  @override
+  String get ledgerPaymentSaved => '입금이 기록되었어요.';
+
+  @override
+  String ledgerPaymentFail(String message) {
+    return '실패: $message';
+  }
+
+  @override
+  String get ledgerRecordPayment => '입금 기록';
+
+  @override
+  String ledgerRemainingAmount(String amount) {
+    return '남은 미수 $amount';
+  }
+
+  @override
+  String get ledgerPaymentAmount => '입금액';
+
+  @override
+  String get ledgerWonSuffix => '원';
+
+  @override
+  String get ledgerFull => '전액';
+
+  @override
+  String get ledgerHalf => '절반';
+
+  @override
+  String get ledgerRecordPaymentBtn => '입금 기록하기';
+
+  @override
+  String get taxTitle => '세금계산서 준비';
+
+  @override
+  String taxSupplierPrefix(String name) {
+    return '공급자 · $name';
+  }
+
+  @override
+  String get taxNoBizName => '(상호 미등록)';
+
+  @override
+  String taxBizNumberLine(String number) {
+    return '사업자번호 $number';
+  }
+
+  @override
+  String get taxHometaxGuide =>
+      '복사한 내용을 홈택스(hometax.go.kr) 세금계산서 발행에 붙여넣으세요. 발행 후 \"발행 완료 표시\"를 누르면 목록에서 빠져요.';
+
+  @override
+  String get taxEmptyTitle => '발행 대상 확인서가 없어요.';
+
+  @override
+  String get taxEmptySubtitle => '서명 완료(SIGNED)·미발행 확인서만 여기 모여요.';
+
+  @override
+  String get taxStamp => '세금계산서 · WORKON';
+
+  @override
+  String get taxSupplierPromptTitle => '먼저 사업자 정보를 입력하세요';
+
+  @override
+  String get taxSupplierPromptDesc => '세금계산서 공급자(나)의 사업자등록번호·상호가 필요해요.';
+
+  @override
+  String get taxEnterBizInfo => '사업자 정보 입력';
+
+  @override
+  String get taxCopiedSnack => '복사됐어요 · 홈택스에 붙여넣으세요.';
+
+  @override
+  String get taxMarkedSnack => '발행 완료로 표시했어요 · 목록에서 제외돼요.';
+
+  @override
+  String get taxAlreadyMarkedSnack => '이미 발행 표시된 항목이에요.';
+
+  @override
+  String taxMarkFailed(String msg) {
+    return '표시 실패: $msg';
+  }
+
+  @override
+  String taxBuyerBizLine(String number, int count) {
+    return '사업자번호 $number · 품목 $count건';
+  }
+
+  @override
+  String get taxNotRegistered => '(미등록)';
+
+  @override
+  String get taxSupplyAmount => '공급가액';
+
+  @override
+  String get taxGrandTotal => '합계금액';
+
+  @override
+  String get taxCopy => '복사';
+
+  @override
+  String get taxMarkIssued => '발행 완료 표시';
+
+  @override
+  String get taxRegisteredBadge => '등록 상대';
+
+  @override
+  String get taxCheckNeeded => '확인 필요';
+
+  @override
+  String get bizinfoTitle => '사업자 정보';
+
+  @override
+  String get bizinfoDesc => '세금계산서 발행에 쓰이는 공급자(나) 정보예요.';
+
+  @override
+  String get bizinfoBizNumberLabel => '사업자등록번호';
+
+  @override
+  String get bizinfoBizNameLabel => '상호';
+
+  @override
+  String get bizinfoBizNameHint => '상호(회사명)';
+
+  @override
+  String get bizinfoAddressLabel => '사업장 주소 (선택)';
+
+  @override
+  String get bizinfoAddressHint => '사업장 주소';
+
+  @override
+  String get bizinfoSavedSnack => '사업자 정보를 저장했어요.';
+
+  @override
+  String bizinfoSaveFailed(String msg) {
+    return '저장 실패: $msg';
+  }
+
+  @override
+  String get walletTitle => '서류 지갑';
+
+  @override
+  String walletSelectedCount(int n) {
+    return '$n개 선택';
+  }
+
+  @override
+  String get walletAddDoc => '서류 추가';
+
+  @override
+  String get walletMaskPromptTitle => '개인정보를 가릴까요?';
+
+  @override
+  String get walletMaskPromptBody => '주민번호·주소 등 민감정보를 마스킹하면 안전하게 공유할 수 있어요.';
+
+  @override
+  String get walletLater => '나중에';
+
+  @override
+  String get walletMaskEdit => '마스킹 편집';
+
+  @override
+  String walletExpiredTitle(String type) {
+    return '$type 만료됨';
+  }
+
+  @override
+  String walletExpiringTitle(String type, String dday) {
+    return '$type 만료 $dday';
+  }
+
+  @override
+  String walletExpiringMultiSub(int n) {
+    return '만료 임박 서류 $n건 — 갱신 후 다시 등록하세요';
+  }
+
+  @override
+  String get walletRenewHint => '갱신 후 다시 등록하세요';
+
+  @override
+  String get walletEmptyTitle => '아직 등록한 서류가 없어요';
+
+  @override
+  String get walletEmptySub => '자격증·보험·검사증을 등록하고 만료를 관리하세요';
+
+  @override
+  String walletShareMessage(int count, int days, String url) {
+    return '[작업온] 서류 $count건을 보냅니다.\n아래 링크에서 확인하세요 (유효 $days일).\n$url';
+  }
+
+  @override
+  String get walletShareSubject => '작업온 서류 공유';
+
+  @override
+  String walletShareFailed(String error) {
+    return '공유 실패: $error';
+  }
+
+  @override
+  String walletSendBundle(int count) {
+    return '$count건 묶어 보내기';
+  }
+
+  @override
+  String get walletBundleSend => '묶음 보내기';
+
+  @override
+  String get walletValidPeriod => '유효기간';
+
+  @override
+  String get walletMaskedInfo => '마스킹본이 있는 서류는 개인정보가 가려진 상태로 전송됩니다.';
+
+  @override
+  String get walletUnmaskedInfo => '마스킹본이 없으면 원본이 그대로 전송됩니다. 상세에서 마스킹할 수 있어요.';
+
+  @override
+  String get walletMakeLinkShare => '링크 만들고 공유';
+
+  @override
+  String docOpenFailed(String error) {
+    return '열기 실패: $error';
+  }
+
+  @override
+  String docUpdateFailed(String error) {
+    return '수정 실패: $error';
+  }
+
+  @override
+  String get docDeleteConfirmTitle => '서류를 삭제할까요?';
+
+  @override
+  String get docDeleteConfirmBody => '이 서류와 공유 링크가 함께 삭제됩니다.';
+
+  @override
+  String docDeleteFailed(String error) {
+    return '삭제 실패: $error';
+  }
+
+  @override
+  String get docOpenPdf => 'PDF 열기';
+
+  @override
+  String get docHasMask => '마스킹본 있음';
+
+  @override
+  String get docExpiryDate => '만료일';
+
+  @override
+  String get docNone => '없음';
+
+  @override
+  String get docIssuedDate => '발급일';
+
+  @override
+  String get docReMask => '마스킹 다시 편집';
+
+  @override
+  String get docMaskEdit => '개인정보 마스킹 편집';
+
+  @override
+  String get docModify => '수정';
+
+  @override
+  String get docExpired => '만료됨';
+
+  @override
+  String docUploadFailed(String error) {
+    return '업로드 실패: $error';
+  }
+
+  @override
+  String get docSourceCamera => '카메라로 촬영';
+
+  @override
+  String get docSourceGallery => '갤러리에서 선택';
+
+  @override
+  String get docSourcePdf => 'PDF 파일 선택';
+
+  @override
+  String get docInfoTitle => '서류 정보';
+
+  @override
+  String docFilePdf(String name) {
+    return 'PDF · $name';
+  }
+
+  @override
+  String docFileImage(int kb) {
+    return '이미지 · ${kb}KB';
+  }
+
+  @override
+  String get docTypeLabel => '유형';
+
+  @override
+  String get docLinkEquip => '장비 연결 (선택)';
+
+  @override
+  String get docPersonal => '개인';
+
+  @override
+  String get docPickExpiry => '만료일 선택 (선택)';
+
+  @override
+  String get docUpload => '업로드';
+
+  @override
+  String get equipTitle => '장비 관리';
+
+  @override
+  String get equipAdd => '장비 추가';
+
+  @override
+  String get equipEmptyTitle => '등록된 장비가 없어요';
+
+  @override
+  String get equipEmptySub => '굴삭기·지게차 등 장비를 등록하고 서류를 묶으세요';
+
+  @override
+  String equipDocCount(int n) {
+    return '서류 $n건';
+  }
+
+  @override
+  String get equipDocs => '서류';
+
+  @override
+  String get equipTypeHint => '장비 종류 (예: 굴삭기)';
+
+  @override
+  String get equipVehicleHint => '차량번호 (선택)';
+
+  @override
+  String get equipSpecHint => '규격 (예: 06W) (선택)';
+
+  @override
+  String get equipSubmit => '추가';
+
+  @override
+  String get maskDoneToast => '마스킹본을 만들었어요. 공유 시 개인정보가 가려집니다.';
+
+  @override
+  String maskFailed(String error) {
+    return '마스킹 실패: $error';
+  }
+
+  @override
+  String get maskTitle => '개인정보 마스킹';
+
+  @override
+  String get maskReset => '초기화';
+
+  @override
+  String get maskGuide => '가릴 영역을 손가락으로 드래그해 사각형으로 지정하세요. (예: 주민번호·주소)';
+
+  @override
+  String maskRegionCount(int n) {
+    return '지정한 영역 $n개';
+  }
+
+  @override
+  String get maskSave => '마스킹본 저장';
+
+  @override
+  String get wshareTitle => '내 공유';
+
+  @override
+  String wshareLoadFailed(String error) {
+    return '불러오지 못했습니다: $error';
+  }
+
+  @override
+  String get wshareEmpty => '아직 공유한 서류 묶음이 없어요';
+
+  @override
+  String get wshareActive => '활성';
+
+  @override
+  String get wshareInactive => '만료/무효';
+
+  @override
+  String wshareViewCount(int n) {
+    return '열람 $n회';
+  }
+
+  @override
+  String get wshareReshare => '다시 공유';
+
+  @override
+  String get wshareRevoke => '무효화';
+
+  @override
+  String myjobFailed(String error) {
+    return '실패: $error';
+  }
+
+  @override
+  String get myjobConditionTitle => '컨디션 체크';
+
+  @override
+  String get myjobConditionBody => '오늘 몸 상태는 어떤가요? 안전한 작업을 위해 확인합니다.';
+
+  @override
+  String get myjobConditionBad => '안 좋아요';
+
+  @override
+  String get myjobConditionGood => '좋아요';
+
+  @override
+  String get myjobConditionReported => '사업장에 컨디션 이상이 전달되었습니다. 무리하지 마세요.';
+
+  @override
+  String myjobLoadFailed(String error) {
+    return '불러오지 못했습니다: $error';
+  }
+
+  @override
+  String get myjobEmpty => '받은 작업 지시가 없어요';
+
+  @override
+  String get myjobAccept => '수락';
+
+  @override
+  String get myjobStart => '작업 시작';
+
+  @override
+  String get myjobComplete => '작업 완료';
+
+  @override
+  String get signPadHint => '여기에 손가락으로 서명하세요';
+}

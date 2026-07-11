@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../core/format.dart';
+import '../../l10n/l10n_ext.dart';
 import '../../core/location.dart';
 import '../../models/models.dart';
 import '../../providers/biz.dart';
@@ -27,7 +28,7 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('실패: $e')));
+            .showSnackBar(SnackBar(content: Text(context.l.myjobFailed('$e'))));
       }
     } finally {
       if (mounted) setState(() => _busy.remove(id));
@@ -41,15 +42,15 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> {
     final condition = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('컨디션 체크'),
-        content: const Text('오늘 몸 상태는 어떤가요? 안전한 작업을 위해 확인합니다.'),
+        title: Text(ctx.l.myjobConditionTitle),
+        content: Text(ctx.l.myjobConditionBody),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, 'BAD'),
-              child: const Text('안 좋아요')),
+              child: Text(ctx.l.myjobConditionBad)),
           FilledButton(
               onPressed: () => Navigator.pop(ctx, 'OK'),
-              child: const Text('좋아요')),
+              child: Text(ctx.l.myjobConditionGood)),
         ],
       ),
     );
@@ -61,7 +62,7 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> {
     });
     if (mounted && condition == 'BAD') {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('사업장에 컨디션 이상이 전달되었습니다. 무리하지 마세요.')));
+          SnackBar(content: Text(context.l.myjobConditionReported)));
     }
   }
 
@@ -79,17 +80,17 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> {
     final jobs = ref.watch(jobsProvider(month));
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('받은 작업')),
+      appBar: AppBar(title: Text(context.l.menuJobs)),
       body: SafeArea(
         child: jobs.when(
           loading: () =>
               Center(child: CircularProgressIndicator(color: c.primary)),
-          error: (e, _) => Center(child: Text('불러오지 못했습니다: $e')),
+          error: (e, _) => Center(child: Text(context.l.myjobLoadFailed('$e'))),
           data: (list) {
             final mine = list.where((j) => j.role == 'WORKER').toList();
             if (mine.isEmpty) {
               return Center(
-                  child: Text('받은 작업 지시가 없어요',
+                  child: Text(context.l.myjobEmpty,
                       style: TextStyle(color: c.ink2, fontSize: 15)));
             }
             return ListView.separated(
@@ -109,11 +110,11 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> {
     final busy = _busy.contains(j.id);
     Widget? action;
     if (j.status == 'SCHEDULED' && j.acceptedAt == null) {
-      action = _btn('수락', () => _accept(j), busy, c);
+      action = _btn(context.l.myjobAccept, () => _accept(j), busy, c);
     } else if (j.status == 'SCHEDULED' && j.acceptedAt != null) {
-      action = _btn('작업 시작', () => _start(j), busy, c);
+      action = _btn(context.l.myjobStart, () => _start(j), busy, c);
     } else if (j.status == 'IN_PROGRESS') {
-      action = _btn('작업 완료', () => _complete(j), busy, c);
+      action = _btn(context.l.myjobComplete, () => _complete(j), busy, c);
     }
     return Container(
       decoration: BoxDecoration(
@@ -137,7 +138,7 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
                 decoration: BoxDecoration(
                     color: c.surface2, borderRadius: BorderRadius.circular(999)),
-                child: Text(jobStatusLabel(j.status),
+                child: Text(jobStatusLabel(j.status, context.l),
                     style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
@@ -147,7 +148,7 @@ class _MyJobsScreenState extends ConsumerState<MyJobsScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-              '${formatShortDate(j.scheduledAt)} ${ampm('${j.scheduledAt.hour.toString().padLeft(2, '0')}:${j.scheduledAt.minute.toString().padLeft(2, '0')}')} · ${formatWonUnit(j.rate)}',
+              '${fmtShortDate(j.scheduledAt, context.lang)} ${fmtAmpm('${j.scheduledAt.hour.toString().padLeft(2, '0')}:${j.scheduledAt.minute.toString().padLeft(2, '0')}', context.lang)} · ${formatMoney(j.rate, context.lang)}',
               style: TextStyle(fontSize: 13, color: c.ink2)),
           if (action != null) ...[
             const SizedBox(height: 12),

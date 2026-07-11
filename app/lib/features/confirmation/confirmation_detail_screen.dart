@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../core/format.dart';
+import '../../l10n/l10n_ext.dart';
 import '../../models/models.dart';
 import '../../providers/auth.dart';
 import '../../providers/data.dart';
@@ -25,7 +26,7 @@ class ConfirmationDetailScreen extends ConsumerWidget {
     final detail = ref.watch(_confDetailProvider(confirmationId));
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(title: const Text('작업확인서')),
+      appBar: AppBar(title: Text(context.l.confDetailTitle)),
       body: detail.when(
         loading: () => Center(child: CircularProgressIndicator(color: c.primary)),
         error: (e, _) => Center(child: Text('$e', style: TextStyle(color: c.ink2))),
@@ -47,6 +48,7 @@ class _BodyState extends ConsumerState<_Body> {
 
   Future<void> _send() async {
     setState(() => _sending = true);
+    final l = context.l;
     try {
       final repo = ref.read(repoProvider);
       final res = await repo.send(widget.conf.id);
@@ -55,7 +57,7 @@ class _BodyState extends ConsumerState<_Body> {
       if (!mounted) return;
       if (linked) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('연결된 사업장에 전송했어요.')));
+            SnackBar(content: Text(l.confSentLinked)));
       } else {
         await shareConfirmationLink(context, widget.conf, url);
       }
@@ -64,7 +66,7 @@ class _BodyState extends ConsumerState<_Body> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('전송 실패: $e')));
+            .showSnackBar(SnackBar(content: Text(l.confSendFailed('$e'))));
       }
     } finally {
       if (mounted) setState(() => _sending = false);
@@ -74,6 +76,8 @@ class _BodyState extends ConsumerState<_Body> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
+    final lang = context.lang;
     final conf = widget.conf;
     return Column(
       children: [
@@ -82,21 +86,22 @@ class _BodyState extends ConsumerState<_Body> {
             padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
             children: [
               PaperCard(
-                stamp: '작 업 확 인 서',
+                stamp: l.paperStamp,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _row(context, '작업일', formatShortDate(conf.dateTime)),
-                    _row(context, '시간', '${conf.startTime} ~ ${conf.endTime}'),
-                    _row(context, '현장', conf.siteName),
-                    _row(context, '지시자',
+                    _row(context, l.paperDate, fmtShortDate(conf.dateTime, lang)),
+                    _row(context, l.paperTime,
+                        '${fmtAmpm(conf.startTime, lang)} ~ ${fmtAmpm(conf.endTime, lang)}'),
+                    _row(context, l.paperSite, conf.siteName),
+                    _row(context, l.paperOrderer,
                         conf.contact != null && conf.contact!.isNotEmpty
                             ? '${conf.companyName} · ${conf.contact}'
                             : conf.companyName),
-                    _row(context, '작업 내용', conf.workDescription),
+                    _row(context, l.paperWork, conf.workDescription),
                     if (conf.equipmentSection != null &&
                         (conf.equipmentSection!['name'] ?? '').toString().isNotEmpty)
-                      _row(context, '장비',
+                      _row(context, l.paperEquipment,
                           '${conf.equipmentSection!['name']}${conf.equipmentSection!['vehicleNumber'] != null ? ' · ${conf.equipmentSection!['vehicleNumber']}' : ''}'),
                     const SizedBox(height: 8),
                     Divider(color: c.border),
@@ -106,14 +111,14 @@ class _BodyState extends ConsumerState<_Body> {
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Row(
                           children: [
-                            Text('단가',
+                            Text(l.confUnitPrice,
                                 style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
                                     color: c.ink2)),
                             const Spacer(),
                             Text(
-                                '${formatWon(conf.baseRate)} × ${formatGongsu(conf.baseQuantity)}${conf.baseUnit}',
+                                '${formatMoney(conf.baseRate, lang)} × ${l.qtyGongsu(formatGongsu(conf.baseQuantity))}',
                                 style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -126,16 +131,13 @@ class _BodyState extends ConsumerState<_Body> {
                       ),
                     Row(
                       children: [
-                        Text('받을 금액',
+                        Text(l.paperTotal,
                             style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
                                 color: c.ink)),
                         const Spacer(),
-                        Text.rich(TextSpan(children: [
-                          TextSpan(text: formatWon(conf.total)),
-                          const TextSpan(text: ' 원', style: TextStyle(fontSize: 17)),
-                        ]),
+                        Text(formatMoney(conf.total, lang),
                             style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w800,
@@ -162,7 +164,7 @@ class _BodyState extends ConsumerState<_Body> {
             child: Column(
               children: [
                 PrimaryButton(
-                  label: conf.status == 'DRAFT' ? '저장하고 보내기' : '다시 공유하기',
+                  label: conf.status == 'DRAFT' ? l.confSaveSend : l.confReshare,
                   icon: Icons.send_rounded,
                   loading: _sending,
                   onPressed: _send,
@@ -170,8 +172,8 @@ class _BodyState extends ConsumerState<_Body> {
                 const SizedBox(height: 8),
                 Text(
                     conf.businessId != null
-                        ? '연결된 사업장으로 전송됩니다'
-                        : '공유 시트(카카오톡 등)로 링크를 보낼 수 있어요',
+                        ? l.confSendToLinked
+                        : l.confSendViaShare,
                     style: TextStyle(fontSize: 13, color: c.ink3)),
               ],
             ),
@@ -211,6 +213,7 @@ class _SignStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     final signed = conf.status == 'SIGNED';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -227,10 +230,10 @@ class _SignStatus extends StatelessWidget {
           Expanded(
             child: Text(
                 signed
-                    ? '${conf.signerName ?? '상대'} 서명 완료'
+                    ? l.paperSignedBy(conf.signerName ?? l.confCounterparty)
                     : conf.status == 'SENT'
-                        ? '전송됨 · 상대 서명 대기 중'
-                        : '작성됨 · 전송 전',
+                        ? l.confSentWaitingSign
+                        : l.confDraftBeforeSend,
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,

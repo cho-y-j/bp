@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../core/format.dart';
+import '../l10n/app_localizations.dart';
+import '../l10n/l10n_ext.dart';
 
 /// 종이 확인서 시그니처 카드 — 상단 절취선(perforation)·스탬프 + 본문.
 class PaperCard extends StatelessWidget {
@@ -130,20 +132,23 @@ class SectionTitle extends StatelessWidget {
 /// [boxed] 가 true 면 카드(테두리) 안에, false 면 중앙 정렬 텍스트 스택으로 그린다.
 class ErrorRetry extends StatelessWidget {
   final VoidCallback onRetry;
-  final String title;
-  final String subtitle;
+  final String? title;
+  final String? subtitle;
   final bool boxed;
   const ErrorRetry({
     super.key,
     required this.onRetry,
-    this.title = '연결에 문제가 있어요',
-    this.subtitle = '인터넷 연결을 확인하고 다시 시도해 주세요.',
+    this.title,
+    this.subtitle,
     this.boxed = true,
   });
 
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
+    final title = this.title ?? l.errorConnTitle;
+    final subtitle = this.subtitle ?? l.errorConnSubtitle;
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment:
@@ -171,7 +176,7 @@ class ErrorRetry extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: onRetry,
           icon: Icon(Icons.refresh_rounded, size: 18, color: c.ink),
-          label: Text('다시 시도',
+          label: Text(l.retry,
               style: TextStyle(
                   color: c.ink, fontSize: 15, fontWeight: FontWeight.w700)),
           style: OutlinedButton.styleFrom(
@@ -266,7 +271,7 @@ class MoneyLine extends StatelessWidget {
         Icon(received ? Icons.check_circle_outline_rounded : Icons.south_west_rounded,
             size: size - 2, color: color),
         const SizedBox(width: 4),
-        Text(formatWon(amount),
+        Text(formatGrouped(amount, context.lang),
             style: TextStyle(
                 fontSize: size,
                 fontWeight: FontWeight.w800,
@@ -411,9 +416,9 @@ class CompanyAvatar extends StatelessWidget {
   }
 }
 
-String ddayText(int? dday, String status) {
-  if (status == 'PAID') return '입금완료';
-  if (status == 'OVERDUE') return '기한 지남';
+String ddayText(AppLocalizations l, int? dday, String status) {
+  if (status == 'PAID') return l.statusDeposited;
+  if (status == 'OVERDUE') return l.statusOverdue;
   if (dday == null) return '';
-  return '수금 ${ddayLabel(dday)}';
+  return l.collectDday(ddayLabel(dday));
 }

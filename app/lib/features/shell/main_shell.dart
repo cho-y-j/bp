@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../core/push.dart';
 import '../../providers/drafts.dart';
+import '../../l10n/l10n_ext.dart';
 import '../home/home_screen.dart';
 import '../calendar/calendar_screen.dart';
 import '../ledger/ledger_screen.dart';
@@ -45,16 +46,17 @@ class _MainShellState extends ConsumerState<MainShell> {
   @override
   Widget build(BuildContext context) {
     final index = ref.watch(shellTabProvider);
+    final l = context.l;
     // 초안 자동 전송 결과 → 전역 스낵바 알림.
     ref.listen(draftFlushEventProvider, (prev, ev) {
       if (ev == null || !mounted) return;
       final messenger = ScaffoldMessenger.of(context);
       if (ev.sent > 0) {
         messenger.showSnackBar(SnackBar(
-            content: Text('임시저장 ${ev.sent}건이 자동 전송되었어요.')));
+            content: Text(l.navDraftsSent(ev.sent))));
       } else if (ev.failed > 0) {
-        messenger.showSnackBar(const SnackBar(
-            content: Text('임시저장 초안 전송에 실패했어요. 홈에서 확인해 주세요.')));
+        messenger.showSnackBar(SnackBar(
+            content: Text(l.navDraftsFailed(ev.failed))));
       }
     });
     return Scaffold(
@@ -78,6 +80,7 @@ class _WonTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l = context.l;
     return Container(
       decoration: BoxDecoration(
         color: c.surface,
@@ -89,13 +92,15 @@ class _WonTabBar extends StatelessWidget {
           height: 62,
           child: Row(
             children: [
-              _tab(context, 0, Icons.home_outlined, Icons.home_rounded, '홈'),
+              _tab(context, 0, Icons.home_outlined, Icons.home_rounded,
+                  l.navHome),
               _tab(context, 1, Icons.calendar_today_outlined,
-                  Icons.calendar_today_rounded, '캘린더'),
+                  Icons.calendar_today_rounded, l.navCalendar),
               _plus(context),
               _tab(context, 2, Icons.receipt_long_outlined,
-                  Icons.receipt_long_rounded, '장부'),
-              _tab(context, 3, Icons.menu_rounded, Icons.menu_rounded, '더보기'),
+                  Icons.receipt_long_rounded, l.navLedger),
+              _tab(context, 3, Icons.menu_rounded, Icons.menu_rounded,
+                  l.navMore),
             ],
           ),
         ),
@@ -153,7 +158,7 @@ class _WonTabBar extends StatelessWidget {
               child: Icon(Icons.add_rounded, color: c.primaryInk, size: 26),
             ),
             const SizedBox(height: 2),
-            Text('작성',
+            Text(context.l.navWrite,
                 style: TextStyle(
                     height: 1.0,
                     fontSize: 12,
