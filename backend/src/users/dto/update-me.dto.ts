@@ -23,4 +23,20 @@ export class UpdateMeDto {
   @IsOptional()
   @IsBoolean()
   phoneSearchConsent?: boolean;
+
+  // 세금계산서 공급자(내 사업자) 정보 — 홈택스 작성용
+  @IsOptional()
+  @IsString()
+  @Length(0, 20, { message: '사업자번호는 20자 이내입니다.' })
+  bizNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(0, 60, { message: '상호는 60자 이내입니다.' })
+  bizName?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(0, 200, { message: '주소는 200자 이내입니다.' })
+  bizAddress?: string;
 }

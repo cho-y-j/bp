@@ -15,6 +15,7 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { LedgerService } from './ledger.service';
 import { AddPaymentDto } from './dto/add-payment.dto';
 import { UpdateLedgerDto } from './dto/update-ledger.dto';
+import { MarkTaxInvoiceDto } from './dto/mark-tax-invoice.dto';
 
 @Controller('ledger')
 export class LedgerController {
@@ -46,6 +47,25 @@ export class LedgerController {
     @Query('businessId') businessId?: string,
   ) {
     return this.ledger.entries(userId, month, businessId);
+  }
+
+  // GET /ledger/tax-invoice-data?month=&businessId= — 홈택스 세금계산서 입력용 데이터(JSON+텍스트)
+  @Get('tax-invoice-data')
+  taxInvoiceData(
+    @CurrentUser('userId') userId: string,
+    @Query('month') month: string,
+    @Query('businessId') businessId?: string,
+  ) {
+    return this.ledger.taxInvoiceData(userId, month, businessId);
+  }
+
+  // POST /ledger/tax-invoice-data/mark — 발행 완료 표시(이후 집계 제외)
+  @Post('tax-invoice-data/mark')
+  markTaxInvoiced(
+    @CurrentUser('userId') userId: string,
+    @Body() dto: MarkTaxInvoiceDto,
+  ) {
+    return this.ledger.markTaxInvoiced(userId, dto.ledgerIds);
   }
 
   // GET /ledger/statement?month= — 월간 명세서 PDF

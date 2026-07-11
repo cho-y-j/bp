@@ -209,4 +209,134 @@ describe('AuthService', () => {
       }
     });
   });
+
+  describe('linkKakao (전화 계정에 카카오 연결)', () => {
+    const realFetch = global.fetch;
+    afterEach(() => {
+      global.fetch = realFetch;
+      jest.restoreAllMocks();
+    });
+
+    const meBase = {
+      id: 'u1',
+      name: '김기사',
+      phone: '01011112222',
+      kakaoId: null as string | null,
+      phoneSearchConsent: false,
+      industryTags: [] as string[],
+      bizNumber: null,
+      bizName: null,
+      bizAddress: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      _count: { ownedBusinesses: 0 },
+    };
+
+    function makeLinkService(opts: {
+      me: unknown;
+      other: unknown;
+      enabled: boolean;
+    }) {
+      const prisma = {
+        profile: {
+          findUnique: jest
+            .fn()
+            .mockResolvedValueOnce(opts.me) // me by id
+            .mockResolvedValueOnce(opts.other), // other by kakaoId
+          update: jest
+            .fn()
+            .mockImplementation(({ data }: { data: { kakaoId: string } }) =>
+              Promise.resolve({ ...(opts.me as object), ...data }),
+            ),
+        },
+      };
+      const jwt = { sign: jest.fn().mockReturnValue('t') };
+      const config = {
+        get: jest.fn((k: string) =>
+          k === 'KAKAO_ENABLED'
+            ? opts.enabled
+              ? 'true'
+              : 'false'
+            : k === 'NODE_ENV'
+              ? 'development'
+              : undefined,
+        ),
+      };
+      const sms: SmsService = {
+        sendVerificationCode: jest.fn().mockResolvedValue(undefined),
+      };
+      const service = new AuthService(
+        prisma as never,
+        jwt as unknown as JwtService,
+        config as unknown as ConfigService,
+        sms,
+      );
+      return { service, prisma };
+    }
+
+    function mockKakaoFetch(id: number) {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ id }),
+      }) as unknown as typeof fetch;
+    }
+
+    it('KAKAO_ENABLED=false → 501', async () => {
+      const { service } = makeLinkService({
+        me: null,
+        other: null,
+        enabled: false,
+      });
+      await expect(
+        service.linkKakao('u1', 'access-token-123'),
+      ).rejects.toMatchObject({ getStatus: expect.any(Function) });
+    });
+
+    it('전화 계정에 kakaoId 연결 성공(mock kakao)', async () => {
+      mockKakaoFetch(987654321);
+      const { service, prisma } = makeLinkService({
+        me: { ...meBase, kakaoId: null },
+        other: null,
+        enabled: true,
+      });
+      const res = await service.linkKakao('u1', 'access-token-123');
+      expect(prisma.profile.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'u1' },
+          data: { kakaoId: '987654321' },
+        }),
+      );
+      expect(res.kakaoId).toBe('987654321');
+    });
+
+    it('같은 kakaoId 재연결 → 멱등(업데이트 없음)', async () => {
+      mockKakaoFetch(987654321);
+      const { service, prisma } = makeLinkService({
+        me: { ...meBase, kakaoId: '987654321' },
+        other: null,
+        enabled: true,
+      });
+      const res = await service.linkKakao('u1', 'access-token-123');
+      expect(prisma.profile.update).not.toHaveBeenCalled();
+      expect(res.kakaoId).toBe('987654321');
+    });
+
+    it('다른 프로필에 이미 연결된 kakaoId → 409 KAKAO_ALREADY_LINKED', async () => {
+      mockKakaoFetch(987654321);
+      const { service } = makeLinkService({
+        me: { ...meBase, kakaoId: null },
+        other: { id: 'u2', kakaoId: '987654321' },
+        enabled: true,
+      });
+      try {
+        await service.linkKakao('u1', 'access-token-123');
+        fail('should throw');
+      } catch (e) {
+        expect((e as AppException).getStatus()).toBe(409);
+        expect((e as AppException).getResponse()).toMatchObject({
+          code: 'KAKAO_ALREADY_LINKED',
+        });
+      }
+    });
+  });
 });

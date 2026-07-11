@@ -63,6 +63,15 @@ export class LedgerDueScheduler {
         title: this.title(dday),
         body: `${name} 수금 예정 (미수 ${outstanding.toLocaleString('ko-KR')}원)`,
         data: { ledgerId: e.id, dday, outstanding },
+        // 푸시 미도달 시 알림톡 fallback(미가입/미설치 대상 우선)
+        alimtalk: {
+          templateKey: 'PAYMENT_DUE',
+          variables: {
+            companyName: name,
+            amount: outstanding.toLocaleString('ko-KR'),
+            dday: dday === 0 ? '오늘' : '내일',
+          },
+        },
       });
       created += 1;
     }

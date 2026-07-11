@@ -33,11 +33,17 @@ export class UsersService {
       name?: string;
       industryTags?: string[];
       phoneSearchConsent?: boolean;
+      bizNumber?: string;
+      bizName?: string;
+      bizAddress?: string;
     } = {};
     if (dto.name !== undefined) data.name = dto.name;
     if (dto.industryTags !== undefined) data.industryTags = dto.industryTags;
     if (dto.phoneSearchConsent !== undefined)
       data.phoneSearchConsent = dto.phoneSearchConsent;
+    if (dto.bizNumber !== undefined) data.bizNumber = dto.bizNumber;
+    if (dto.bizName !== undefined) data.bizName = dto.bizName;
+    if (dto.bizAddress !== undefined) data.bizAddress = dto.bizAddress;
 
     const profile = await this.prisma.profile.update({
       where: { id: userId },

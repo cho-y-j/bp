@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { Public } from '../common/decorators/public.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { AuthService } from './auth.service';
 import { PhoneRequestDto } from './dto/phone-request.dto';
 import { PhoneVerifyDto } from './dto/phone-verify.dto';
@@ -32,5 +33,15 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async kakao(@Body() dto: KakaoLoginDto) {
     return this.auth.kakaoLogin(dto.accessToken);
+  }
+
+  // POST /auth/kakao/link — 로그인 상태에서 카카오 계정 연결(인증 필요)
+  @Post('kakao/link')
+  @HttpCode(HttpStatus.OK)
+  async kakaoLink(
+    @CurrentUser('userId') userId: string,
+    @Body() dto: KakaoLoginDto,
+  ) {
+    return this.auth.linkKakao(userId, dto.accessToken);
   }
 }

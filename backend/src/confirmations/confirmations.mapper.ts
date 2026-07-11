@@ -7,6 +7,7 @@ const RATE_TYPE_LABEL: Record<string, string> = {
   PER_CASE: '건당',
   MONTHLY: '월급',
   UNIT: '물량단가',
+  GONGSU: '공수',
 };
 
 const STATUS_LABEL: Record<string, string> = {

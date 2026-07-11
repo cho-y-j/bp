@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import {
   Business,
   Confirmation,
+  ConfirmationStatus,
   LedgerEntry,
   LedgerStatus,
   Prisma,
@@ -29,6 +30,12 @@ import {
 import { toLedgerDto, STATUS_LABEL } from './ledger.mapper';
 import { AddPaymentDto } from './dto/add-payment.dto';
 import { UpdateLedgerDto } from './dto/update-ledger.dto';
+import {
+  buildTaxInvoiceGroups,
+  formatTaxInvoiceText,
+  type TaxInvoiceSourceRow,
+  type TaxInvoiceSupplier,
+} from './tax-invoice.util';
 
 type EntryWithRefs = LedgerEntry & {
   confirmation: Confirmation | null;
@@ -55,6 +62,7 @@ export class LedgerService {
     let totalBilled = 0;
     let totalOutstanding = 0;
     let totalPaid = 0;
+    let totalGongsu = 0; // 공수 확인서의 공수 합계(별도 집계)
     for (const e of entries) {
       const amount = Number(e.amount);
       const { paid, outstanding } = computeOutstanding(
@@ -67,6 +75,7 @@ export class LedgerService {
       totalOutstanding += outstanding;
       totalPaid += paid;
       workDates.add(toKstDateStr(this.effectiveDate(e)));
+      totalGongsu += this.gongsuOf(e.confirmation);
     }
     return {
       month,
@@ -74,6 +83,7 @@ export class LedgerService {
       totalBilled,
       totalOutstanding,
       totalPaid,
+      totalGongsu: Math.round(totalGongsu * 10) / 10, // 부동소수 오차 정리(0.1 단위)
       entryCount: entries.length,
     };
   }
@@ -299,11 +309,110 @@ export class LedgerService {
   }
 
   // --------------------------------------------------------------------------
+  // 세금계산서 1단계 — 홈택스 입력용 데이터 정리 (상대별)
+  //  - SIGNED 확인서 + 미발행(taxInvoicedAt=null) 항목만 집계.
+  //  - 공급가액=확인서 amountCalc.subtotal, 세액=10%. JSON + 복사용 텍스트 반환.
+  // --------------------------------------------------------------------------
+  async taxInvoiceData(userId: string, month: string, businessId?: string) {
+    this.assertMonth(month);
+    const rows = await this.entriesForMonth(userId, month);
+    const supplierProfile = await this.prisma.profile.findUnique({
+      where: { id: userId },
+      select: { name: true, bizNumber: true, bizName: true, bizAddress: true },
+    });
+    const supplier: TaxInvoiceSupplier = {
+      name: supplierProfile?.name ?? null,
+      bizNumber: supplierProfile?.bizNumber ?? null,
+      bizName: supplierProfile?.bizName ?? null,
+      bizAddress: supplierProfile?.bizAddress ?? null,
+    };
+
+    const sourceRows: TaxInvoiceSourceRow[] = rows
+      .filter((e) => {
+        const c = e.confirmation;
+        if (!c || c.status !== ConfirmationStatus.SIGNED) return false;
+        if (e.taxInvoicedAt) return false; // 이미 발행 표시된 항목 제외
+        if (businessId && e.businessId !== businessId) return false;
+        return true;
+      })
+      .map((e) => {
+        const c = e.confirmation as Confirmation;
+        const calc = c.amountCalc as unknown as { subtotal?: number } | null;
+        return {
+          ledgerId: e.id,
+          businessId: e.businessId,
+          buyerName: e.business?.name ?? e.counterpartyName ?? '(미지정)',
+          buyerBizNumber: e.business?.businessNumber ?? null,
+          date: toKstDateStr(c.date),
+          content: c.workContent,
+          supplyAmount: typeof calc?.subtotal === 'number' ? calc.subtotal : 0,
+        };
+      });
+
+    const writeDate = toKstDateStr(new Date());
+    const groups = buildTaxInvoiceGroups(sourceRows, writeDate);
+    const supplierReady = !!supplier.bizNumber;
+    return {
+      month,
+      businessId: businessId ?? null,
+      writeDate,
+      supplier,
+      supplierReady, // false 면 PATCH /me 로 bizNumber 등록 안내
+      groupCount: groups.length,
+      groups,
+      text: formatTaxInvoiceText(supplier, groups),
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // 세금계산서 발행(홈택스 입력) 완료 표시 — 이후 집계에서 제외
+  // --------------------------------------------------------------------------
+  async markTaxInvoiced(userId: string, ledgerIds: string[]) {
+    const uniqueIds = [...new Set(ledgerIds)];
+    // 소유 검증: 내 장부 항목만 표시 가능.
+    const owned = await this.prisma.ledgerEntry.findMany({
+      where: { id: { in: uniqueIds }, profileId: userId },
+      select: { id: true, taxInvoicedAt: true },
+    });
+    if (owned.length !== uniqueIds.length) {
+      throw new AppException(
+        'LEDGER_NOT_FOUND',
+        '일부 장부 항목을 찾을 수 없습니다.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const now = new Date();
+    // 아직 표시 안 된 항목만 표시(재표시 방지, 최초 시각 보존).
+    const toMark = owned.filter((e) => !e.taxInvoicedAt).map((e) => e.id);
+    if (toMark.length > 0) {
+      await this.prisma.ledgerEntry.updateMany({
+        where: { id: { in: toMark }, profileId: userId, taxInvoicedAt: null },
+        data: { taxInvoicedAt: now },
+      });
+    }
+    return {
+      marked: toMark.length,
+      alreadyMarked: uniqueIds.length - toMark.length,
+      taxInvoicedAt: now,
+    };
+  }
+
+  // --------------------------------------------------------------------------
   // 내부 헬퍼
   // --------------------------------------------------------------------------
   /** 장부 항목의 기준 날짜: 연결 확인서의 작업일 우선, 없으면 생성일. */
   private effectiveDate(e: EntryWithRefs): Date {
     return e.confirmation?.date ?? e.createdAt;
+  }
+
+  /** 연결 확인서가 공수(GONGSU) 유형이면 기본항목 공수 수량, 아니면 0. */
+  private gongsuOf(confirmation: Confirmation | null): number {
+    if (!confirmation || confirmation.rateType !== 'GONGSU') return 0;
+    const calc = confirmation.amountCalc as unknown as {
+      items?: Array<{ type: string; quantity?: number }>;
+    } | null;
+    const base = calc?.items?.find((i) => i.type === 'BASE');
+    return typeof base?.quantity === 'number' ? base.quantity : 0;
   }
 
   private groupStatus(

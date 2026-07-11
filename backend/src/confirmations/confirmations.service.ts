@@ -17,7 +17,12 @@ import { PdfService } from '../documents/pdf.service';
 import type { ConfirmationPdfData } from '../documents/pdf.types';
 import { NotificationsService } from '../notifications/notifications.service';
 import { maskName } from '../common/phone.util';
-import { calcAmount, type AmountCalcResult } from './amount.util';
+import {
+  calcAmount,
+  validateGongsuQuantity,
+  type AmountCalcResult,
+  type BaseRateType,
+} from './amount.util';
 import { CreateConfirmationDto } from './dto/create-confirmation.dto';
 import { UpdateConfirmationDto } from './dto/update-confirmation.dto';
 import { SignConfirmationDto } from './dto/sign-confirmation.dto';
@@ -57,10 +62,11 @@ export class ConfirmationsService {
         dto.contact,
       );
 
+    const quantity = this.resolveQuantity(dto.rateType, dto.quantity);
     const calc = calcAmount({
       rateType: dto.rateType,
       rate: dto.rate,
-      quantity: dto.quantity,
+      quantity,
       additionalItems: dto.additionalItems,
       vatRate: dto.vatRate,
     });
@@ -285,11 +291,15 @@ export class ConfirmationsService {
       // 기존 amountCalc 에서 기본/추가 항목을 복원해 부분 수정 지원
       const prevBase = prev?.items?.find((i) => i.type === 'BASE');
       const prevAdd = (prev?.items ?? []).filter((i) => i.type !== 'BASE');
+      const effRateType = (dto.rateType ?? c.rateType) as BaseRateType;
+      const effQuantity = this.resolveQuantity(
+        effRateType,
+        dto.quantity ?? prevBase?.quantity ?? 0,
+      );
       const calc = calcAmount({
-        rateType: (dto.rateType ?? c.rateType) as
-          'DAILY' | 'HOURLY' | 'PER_CASE',
+        rateType: effRateType,
         rate: dto.rate ?? prevBase?.rate ?? 0,
-        quantity: dto.quantity ?? prevBase?.quantity ?? 0,
+        quantity: effQuantity,
         additionalItems:
           dto.additionalItems ??
           prevAdd.map((i) => ({
@@ -356,7 +366,13 @@ export class ConfirmationsService {
       });
     }
 
+    const baseUrl = (
+      this.config.get<string>('PUBLIC_WEB_URL') ?? 'http://localhost:3001'
+    ).replace(/\/$/, '');
+    const url = `${baseUrl}/c/${c.shareToken}`;
+
     let notified = false;
+    let alimtalkSent = false;
     if (c.businessId) {
       const business = await this.prisma.business.findUnique({
         where: { id: c.businessId },
@@ -372,17 +388,23 @@ export class ConfirmationsService {
         });
         notified = true;
       }
+    } else if (c.manualContact) {
+      // 미가입 수기 상대: 전화번호가 있으면 알림톡으로 서명 링크 발송(카톡 공유 대체).
+      const res = await this.notifications.sendExternalAlimtalk(
+        c.manualContact,
+        'CONFIRMATION_SIGN',
+        { companyName: c.companyName, url },
+      );
+      alimtalkSent = res.sent;
     }
 
-    const baseUrl = (
-      this.config.get<string>('PUBLIC_WEB_URL') ?? 'http://localhost:3001'
-    ).replace(/\/$/, '');
     return {
       shareToken: c.shareToken,
-      url: `${baseUrl}/c/${c.shareToken}`,
+      url,
       sent: true,
       linked: !!c.businessId,
       notified,
+      alimtalkSent,
     };
   }
 
@@ -425,7 +447,10 @@ export class ConfirmationsService {
       rateTypeLabel: RATE_TYPE_LABEL[c.rateType] ?? c.rateType,
       lines: (calc?.items ?? []).map((it) => ({
         label: it.label,
-        detail: `${it.rate.toLocaleString('ko-KR')} × ${it.quantity}`,
+        // 공수 등 단위가 있으면 "1.5공수 × 180,000", 그 외는 "단가 × 수량".
+        detail: it.unit
+          ? `${it.quantity}${it.unit} × ${it.rate.toLocaleString('ko-KR')}`
+          : `${it.rate.toLocaleString('ko-KR')} × ${it.quantity}`,
         amount: it.amount,
       })),
       subtotal: calc?.subtotal ?? 0,
@@ -675,6 +700,26 @@ export class ConfirmationsService {
   // --------------------------------------------------------------------------
   // 내부 헬퍼
   // --------------------------------------------------------------------------
+  /**
+   * 단가유형별 기본 수량 정규화.
+   *  - GONGSU(공수): 소수 허용하되 0.1 단위여야 함(0.5 권장). 위반 시 400.
+   *  - 그 외: 기존과 동일하게 그대로 사용(정수 강제 없음).
+   */
+  private resolveQuantity(rateType: string, quantity: number): number {
+    if (rateType === 'GONGSU') {
+      const normalized = validateGongsuQuantity(quantity);
+      if (normalized === null) {
+        throw new AppException(
+          'INVALID_GONGSU_QUANTITY',
+          '공수 수량은 0보다 크고 0.1 단위여야 합니다 (예: 0.5, 1, 1.5).',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      return normalized;
+    }
+    return quantity;
+  }
+
   private async resolveCounterparty(
     userId: string,
     businessId: string | undefined,

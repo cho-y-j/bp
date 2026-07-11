@@ -6,8 +6,9 @@
 ## 인증 /auth
 - `POST /auth/phone/request` — 전화번호 인증코드 발송 (개발: mock, 응답에 코드 노출은 dev 환경만)
 - `POST /auth/phone/verify` — 코드 검증 → 신규면 가입 + JWT, 기존이면 로그인 + JWT
-- `POST /auth/kakao` — 카카오 액세스토큰 검증 → 가입/로그인 (키 없으면 501 스텁)
-- `GET /me` / `PATCH /me` — 프로필 조회·수정 (전화검색 동의 토글 포함)
+- `POST /auth/kakao` — 카카오 액세스토큰 검증 → 가입/로그인 (KAKAO_ENABLED=false 면 501 스텁)
+- `POST /auth/kakao/link` **(P1)** — 로그인 상태에서 카카오 토큰 제출 → 기존(전화 인증) 계정에 kakaoId 연결. 멱등, 충돌 시 409(KAKAO_ALREADY_LINKED), 비활성 501. 반환: ProfileDto
+- `GET /me` / `PATCH /me` — 프로필 조회·수정 (전화검색 동의 토글 + **P1: bizNumber/bizName/bizAddress** 세금계산서 공급자 정보). ProfileDto 에 `bizNumber/bizName/bizAddress` 노출
 
 ## 서류 /documents
 - `POST /documents` — 업로드(multipart, 이미지/PDF) → PDF 정규화 저장. body: 유형, 소유자(profile|equipment), 발급일?, 만료일?
@@ -24,6 +25,8 @@
 
 ## 확인서 /confirmations
 - `POST /confirmations` — 작성(코어+장비섹션?, 단가유형/수량 → 금액 자동계산) → 저장 시 ledger_entry 자동 생성
+  - **P1 단가유형 GONGSU(공수)** 추가: 1공수=하루 단가, `quantity` 소수 허용(0.5 권장·0.1 단위, 위반 시 400 INVALID_GONGSU_QUANTITY). `amountCalc.items[0].unit="공수"`, PDF·명세서에 "1.5공수 × 180,000" 라벨.
+- `POST /confirmations/:id/send` 응답에 **P1 `alimtalkSent`** 추가 — 수기 상대(manualContact) 전화번호 있으면 알림톡으로 서명 링크 발송 시도(키 없으면 false, 로그만).
 - `POST /confirmations/:id/duplicate` — 이전 확인서 복사
 - `GET /confirmations?month=YYYY-MM` — 목록(캘린더용 일자 집계 포함)
 - `POST /confirmations/:id/send` — 연결 사업장에 전송 or 외부 링크 발급 → `{ share_token?, url? }`
@@ -32,7 +35,9 @@
 - `POST /public/confirmations/:token/sign` — 외부 서명(서명자명 + 서명 이미지 base64) → SIGNED, 양측 알림
 
 ## 장부 /ledger
-- `GET /ledger/summary?month=` — 월 합계(미수/입금/일한 날)
+- `GET /ledger/summary?month=` — 월 합계(미수/입금/일한 날 + **P1 `totalGongsu`** 공수 합계)
+- `GET /ledger/tax-invoice-data?month=&businessId?=` **(P1)** — 홈택스 세금계산서 작성 데이터. SIGNED·미발행 확인서만 상대별 집계: 공급자(내 프로필 bizNumber 등), 공급받는자(사업장 상호·사업자번호), 작성일자, 공급가액 합계, 세액(10%), 품목(일자·내용·금액). `{ supplier, supplierReady, groups[{ buyerName, buyerBizNumber, supplyTotal, taxTotal, grandTotal, items[], ledgerIds[] }], text }` — JSON + **복사용 텍스트**.
+- `POST /ledger/tax-invoice-data/mark` **(P1)** — `{ ledgerIds:[] }` 발행 완료 표시(taxInvoicedAt). 이후 tax-invoice-data 에서 제외. 반환 `{ marked, alreadyMarked, taxInvoicedAt }`
 - `GET /ledger/by-company?month=` — 회사별 미수 집계 + 수금 D-day
 - `POST /ledger/:id/payments` — 입금 기록(부분입금 허용) / `PATCH /ledger/:id` — 수금예정일 수정
 - `GET /ledger/statement?month=` — 월간 명세서 PDF
@@ -61,6 +66,7 @@
 ## 알림 /notifications
 - `GET /notifications` / `POST /device-tokens` (FCM 토큰 등록)
 - 스케줄러: 수금 D-day, 서류 만료 D-30/7/0, 작업 예약 리마인드
+- **P1 알림톡 채널**: 수금 D-day·폭염 알림은 푸시 미도달(미가입/미설치) 시 알림톡 fallback. Solapi 어댑터(`SOLAPI_*`/`ALIMTALK_*` env)·카카오 비즈메시지 템플릿 승인 필요(미설정이면 로그만, API 계약 변화 없음).
 
 ## 구현 순서 (S2 내부)
 1. auth → 2. documents(+shares/mask) → 3. confirmations(+public sign) → 4. ledger → 5. connections/jobs → 6. biz → 7. safety/notifications(스케줄러)

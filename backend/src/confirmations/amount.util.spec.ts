@@ -1,4 +1,4 @@
-import { calcAmount } from './amount.util';
+import { calcAmount, validateGongsuQuantity } from './amount.util';
 
 describe('calcAmount (확인서 금액 계산)', () => {
   it('DAILY 기본: 일당 × 일수', () => {
@@ -72,6 +72,53 @@ describe('calcAmount (확인서 금액 계산)', () => {
     });
     expect(r.subtotal).toBe(0);
     expect(r.total).toBe(0);
+  });
+
+  describe('GONGSU(공수) 단가유형', () => {
+    it('1.5공수 × 180,000 = 270,000, 기본항목 unit=공수', () => {
+      const r = calcAmount({ rateType: 'GONGSU', rate: 180000, quantity: 1.5 });
+      expect(r.items).toHaveLength(1);
+      expect(r.items[0]).toMatchObject({
+        type: 'BASE',
+        label: '기본(공수)',
+        unit: '공수',
+        rate: 180000,
+        quantity: 1.5,
+        amount: 270000,
+      });
+      expect(r.subtotal).toBe(270000);
+      expect(r.total).toBe(270000);
+    });
+
+    it('0.5공수 × 200,000 = 100,000', () => {
+      const r = calcAmount({ rateType: 'GONGSU', rate: 200000, quantity: 0.5 });
+      expect(r.items[0].amount).toBe(100000);
+      expect(r.subtotal).toBe(100000);
+    });
+
+    it('공수 소수 금액 반올림: 0.7공수 × 150,000 = 105,000', () => {
+      const r = calcAmount({ rateType: 'GONGSU', rate: 150000, quantity: 0.7 });
+      // 150000 * 0.7 = 105000 (정확), 부동소수 오차는 money() 반올림으로 흡수
+      expect(r.items[0].amount).toBe(105000);
+    });
+  });
+
+  describe('validateGongsuQuantity', () => {
+    it('0.5/1/1.5 등 0.1 단위는 정규화 반환', () => {
+      expect(validateGongsuQuantity(0.5)).toBe(0.5);
+      expect(validateGongsuQuantity(1)).toBe(1);
+      expect(validateGongsuQuantity(1.5)).toBe(1.5);
+      expect(validateGongsuQuantity(0.1)).toBe(0.1);
+      expect(validateGongsuQuantity(2.3)).toBe(2.3);
+    });
+
+    it('0 이하·0.1 미만 단위·NaN 은 null', () => {
+      expect(validateGongsuQuantity(0)).toBeNull();
+      expect(validateGongsuQuantity(-1)).toBeNull();
+      expect(validateGongsuQuantity(0.05)).toBeNull(); // 0.1 단위 아님
+      expect(validateGongsuQuantity(1.25)).toBeNull(); // 0.1 단위 아님
+      expect(validateGongsuQuantity(NaN)).toBeNull();
+    });
   });
 
   it('반올림: 소수 단가 × 수량은 정수 원으로', () => {

@@ -181,11 +181,7 @@ export class AuthService {
   // POST /auth/kakao — 키 없으면 501 스텁, 있으면 실제 호출
   // --------------------------------------------------------------------------
   async kakaoLogin(accessToken: string): Promise<AuthResult> {
-    const enabled =
-      (this.config.get<string>('KAKAO_ENABLED') ?? 'false').toLowerCase() ===
-      'true';
-
-    if (!enabled) {
+    if (!this.kakaoEnabled()) {
       throw new AppException(
         'NOT_IMPLEMENTED',
         '카카오 로그인은 아직 활성화되지 않았습니다.',
@@ -215,6 +211,67 @@ export class AuthService {
       isNew,
       profile: toProfileDto(profile),
     };
+  }
+
+  private kakaoEnabled(): boolean {
+    return (
+      (this.config.get<string>('KAKAO_ENABLED') ?? 'false').toLowerCase() ===
+      'true'
+    );
+  }
+
+  // --------------------------------------------------------------------------
+  // POST /auth/kakao/link — 로그인 상태에서 카카오 계정 연결
+  //  - 기존 전화 인증 계정에 kakaoId 를 연결한다(이후 카카오로도 로그인 가능).
+  // --------------------------------------------------------------------------
+  async linkKakao(userId: string, accessToken: string): Promise<ProfileDto> {
+    if (!this.kakaoEnabled()) {
+      throw new AppException(
+        'NOT_IMPLEMENTED',
+        '카카오 로그인은 아직 활성화되지 않았습니다.',
+        HttpStatus.NOT_IMPLEMENTED,
+      );
+    }
+    const kakaoId = await this.fetchKakaoId(accessToken);
+
+    const me = await this.prisma.profile.findUnique({
+      where: { id: userId },
+      include: profileCountInclude,
+    });
+    if (!me) {
+      throw new AppException(
+        'PROFILE_NOT_FOUND',
+        '프로필을 찾을 수 없습니다.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    // 이미 같은 kakaoId 로 연결돼 있으면 멱등 처리.
+    if (me.kakaoId === kakaoId) {
+      return toProfileDto(me);
+    }
+    // 내 계정이 이미 다른 카카오에 연결돼 있으면 거부.
+    if (me.kakaoId && me.kakaoId !== kakaoId) {
+      throw new AppException(
+        'KAKAO_ALREADY_LINKED',
+        '이미 다른 카카오 계정이 연결되어 있습니다.',
+        HttpStatus.CONFLICT,
+      );
+    }
+    // 이 kakaoId 가 이미 다른 프로필에 연결돼 있으면 거부.
+    const other = await this.prisma.profile.findUnique({ where: { kakaoId } });
+    if (other && other.id !== userId) {
+      throw new AppException(
+        'KAKAO_ALREADY_LINKED',
+        '이 카카오 계정은 이미 다른 사용자에 연결되어 있습니다.',
+        HttpStatus.CONFLICT,
+      );
+    }
+    const updated = await this.prisma.profile.update({
+      where: { id: userId },
+      data: { kakaoId },
+      include: profileCountInclude,
+    });
+    return toProfileDto(updated);
   }
 
   /** kapi.kakao.com/v2/user/me 호출 → 카카오 사용자 id 반환. 실패 시 501. */

@@ -12,6 +12,9 @@ export interface ProfileDto {
   kakaoId: string | null;
   phoneSearchConsent: boolean;
   industryTags: string[];
+  bizNumber: string | null; // 세금계산서 공급자 사업자번호
+  bizName: string | null; // 세금계산서 공급자 상호
+  bizAddress: string | null; // 세금계산서 공급자 주소
   hasBusiness: boolean; // 사업장 보유 여부 (소유 사업장 존재 → 사업장 모드)
   createdAt: Date;
   updatedAt: Date;
@@ -26,6 +29,9 @@ export function toProfileDto(profile: ProfileWithCount): ProfileDto {
     kakaoId: profile.kakaoId,
     phoneSearchConsent: profile.phoneSearchConsent,
     industryTags: profile.industryTags,
+    bizNumber: profile.bizNumber,
+    bizName: profile.bizName,
+    bizAddress: profile.bizAddress,
     hasBusiness: (profile._count?.ownedBusinesses ?? 0) > 0,
     createdAt: profile.createdAt,
     updatedAt: profile.updatedAt,

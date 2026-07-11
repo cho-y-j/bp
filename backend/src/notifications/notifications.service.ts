@@ -1,8 +1,24 @@
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { DevicePlatform, NotificationType, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../common/errors';
 import { FcmService } from './fcm.service';
+import {
+  ALIMTALK_SERVICE,
+  AlimtalkService,
+  AlimtalkTemplateKey,
+} from './alimtalk/alimtalk.types';
+
+/**
+ * 알림톡 병행 채널.
+ *  - templateKey/variables 로 알림톡 발송 문맥을 지정한다.
+ *  - 정책: 알림톡은 "미가입(푸시 미도달) 상대 전용 우선" → 푸시가 도달하지 못한
+ *    경우에만 fallback 으로 발송한다(가입자에게 중복 발송하지 않음).
+ */
+export interface NotificationAlimtalk {
+  templateKey: AlimtalkTemplateKey;
+  variables: Record<string, string>;
+}
 
 export interface CreateNotificationInput {
   profileId: string;
@@ -10,6 +26,7 @@ export interface CreateNotificationInput {
   title: string;
   body: string;
   data?: Prisma.InputJsonValue;
+  alimtalk?: NotificationAlimtalk; // 푸시 미도달 시 알림톡 fallback
 }
 
 /**
@@ -25,6 +42,7 @@ export class NotificationsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly fcm: FcmService,
+    @Inject(ALIMTALK_SERVICE) private readonly alimtalk: AlimtalkService,
   ) {}
 
   /** 알림 레코드 생성 + 푸시 발송 시도. */
@@ -42,11 +60,15 @@ export class NotificationsService {
     return notification;
   }
 
-  /** device_tokens 조회 → FCM 발송 → 무효 토큰 정리. 실패해도 예외 던지지 않음. */
+  /**
+   * device_tokens 조회 → FCM 발송 → 무효 토큰 정리. 실패해도 예외 던지지 않음.
+   * 푸시가 도달하지 못하면(토큰 없음/비활성/전부 실패) 알림톡 fallback 을 시도한다.
+   */
   private async push(
     notificationId: string,
     input: CreateNotificationInput,
   ): Promise<void> {
+    let pushDelivered = false;
     try {
       const tokens = await this.prisma.deviceToken.findMany({
         where: { profileId: input.profileId },
@@ -54,27 +76,65 @@ export class NotificationsService {
       });
       if (tokens.length === 0) {
         this.logger.debug(`[push] ${input.profileId}: 등록 토큰 없음`);
-        return;
+      } else {
+        const result = await this.fcm.sendToTokens(
+          tokens.map((t) => t.token),
+          {
+            title: input.title,
+            body: input.body,
+            data: { notificationId, type: input.type },
+          },
+        );
+        if (result.invalidTokens.length > 0) {
+          await this.prisma.deviceToken.deleteMany({
+            where: { token: { in: result.invalidTokens } },
+          });
+        }
+        pushDelivered = result.enabled && result.successCount > 0;
+        this.logger.debug(
+          `[push] ${input.profileId}: 성공 ${result.successCount} / 실패 ${result.failureCount} (enabled=${result.enabled})`,
+        );
       }
-      const result = await this.fcm.sendToTokens(
-        tokens.map((t) => t.token),
-        {
-          title: input.title,
-          body: input.body,
-          data: { notificationId, type: input.type },
-        },
-      );
-      if (result.invalidTokens.length > 0) {
-        await this.prisma.deviceToken.deleteMany({
-          where: { token: { in: result.invalidTokens } },
-        });
-      }
-      this.logger.debug(
-        `[push] ${input.profileId}: 성공 ${result.successCount} / 실패 ${result.failureCount} (enabled=${result.enabled})`,
-      );
     } catch (e) {
       this.logger.warn(`푸시 발송 처리 실패: ${(e as Error).message}`);
     }
+
+    // 알림톡 fallback: 푸시가 도달하지 못한(미가입/미설치) 대상에게만 우선 발송.
+    if (input.alimtalk && !pushDelivered) {
+      await this.sendAlimtalkToProfile(input.profileId, input.alimtalk);
+    }
+  }
+
+  /** 프로필의 전화번호로 알림톡 발송(fallback). 실패해도 예외 던지지 않음. */
+  private async sendAlimtalkToProfile(
+    profileId: string,
+    alimtalk: NotificationAlimtalk,
+  ): Promise<void> {
+    try {
+      const profile = await this.prisma.profile.findUnique({
+        where: { id: profileId },
+        select: { phone: true },
+      });
+      // 카카오 가입 임시 전화(kakao:...)는 실제 번호가 아니므로 제외.
+      const phone = profile?.phone ?? '';
+      if (!phone || phone.startsWith('kakao:')) return;
+      await this.alimtalk.send(phone, alimtalk.templateKey, alimtalk.variables);
+    } catch (e) {
+      this.logger.warn(`알림톡 fallback 실패: ${(e as Error).message}`);
+    }
+  }
+
+  /**
+   * 미가입 상대(전화번호만 아는 수기 상대)에게 알림톡 직접 발송.
+   *  - Notification 레코드 없이 알림톡만 발송(수신자가 우리 서비스 프로필이 아님).
+   *  - 어댑터 비활성 시 로그만.
+   */
+  async sendExternalAlimtalk(
+    phone: string,
+    templateKey: AlimtalkTemplateKey,
+    variables: Record<string, string>,
+  ) {
+    return this.alimtalk.send(phone, templateKey, variables);
   }
 
   // --------------------------------------------------------------------------

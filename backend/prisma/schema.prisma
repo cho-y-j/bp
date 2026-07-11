@@ -59,6 +59,7 @@ enum RateType {
   PER_CASE // 건당
   MONTHLY // 월급
   UNIT // 물량(㎥·톤 등) 단가
+  GONGSU // 공수(품) — 1공수=하루 단가, 수량 소수 허용(0.5/1.5 등)
 }
 
 // 작업 지시/예약 상태
@@ -118,6 +119,10 @@ model Profile {
   kakaoId            String?  @unique // 카카오 로그인 식별자 (카카오 가입자만)
   phoneSearchConsent Boolean  @default(false) // 전화번호 검색 허용 동의 (법적 필수)
   industryTags       String[] @default([]) // 업종 태그
+  // 세금계산서 공급자(내 사업자) 정보 — 홈택스 작성용. PATCH /me 로 등록.
+  bizNumber          String? // 내 사업자등록번호 (세금계산서 공급자)
+  bizName            String? // 내 상호(사업자명)
+  bizAddress         String? // 내 사업장 주소
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
@@ -402,6 +407,7 @@ model LedgerEntry {
   dueDate          DateTime? // 수금 예정일
   status           LedgerStatus @default(PENDING)
   payments         Json[]       @default([]) // 입금 기록 [{ amount, paidAt, method }] (부분입금)
+  taxInvoicedAt    DateTime? // 세금계산서 발행(홈택스 입력) 완료 표시 시각 — 재집계 제외용
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 

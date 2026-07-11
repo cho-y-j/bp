@@ -16,8 +16,8 @@ export type AdditionalItemType =
   | 'ALLNIGHT' // 철야
   | 'OTHER'; // 기타(임의 라벨)
 
-/** 기본 단가 유형 (API 계약: DAILY | HOURLY | PER_CASE(건당)). */
-export type BaseRateType = 'DAILY' | 'HOURLY' | 'PER_CASE';
+/** 기본 단가 유형 (API 계약: DAILY | HOURLY | PER_CASE(건당) | GONGSU(공수)). */
+export type BaseRateType = 'DAILY' | 'HOURLY' | 'PER_CASE' | 'GONGSU';
 
 export interface AdditionalItemInput {
   type: AdditionalItemType;
@@ -39,6 +39,7 @@ export interface AmountLineItem {
   label: string; // 사람이 읽는 항목명 (PDF/화면 표시용)
   rate: number;
   quantity: number;
+  unit?: string; // 수량 단위(있으면 "1.5공수" 처럼 표기). 공수(GONGSU) 기본항목만 '공수'.
   amount: number; // rate × quantity (정수 원)
 }
 
@@ -54,6 +55,12 @@ const BASE_LABEL: Record<BaseRateType, string> = {
   DAILY: '기본(일당)',
   HOURLY: '기본(시급)',
   PER_CASE: '기본(건당)',
+  GONGSU: '기본(공수)',
+};
+
+/** 기본항목 수량 단위(있으면 표기용). 공수만 '공수'. */
+const BASE_UNIT: Partial<Record<BaseRateType, string>> = {
+  GONGSU: '공수',
 };
 
 const ITEM_LABEL: Record<AdditionalItemType, string> = {
@@ -63,6 +70,19 @@ const ITEM_LABEL: Record<AdditionalItemType, string> = {
   ALLNIGHT: '철야',
   OTHER: '기타',
 };
+
+/**
+ * 공수(GONGSU) 수량 유효성 검사.
+ *  - 0보다 크고, 0.1 단위여야 한다(0.5 권장, 0.1까지 허용 — 예: 0.5/1/1.5).
+ *  - 부동소수 오차를 고려해 ×10 반올림 비교. 유효하면 0.1로 정규화한 수량, 아니면 null.
+ */
+export function validateGongsuQuantity(quantity: number): number | null {
+  if (!Number.isFinite(quantity) || quantity <= 0) return null;
+  const scaled = Math.round(quantity * 10);
+  if (scaled <= 0) return null;
+  if (Math.abs(quantity * 10 - scaled) > 1e-6) return null; // 0.1 단위가 아님
+  return scaled / 10;
+}
 
 /** 음수/NaN 방지 후 반올림한 정수 금액. */
 function money(n: number): number {
@@ -78,12 +98,15 @@ export function calcAmount(input: AmountCalcInput): AmountCalcResult {
   const items: AmountLineItem[] = [];
 
   const baseRate = Math.max(0, input.rate || 0);
+  // 공수(GONGSU)는 소수 수량 허용(0.5/1.5 등). 나머지도 기존과 동일하게 그대로 사용.
   const baseQty = Math.max(0, input.quantity || 0);
+  const baseUnit = BASE_UNIT[input.rateType];
   items.push({
     type: 'BASE',
     label: BASE_LABEL[input.rateType],
     rate: money(baseRate),
     quantity: baseQty,
+    ...(baseUnit ? { unit: baseUnit } : {}),
     amount: money(baseRate * baseQty),
   });
 

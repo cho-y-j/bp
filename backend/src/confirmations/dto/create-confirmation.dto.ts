@@ -13,8 +13,13 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-/** 확인서 단가 유형 (API 계약: DAILY | HOURLY | PER_CASE(건당)). */
-export const CONFIRMATION_RATE_TYPES = ['DAILY', 'HOURLY', 'PER_CASE'] as const;
+/** 확인서 단가 유형 (API 계약: DAILY | HOURLY | PER_CASE(건당) | GONGSU(공수)). */
+export const CONFIRMATION_RATE_TYPES = [
+  'DAILY',
+  'HOURLY',
+  'PER_CASE',
+  'GONGSU',
+] as const;
 export const ADDITIONAL_ITEM_TYPES = [
   'OVERTIME',
   'EARLY',
@@ -107,7 +112,7 @@ export class CreateConfirmationDto {
   endTime!: string; // HH:mm
 
   @IsIn(CONFIRMATION_RATE_TYPES, {
-    message: '단가 유형은 DAILY | HOURLY | PER_CASE 중 하나입니다.',
+    message: '단가 유형은 DAILY | HOURLY | PER_CASE | GONGSU 중 하나입니다.',
   })
   rateType!: (typeof CONFIRMATION_RATE_TYPES)[number];
 

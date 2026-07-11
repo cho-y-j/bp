@@ -87,6 +87,11 @@ export class SafetyService {
         title: '폭염 경고',
         body,
         data: { businessId, kind: 'HEAT_ALERT', safetyLogId: log.id },
+        // 푸시 미도달 시 알림톡 fallback(미설치 작업자 우선)
+        alimtalk: {
+          templateKey: 'HEAT_ALERT',
+          variables: { site: business.name },
+        },
       });
       created += 1;
     }
