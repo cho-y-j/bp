@@ -25,6 +25,8 @@ import {
   toKstDateTimeStr,
 } from '../confirmations/time.util';
 import { PaySettlementDto } from './dto/pay-settlement.dto';
+import { BadgeService } from '../ledger/badge.service';
+import { selfBadgeStatus } from '../ledger/badge.util';
 
 export interface SettlementWorkerGroup {
   workerProfileId: string;
@@ -42,7 +44,53 @@ export class BizService {
     private readonly prisma: PrismaService,
     private readonly pdf: PdfService,
     private readonly notifications: NotificationsService,
+    private readonly badges: BadgeService,
   ) {}
+
+  // --------------------------------------------------------------------------
+  // 지급 평판 배지 — 사업장 본인용(데이터 부족/개선 안내 포함). P3a
+  // --------------------------------------------------------------------------
+  async paymentBadge(userId: string, businessId?: string) {
+    const business = await this.resolveOwnedBusiness(userId, businessId);
+    const status = selfBadgeStatus(business);
+    return {
+      businessId: business.id,
+      businessName: business.name,
+      status: status.status, // EXCELLENT | GOOD | NONE | INSUFFICIENT
+      avgDays: status.avgDays,
+      sampleSize: status.sampleSize,
+      updatedAt: business.paymentBadgeUpdatedAt,
+    };
+  }
+
+  /** 소유 사업장 1건 해석(businessId 지정 시 검증, 없으면 최초 소유). */
+  private async resolveOwnedBusiness(userId: string, businessId?: string) {
+    if (businessId) {
+      const b = await this.prisma.business.findUnique({
+        where: { id: businessId },
+      });
+      if (!b || b.ownerId !== userId) {
+        throw new AppException(
+          'BUSINESS_NOT_FOUND',
+          '내 사업장을 찾을 수 없습니다.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return b;
+    }
+    const b = await this.prisma.business.findFirst({
+      where: { ownerId: userId },
+      orderBy: { createdAt: 'asc' },
+    });
+    if (!b) {
+      throw new AppException(
+        'BUSINESS_NOT_FOUND',
+        '보유한 사업장이 없습니다.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return b;
+  }
 
   // --------------------------------------------------------------------------
   // 수신 확인서함 — 연동 작업자가 send 한 확인서(내 사업장 대상)
@@ -234,6 +282,12 @@ export class BizService {
         data: { paidAmount: amount, paidAt: paidAtIso },
       });
     }
+
+    // 지급 평판 배지 비동기 갱신(pay 시점) — 실패해도 pay 응답에 영향 없음. P3a
+    const affectedBiz = [...new Set(businessIds)];
+    void Promise.all(
+      affectedBiz.map((bid) => this.badges.recomputeBusinessQuietly(bid)),
+    );
 
     const totalPaid = results.reduce((s, r) => s + r.paidAmount, 0);
     return {

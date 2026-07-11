@@ -2117,4 +2117,81 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get incomeReportEmptySub => '填写确认书后,收入会显示在此报告中。';
+
+  @override
+  String get ledgerAutoRemind => '自动催收提醒';
+
+  @override
+  String get ledgerAutoRemindHint => '到期日后自动发送款项提醒';
+
+  @override
+  String get ledgerRemindNow => '立即发送提醒';
+
+  @override
+  String get ledgerRemindSent => '已发送催收提醒';
+
+  @override
+  String get ledgerRemindHistory => '提醒发送记录';
+
+  @override
+  String ledgerRemindHistoryItem(String date, String stage) {
+    return '$date · $stage';
+  }
+
+  @override
+  String get reminderStageD7 => '7天提醒';
+
+  @override
+  String get reminderStageD30 => '30天提醒';
+
+  @override
+  String get reminderStageManual => '手动提醒';
+
+  @override
+  String get profilePayoutSection => '收款账户（用于催收提醒）';
+
+  @override
+  String get profilePayoutBank => '银行名称';
+
+  @override
+  String get profilePayoutAccount => '账号';
+
+  @override
+  String get profilePayoutHolder => '账户持有人';
+
+  @override
+  String get profilePayoutHint => '发送催收提醒时会一并提供此账户（选填）';
+
+  @override
+  String get profilePayoutSaved => '已保存收款账户';
+
+  @override
+  String get badgeExcellent => '优质付款方';
+
+  @override
+  String get badgeGood => '良好付款方';
+
+  @override
+  String badgeAvgDays(int days) {
+    return '平均$days天';
+  }
+
+  @override
+  String get badgeSelfImproveGood => '15天内付款即可获得优质付款方徽章';
+
+  @override
+  String get badgeSelfImproveNone => '按时付款即可获得优质付款方徽章';
+
+  @override
+  String badgeInsufficient(int count) {
+    return '付款记录$count条——评定徽章需要更多记录';
+  }
+
+  @override
+  String badgeSampleCount(int count) {
+    return '基于最近$count条';
+  }
+
+  @override
+  String get badgeSelfTitle => '付款信誉';
 }

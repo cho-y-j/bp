@@ -36,6 +36,14 @@ export const ALIMTALK_TEMPLATES: Record<
       '미수 금액 #{amount}원의 수금 예정일이 #{dday} 입니다.',
     variables: ['companyName', 'amount', 'dday'],
   },
+  PAYMENT_REMINDER: {
+    envKey: 'ALIMTALK_TEMPLATE_PAYMENT_REMINDER',
+    fallbackText:
+      '[작업온] #{workerName}님이 #{month} 작업 대금 안내를 드립니다.\n' +
+      '금액: #{amount}원#{account}\n' +
+      '자세한 내역은 아래 링크에서 확인하실 수 있습니다.\n#{url}',
+    variables: ['workerName', 'month', 'amount', 'account', 'url'],
+  },
   HEAT_ALERT: {
     envKey: 'ALIMTALK_TEMPLATE_HEAT_ALERT',
     fallbackText:

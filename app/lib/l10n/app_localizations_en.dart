@@ -2176,4 +2176,85 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get incomeReportEmptySub =>
       'Write a confirmation and your income will appear here.';
+
+  @override
+  String get ledgerAutoRemind => 'Auto payment reminder';
+
+  @override
+  String get ledgerAutoRemindHint =>
+      'Automatically sends a payment reminder after the due date';
+
+  @override
+  String get ledgerRemindNow => 'Send reminder now';
+
+  @override
+  String get ledgerRemindSent => 'Payment reminder sent';
+
+  @override
+  String get ledgerRemindHistory => 'Reminder history';
+
+  @override
+  String ledgerRemindHistoryItem(String date, String stage) {
+    return '$date · $stage';
+  }
+
+  @override
+  String get reminderStageD7 => '7-day reminder';
+
+  @override
+  String get reminderStageD30 => '30-day reminder';
+
+  @override
+  String get reminderStageManual => 'Manual reminder';
+
+  @override
+  String get profilePayoutSection => 'Payout account (for reminders)';
+
+  @override
+  String get profilePayoutBank => 'Bank';
+
+  @override
+  String get profilePayoutAccount => 'Account number';
+
+  @override
+  String get profilePayoutHolder => 'Account holder';
+
+  @override
+  String get profilePayoutHint =>
+      'This account is included when you send a payment reminder (optional)';
+
+  @override
+  String get profilePayoutSaved => 'Payout account saved';
+
+  @override
+  String get badgeExcellent => 'Excellent payer';
+
+  @override
+  String get badgeGood => 'Good payer';
+
+  @override
+  String badgeAvgDays(int days) {
+    return 'Avg $days days';
+  }
+
+  @override
+  String get badgeSelfImproveGood =>
+      'Pay within 15 days to earn the Excellent payer badge';
+
+  @override
+  String get badgeSelfImproveNone =>
+      'Pay on time to earn the Excellent payer badge';
+
+  @override
+  String badgeInsufficient(int count) {
+    return '$count payment records — more history is needed to rate a badge';
+  }
+
+  @override
+  String badgeSampleCount(int count) {
+    return 'Based on last $count';
+  }
+
+  @override
+  String get badgeSelfTitle => 'Payment reliability';
 }

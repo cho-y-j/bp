@@ -127,16 +127,17 @@ class _CreateFlowState extends ConsumerState<_CreateFlow> {
   }
 }
 
-class _BizHome extends StatelessWidget {
+class _BizHome extends ConsumerWidget {
   final BusinessItem business;
   const _BizHome({required this.business});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
     final l = context.l;
     return ListView(
       padding: const EdgeInsets.fromLTRB(18, 12, 18, 32),
       children: [
+        const _SelfBadgeCard(),
         Container(
           decoration: BoxDecoration(
             color: c.surface,
@@ -220,6 +221,86 @@ class _BizHome extends StatelessWidget {
 
   void _push(BuildContext context, Widget screen) => Navigator.of(context)
       .push(MaterialPageRoute(builder: (_) => screen));
+}
+
+/// 사업장 지급 신뢰도 자체 배지 카드 (P3a).
+/// EXCELLENT/GOOD 만 등급 라벨, NONE/INSUFFICIENT 는 개선 안내만(부정 배지 없음).
+class _SelfBadgeCard extends ConsumerWidget {
+  const _SelfBadgeCard();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = context.c;
+    final l = context.l;
+    final badge = ref.watch(myPaymentBadgeProvider);
+    final data = badge.valueOrNull;
+    if (data == null) return const SizedBox.shrink();
+    final status = data['status']?.toString() ?? 'NONE';
+    final avgDays = (data['avgDays'] as num?)?.round();
+    final sample = (data['sampleSize'] as num?)?.toInt() ?? 0;
+    final excellent = status == 'EXCELLENT';
+    final good = status == 'GOOD';
+    final graded = excellent || good;
+
+    final String title;
+    final String note;
+    if (excellent) {
+      title = '⚡ ${l.badgeExcellent}';
+      note = avgDays != null
+          ? '${l.badgeAvgDays(avgDays)} · ${l.badgeSampleCount(sample)}'
+          : l.badgeSampleCount(sample);
+    } else if (good) {
+      title = l.badgeGood;
+      note = l.badgeSelfImproveGood;
+    } else if (status == 'INSUFFICIENT') {
+      title = l.badgeSelfTitle;
+      note = l.badgeInsufficient(sample);
+    } else {
+      title = l.badgeSelfTitle;
+      note = l.badgeSelfImproveNone;
+    }
+
+    final accent = excellent ? c.deposited : (good ? c.primary : c.ink3);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: graded ? accent.withValues(alpha: 0.08) : c.surface,
+          border: Border.all(
+              color: graded ? accent.withValues(alpha: 0.35) : c.border),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(
+                excellent
+                    ? Icons.verified_rounded
+                    : (good
+                        ? Icons.thumb_up_alt_outlined
+                        : Icons.insights_outlined),
+                color: graded ? accent : c.ink3,
+                size: 26),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: graded ? accent : c.ink)),
+                  const SizedBox(height: 3),
+                  Text(note,
+                      style: TextStyle(fontSize: 13, color: c.ink2)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _MenuCard extends StatelessWidget {

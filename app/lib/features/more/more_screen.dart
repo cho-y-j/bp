@@ -8,6 +8,7 @@ import '../../core/kakao_auth.dart';
 import '../../l10n/l10n_ext.dart';
 import '../../providers/auth.dart';
 import '../../providers/locale.dart';
+import '../../widgets/common.dart';
 import '../wallet/wallet_screen.dart';
 import '../wallet/my_contracts_screen.dart';
 import '../wallet/my_tbm_screen.dart';
@@ -165,6 +166,9 @@ class MoreScreen extends ConsumerWidget {
               onTap: () => _push(context, const IncomeReportScreen()),
             ),
             const SizedBox(height: 20),
+            _SectionLabel(l.profilePayoutSection),
+            const _PayoutSection(),
+            const SizedBox(height: 20),
             _SectionLabel(l.sectionSettings),
             _Tile(
               icon: Icons.notifications_none_rounded,
@@ -214,6 +218,109 @@ class MoreScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// 수금 안내용 입금 계좌 입력 (P3a).
+class _PayoutSection extends ConsumerStatefulWidget {
+  const _PayoutSection();
+  @override
+  ConsumerState<_PayoutSection> createState() => _PayoutSectionState();
+}
+
+class _PayoutSectionState extends ConsumerState<_PayoutSection> {
+  late final TextEditingController _bank;
+  late final TextEditingController _account;
+  late final TextEditingController _holder;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final p = ref.read(authControllerProvider).profile;
+    _bank = TextEditingController(text: p?.payoutBank ?? '');
+    _account = TextEditingController(text: p?.payoutAccount ?? '');
+    _holder = TextEditingController(text: p?.payoutHolder ?? '');
+  }
+
+  @override
+  void dispose() {
+    _bank.dispose();
+    _account.dispose();
+    _holder.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    setState(() => _saving = true);
+    final l = context.l;
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(authControllerProvider.notifier).savePayout(
+            bank: _bank.text,
+            account: _account.text,
+            holder: _holder.text,
+          );
+      messenger.showSnackBar(SnackBar(content: Text(l.profilePayoutSaved)));
+    } on ApiException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l = context.l;
+    return Container(
+      decoration: BoxDecoration(
+        color: c.surface,
+        border: Border.all(color: c.border),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l.profilePayoutHint,
+              style: TextStyle(fontSize: 13, color: c.ink2)),
+          const SizedBox(height: 12),
+          _field(_bank, l.profilePayoutBank),
+          const SizedBox(height: 10),
+          _field(_account, l.profilePayoutAccount, number: true),
+          const SizedBox(height: 10),
+          _field(_holder, l.profilePayoutHolder),
+          const SizedBox(height: 14),
+          PrimaryButton(
+            label: l.save,
+            icon: Icons.check_rounded,
+            loading: _saving,
+            onPressed: _save,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _field(TextEditingController ctl, String label, {bool number = false}) {
+    final c = context.c;
+    return TextField(
+      controller: ctl,
+      keyboardType: number ? TextInputType.text : TextInputType.text,
+      style: TextStyle(fontSize: 16, color: c.ink),
+      decoration: InputDecoration(
+        labelText: label,
+        filled: true,
+        fillColor: c.fieldBg,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: c.border)),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: c.border)),
       ),
     );
   }

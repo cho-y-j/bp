@@ -5,6 +5,7 @@ import { AppException } from '../common/errors';
 import { PromotionService } from './promotion.service';
 import { CreateBusinessDto } from './dto/create-business.dto';
 import { UpdateBusinessDto } from './dto/update-business.dto';
+import { badgeFromCache } from '../ledger/badge.util';
 
 function toBusinessDto(b: Business) {
   return {
@@ -79,7 +80,34 @@ export class BusinessesService {
         businessNumber: b.businessNumber,
         ownerName: b.owner?.name ?? null,
         matchedByCode: isCode && b.inviteCode === query,
+        // 지급 평판 배지 — 캐시 컬럼 기반(우수/양호만, 없으면 null). P3a
+        paymentBadge: badgeFromCache(b),
       })),
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // 단건 조회 — 공개 정보 + 지급 평판 배지 (P3a). 인증 필요(전역 가드).
+  // --------------------------------------------------------------------------
+  async getById(id: string) {
+    const b = await this.prisma.business.findUnique({
+      where: { id },
+      include: { owner: { select: { name: true } } },
+    });
+    if (!b) {
+      throw new AppException(
+        'BUSINESS_NOT_FOUND',
+        '사업장을 찾을 수 없습니다.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return {
+      id: b.id,
+      name: b.name,
+      businessNumber: b.businessNumber,
+      address: b.address,
+      ownerName: b.owner?.name ?? null,
+      paymentBadge: badgeFromCache(b),
     };
   }
 

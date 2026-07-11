@@ -21,6 +21,18 @@ final allConnectionsProvider =
   return items.map((e) => ConnectionItem.fromJson(e as Map)).toList();
 });
 
+/// 내 사업장 지급 신뢰도 배지 상태 (P3a). 사업장 미보유면 null.
+final myPaymentBadgeProvider = FutureProvider<Map?>((ref) async {
+  final api = ref.watch(apiClientProvider);
+  try {
+    final res = await api.get('/biz/payment-badge');
+    return res as Map;
+  } on ApiException catch (e) {
+    if (e.code == 'BUSINESS_NOT_FOUND' || e.status == 404) return null;
+    rethrow;
+  }
+});
+
 /// 수신함(사업장 대상 확인서).
 final inboxProvider = FutureProvider<List<InboxItem>>((ref) async {
   final api = ref.watch(apiClientProvider);
@@ -73,6 +85,25 @@ class BizRepo {
     final res = await api.get('/businesses/search', query: {'q': q});
     final items = (res as Map)['items'] as List? ?? [];
     return items.map((e) => BusinessItem.fromJson(e as Map)).toList();
+  }
+
+  /// 내 사업장의 지급 신뢰도 배지 상태 (P3a). businessId 생략 시 첫 사업장.
+  /// 사업장 미보유(404 BUSINESS_NOT_FOUND) 면 null 반환.
+  Future<Map?> businessBadge({String? businessId}) async {
+    try {
+      final res = await api.get('/biz/payment-badge',
+          query: {'businessId': ?businessId});
+      return res as Map;
+    } on ApiException catch (e) {
+      if (e.code == 'BUSINESS_NOT_FOUND' || e.status == 404) return null;
+      rethrow;
+    }
+  }
+
+  /// 특정 사업장의 지급 신뢰도 배지 (P3a) — GET /businesses/:id 의 paymentBadge.
+  Future<PaymentBadge?> businessBadgeById(String id) async {
+    final res = await api.get('/businesses/$id');
+    return PaymentBadge.parse((res as Map)['paymentBadge']);
   }
 
   Future<List<WorkerSearchItem>> searchWorkers(String phone) async {

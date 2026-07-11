@@ -8,7 +8,7 @@
 - `POST /auth/phone/verify` — 코드 검증 → 신규면 가입 + JWT, 기존이면 로그인 + JWT
 - `POST /auth/kakao` — 카카오 액세스토큰 검증 → 가입/로그인 (KAKAO_ENABLED=false 면 501 스텁)
 - `POST /auth/kakao/link` **(P1)** — 로그인 상태에서 카카오 토큰 제출 → 기존(전화 인증) 계정에 kakaoId 연결. 멱등, 충돌 시 409(KAKAO_ALREADY_LINKED), 비활성 501. 반환: ProfileDto
-- `GET /me` / `PATCH /me` — 프로필 조회·수정 (전화검색 동의 토글 + **P1: bizNumber/bizName/bizAddress** 세금계산서 공급자 정보). ProfileDto 에 `bizNumber/bizName/bizAddress` 노출
+- `GET /me` / `PATCH /me` — 프로필 조회·수정 (전화검색 동의 토글 + **P1: bizNumber/bizName/bizAddress** 세금계산서 공급자 정보 + **P3a: payoutBank/payoutAccount/payoutHolder** 수금 안내용 입금 계좌(선택 입력)). ProfileDto 에 `bizNumber/bizName/bizAddress`·`payoutBank/payoutAccount/payoutHolder` 노출
 
 ## 서류 /documents
 - `POST /documents` — 업로드(multipart, 이미지/PDF) → PDF 정규화 저장. body: 유형, 소유자(profile|equipment), 발급일?, 만료일?
@@ -61,14 +61,17 @@
 - `GET /ledger/tax-invoice-data?month=&businessId?=` **(P1)** — 홈택스 세금계산서 작성 데이터. SIGNED·미발행 확인서만 상대별 집계: 공급자(내 프로필 bizNumber 등), 공급받는자(사업장 상호·사업자번호), 작성일자, 공급가액 합계, 세액(10%), 품목(일자·내용·금액). `{ supplier, supplierReady, groups[{ buyerName, buyerBizNumber, supplyTotal, taxTotal, grandTotal, items[], ledgerIds[] }], text }` — JSON + **복사용 텍스트**.
 - `POST /ledger/tax-invoice-data/mark` **(P1)** — `{ ledgerIds:[] }` 발행 완료 표시(taxInvoicedAt). 이후 tax-invoice-data 에서 제외. 반환 `{ marked, alreadyMarked, taxInvoicedAt }`
 - `GET /ledger/by-company?month=` — 회사별 미수 집계 + 수금 D-day. **P2a**: 팀 파생 항목은 반장 이름 그룹으로 집계, 월 기준일은 원 확인서(팀 확인서) 작업일.
-- `POST /ledger/:id/payments` — 입금 기록(부분입금 허용). **P2a**: 팀 파생 항목(`derived=true`)도 입금 기록 가능. `PATCH /ledger/:id` — 수금예정일 수정. **P2a**: 파생 항목은 읽기전용 → 409 LEDGER_DERIVED_READONLY.
+- `POST /ledger/:id/payments` — 입금 기록(부분입금 허용). **P2a**: 팀 파생 항목(`derived=true`)도 입금 기록 가능. `PATCH /ledger/:id` — 수금예정일 수정 + **P3a `autoRemind`(bool) 토글**(additive, 파생 항목은 409 LEDGER_DERIVED_READONLY). 장부 DTO 에 **P3a `autoRemind`·`reminders[{at,channel,stage}]`** 노출(`GET /ledger/entries` 포함).
+- `POST /ledger/:id/remind` **(P3a)** — 수동 즉시 수금 안내. 작업자 대신 상대(연결 사업장 소유자=푸시+인앱 알림 / 수기 미가입 상대=알림톡, 명세서·확인서 공개 링크+금액+계좌 포함)에게 점잖은 대금 안내 발송 + 발송 이력 append. **쿨다운 3일**(최근 발송 후 3일 내 재요청 409 REMIND_COOLDOWN). 이미 완납 409 LEDGER_ALREADY_PAID, 대상 정보 없음 409 REMIND_NO_TARGET, 파생 409 LEDGER_DERIVED_READONLY, 타인 404 LEDGER_NOT_FOUND. 반환 `{ sent, channel, lastAt }`.
+- **P3a 자동 독촉 크론**: 매일 10:00 KST(기존 수금 스케줄러 확장). `autoRemind=true`·미수·파생 아님·수금예정일 **D+7/D+30 도달** 항목 → 상대에게 발송, `reminders` 에 append, **같은 단계(D7/D30) 중복 발송 방지**.
   - 장부 항목 응답에 **P2a** `derived`(팀 파생 여부)·`sourceConfirmationId` 포함.
 - `GET /ledger/statement?month=` — 월간 명세서 PDF
 - `GET /ledger/income-report?year=YYYY | from=YYYY-MM&to=YYYY-MM` **(P2d)** — 연간(기간별) 소득 리포트. `{ range{from,to,year}, monthly[{month,billed,paid,outstanding,daysWorked,gongsu}](데이터 없는 월도 0으로 채움), companies[{companyName,businessId,count,total,paid,outstanding}](총액 내림차순), totals{totalBilled,totalPaid,totalOutstanding,totalDays,totalGongsu,entryCount,teamPayout,netBilled}, taxNote{period,lines[]} }`. **팀 파생 처리**: 팀원 파생 항목은 본인 소득으로 집계(teamPayout 0), 반장은 팀 확인서 전체가 매출이며 팀원 지급분(본인 몫 제외)을 `teamPayout` 으로 표기해 `netBilled(=총청구−지급분)` 순소득 참고 제공(차감 아님). 범위 최대 24개월, year/from-to 누락 400, year 형식 400. 종소세 안내는 일반 정보(5월 신고·3.3% 원천징수, 세무 상담 아님 명시).
 - `GET /ledger/income-report/pdf?year=|from=&to=` **(P2d)** — 위 리포트를 인증 blob PDF(월별 표+상대별 표+총계+종소세 안내, 나눔고딕·페이지 브레이크).
 
 ## 연동 /connections, /businesses
-- `POST /businesses` — 사업장 생성(초대코드 자동 발급) / `GET /businesses/search?q=` — 상호·코드 검색
+- `POST /businesses` — 사업장 생성(초대코드 자동 발급) / `GET /businesses/search?q=` — 상호·코드 검색. **P3a**: 각 item 에 `paymentBadge: {grade:"EXCELLENT"|"GOOD", avgDays, sampleSize} | null` 추가(우수/양호만 노출, 없으면 null — 부정 낙인 금지).
+- `GET /businesses/:id` **(P3a)** — 사업장 단건(공개 정보 + `paymentBadge`). 인증 필요.
 - `GET /workers/search?phone=` — 전화번호로 작업자 검색(동의자만)
 - `POST /connections` — 연결 요청 / `POST /connections/:id/accept`
 - `GET /connections` — 내 연결 목록
@@ -80,7 +83,9 @@
 
 ## 사업장 정산·안전 (사업장 모드)
 - `GET /biz/inbox` — 수신 확인서 목록 / `POST /biz/confirmations/:id/sign` — 앱 내 서명
-- `GET /biz/settlements?month=` — 작업자별 미지급 집계 / `POST /biz/settlements/pay` — 지급 처리(해당 ledger 반영)
+- `GET /biz/settlements?month=` — 작업자별 미지급 집계 / `POST /biz/settlements/pay` — 지급 처리(해당 ledger 반영). **P3a**: pay 후 지급 평판 배지 캐시 비동기 갱신(fire-and-forget).
+- `GET /biz/payment-badge?businessId?=` **(P3a)** — 내 사업장 지급 평판 배지(본인용). `{ businessId, businessName, status:"EXCELLENT"|"GOOD"|"NONE"|"INSUFFICIENT", avgDays, sampleSize, updatedAt }`. 우수/양호는 배지, NONE(>30일)·INSUFFICIENT(표본<3)는 개선 안내만(부정 낙인 없음). 미소유 404 BUSINESS_NOT_FOUND.
+- **P3a 지급 평판 배지 집계**: 사업장별 **평균 지급 소요일** = SIGNED(확인서)→전액 PAID 까지 일수 평균(최근 12개월, 표본 3건 이상일 때만 산출). 등급 ⚡우수(≤15일)/양호(≤30일). **캐시 컬럼**(`businesses.paymentAvgDays/paymentSampleSize/paymentBadgeUpdatedAt`)에 저장 — 검색마다 실시간 집계 금지. **일일 크론**(04:00 KST) 전 사업장 갱신 + pay 시점 비동기 갱신.
 - `GET /biz/safety-report?month=` — 안전관리 이행 리포트 PDF (safety_logs 집계)
 - **(백로그정리 — 다중 사업장 스코프)** `GET /biz/inbox`·`/biz/settlements`·`/biz/safety-report` 모두 선택적 `?businessId=` 지원(additive). 미지정 시 소유 전체 집계(기존 동작), 지정 시 해당 사업장만. 미소유 businessId 는 빈 결과(타 사업장 데이터 유출 차단). `pay` 는 항상 소유 전체 ledger 대상(스코프 무관).
 

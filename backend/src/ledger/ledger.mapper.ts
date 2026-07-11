@@ -1,5 +1,6 @@
 import { LedgerEntry, LedgerStatus } from '@prisma/client';
 import { computeOutstanding, PaymentRecord } from './ledger.util';
+import { normalizeReminders, ReminderRecord } from './reminder.util';
 
 const STATUS_LABEL: Record<LedgerStatus, string> = {
   PENDING: '미수',
@@ -23,6 +24,8 @@ export interface LedgerDto {
   dueDate: Date | null;
   dday: number | null;
   payments: PaymentRecord[];
+  autoRemind: boolean; // 자동 수금 안내 (P3a)
+  reminders: ReminderRecord[]; // 발송 이력 (P3a)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,6 +56,8 @@ export function toLedgerDto(e: LedgerEntry, now: Date = new Date()): LedgerDto {
     payments: Array.isArray(e.payments)
       ? (e.payments as unknown as PaymentRecord[])
       : [],
+    autoRemind: e.autoRemind,
+    reminders: normalizeReminders(e.reminders),
     createdAt: e.createdAt,
     updatedAt: e.updatedAt,
   };

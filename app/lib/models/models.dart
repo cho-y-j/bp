@@ -15,6 +15,9 @@ class Profile {
   final String? bizNumber; // 세금계산서 공급자 사업자번호
   final String? bizName; // 세금계산서 공급자 상호
   final String? bizAddress; // 세금계산서 공급자 주소
+  final String? payoutBank; // 수금 안내용 입금 계좌 은행 (P3a)
+  final String? payoutAccount; // 수금 안내용 입금 계좌번호 (P3a)
+  final String? payoutHolder; // 수금 안내용 예금주 (P3a)
 
   Profile({
     required this.id,
@@ -27,6 +30,9 @@ class Profile {
     required this.bizNumber,
     required this.bizName,
     required this.bizAddress,
+    required this.payoutBank,
+    required this.payoutAccount,
+    required this.payoutHolder,
   });
 
   /// 세금계산서 공급자 정보(사업자번호) 등록 여부.
@@ -47,6 +53,9 @@ class Profile {
         bizNumber: j['bizNumber'] as String?,
         bizName: j['bizName'] as String?,
         bizAddress: j['bizAddress'] as String?,
+        payoutBank: j['payoutBank'] as String?,
+        payoutAccount: j['payoutAccount'] as String?,
+        payoutHolder: j['payoutHolder'] as String?,
       );
 }
 
@@ -270,6 +279,8 @@ class LedgerEntry {
   final List payments;
   final bool derived; // 팀원 몫(반장이 발행) — 읽기전용(입금만 가능)
   final String? sourceConfirmationId;
+  final bool autoRemind; // 자동 수금 안내 on/off (P3a)
+  final List reminders; // [{at, channel, stage}] 발송 이력 (P3a)
   LedgerEntry({
     required this.id,
     required this.companyName,
@@ -286,6 +297,8 @@ class LedgerEntry {
     required this.payments,
     required this.derived,
     required this.sourceConfirmationId,
+    required this.autoRemind,
+    required this.reminders,
   });
   factory LedgerEntry.fromJson(Map j) => LedgerEntry(
         id: j['id'].toString(),
@@ -303,7 +316,27 @@ class LedgerEntry {
         payments: j['payments'] as List? ?? const [],
         derived: j['derived'] == true,
         sourceConfirmationId: j['sourceConfirmationId'] as String?,
+        autoRemind: j['autoRemind'] == true,
+        reminders: j['reminders'] as List? ?? const [],
       );
+}
+
+/// 지급 신뢰도 배지 (P3a). status EXCELLENT/GOOD 만 배지 노출.
+class PaymentBadge {
+  final String grade; // EXCELLENT | GOOD
+  final num avgDays;
+  final int sampleSize;
+  const PaymentBadge(
+      {required this.grade, required this.avgDays, required this.sampleSize});
+  factory PaymentBadge.fromJson(Map j) => PaymentBadge(
+        grade: j['grade']?.toString() ?? 'GOOD',
+        avgDays: (j['avgDays'] as num?) ?? 0,
+        sampleSize: _pint(j['sampleSize']),
+      );
+
+  /// null 이면 null 반환하는 안전 파서.
+  static PaymentBadge? parse(dynamic v) =>
+      v is Map ? PaymentBadge.fromJson(v) : null;
 }
 
 /// 팀원(반장 팀 명단의 1명).
@@ -518,14 +551,19 @@ class BusinessItem {
   final String? businessNumber;
   final String? inviteCode;
   final String? address;
+  final String? ownerName; // 대표자명 (P3a 검색결과)
+  final PaymentBadge? paymentBadge; // 지급 신뢰도 배지 (P3a)
   BusinessItem(this.id, this.name, this.businessNumber, this.inviteCode,
-      this.address);
+      this.address,
+      {this.ownerName, this.paymentBadge});
   factory BusinessItem.fromJson(Map j) => BusinessItem(
         j['id'].toString(),
         j['name']?.toString() ?? '',
         j['businessNumber'] as String?,
         j['inviteCode'] as String?,
         j['address'] as String?,
+        ownerName: j['ownerName'] as String?,
+        paymentBadge: PaymentBadge.parse(j['paymentBadge']),
       );
 }
 

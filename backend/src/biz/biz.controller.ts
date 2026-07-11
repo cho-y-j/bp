@@ -68,6 +68,15 @@ export class BizController {
     return this.biz.pay(userId, dto);
   }
 
+  // GET /biz/payment-badge?businessId= — 내 사업장 지급 평판 배지(본인용, 개선 안내 포함)
+  @Get('payment-badge')
+  paymentBadge(
+    @CurrentUser('userId') userId: string,
+    @Query('businessId') businessId?: string,
+  ) {
+    return this.biz.paymentBadge(userId, businessId);
+  }
+
   // GET /biz/safety-report?month=&businessId= — 안전관리 이행 리포트 PDF
   @Get('safety-report')
   async safetyReport(

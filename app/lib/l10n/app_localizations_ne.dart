@@ -2168,4 +2168,85 @@ class AppLocalizationsNe extends AppLocalizations {
   @override
   String get incomeReportEmptySub =>
       'पुष्टिपत्र लेखेपछि यो रिपोर्टमा आय देखिन्छ।';
+
+  @override
+  String get ledgerAutoRemind => 'स्वतः भुक्तानी सम्झाउने';
+
+  @override
+  String get ledgerAutoRemindHint =>
+      'समयसीमा पछि स्वतः भुक्तानी सम्झौटो पठाउँछ';
+
+  @override
+  String get ledgerRemindNow => 'अहिले सम्झाउने पठाउनुहोस्';
+
+  @override
+  String get ledgerRemindSent => 'भुक्तानी सम्झौटो पठाइयो';
+
+  @override
+  String get ledgerRemindHistory => 'सम्झौटो इतिहास';
+
+  @override
+  String ledgerRemindHistoryItem(String date, String stage) {
+    return '$date · $stage';
+  }
+
+  @override
+  String get reminderStageD7 => '७ दिनको सम्झौटो';
+
+  @override
+  String get reminderStageD30 => '३० दिनको सम्झौटो';
+
+  @override
+  String get reminderStageManual => 'म्यानुअल सम्झौटो';
+
+  @override
+  String get profilePayoutSection => 'भुक्तानी खाता (सम्झौटोका लागि)';
+
+  @override
+  String get profilePayoutBank => 'बैंकको नाम';
+
+  @override
+  String get profilePayoutAccount => 'खाता नम्बर';
+
+  @override
+  String get profilePayoutHolder => 'खातावाला';
+
+  @override
+  String get profilePayoutHint =>
+      'भुक्तानी सम्झौटो पठाउँदा यो खाता सँगै पठाइन्छ (वैकल्पिक)';
+
+  @override
+  String get profilePayoutSaved => 'भुक्तानी खाता सुरक्षित गरियो';
+
+  @override
+  String get badgeExcellent => 'उत्कृष्ट भुक्तानीकर्ता';
+
+  @override
+  String get badgeGood => 'राम्रो भुक्तानीकर्ता';
+
+  @override
+  String badgeAvgDays(int days) {
+    return 'औसत $days दिन';
+  }
+
+  @override
+  String get badgeSelfImproveGood =>
+      '१५ दिनभित्र भुक्तानी गर्नुभयो भने उत्कृष्ट भुक्तानीकर्ता चिन्ह पाइन्छ';
+
+  @override
+  String get badgeSelfImproveNone =>
+      'समयमै भुक्तानी गर्नुभयो भने उत्कृष्ट भुक्तानीकर्ता चिन्ह पाइन्छ';
+
+  @override
+  String badgeInsufficient(int count) {
+    return '$count भुक्तानी रेकर्ड — चिन्ह मूल्यांकनका लागि थप रेकर्ड चाहिन्छ';
+  }
+
+  @override
+  String badgeSampleCount(int count) {
+    return 'पछिल्लो $count का आधारमा';
+  }
+
+  @override
+  String get badgeSelfTitle => 'भुक्तानी विश्वसनीयता';
 }

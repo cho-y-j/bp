@@ -169,6 +169,18 @@ class Repo {
         body: {'amount': amount, if (memo != null && memo.isNotEmpty) 'memo': memo});
   }
 
+  /// 자동 수금 안내 on/off (P3a) → 갱신된 장부 항목.
+  Future<LedgerEntry> setAutoRemind(String ledgerId, bool value) async {
+    final res = await api.patch('/ledger/$ledgerId', body: {'autoRemind': value});
+    return LedgerEntry.fromJson(res as Map);
+  }
+
+  /// 지금 수금 안내 보내기 (P3a) → {sent, channel, lastAt}. ApiException 은 그대로 전파.
+  Future<Map> remindNow(String ledgerId) async {
+    final res = await api.post('/ledger/$ledgerId/remind');
+    return res as Map;
+  }
+
   /// 세금계산서 발행 완료 표시 → { marked, alreadyMarked, taxInvoicedAt }.
   Future<Map> markTaxInvoiced(List<String> ledgerIds) async {
     final res = await api.post('/ledger/tax-invoice-data/mark',

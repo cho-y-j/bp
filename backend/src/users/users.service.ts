@@ -36,6 +36,9 @@ export class UsersService {
       bizNumber?: string;
       bizName?: string;
       bizAddress?: string;
+      payoutBank?: string;
+      payoutAccount?: string;
+      payoutHolder?: string;
     } = {};
     if (dto.name !== undefined) data.name = dto.name;
     if (dto.industryTags !== undefined) data.industryTags = dto.industryTags;
@@ -44,6 +47,9 @@ export class UsersService {
     if (dto.bizNumber !== undefined) data.bizNumber = dto.bizNumber;
     if (dto.bizName !== undefined) data.bizName = dto.bizName;
     if (dto.bizAddress !== undefined) data.bizAddress = dto.bizAddress;
+    if (dto.payoutBank !== undefined) data.payoutBank = dto.payoutBank;
+    if (dto.payoutAccount !== undefined) data.payoutAccount = dto.payoutAccount;
+    if (dto.payoutHolder !== undefined) data.payoutHolder = dto.payoutHolder;
 
     const profile = await this.prisma.profile.update({
       where: { id: userId },

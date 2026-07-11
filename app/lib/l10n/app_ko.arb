@@ -1299,5 +1299,59 @@
     }
   },
   "incomeReportEmptyTitle": "아직 소득 기록이 없어요",
-  "incomeReportEmptySub": "확인서를 작성하면 이 리포트에 수입이 쌓여요."
+  "incomeReportEmptySub": "확인서를 작성하면 이 리포트에 수입이 쌓여요.",
+  "ledgerAutoRemind": "자동 수금 안내",
+  "ledgerAutoRemindHint": "수금일 이후 자동으로 대금 안내를 보냅니다",
+  "ledgerRemindNow": "지금 안내 보내기",
+  "ledgerRemindSent": "수금 안내를 보냈어요",
+  "ledgerRemindHistory": "안내 발송 이력",
+  "ledgerRemindHistoryItem": "{date} · {stage}",
+  "@ledgerRemindHistoryItem":   {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "stage": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderStageD7": "7일 안내",
+  "reminderStageD30": "30일 안내",
+  "reminderStageManual": "수동 안내",
+  "profilePayoutSection": "입금 계좌 (수금 안내용)",
+  "profilePayoutBank": "은행명",
+  "profilePayoutAccount": "계좌번호",
+  "profilePayoutHolder": "예금주",
+  "profilePayoutHint": "수금 안내를 보낼 때 이 계좌가 함께 전달됩니다 (선택 입력)",
+  "profilePayoutSaved": "입금 계좌를 저장했어요",
+  "badgeExcellent": "우수 지급처",
+  "badgeGood": "양호 지급처",
+  "badgeAvgDays": "평균 {days}일",
+  "@badgeAvgDays":   {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "badgeSelfImproveGood": "15일 내 지급 시 우수 지급처 배지를 받을 수 있어요",
+  "badgeSelfImproveNone": "대금을 제때 지급하면 우수 지급처 배지를 받을 수 있어요",
+  "badgeInsufficient": "지급 기록 {count}건 — 배지 산정에는 더 많은 기록이 필요해요",
+  "@badgeInsufficient":   {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "badgeSampleCount": "최근 {count}건 기준",
+  "@badgeSampleCount":   {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "badgeSelfTitle": "지급 신뢰도"
 }

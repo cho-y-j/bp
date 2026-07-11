@@ -11,6 +11,7 @@ export const ALIMTALK_SERVICE = Symbol('ALIMTALK_SERVICE');
 export type AlimtalkTemplateKey =
   | 'CONFIRMATION_SIGN' // 확인서 서명 요청(미가입 상대)
   | 'PAYMENT_DUE' // 수금 예정 안내
+  | 'PAYMENT_REMINDER' // 수금 독촉(작업자 대신 사업장/수기 상대에게 점잖은 대금 안내) — P3a
   | 'HEAT_ALERT'; // 폭염 경고
 
 export interface AlimtalkSendResult {

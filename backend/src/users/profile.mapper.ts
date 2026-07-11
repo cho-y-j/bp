@@ -15,6 +15,9 @@ export interface ProfileDto {
   bizNumber: string | null; // 세금계산서 공급자 사업자번호
   bizName: string | null; // 세금계산서 공급자 상호
   bizAddress: string | null; // 세금계산서 공급자 주소
+  payoutBank: string | null; // 수금 안내용 입금 계좌 은행 (P3a)
+  payoutAccount: string | null; // 수금 안내용 계좌번호 (P3a)
+  payoutHolder: string | null; // 수금 안내용 예금주 (P3a)
   hasBusiness: boolean; // 사업장 보유 여부 (소유 사업장 존재 → 사업장 모드)
   createdAt: Date;
   updatedAt: Date;
@@ -32,6 +35,9 @@ export function toProfileDto(profile: ProfileWithCount): ProfileDto {
     bizNumber: profile.bizNumber,
     bizName: profile.bizName,
     bizAddress: profile.bizAddress,
+    payoutBank: profile.payoutBank,
+    payoutAccount: profile.payoutAccount,
+    payoutHolder: profile.payoutHolder,
     hasBusiness: (profile._count?.ownedBusinesses ?? 0) > 0,
     createdAt: profile.createdAt,
     updatedAt: profile.updatedAt,

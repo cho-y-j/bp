@@ -2121,4 +2121,81 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get incomeReportEmptySub => '확인서를 작성하면 이 리포트에 수입이 쌓여요.';
+
+  @override
+  String get ledgerAutoRemind => '자동 수금 안내';
+
+  @override
+  String get ledgerAutoRemindHint => '수금일 이후 자동으로 대금 안내를 보냅니다';
+
+  @override
+  String get ledgerRemindNow => '지금 안내 보내기';
+
+  @override
+  String get ledgerRemindSent => '수금 안내를 보냈어요';
+
+  @override
+  String get ledgerRemindHistory => '안내 발송 이력';
+
+  @override
+  String ledgerRemindHistoryItem(String date, String stage) {
+    return '$date · $stage';
+  }
+
+  @override
+  String get reminderStageD7 => '7일 안내';
+
+  @override
+  String get reminderStageD30 => '30일 안내';
+
+  @override
+  String get reminderStageManual => '수동 안내';
+
+  @override
+  String get profilePayoutSection => '입금 계좌 (수금 안내용)';
+
+  @override
+  String get profilePayoutBank => '은행명';
+
+  @override
+  String get profilePayoutAccount => '계좌번호';
+
+  @override
+  String get profilePayoutHolder => '예금주';
+
+  @override
+  String get profilePayoutHint => '수금 안내를 보낼 때 이 계좌가 함께 전달됩니다 (선택 입력)';
+
+  @override
+  String get profilePayoutSaved => '입금 계좌를 저장했어요';
+
+  @override
+  String get badgeExcellent => '우수 지급처';
+
+  @override
+  String get badgeGood => '양호 지급처';
+
+  @override
+  String badgeAvgDays(int days) {
+    return '평균 $days일';
+  }
+
+  @override
+  String get badgeSelfImproveGood => '15일 내 지급 시 우수 지급처 배지를 받을 수 있어요';
+
+  @override
+  String get badgeSelfImproveNone => '대금을 제때 지급하면 우수 지급처 배지를 받을 수 있어요';
+
+  @override
+  String badgeInsufficient(int count) {
+    return '지급 기록 $count건 — 배지 산정에는 더 많은 기록이 필요해요';
+  }
+
+  @override
+  String badgeSampleCount(int count) {
+    return '최근 $count건 기준';
+  }
+
+  @override
+  String get badgeSelfTitle => '지급 신뢰도';
 }

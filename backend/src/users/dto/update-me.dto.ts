@@ -39,4 +39,20 @@ export class UpdateMeDto {
   @IsString()
   @Length(0, 200, { message: '주소는 200자 이내입니다.' })
   bizAddress?: string;
+
+  // 수금 안내용 입금 계좌 (P3a, 선택 입력)
+  @IsOptional()
+  @IsString()
+  @Length(0, 30, { message: '은행명은 30자 이내입니다.' })
+  payoutBank?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(0, 40, { message: '계좌번호는 40자 이내입니다.' })
+  payoutAccount?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(0, 40, { message: '예금주는 40자 이내입니다.' })
+  payoutHolder?: string;
 }

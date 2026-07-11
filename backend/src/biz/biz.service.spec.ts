@@ -33,10 +33,14 @@ describe('BizService.pay — 정산 양측 일치', () => {
         .mockImplementation((cb: (tx: unknown) => unknown) => cb(prisma)),
     };
     const notifications = { create: jest.fn().mockResolvedValue({}) };
+    const badges = {
+      recomputeBusinessQuietly: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new BizService(
       prisma as never,
       {} as never,
       notifications as never,
+      badges as never,
     );
 
     const res = await svc.pay('owner1', {
@@ -82,10 +86,14 @@ describe('BizService.pay — 정산 양측 일치', () => {
         .mockImplementation((cb: (tx: unknown) => unknown) => cb(prisma)),
     };
     const notifications = { create: jest.fn() };
+    const badges = {
+      recomputeBusinessQuietly: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new BizService(
       prisma as never,
       {} as never,
       notifications as never,
+      badges as never,
     );
     const res = await svc.pay('owner1', { ledgerEntryIds: ['L2'] });
     expect(res.paidCount).toBe(0);

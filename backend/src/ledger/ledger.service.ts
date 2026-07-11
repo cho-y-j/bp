@@ -296,9 +296,12 @@ export class LedgerService {
     const paid = sumPayments(entry.payments);
     const status = deriveLedgerStatus(amount, paid, dueDate);
 
+    const data: Prisma.LedgerEntryUpdateInput = { dueDate, status };
+    if (dto.autoRemind !== undefined) data.autoRemind = dto.autoRemind;
+
     const updated = await this.prisma.ledgerEntry.update({
       where: { id },
-      data: { dueDate, status },
+      data,
     });
     return toLedgerDto(updated);
   }

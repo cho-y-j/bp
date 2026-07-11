@@ -46,6 +46,12 @@ export class BusinessesController {
   ) {
     return this.businesses.updateMine(userId, dto);
   }
+
+  // GET /businesses/:id — 단건 조회(공개 정보 + 지급 평판 배지). 'search'/'mine' 뒤에 선언.
+  @Get(':id')
+  getById(@Param('id', ParseUUIDPipe) id: string) {
+    return this.businesses.getById(id);
+  }
 }
 
 /** /workers/search — 전화번호로 작업자 검색(동의자만, 이름 마스킹) */

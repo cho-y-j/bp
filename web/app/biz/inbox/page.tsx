@@ -11,6 +11,7 @@ import SignaturePad, {
   type SignaturePadHandle,
 } from '@/components/SignaturePad';
 import { FileText, Pen, CheckCircle } from '@/components/Icons';
+import BizPaymentBadge from '@/components/BizPaymentBadge';
 
 interface InboxItem {
   id: string;
@@ -94,6 +95,8 @@ export default function InboxPage() {
       <p className="page-sub">
         작업자가 보낸 작업확인서입니다. 확인 후 앱에서 바로 서명하세요.
       </p>
+
+      <BizPaymentBadge businessId={businessId} />
 
       {error ? (
         <p style={{ color: 'var(--receivable)' }}>{error}</p>

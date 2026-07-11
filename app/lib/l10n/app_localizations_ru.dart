@@ -2173,4 +2173,85 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get incomeReportEmptySub =>
       'Создайте подтверждение — доход появится в этом отчёте.';
+
+  @override
+  String get ledgerAutoRemind => 'Авто-напоминание об оплате';
+
+  @override
+  String get ledgerAutoRemindHint =>
+      'Автоматически отправляет напоминание об оплате после срока';
+
+  @override
+  String get ledgerRemindNow => 'Отправить напоминание';
+
+  @override
+  String get ledgerRemindSent => 'Напоминание об оплате отправлено';
+
+  @override
+  String get ledgerRemindHistory => 'История напоминаний';
+
+  @override
+  String ledgerRemindHistoryItem(String date, String stage) {
+    return '$date · $stage';
+  }
+
+  @override
+  String get reminderStageD7 => 'Напоминание 7 дней';
+
+  @override
+  String get reminderStageD30 => 'Напоминание 30 дней';
+
+  @override
+  String get reminderStageManual => 'Ручное напоминание';
+
+  @override
+  String get profilePayoutSection => 'Счёт для получения (для напоминаний)';
+
+  @override
+  String get profilePayoutBank => 'Банк';
+
+  @override
+  String get profilePayoutAccount => 'Номер счёта';
+
+  @override
+  String get profilePayoutHolder => 'Владелец счёта';
+
+  @override
+  String get profilePayoutHint =>
+      'Этот счёт добавляется при отправке напоминания об оплате (необязательно)';
+
+  @override
+  String get profilePayoutSaved => 'Счёт для получения сохранён';
+
+  @override
+  String get badgeExcellent => 'Отличный плательщик';
+
+  @override
+  String get badgeGood => 'Хороший плательщик';
+
+  @override
+  String badgeAvgDays(int days) {
+    return 'В среднем $days дн.';
+  }
+
+  @override
+  String get badgeSelfImproveGood =>
+      'Платите в течение 15 дней, чтобы получить значок «Отличный плательщик»';
+
+  @override
+  String get badgeSelfImproveNone =>
+      'Платите вовремя, чтобы получить значок «Отличный плательщик»';
+
+  @override
+  String badgeInsufficient(int count) {
+    return 'Записей об оплате: $count — для значка нужно больше данных';
+  }
+
+  @override
+  String badgeSampleCount(int count) {
+    return 'По последним $count';
+  }
+
+  @override
+  String get badgeSelfTitle => 'Надёжность оплаты';
 }

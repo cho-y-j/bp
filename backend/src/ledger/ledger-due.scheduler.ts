@@ -5,6 +5,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { computeDday } from '../common/dday.util';
 import { sumPayments } from './ledger.util';
+import { ReminderService } from './reminder.service';
+import { BadgeService } from './badge.service';
 
 const TARGET_DDAYS = [1, 0]; // D-1 / D-0
 
@@ -21,6 +23,8 @@ export class LedgerDueScheduler {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly reminders: ReminderService,
+    private readonly badges: BadgeService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_9AM, {
@@ -29,6 +33,24 @@ export class LedgerDueScheduler {
   })
   async handleDailyDueScan(): Promise<number> {
     return this.runDueScan();
+  }
+
+  /** 수금 독촉 자동화 스캔 (매일 10:00 KST) — autoRemind·미수·D+7/D+30 도달 항목 발송. */
+  @Cron(CronExpression.EVERY_DAY_AT_10AM, {
+    name: 'ledger-reminder',
+    timeZone: 'Asia/Seoul',
+  })
+  async handleDailyReminderScan(): Promise<number> {
+    return this.reminders.runReminderScan();
+  }
+
+  /** 지급 평판 배지 캐시 일일 갱신 (매일 04:00 KST). */
+  @Cron(CronExpression.EVERY_DAY_AT_4AM, {
+    name: 'payment-badge',
+    timeZone: 'Asia/Seoul',
+  })
+  async handleDailyBadgeRefresh(): Promise<number> {
+    return this.badges.recomputeAll();
   }
 
   /** 실제 스캔 로직(테스트/수동 트리거 재사용). 생성한 알림 수 반환. */

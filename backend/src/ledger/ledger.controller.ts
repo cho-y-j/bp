@@ -13,13 +13,17 @@ import {
 import type { Response } from 'express';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { LedgerService } from './ledger.service';
+import { ReminderService } from './reminder.service';
 import { AddPaymentDto } from './dto/add-payment.dto';
 import { UpdateLedgerDto } from './dto/update-ledger.dto';
 import { MarkTaxInvoiceDto } from './dto/mark-tax-invoice.dto';
 
 @Controller('ledger')
 export class LedgerController {
-  constructor(private readonly ledger: LedgerService) {}
+  constructor(
+    private readonly ledger: LedgerService,
+    private readonly reminders: ReminderService,
+  ) {}
 
   // GET /ledger/summary?month= — 월 합계
   @Get('summary')
@@ -124,7 +128,7 @@ export class LedgerController {
     return this.ledger.addPayment(userId, id, dto);
   }
 
-  // PATCH /ledger/:id — 수금예정일 수정
+  // PATCH /ledger/:id — 수금예정일 수정 + 자동 수금 안내 토글
   @Patch(':id')
   update(
     @CurrentUser('userId') userId: string,
@@ -132,5 +136,14 @@ export class LedgerController {
     @Body() dto: UpdateLedgerDto,
   ) {
     return this.ledger.updateLedger(userId, id, dto);
+  }
+
+  // POST /ledger/:id/remind — 수동 즉시 수금 안내(쿨다운 3일, 409)
+  @Post(':id/remind')
+  remind(
+    @CurrentUser('userId') userId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.reminders.manualRemind(userId, id);
   }
 }

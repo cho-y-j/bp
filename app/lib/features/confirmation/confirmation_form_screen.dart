@@ -8,6 +8,7 @@ import '../../core/api_client.dart';
 import '../../l10n/l10n_ext.dart';
 import '../../models/models.dart';
 import '../../providers/data.dart';
+import '../../providers/biz.dart';
 import '../../providers/drafts.dart';
 import '../../widgets/common.dart';
 import 'share_helper.dart';
@@ -957,6 +958,12 @@ class _CounterpartySection extends StatelessWidget {
               ),
             ),
           ]),
+        // 연결된 사업장의 지급 신뢰도 배지 (P3a).
+        if (useBusiness && businessId != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: _ConnectedBizBadge(businessId: businessId!),
+          ),
       ],
     );
   }
@@ -978,6 +985,51 @@ class _CounterpartySection extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 color: on ? c.accentText : c.ink2)),
       ),
+    );
+  }
+}
+
+/// 선택된 연결 사업장의 지급 신뢰도 배지 (P3a). 없으면 아무것도 그리지 않음.
+class _ConnectedBizBadge extends ConsumerStatefulWidget {
+  final String businessId;
+  const _ConnectedBizBadge({required this.businessId});
+  @override
+  ConsumerState<_ConnectedBizBadge> createState() => _ConnectedBizBadgeState();
+}
+
+class _ConnectedBizBadgeState extends ConsumerState<_ConnectedBizBadge> {
+  late Future<PaymentBadge?> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _load();
+  }
+
+  @override
+  void didUpdateWidget(_ConnectedBizBadge old) {
+    super.didUpdateWidget(old);
+    if (old.businessId != widget.businessId) _future = _load();
+  }
+
+  Future<PaymentBadge?> _load() async {
+    try {
+      return await ref.read(bizRepoProvider).businessBadgeById(widget.businessId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<PaymentBadge?>(
+      future: _future,
+      builder: (ctx, snap) {
+        final b = snap.data;
+        if (b == null) return const SizedBox.shrink();
+        return Align(
+            alignment: Alignment.centerLeft, child: PaymentBadgeChip(b));
+      },
     );
   }
 }

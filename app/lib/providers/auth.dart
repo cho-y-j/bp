@@ -105,6 +105,16 @@ class AuthController extends StateNotifier<AuthState> {
     state = AuthState(AuthStatus.authenticated, Profile.fromJson(res as Map));
   }
 
+  /// 수금 안내용 입금 계좌 저장 (PATCH /me). 제공된 키만 전송 (P3a).
+  Future<void> savePayout({String? bank, String? account, String? holder}) async {
+    final res = await _api.patch('/me', body: {
+      if (bank != null) 'payoutBank': bank.trim(),
+      if (account != null) 'payoutAccount': account.trim(),
+      if (holder != null) 'payoutHolder': holder.trim(),
+    });
+    state = AuthState(AuthStatus.authenticated, Profile.fromJson(res as Map));
+  }
+
   Future<void> refreshProfile() async {
     try {
       final me = await _api.get('/me');

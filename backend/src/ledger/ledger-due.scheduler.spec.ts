@@ -14,9 +14,13 @@ function makeScheduler(opts: {
         .mockResolvedValue(opts.existing ? { id: 'n1' } : null),
     },
   };
+  const reminders = { runReminderScan: jest.fn().mockResolvedValue(0) };
+  const badges = { recomputeAll: jest.fn().mockResolvedValue(0) };
   const scheduler = new LedgerDueScheduler(
     prisma as never,
     notifications as never,
+    reminders as never,
+    badges as never,
   );
   return { scheduler, notifications, prisma };
 }

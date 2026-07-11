@@ -3,6 +3,7 @@ import '../theme/app_colors.dart';
 import '../core/format.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/l10n_ext.dart';
+import '../models/models.dart';
 
 /// 종이 확인서 시그니처 카드 — 상단 절취선(perforation)·스탬프 + 본문.
 class PaperCard extends StatelessWidget {
@@ -275,6 +276,48 @@ class TeamBadge extends StatelessWidget {
           Text(context.l.ledgerTeamBadge,
               style: TextStyle(
                   fontSize: 12, fontWeight: FontWeight.w800, color: c.accentText)),
+        ],
+      ),
+    );
+  }
+}
+
+/// 지급 신뢰도 배지 칩 (P3a). EXCELLENT/GOOD 만 노출(부정 라벨 없음).
+/// [showAvg] 가 true 면 평균 지급일을 함께 표기.
+class PaymentBadgeChip extends StatelessWidget {
+  final PaymentBadge badge;
+  final bool showAvg;
+  const PaymentBadgeChip(this.badge, {super.key, this.showAvg = true});
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l = context.l;
+    final excellent = badge.grade == 'EXCELLENT';
+    final bg = excellent
+        ? c.deposited.withValues(alpha: 0.12)
+        : c.primary.withValues(alpha: 0.12);
+    final fg = excellent ? c.depositedBadge : c.accentText;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(excellent ? '⚡ ${l.badgeExcellent}' : l.badgeGood,
+              style: TextStyle(
+                  fontSize: 12, fontWeight: FontWeight.w800, color: fg)),
+          if (showAvg) ...[
+            const SizedBox(width: 5),
+            Text(l.badgeAvgDays(badge.avgDays.round()),
+                style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    color: fg.withValues(alpha: 0.85),
+                    fontFeatures: const [FontFeature.tabularFigures()])),
+          ],
         ],
       ),
     );

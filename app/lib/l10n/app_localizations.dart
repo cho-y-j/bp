@@ -3963,6 +3963,144 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'확인서를 작성하면 이 리포트에 수입이 쌓여요.'**
   String get incomeReportEmptySub;
+
+  /// No description provided for @ledgerAutoRemind.
+  ///
+  /// In ko, this message translates to:
+  /// **'자동 수금 안내'**
+  String get ledgerAutoRemind;
+
+  /// No description provided for @ledgerAutoRemindHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'수금일 이후 자동으로 대금 안내를 보냅니다'**
+  String get ledgerAutoRemindHint;
+
+  /// No description provided for @ledgerRemindNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 안내 보내기'**
+  String get ledgerRemindNow;
+
+  /// No description provided for @ledgerRemindSent.
+  ///
+  /// In ko, this message translates to:
+  /// **'수금 안내를 보냈어요'**
+  String get ledgerRemindSent;
+
+  /// No description provided for @ledgerRemindHistory.
+  ///
+  /// In ko, this message translates to:
+  /// **'안내 발송 이력'**
+  String get ledgerRemindHistory;
+
+  /// No description provided for @ledgerRemindHistoryItem.
+  ///
+  /// In ko, this message translates to:
+  /// **'{date} · {stage}'**
+  String ledgerRemindHistoryItem(String date, String stage);
+
+  /// No description provided for @reminderStageD7.
+  ///
+  /// In ko, this message translates to:
+  /// **'7일 안내'**
+  String get reminderStageD7;
+
+  /// No description provided for @reminderStageD30.
+  ///
+  /// In ko, this message translates to:
+  /// **'30일 안내'**
+  String get reminderStageD30;
+
+  /// No description provided for @reminderStageManual.
+  ///
+  /// In ko, this message translates to:
+  /// **'수동 안내'**
+  String get reminderStageManual;
+
+  /// No description provided for @profilePayoutSection.
+  ///
+  /// In ko, this message translates to:
+  /// **'입금 계좌 (수금 안내용)'**
+  String get profilePayoutSection;
+
+  /// No description provided for @profilePayoutBank.
+  ///
+  /// In ko, this message translates to:
+  /// **'은행명'**
+  String get profilePayoutBank;
+
+  /// No description provided for @profilePayoutAccount.
+  ///
+  /// In ko, this message translates to:
+  /// **'계좌번호'**
+  String get profilePayoutAccount;
+
+  /// No description provided for @profilePayoutHolder.
+  ///
+  /// In ko, this message translates to:
+  /// **'예금주'**
+  String get profilePayoutHolder;
+
+  /// No description provided for @profilePayoutHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'수금 안내를 보낼 때 이 계좌가 함께 전달됩니다 (선택 입력)'**
+  String get profilePayoutHint;
+
+  /// No description provided for @profilePayoutSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'입금 계좌를 저장했어요'**
+  String get profilePayoutSaved;
+
+  /// No description provided for @badgeExcellent.
+  ///
+  /// In ko, this message translates to:
+  /// **'우수 지급처'**
+  String get badgeExcellent;
+
+  /// No description provided for @badgeGood.
+  ///
+  /// In ko, this message translates to:
+  /// **'양호 지급처'**
+  String get badgeGood;
+
+  /// No description provided for @badgeAvgDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'평균 {days}일'**
+  String badgeAvgDays(int days);
+
+  /// No description provided for @badgeSelfImproveGood.
+  ///
+  /// In ko, this message translates to:
+  /// **'15일 내 지급 시 우수 지급처 배지를 받을 수 있어요'**
+  String get badgeSelfImproveGood;
+
+  /// No description provided for @badgeSelfImproveNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'대금을 제때 지급하면 우수 지급처 배지를 받을 수 있어요'**
+  String get badgeSelfImproveNone;
+
+  /// No description provided for @badgeInsufficient.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 기록 {count}건 — 배지 산정에는 더 많은 기록이 필요해요'**
+  String badgeInsufficient(int count);
+
+  /// No description provided for @badgeSampleCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 {count}건 기준'**
+  String badgeSampleCount(int count);
+
+  /// No description provided for @badgeSelfTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 신뢰도'**
+  String get badgeSelfTitle;
 }
 
 class _AppLocalizationsDelegate

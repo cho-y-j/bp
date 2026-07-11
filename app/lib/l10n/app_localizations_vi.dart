@@ -2168,4 +2168,85 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get incomeReportEmptySub =>
       'Hãy lập giấy xác nhận, thu nhập sẽ hiện ở báo cáo này.';
+
+  @override
+  String get ledgerAutoRemind => 'Nhắc thu tiền tự động';
+
+  @override
+  String get ledgerAutoRemindHint =>
+      'Tự động gửi nhắc thanh toán sau ngày đến hạn';
+
+  @override
+  String get ledgerRemindNow => 'Gửi nhắc ngay';
+
+  @override
+  String get ledgerRemindSent => 'Đã gửi nhắc thanh toán';
+
+  @override
+  String get ledgerRemindHistory => 'Lịch sử nhắc';
+
+  @override
+  String ledgerRemindHistoryItem(String date, String stage) {
+    return '$date · $stage';
+  }
+
+  @override
+  String get reminderStageD7 => 'Nhắc 7 ngày';
+
+  @override
+  String get reminderStageD30 => 'Nhắc 30 ngày';
+
+  @override
+  String get reminderStageManual => 'Nhắc thủ công';
+
+  @override
+  String get profilePayoutSection => 'Tài khoản nhận tiền (để nhắc thu)';
+
+  @override
+  String get profilePayoutBank => 'Tên ngân hàng';
+
+  @override
+  String get profilePayoutAccount => 'Số tài khoản';
+
+  @override
+  String get profilePayoutHolder => 'Chủ tài khoản';
+
+  @override
+  String get profilePayoutHint =>
+      'Tài khoản này sẽ được gửi kèm khi nhắc thanh toán (tùy chọn)';
+
+  @override
+  String get profilePayoutSaved => 'Đã lưu tài khoản nhận tiền';
+
+  @override
+  String get badgeExcellent => 'Bên trả xuất sắc';
+
+  @override
+  String get badgeGood => 'Bên trả tốt';
+
+  @override
+  String badgeAvgDays(int days) {
+    return 'TB $days ngày';
+  }
+
+  @override
+  String get badgeSelfImproveGood =>
+      'Thanh toán trong 15 ngày để nhận huy hiệu Bên trả xuất sắc';
+
+  @override
+  String get badgeSelfImproveNone =>
+      'Thanh toán đúng hạn để nhận huy hiệu Bên trả xuất sắc';
+
+  @override
+  String badgeInsufficient(int count) {
+    return '$count lần thanh toán — cần thêm dữ liệu để xếp huy hiệu';
+  }
+
+  @override
+  String badgeSampleCount(int count) {
+    return 'Dựa trên $count gần nhất';
+  }
+
+  @override
+  String get badgeSelfTitle => 'Độ tin cậy thanh toán';
 }
