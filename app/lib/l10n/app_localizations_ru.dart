@@ -2075,4 +2075,102 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get tbmHzConfined => 'Удушье в замкнутом пространстве';
+
+  @override
+  String get incomeReportMenuTitle => 'Отчёт о доходах';
+
+  @override
+  String get incomeReportMenuSub => 'Годовой доход, долги и трудодни';
+
+  @override
+  String get incomeReportTitle => 'Отчёт о доходах';
+
+  @override
+  String incomeReportYear(String year) {
+    return '$year год';
+  }
+
+  @override
+  String get incomeReportTotalBilled => 'Всего начислено';
+
+  @override
+  String get incomeReportTotalPaid => 'Всего оплачено';
+
+  @override
+  String get incomeReportTotalOutstanding => 'Всего долг';
+
+  @override
+  String get incomeReportTotalDays => 'Рабочих дней';
+
+  @override
+  String get incomeReportTotalGongsu => 'Всего гонсу';
+
+  @override
+  String get incomeReportTeamPayout => 'Выплата бригаде';
+
+  @override
+  String get incomeReportNetBilled => 'Чистый доход (справка)';
+
+  @override
+  String get incomeReportNetHint =>
+      'Начислено − выплаты членам (доля бригадира)';
+
+  @override
+  String get incomeReportMonthlyTrend => 'Помесячная динамика';
+
+  @override
+  String incomeReportPeakLabel(String amount) {
+    return 'Максимум $amount';
+  }
+
+  @override
+  String get incomeReportByCompany => 'По контрагентам';
+
+  @override
+  String incomeReportEntryCount(int n) {
+    return '$n шт.';
+  }
+
+  @override
+  String incomeReportOutstandingShort(String amount) {
+    return 'Долг $amount';
+  }
+
+  @override
+  String get incomeReportTaxTitle => 'О подоходном налоге';
+
+  @override
+  String get incomeReportTaxL1 =>
+      'Совокупный подоходный налог подаётся и уплачивается ежегодно в мае за доход предыдущего года.';
+
+  @override
+  String get incomeReportTaxL2 =>
+      'С дохода от личных услуг часто удерживают 3,3% при выплате.';
+
+  @override
+  String get incomeReportTaxL3 =>
+      'Удержанный налог пересчитывается (возврат или доплата) при подаче в мае.';
+
+  @override
+  String get incomeReportTaxL4 =>
+      'Хранение расходов и подтверждений·ведомостей помогает при подаче.';
+
+  @override
+  String get incomeReportTaxL5 =>
+      'Это общая информация, а не налоговая консультация. Для точной подачи обратитесь к специалисту или на Hometax.';
+
+  @override
+  String get incomeReportSavePdf => 'Сохранить / отправить PDF';
+
+  @override
+  String incomeReportPdfFail(String msg) {
+    return 'Не удалось открыть отчёт: $msg';
+  }
+
+  @override
+  String get incomeReportEmptyTitle => 'Пока нет данных о доходах';
+
+  @override
+  String get incomeReportEmptySub =>
+      'Создайте подтверждение — доход появится в этом отчёте.';
 }

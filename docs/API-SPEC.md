@@ -62,6 +62,8 @@
 - `POST /ledger/:id/payments` — 입금 기록(부분입금 허용). **P2a**: 팀 파생 항목(`derived=true`)도 입금 기록 가능. `PATCH /ledger/:id` — 수금예정일 수정. **P2a**: 파생 항목은 읽기전용 → 409 LEDGER_DERIVED_READONLY.
   - 장부 항목 응답에 **P2a** `derived`(팀 파생 여부)·`sourceConfirmationId` 포함.
 - `GET /ledger/statement?month=` — 월간 명세서 PDF
+- `GET /ledger/income-report?year=YYYY | from=YYYY-MM&to=YYYY-MM` **(P2d)** — 연간(기간별) 소득 리포트. `{ range{from,to,year}, monthly[{month,billed,paid,outstanding,daysWorked,gongsu}](데이터 없는 월도 0으로 채움), companies[{companyName,businessId,count,total,paid,outstanding}](총액 내림차순), totals{totalBilled,totalPaid,totalOutstanding,totalDays,totalGongsu,entryCount,teamPayout,netBilled}, taxNote{period,lines[]} }`. **팀 파생 처리**: 팀원 파생 항목은 본인 소득으로 집계(teamPayout 0), 반장은 팀 확인서 전체가 매출이며 팀원 지급분(본인 몫 제외)을 `teamPayout` 으로 표기해 `netBilled(=총청구−지급분)` 순소득 참고 제공(차감 아님). 범위 최대 24개월, year/from-to 누락 400, year 형식 400. 종소세 안내는 일반 정보(5월 신고·3.3% 원천징수, 세무 상담 아님 명시).
+- `GET /ledger/income-report/pdf?year=|from=&to=` **(P2d)** — 위 리포트를 인증 blob PDF(월별 표+상대별 표+총계+종소세 안내, 나눔고딕·페이지 브레이크).
 
 ## 연동 /connections, /businesses
 - `POST /businesses` — 사업장 생성(초대코드 자동 발급) / `GET /businesses/search?q=` — 상호·코드 검색

@@ -2029,4 +2029,96 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get tbmHzConfined => '밀폐공간 질식';
+
+  @override
+  String get incomeReportMenuTitle => '소득 리포트';
+
+  @override
+  String get incomeReportMenuSub => '연간 수입·미수·공수 한눈에';
+
+  @override
+  String get incomeReportTitle => '소득 리포트';
+
+  @override
+  String incomeReportYear(String year) {
+    return '$year년';
+  }
+
+  @override
+  String get incomeReportTotalBilled => '총 청구액';
+
+  @override
+  String get incomeReportTotalPaid => '총 입금';
+
+  @override
+  String get incomeReportTotalOutstanding => '총 미수';
+
+  @override
+  String get incomeReportTotalDays => '일한 날';
+
+  @override
+  String get incomeReportTotalGongsu => '총 공수';
+
+  @override
+  String get incomeReportTeamPayout => '팀 지급분';
+
+  @override
+  String get incomeReportNetBilled => '순소득 참고';
+
+  @override
+  String get incomeReportNetHint => '청구액 − 팀원 지급분 (반장 본인 몫)';
+
+  @override
+  String get incomeReportMonthlyTrend => '월별 추이';
+
+  @override
+  String incomeReportPeakLabel(String amount) {
+    return '최고 $amount';
+  }
+
+  @override
+  String get incomeReportByCompany => '상대별 합계';
+
+  @override
+  String incomeReportEntryCount(int n) {
+    return '$n건';
+  }
+
+  @override
+  String incomeReportOutstandingShort(String amount) {
+    return '미수 $amount';
+  }
+
+  @override
+  String get incomeReportTaxTitle => '종합소득세 안내';
+
+  @override
+  String get incomeReportTaxL1 => '종합소득세는 매년 5월에 전년도 소득을 신고·납부합니다.';
+
+  @override
+  String get incomeReportTaxL2 => '인적용역 사업소득은 대금 지급 시 3.3%가 원천징수되는 경우가 많습니다.';
+
+  @override
+  String get incomeReportTaxL3 => '원천징수된 세액은 5월 신고 때 정산(환급 또는 추가납부)됩니다.';
+
+  @override
+  String get incomeReportTaxL4 => '지출 경비와 확인서·명세서를 보관하면 신고에 도움이 됩니다.';
+
+  @override
+  String get incomeReportTaxL5 =>
+      '일반 안내이며 세무 상담이 아닙니다. 정확한 신고는 세무 전문가·홈택스를 확인하세요.';
+
+  @override
+  String get incomeReportSavePdf => 'PDF 저장·공유';
+
+  @override
+  String incomeReportPdfFail(String msg) {
+    return '리포트를 열지 못했어요: $msg';
+  }
+
+  @override
+  String get incomeReportEmptyTitle => '아직 소득 기록이 없어요';
+
+  @override
+  String get incomeReportEmptySub => '확인서를 작성하면 이 리포트에 수입이 쌓여요.';
 }

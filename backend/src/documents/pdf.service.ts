@@ -8,6 +8,7 @@ import { promises as fs } from 'fs';
 import { AppException } from '../common/errors';
 import type {
   ConfirmationPdfData,
+  IncomeReportPdfData,
   LaborContractPdfData,
   SafetyReportPdfData,
   StatementPdfData,
@@ -890,6 +891,194 @@ export class PdfService {
     rightText(this.krw(data.totalAmount), cols.amount + 60, y - 8, 12);
     rightText(this.krw(data.totalPaid), cols.paid + 50, y - 8, 12);
     rightText(this.krw(data.totalOutstanding), cols.out, y - 8, 12);
+
+    const bytes = await pdf.save();
+    return Buffer.from(bytes);
+  }
+
+  /** 연간(기간별) 소득 리포트 PDF — 총계 + 월별 추이 표 + 상대별 표 + 종소세 안내 (P2d). */
+  async renderIncomeReportPdf(data: IncomeReportPdfData): Promise<Buffer> {
+    const pdf = await PDFDocument.create();
+    pdf.registerFontkit(fontkit);
+    const fontBytes = await this.loadFontBytes();
+    const font = await pdf.embedFont(fontBytes, { subset: true });
+
+    const A4: [number, number] = [595.28, 841.89];
+    let page: PDFPage = pdf.addPage(A4);
+    const { width, height } = page.getSize();
+    const margin = 48;
+    let y = height - margin;
+    const black = rgb(0.1, 0.1, 0.1);
+    const gray = rgb(0.45, 0.45, 0.45);
+    const line = rgb(0.8, 0.8, 0.8);
+
+    const text = (
+      s: string,
+      x: number,
+      yy: number,
+      size: number,
+      color = black,
+    ) => page.drawText(s ?? '', { x, y: yy, size, font, color });
+    const rightText = (
+      s: string,
+      xRight: number,
+      yy: number,
+      size: number,
+      color = black,
+    ) => text(s, xRight - font.widthOfTextAtSize(s, size), yy, size, color);
+    const pageBreak = (need: number) => {
+      if (y < margin + need) {
+        page = pdf.addPage(A4);
+        y = height - margin;
+      }
+    };
+    const clip = (s: string, maxW: number, size: number): string => {
+      let shown = s ?? '';
+      while (font.widthOfTextAtSize(shown, size) > maxW && shown.length > 1) {
+        shown = shown.slice(0, -1);
+      }
+      return shown !== (s ?? '') ? shown.slice(0, -1) + '…' : shown;
+    };
+
+    // 제목
+    const titleSize = 20;
+    const t = `${data.title} (${data.periodLabel})`;
+    text(t, (width - font.widthOfTextAtSize(t, titleSize)) / 2, y, titleSize);
+    y -= 18;
+    text(`작업자: ${data.workerName}`, margin, y, 10, gray);
+    y -= 16;
+    page.drawLine({
+      start: { x: margin, y },
+      end: { x: width - margin, y },
+      thickness: 1,
+      color: black,
+    });
+    y -= 24;
+
+    // 총계 요약
+    text('■ 총계', margin, y, 12);
+    y -= 20;
+    const gongStr = `${data.totals.totalGongsu}`;
+    const summaryRows: Array<[string, string]> = [
+      ['총 청구액', this.krw(data.totals.totalBilled)],
+      ['총 입금', this.krw(data.totals.totalPaid)],
+      ['총 미수', this.krw(data.totals.totalOutstanding)],
+      ['총 일한 날', `${data.totals.totalDays}일`],
+      ['총 공수', `${gongStr}공수`],
+    ];
+    if (data.totals.teamPayout > 0) {
+      summaryRows.push(['팀 지급분(팀원 몫)', this.krw(data.totals.teamPayout)]);
+      summaryRows.push(['순소득 참고(청구-지급분)', this.krw(data.totals.netBilled)]);
+    }
+    for (const [label, value] of summaryRows) {
+      text(label, margin, y, 11, gray);
+      rightText(value, width - margin, y, 11);
+      y -= 18;
+    }
+    y -= 10;
+
+    // 월별 추이 표
+    pageBreak(120);
+    text('■ 월별 추이', margin, y, 12);
+    y -= 20;
+    const mcol = {
+      month: margin,
+      billed: margin + 170,
+      paid: margin + 290,
+      out: margin + 400,
+      days: width - margin,
+    };
+    text('월', mcol.month, y, 10, gray);
+    rightText('청구액', mcol.billed, y, 10, gray);
+    rightText('입금', mcol.paid, y, 10, gray);
+    rightText('미수', mcol.out, y, 10, gray);
+    rightText('일수/공수', mcol.days, y, 10, gray);
+    y -= 6;
+    page.drawLine({
+      start: { x: margin, y },
+      end: { x: width - margin, y },
+      thickness: 0.6,
+      color: line,
+    });
+    y -= 16;
+    for (const m of data.monthly) {
+      pageBreak(30);
+      text(m.month, mcol.month, y, 10);
+      rightText(this.krw(m.billed), mcol.billed, y, 10);
+      rightText(this.krw(m.paid), mcol.paid, y, 10);
+      rightText(this.krw(m.outstanding), mcol.out, y, 10);
+      const dg =
+        m.gongsu > 0 ? `${m.daysWorked}일/${m.gongsu}공수` : `${m.daysWorked}일`;
+      rightText(dg, mcol.days, y, 10, gray);
+      y -= 16;
+    }
+    y -= 12;
+
+    // 상대별 표
+    pageBreak(100);
+    text('■ 상대별 합계', margin, y, 12);
+    y -= 20;
+    const ccol = {
+      name: margin,
+      count: margin + 200,
+      total: margin + 300,
+      paid: margin + 400,
+      out: width - margin,
+    };
+    text('상대(회사)', ccol.name, y, 10, gray);
+    rightText('건수', ccol.count, y, 10, gray);
+    rightText('총액', ccol.total, y, 10, gray);
+    rightText('입금', ccol.paid, y, 10, gray);
+    rightText('미수', ccol.out, y, 10, gray);
+    y -= 6;
+    page.drawLine({
+      start: { x: margin, y },
+      end: { x: width - margin, y },
+      thickness: 0.6,
+      color: line,
+    });
+    y -= 16;
+    if (data.companies.length === 0) {
+      text('기록 없음', ccol.name, y, 10, gray);
+      y -= 16;
+    }
+    for (const c of data.companies) {
+      pageBreak(30);
+      text(clip(c.companyName || '(미지정)', 180, 11), ccol.name, y, 11);
+      rightText(`${c.count}건`, ccol.count, y, 10, gray);
+      rightText(this.krw(c.total), ccol.total, y, 10);
+      rightText(this.krw(c.paid), ccol.paid, y, 10);
+      rightText(this.krw(c.outstanding), ccol.out, y, 10);
+      y -= 16;
+    }
+    y -= 14;
+
+    // 종소세 안내
+    pageBreak(120);
+    text('■ 종합소득세 안내', margin, y, 12);
+    y -= 20;
+    const noteMaxW = width - 2 * margin - 12;
+    for (const noteLine of data.taxNoteLines) {
+      // 간단 래핑
+      let buf = '';
+      const flush = () => {
+        pageBreak(24);
+        text(`· ${buf}`, margin, y, 9, gray);
+        y -= 14;
+        buf = '';
+      };
+      for (const ch of noteLine) {
+        const test = buf + ch;
+        if (font.widthOfTextAtSize(`· ${test}`, 9) > noteMaxW) {
+          flush();
+          buf = ch;
+        } else {
+          buf = test;
+        }
+      }
+      if (buf) flush();
+      y -= 2;
+    }
 
     const bytes = await pdf.save();
     return Buffer.from(bytes);

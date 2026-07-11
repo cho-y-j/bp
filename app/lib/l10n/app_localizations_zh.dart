@@ -2026,4 +2026,95 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tbmHzConfined => '密闭空间窒息';
+
+  @override
+  String get incomeReportMenuTitle => '收入报告';
+
+  @override
+  String get incomeReportMenuSub => '年度收入·未收·工数一目了然';
+
+  @override
+  String get incomeReportTitle => '收入报告';
+
+  @override
+  String incomeReportYear(String year) {
+    return '$year年';
+  }
+
+  @override
+  String get incomeReportTotalBilled => '总请款额';
+
+  @override
+  String get incomeReportTotalPaid => '总入账';
+
+  @override
+  String get incomeReportTotalOutstanding => '总未收';
+
+  @override
+  String get incomeReportTotalDays => '工作天数';
+
+  @override
+  String get incomeReportTotalGongsu => '总工数';
+
+  @override
+  String get incomeReportTeamPayout => '团队支付';
+
+  @override
+  String get incomeReportNetBilled => '净收入(参考)';
+
+  @override
+  String get incomeReportNetHint => '请款额 − 队员支付(班长本人份额)';
+
+  @override
+  String get incomeReportMonthlyTrend => '月度趋势';
+
+  @override
+  String incomeReportPeakLabel(String amount) {
+    return '最高 $amount';
+  }
+
+  @override
+  String get incomeReportByCompany => '按对方汇总';
+
+  @override
+  String incomeReportEntryCount(int n) {
+    return '$n笔';
+  }
+
+  @override
+  String incomeReportOutstandingShort(String amount) {
+    return '未收 $amount';
+  }
+
+  @override
+  String get incomeReportTaxTitle => '综合所得税指南';
+
+  @override
+  String get incomeReportTaxL1 => '综合所得税每年5月申报并缴纳上一年度所得。';
+
+  @override
+  String get incomeReportTaxL2 => '人力服务经营所得在支付时常按3.3%预扣。';
+
+  @override
+  String get incomeReportTaxL3 => '预扣的税款在5月申报时结算(退税或补缴)。';
+
+  @override
+  String get incomeReportTaxL4 => '保留支出凭证与确认书·明细表有助于申报。';
+
+  @override
+  String get incomeReportTaxL5 => '此为一般说明,非税务咨询。准确申报请咨询税务专家或Hometax。';
+
+  @override
+  String get incomeReportSavePdf => '保存 / 分享 PDF';
+
+  @override
+  String incomeReportPdfFail(String msg) {
+    return '无法打开报告:$msg';
+  }
+
+  @override
+  String get incomeReportEmptyTitle => '还没有收入记录';
+
+  @override
+  String get incomeReportEmptySub => '填写确认书后,收入会显示在此报告中。';
 }

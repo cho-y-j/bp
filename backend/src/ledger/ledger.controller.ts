@@ -68,6 +68,36 @@ export class LedgerController {
     return this.ledger.markTaxInvoiced(userId, dto.ledgerIds);
   }
 
+  // GET /ledger/income-report?year=&from=&to= — 연간(기간별) 소득 리포트 JSON
+  @Get('income-report')
+  incomeReport(
+    @CurrentUser('userId') userId: string,
+    @Query('year') year?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+  ) {
+    return this.ledger.incomeReport(userId, { year, from, to });
+  }
+
+  // GET /ledger/income-report/pdf?year=&from=&to= — 소득 리포트 PDF(인증 blob)
+  @Get('income-report/pdf')
+  async incomeReportPdf(
+    @CurrentUser('userId') userId: string,
+    @Res() res: Response,
+    @Query('year') year?: string,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+  ): Promise<void> {
+    const buf = await this.ledger.incomeReportPdf(userId, { year, from, to });
+    const label = year || `${from ?? ''}_${to ?? ''}`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `inline; filename="income-report-${label}.pdf"`,
+    );
+    res.status(HttpStatus.OK).end(buf);
+  }
+
   // GET /ledger/statement?month= — 월간 명세서 PDF
   @Get('statement')
   async statement(

@@ -53,6 +53,15 @@ final taxInvoiceDataProvider =
   return TaxInvoiceData.fromJson(res as Map);
 });
 
+/// 연간 소득 리포트 (연도 파라미터 family).
+final incomeReportProvider =
+    FutureProvider.family<IncomeReport, int>((ref, year) async {
+  final api = ref.watch(apiClientProvider);
+  final res =
+      await api.get('/ledger/income-report', query: {'year': '$year'});
+  return IncomeReport.fromJson(res as Map);
+});
+
 /// 만료 임박 서류 (홈 배너용).
 final expiringDocsProvider =
     FutureProvider<List<ExpiringDoc>>((ref) async {

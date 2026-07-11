@@ -3801,6 +3801,168 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'밀폐공간 질식'**
   String get tbmHzConfined;
+
+  /// No description provided for @incomeReportMenuTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'소득 리포트'**
+  String get incomeReportMenuTitle;
+
+  /// No description provided for @incomeReportMenuSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'연간 수입·미수·공수 한눈에'**
+  String get incomeReportMenuSub;
+
+  /// No description provided for @incomeReportTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'소득 리포트'**
+  String get incomeReportTitle;
+
+  /// No description provided for @incomeReportYear.
+  ///
+  /// In ko, this message translates to:
+  /// **'{year}년'**
+  String incomeReportYear(String year);
+
+  /// No description provided for @incomeReportTotalBilled.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 청구액'**
+  String get incomeReportTotalBilled;
+
+  /// No description provided for @incomeReportTotalPaid.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 입금'**
+  String get incomeReportTotalPaid;
+
+  /// No description provided for @incomeReportTotalOutstanding.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 미수'**
+  String get incomeReportTotalOutstanding;
+
+  /// No description provided for @incomeReportTotalDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'일한 날'**
+  String get incomeReportTotalDays;
+
+  /// No description provided for @incomeReportTotalGongsu.
+  ///
+  /// In ko, this message translates to:
+  /// **'총 공수'**
+  String get incomeReportTotalGongsu;
+
+  /// No description provided for @incomeReportTeamPayout.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀 지급분'**
+  String get incomeReportTeamPayout;
+
+  /// No description provided for @incomeReportNetBilled.
+  ///
+  /// In ko, this message translates to:
+  /// **'순소득 참고'**
+  String get incomeReportNetBilled;
+
+  /// No description provided for @incomeReportNetHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'청구액 − 팀원 지급분 (반장 본인 몫)'**
+  String get incomeReportNetHint;
+
+  /// No description provided for @incomeReportMonthlyTrend.
+  ///
+  /// In ko, this message translates to:
+  /// **'월별 추이'**
+  String get incomeReportMonthlyTrend;
+
+  /// No description provided for @incomeReportPeakLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'최고 {amount}'**
+  String incomeReportPeakLabel(String amount);
+
+  /// No description provided for @incomeReportByCompany.
+  ///
+  /// In ko, this message translates to:
+  /// **'상대별 합계'**
+  String get incomeReportByCompany;
+
+  /// No description provided for @incomeReportEntryCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{n}건'**
+  String incomeReportEntryCount(int n);
+
+  /// No description provided for @incomeReportOutstandingShort.
+  ///
+  /// In ko, this message translates to:
+  /// **'미수 {amount}'**
+  String incomeReportOutstandingShort(String amount);
+
+  /// No description provided for @incomeReportTaxTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'종합소득세 안내'**
+  String get incomeReportTaxTitle;
+
+  /// No description provided for @incomeReportTaxL1.
+  ///
+  /// In ko, this message translates to:
+  /// **'종합소득세는 매년 5월에 전년도 소득을 신고·납부합니다.'**
+  String get incomeReportTaxL1;
+
+  /// No description provided for @incomeReportTaxL2.
+  ///
+  /// In ko, this message translates to:
+  /// **'인적용역 사업소득은 대금 지급 시 3.3%가 원천징수되는 경우가 많습니다.'**
+  String get incomeReportTaxL2;
+
+  /// No description provided for @incomeReportTaxL3.
+  ///
+  /// In ko, this message translates to:
+  /// **'원천징수된 세액은 5월 신고 때 정산(환급 또는 추가납부)됩니다.'**
+  String get incomeReportTaxL3;
+
+  /// No description provided for @incomeReportTaxL4.
+  ///
+  /// In ko, this message translates to:
+  /// **'지출 경비와 확인서·명세서를 보관하면 신고에 도움이 됩니다.'**
+  String get incomeReportTaxL4;
+
+  /// No description provided for @incomeReportTaxL5.
+  ///
+  /// In ko, this message translates to:
+  /// **'일반 안내이며 세무 상담이 아닙니다. 정확한 신고는 세무 전문가·홈택스를 확인하세요.'**
+  String get incomeReportTaxL5;
+
+  /// No description provided for @incomeReportSavePdf.
+  ///
+  /// In ko, this message translates to:
+  /// **'PDF 저장·공유'**
+  String get incomeReportSavePdf;
+
+  /// No description provided for @incomeReportPdfFail.
+  ///
+  /// In ko, this message translates to:
+  /// **'리포트를 열지 못했어요: {msg}'**
+  String incomeReportPdfFail(String msg);
+
+  /// No description provided for @incomeReportEmptyTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 소득 기록이 없어요'**
+  String get incomeReportEmptyTitle;
+
+  /// No description provided for @incomeReportEmptySub.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인서를 작성하면 이 리포트에 수입이 쌓여요.'**
+  String get incomeReportEmptySub;
 }
 
 class _AppLocalizationsDelegate

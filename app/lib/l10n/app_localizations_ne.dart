@@ -2070,4 +2070,102 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get tbmHzConfined => 'बन्द ठाउँ निसासिने';
+
+  @override
+  String get incomeReportMenuTitle => 'आय रिपोर्ट';
+
+  @override
+  String get incomeReportMenuSub => 'वार्षिक आय·बाँकी·गोङ्सु एकै ठाउँमा';
+
+  @override
+  String get incomeReportTitle => 'आय रिपोर्ट';
+
+  @override
+  String incomeReportYear(String year) {
+    return '$year साल';
+  }
+
+  @override
+  String get incomeReportTotalBilled => 'कुल बिल';
+
+  @override
+  String get incomeReportTotalPaid => 'कुल प्राप्त';
+
+  @override
+  String get incomeReportTotalOutstanding => 'कुल बाँकी';
+
+  @override
+  String get incomeReportTotalDays => 'काम गरेका दिन';
+
+  @override
+  String get incomeReportTotalGongsu => 'कुल गोङ्सु';
+
+  @override
+  String get incomeReportTeamPayout => 'टोली भुक्तानी';
+
+  @override
+  String get incomeReportNetBilled => 'खुद आय (सन्दर्भ)';
+
+  @override
+  String get incomeReportNetHint =>
+      'बिल − सदस्य भुक्तानी (फोरम्यानको आफ्नो भाग)';
+
+  @override
+  String get incomeReportMonthlyTrend => 'मासिक प्रवृत्ति';
+
+  @override
+  String incomeReportPeakLabel(String amount) {
+    return 'उच्च $amount';
+  }
+
+  @override
+  String get incomeReportByCompany => 'पक्ष अनुसार';
+
+  @override
+  String incomeReportEntryCount(int n) {
+    return '$n वटा';
+  }
+
+  @override
+  String incomeReportOutstandingShort(String amount) {
+    return 'बाँकी $amount';
+  }
+
+  @override
+  String get incomeReportTaxTitle => 'आयकर मार्गदर्शन';
+
+  @override
+  String get incomeReportTaxL1 =>
+      'समग्र आयकर हरेक वर्ष मे महिनामा अघिल्लो वर्षको आयको लागि दाखिला र भुक्तानी गरिन्छ।';
+
+  @override
+  String get incomeReportTaxL2 =>
+      'व्यक्तिगत सेवा व्यवसाय आयमा भुक्तानी हुँदा प्रायः ३.३% अग्रिम कट्टी हुन्छ।';
+
+  @override
+  String get incomeReportTaxL3 =>
+      'कट्टी भएको कर मे महिनाको दाखिलामा मिलान (फिर्ता वा थप भुक्तानी) हुन्छ।';
+
+  @override
+  String get incomeReportTaxL4 =>
+      'खर्च र पुष्टिपत्र·विवरण राख्दा दाखिलामा सहयोग पुग्छ।';
+
+  @override
+  String get incomeReportTaxL5 =>
+      'यो सामान्य जानकारी हो, कर सल्लाह होइन। सही दाखिलाका लागि कर विशेषज्ञ वा Hometax हेर्नुहोस्।';
+
+  @override
+  String get incomeReportSavePdf => 'PDF सुरक्षित / साझा';
+
+  @override
+  String incomeReportPdfFail(String msg) {
+    return 'रिपोर्ट खोल्न सकिएन: $msg';
+  }
+
+  @override
+  String get incomeReportEmptyTitle => 'अझै आय रेकर्ड छैन';
+
+  @override
+  String get incomeReportEmptySub =>
+      'पुष्टिपत्र लेखेपछि यो रिपोर्टमा आय देखिन्छ।';
 }

@@ -1097,6 +1097,102 @@ class TbmReceivedItem {
       );
 }
 
+// ─── P2d 연간 소득 리포트 ─────────────────────────────────────────────
+/// 월별 추이 포인트.
+class IncomeMonthly {
+  final String month; // YYYY-MM
+  final int billed;
+  final int paid;
+  final int outstanding;
+  final int daysWorked;
+  final double gongsu;
+  IncomeMonthly(this.month, this.billed, this.paid, this.outstanding,
+      this.daysWorked, this.gongsu);
+  factory IncomeMonthly.fromJson(Map j) => IncomeMonthly(
+        j['month']?.toString() ?? '',
+        _pint(j['billed']),
+        _pint(j['paid']),
+        _pint(j['outstanding']),
+        _pint(j['daysWorked']),
+        (j['gongsu'] as num?)?.toDouble() ?? 0,
+      );
+}
+
+/// 상대별 합계.
+class IncomeCompany {
+  final String companyName;
+  final String? businessId;
+  final int count;
+  final int total;
+  final int paid;
+  final int outstanding;
+  IncomeCompany(this.companyName, this.businessId, this.count, this.total,
+      this.paid, this.outstanding);
+  factory IncomeCompany.fromJson(Map j) => IncomeCompany(
+        j['companyName']?.toString() ?? '(미지정)',
+        j['businessId'] as String?,
+        _pint(j['count']),
+        _pint(j['total']),
+        _pint(j['paid']),
+        _pint(j['outstanding']),
+      );
+}
+
+/// 연간 소득 리포트 전체.
+class IncomeReport {
+  final String from; // YYYY-MM
+  final String to; // YYYY-MM
+  final int? year;
+  final List<IncomeMonthly> monthly;
+  final List<IncomeCompany> companies;
+  final int totalBilled;
+  final int totalPaid;
+  final int totalOutstanding;
+  final int totalDays;
+  final double totalGongsu;
+  final int entryCount;
+  final int teamPayout;
+  final int netBilled;
+  IncomeReport({
+    required this.from,
+    required this.to,
+    required this.year,
+    required this.monthly,
+    required this.companies,
+    required this.totalBilled,
+    required this.totalPaid,
+    required this.totalOutstanding,
+    required this.totalDays,
+    required this.totalGongsu,
+    required this.entryCount,
+    required this.teamPayout,
+    required this.netBilled,
+  });
+  factory IncomeReport.fromJson(Map j) {
+    final range = (j['range'] as Map?) ?? {};
+    final totals = (j['totals'] as Map?) ?? {};
+    return IncomeReport(
+      from: range['from']?.toString() ?? '',
+      to: range['to']?.toString() ?? '',
+      year: range['year'] == null ? null : _pint(range['year']),
+      monthly: ((j['monthly'] as List?) ?? [])
+          .map((e) => IncomeMonthly.fromJson(e as Map))
+          .toList(),
+      companies: ((j['companies'] as List?) ?? [])
+          .map((e) => IncomeCompany.fromJson(e as Map))
+          .toList(),
+      totalBilled: _pint(totals['totalBilled']),
+      totalPaid: _pint(totals['totalPaid']),
+      totalOutstanding: _pint(totals['totalOutstanding']),
+      totalDays: _pint(totals['totalDays']),
+      totalGongsu: (totals['totalGongsu'] as num?)?.toDouble() ?? 0,
+      entryCount: _pint(totals['entryCount']),
+      teamPayout: _pint(totals['teamPayout']),
+      netBilled: _pint(totals['netBilled']),
+    );
+  }
+}
+
 /// 사업장 커스텀 TBM 프리셋 문구.
 class TbmPreset {
   final String id;

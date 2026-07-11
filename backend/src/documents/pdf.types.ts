@@ -120,6 +120,42 @@ export interface SafetyReportTbmRow {
   ackCount: number; // 확인 M
 }
 
+/** 연간(기간별) 소득 리포트 PDF 입력 (P2d). */
+export interface IncomeReportMonthly {
+  month: string; // YYYY-MM
+  billed: number;
+  paid: number;
+  outstanding: number;
+  daysWorked: number;
+  gongsu: number;
+}
+
+export interface IncomeReportCompany {
+  companyName: string;
+  count: number; // 건수
+  total: number;
+  paid: number;
+  outstanding: number;
+}
+
+export interface IncomeReportPdfData {
+  title: string; // "연간 소득 리포트"
+  periodLabel: string; // "2026년" 또는 "2026-01 ~ 2026-03"
+  workerName: string;
+  monthly: IncomeReportMonthly[];
+  companies: IncomeReportCompany[];
+  totals: {
+    totalBilled: number;
+    totalPaid: number;
+    totalOutstanding: number;
+    totalDays: number;
+    totalGongsu: number;
+    teamPayout: number;
+    netBilled: number;
+  };
+  taxNoteLines: string[]; // 종소세 안내 문구(한국어)
+}
+
 export interface SafetyReportPdfData {
   title: string; // "안전관리 이행 리포트"
   month: string; // YYYY-MM

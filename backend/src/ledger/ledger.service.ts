@@ -36,12 +36,62 @@ import {
   type TaxInvoiceSourceRow,
   type TaxInvoiceSupplier,
 } from './tax-invoice.util';
+import {
+  aggregateIncomeReport,
+  incomeTaxNoticeKo,
+  type IncomeReportInputRow,
+} from './income-report.util';
 
 type EntryWithRefs = LedgerEntry & {
   confirmation: Confirmation | null;
   sourceConfirmation: Confirmation | null;
   business: Business | null;
 };
+
+/** 소득 리포트 조회 파라미터(year 또는 from&to). */
+export interface IncomeReportQuery {
+  year?: string | number;
+  from?: string; // YYYY-MM
+  to?: string; // YYYY-MM
+}
+
+interface ResolvedRange {
+  from: string; // YYYY-MM
+  to: string; // YYYY-MM
+  year?: number;
+  months: string[]; // from..to (양끝 포함)
+  start: Date; // instant (KST 월 시작)
+  end: Date; // instant (to 다음 달 시작, 미포함)
+}
+
+/** "YYYY-MM" from..to(양끝 포함) 월 목록. 역순/과도한 범위는 예외. */
+function enumerateMonths(from: string, to: string): string[] {
+  const [fy, fm] = from.split('-').map((n) => parseInt(n, 10));
+  const [ty, tm] = to.split('-').map((n) => parseInt(n, 10));
+  const startIdx = fy * 12 + (fm - 1);
+  const endIdx = ty * 12 + (tm - 1);
+  if (endIdx < startIdx) {
+    throw new AppException(
+      'INVALID_RANGE',
+      'from 은 to 보다 이후일 수 없습니다.',
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+  if (endIdx - startIdx > 23) {
+    throw new AppException(
+      'RANGE_TOO_LONG',
+      '조회 범위는 최대 24개월입니다.',
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+  const months: string[] = [];
+  for (let i = startIdx; i <= endIdx; i++) {
+    const y = Math.floor(i / 12);
+    const m = (i % 12) + 1;
+    months.push(`${y}-${String(m).padStart(2, '0')}`);
+  }
+  return months;
+}
 
 @Injectable()
 export class LedgerService {
@@ -408,6 +458,148 @@ export class LedgerService {
   }
 
   // --------------------------------------------------------------------------
+  // 연간(기간별) 소득 리포트 — 월별 추이 / 상대별 / 총계 / 팀 지급분 / 종소세 안내
+  //  - year 또는 from&to(YYYY-MM, 분기 등) 지원.
+  //  - 팀 파생: 팀원 파생 항목은 본인 소득으로 집계, 반장은 팀 확인서 전체가 매출이며
+  //    팀원 지급분(teamPayout)을 별도 표기해 순소득(netBilled) 참고 제공(차감 아님).
+  // --------------------------------------------------------------------------
+  async incomeReport(userId: string, opts: IncomeReportQuery) {
+    const range = this.resolveRange(opts);
+    const rows = await this.normalizeIncomeRows(userId, range);
+    const { monthly, companies, totals } = aggregateIncomeReport(
+      rows,
+      range.months,
+    );
+    return {
+      range: { from: range.from, to: range.to, year: range.year ?? null },
+      monthly,
+      companies,
+      totals,
+      taxNote: incomeTaxNoticeKo(this.rangeLabel(range)),
+    };
+  }
+
+  async incomeReportPdf(
+    userId: string,
+    opts: IncomeReportQuery,
+  ): Promise<Buffer> {
+    const range = this.resolveRange(opts);
+    const rows = await this.normalizeIncomeRows(userId, range);
+    const { monthly, companies, totals } = aggregateIncomeReport(
+      rows,
+      range.months,
+    );
+    const worker = await this.prisma.profile.findUnique({
+      where: { id: userId },
+      select: { name: true },
+    });
+    const note = incomeTaxNoticeKo(this.rangeLabel(range));
+    return this.pdf.renderIncomeReportPdf({
+      title: '연간 소득 리포트',
+      periodLabel: this.rangeLabel(range),
+      workerName: worker?.name ?? '작업자',
+      monthly,
+      companies,
+      totals,
+      taxNoteLines: note.lines,
+    });
+  }
+
+  /** year 또는 from/to 로부터 리포트 대상 월 범위·목록·instant 경계를 계산한다. */
+  private resolveRange(opts: IncomeReportQuery): ResolvedRange {
+    let from: string;
+    let to: string;
+    let year: number | undefined;
+    if (opts.year != null && opts.year !== '') {
+      if (!/^\d{4}$/.test(String(opts.year))) {
+        throw new AppException(
+          'INVALID_YEAR',
+          'year 는 YYYY 형식이어야 합니다.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      year = parseInt(String(opts.year), 10);
+      from = `${year}-01`;
+      to = `${year}-12`;
+    } else if (opts.from && opts.to) {
+      this.assertMonth(opts.from);
+      this.assertMonth(opts.to);
+      from = opts.from;
+      to = opts.to;
+    } else {
+      throw new AppException(
+        'INVALID_RANGE',
+        'year 또는 from&to(YYYY-MM)를 지정해야 합니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const months = enumerateMonths(from, to); // from>to 또는 24개월 초과 시 예외
+    const start = new Date(`${from}-01T00:00:00+09:00`);
+    const { end } = kstMonthRange(to);
+    return { from, to, year, months, start, end };
+  }
+
+  private rangeLabel(range: ResolvedRange): string {
+    if (range.year != null) return `${range.year}년`;
+    return `${range.from} ~ ${range.to}`;
+  }
+
+  /** 기간 내 장부 항목을 소득 집계용 정규화 행으로 변환. */
+  private async normalizeIncomeRows(
+    userId: string,
+    range: ResolvedRange,
+  ): Promise<IncomeReportInputRow[]> {
+    const now = new Date();
+    const entries = await this.entriesForRange(userId, range.start, range.end);
+    return entries.map((e) => {
+      const amount = Number(e.amount);
+      const { paid, outstanding } = computeOutstanding(
+        amount,
+        e.payments,
+        e.dueDate,
+        now,
+      );
+      const workDate = toKstDateStr(this.effectiveDate(e));
+      return {
+        month: workDate.slice(0, 7),
+        workDate,
+        amount,
+        paid,
+        outstanding,
+        gongsu: this.gongsuOf(e),
+        businessId: e.businessId,
+        companyName: e.business?.name ?? e.counterpartyName ?? '(미지정)',
+        teamPayout: this.teamPayoutOf(e, userId),
+        derived: e.derived,
+      };
+    });
+  }
+
+  /** [start, end) instant 범위의 장부 항목(월간 조회와 동일 기준, 범위만 확장). */
+  private async entriesForRange(
+    userId: string,
+    start: Date,
+    end: Date,
+  ): Promise<EntryWithRefs[]> {
+    return this.prisma.ledgerEntry.findMany({
+      where: {
+        profileId: userId,
+        OR: [
+          { confirmation: { date: { gte: start, lt: end } } },
+          { sourceConfirmation: { date: { gte: start, lt: end } } },
+          {
+            confirmationId: null,
+            sourceConfirmationId: null,
+            createdAt: { gte: start, lt: end },
+          },
+        ],
+      },
+      include: { confirmation: true, sourceConfirmation: true, business: true },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  // --------------------------------------------------------------------------
   // 내부 헬퍼
   // --------------------------------------------------------------------------
   /** 장부 항목의 기준 날짜: 연결 확인서(또는 팀 파생 원 확인서)의 작업일 우선, 없으면 생성일. */
@@ -446,11 +638,29 @@ export class LedgerService {
 
   private teamEntriesOf(
     confirmation: Confirmation,
-  ): Array<{ profileId?: string | null; quantity?: number }> {
+  ): Array<{ profileId?: string | null; quantity?: number; amount?: number }> {
     const te = confirmation.teamEntries as unknown;
     return Array.isArray(te)
-      ? (te as Array<{ profileId?: string | null; quantity?: number }>)
+      ? (te as Array<{
+          profileId?: string | null;
+          quantity?: number;
+          amount?: number;
+        }>)
       : [];
+  }
+
+  /**
+   * 반장 팀 확인서에서 팀원(본인 제외)에게 지급되는 몫 합계(팀 지급분).
+   *  - 팀 확인서(teamEntries 有, 비-파생)만 대상. 파생 항목/일반 항목은 0.
+   *  - 반장 본인 몫(profileId === userId)은 제외 → 순소득(netBilled) 참고 계산에 사용.
+   */
+  private teamPayoutOf(e: EntryWithRefs, userId: string): number {
+    if (e.derived || !e.confirmation) return 0;
+    const te = this.teamEntriesOf(e.confirmation);
+    if (te.length === 0) return 0;
+    return te
+      .filter((x) => x.profileId !== userId)
+      .reduce((s, x) => s + (typeof x.amount === 'number' ? x.amount : 0), 0);
   }
 
   private groupStatus(

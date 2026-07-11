@@ -2077,4 +2077,103 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tbmHzConfined => 'Confined space asphyxia';
+
+  @override
+  String get incomeReportMenuTitle => 'Income report';
+
+  @override
+  String get incomeReportMenuSub =>
+      'Yearly income, unpaid & gongsu at a glance';
+
+  @override
+  String get incomeReportTitle => 'Income report';
+
+  @override
+  String incomeReportYear(String year) {
+    return '$year';
+  }
+
+  @override
+  String get incomeReportTotalBilled => 'Total billed';
+
+  @override
+  String get incomeReportTotalPaid => 'Total paid';
+
+  @override
+  String get incomeReportTotalOutstanding => 'Total unpaid';
+
+  @override
+  String get incomeReportTotalDays => 'Days worked';
+
+  @override
+  String get incomeReportTotalGongsu => 'Total gongsu';
+
+  @override
+  String get incomeReportTeamPayout => 'Team payout';
+
+  @override
+  String get incomeReportNetBilled => 'Net (reference)';
+
+  @override
+  String get incomeReportNetHint =>
+      'Billed − team member payout (your own share)';
+
+  @override
+  String get incomeReportMonthlyTrend => 'Monthly trend';
+
+  @override
+  String incomeReportPeakLabel(String amount) {
+    return 'Peak $amount';
+  }
+
+  @override
+  String get incomeReportByCompany => 'By counterparty';
+
+  @override
+  String incomeReportEntryCount(int n) {
+    return '$n item(s)';
+  }
+
+  @override
+  String incomeReportOutstandingShort(String amount) {
+    return '$amount unpaid';
+  }
+
+  @override
+  String get incomeReportTaxTitle => 'Income tax guide';
+
+  @override
+  String get incomeReportTaxL1 =>
+      'Comprehensive income tax is filed and paid every May for the previous year\'s income.';
+
+  @override
+  String get incomeReportTaxL2 =>
+      'Personal-service business income is often withheld at 3.3% when paid.';
+
+  @override
+  String get incomeReportTaxL3 =>
+      'Withheld tax is settled (refund or additional payment) at the May filing.';
+
+  @override
+  String get incomeReportTaxL4 =>
+      'Keeping your expenses and confirmations/statements helps at filing time.';
+
+  @override
+  String get incomeReportTaxL5 =>
+      'This is general information, not tax advice. Check a tax professional or Hometax for accurate filing.';
+
+  @override
+  String get incomeReportSavePdf => 'Save / share PDF';
+
+  @override
+  String incomeReportPdfFail(String msg) {
+    return 'Couldn\'t open the report: $msg';
+  }
+
+  @override
+  String get incomeReportEmptyTitle => 'No income records yet';
+
+  @override
+  String get incomeReportEmptySub =>
+      'Write a confirmation and your income will appear here.';
 }

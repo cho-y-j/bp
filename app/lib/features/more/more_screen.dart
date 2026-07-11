@@ -15,6 +15,7 @@ import '../biz/business_mode_screen.dart';
 import '../team/team_screen.dart';
 import '../jobs/my_jobs_screen.dart';
 import '../tax/tax_invoice_screen.dart';
+import '../ledger/income_report_screen.dart';
 import '../notifications/notifications_screen.dart';
 
 class MoreScreen extends ConsumerWidget {
@@ -156,6 +157,12 @@ class MoreScreen extends ConsumerWidget {
               title: l.menuTax,
               subtitle: l.menuTaxSub,
               onTap: () => _push(context, const TaxInvoiceScreen()),
+            ),
+            _Tile(
+              icon: Icons.insights_outlined,
+              title: l.incomeReportMenuTitle,
+              subtitle: l.incomeReportMenuSub,
+              onTap: () => _push(context, const IncomeReportScreen()),
             ),
             const SizedBox(height: 20),
             _SectionLabel(l.sectionSettings),

@@ -2070,4 +2070,102 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get tbmHzConfined => 'Ngạt không gian kín';
+
+  @override
+  String get incomeReportMenuTitle => 'Báo cáo thu nhập';
+
+  @override
+  String get incomeReportMenuSub => 'Thu nhập năm, nợ chưa thu & công';
+
+  @override
+  String get incomeReportTitle => 'Báo cáo thu nhập';
+
+  @override
+  String incomeReportYear(String year) {
+    return 'Năm $year';
+  }
+
+  @override
+  String get incomeReportTotalBilled => 'Tổng yêu cầu';
+
+  @override
+  String get incomeReportTotalPaid => 'Tổng đã nhận';
+
+  @override
+  String get incomeReportTotalOutstanding => 'Tổng chưa thu';
+
+  @override
+  String get incomeReportTotalDays => 'Số ngày làm';
+
+  @override
+  String get incomeReportTotalGongsu => 'Tổng công';
+
+  @override
+  String get incomeReportTeamPayout => 'Chi cho đội';
+
+  @override
+  String get incomeReportNetBilled => 'Thu nhập ròng (tham khảo)';
+
+  @override
+  String get incomeReportNetHint =>
+      'Yêu cầu − chi cho thành viên (phần của tổ trưởng)';
+
+  @override
+  String get incomeReportMonthlyTrend => 'Xu hướng theo tháng';
+
+  @override
+  String incomeReportPeakLabel(String amount) {
+    return 'Cao nhất $amount';
+  }
+
+  @override
+  String get incomeReportByCompany => 'Theo đối tác';
+
+  @override
+  String incomeReportEntryCount(int n) {
+    return '$n mục';
+  }
+
+  @override
+  String incomeReportOutstandingShort(String amount) {
+    return 'Chưa thu $amount';
+  }
+
+  @override
+  String get incomeReportTaxTitle => 'Hướng dẫn thuế thu nhập';
+
+  @override
+  String get incomeReportTaxL1 =>
+      'Thuế thu nhập tổng hợp được khai và nộp vào tháng 5 hằng năm cho thu nhập năm trước.';
+
+  @override
+  String get incomeReportTaxL2 =>
+      'Thu nhập dịch vụ cá nhân thường bị khấu trừ 3,3% khi thanh toán.';
+
+  @override
+  String get incomeReportTaxL3 =>
+      'Thuế đã khấu trừ được quyết toán (hoàn hoặc nộp thêm) khi khai tháng 5.';
+
+  @override
+  String get incomeReportTaxL4 =>
+      'Giữ chi phí và giấy xác nhận·bảng kê sẽ giúp khi khai thuế.';
+
+  @override
+  String get incomeReportTaxL5 =>
+      'Đây là thông tin chung, không phải tư vấn thuế. Hãy hỏi chuyên gia thuế hoặc Hometax để khai chính xác.';
+
+  @override
+  String get incomeReportSavePdf => 'Lưu / chia sẻ PDF';
+
+  @override
+  String incomeReportPdfFail(String msg) {
+    return 'Không mở được báo cáo: $msg';
+  }
+
+  @override
+  String get incomeReportEmptyTitle => 'Chưa có dữ liệu thu nhập';
+
+  @override
+  String get incomeReportEmptySub =>
+      'Hãy lập giấy xác nhận, thu nhập sẽ hiện ở báo cáo này.';
 }
