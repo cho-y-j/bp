@@ -9,9 +9,20 @@ export interface Me {
   hasBusiness: boolean;
 }
 
+export interface Business {
+  id: string;
+  name: string;
+  inviteCode?: string;
+}
+
 export interface BizContextValue {
   me: Me | null;
-  business: { id: string; name: string; inviteCode?: string } | null;
+  /** 현재 선택된 사업장(단일 소유면 유일, 다중 소유면 드롭다운 선택값). */
+  business: Business | null;
+  /** 소유 사업장 전체(다중 소유 전환 UI 용). */
+  businesses: Business[];
+  /** 사업장 전환(선택값 localStorage 저장 + 컨텍스트 전파). */
+  selectBusiness: (id: string) => void;
   reload: () => void;
 }
 
@@ -22,6 +33,8 @@ export interface BizContextValue {
 export const BizContext = createContext<BizContextValue>({
   me: null,
   business: null,
+  businesses: [],
+  selectBusiness: () => {},
   reload: () => {},
 });
 

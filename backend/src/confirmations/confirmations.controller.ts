@@ -78,6 +78,16 @@ export class ConfirmationsController {
     return this.confirmations.send(userId, id);
   }
 
+  // POST /confirmations/:id/revoke — 공유 링크 무효화(발행자).
+  // SENT 만 무효화 가능. SIGNED(서명 완료)는 증빙 보존을 위해 링크 열람 유지 → 409.
+  @Post(':id/revoke')
+  revoke(
+    @CurrentUser('userId') userId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.confirmations.revoke(userId, id);
+  }
+
   // PATCH /confirmations/:id — DRAFT 만 수정(금액 변경 시 ledger 동기화)
   @Patch(':id')
   update(

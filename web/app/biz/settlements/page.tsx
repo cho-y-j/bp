@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError } from '@/lib/api';
+import { useBiz } from '../biz-context';
 import { won, currentMonth } from '@/lib/format';
 import MonthNav from '@/components/MonthNav';
 import { Wallet, Check, CheckCircle } from '@/components/Icons';
@@ -22,6 +23,8 @@ interface Settlements {
 }
 
 export default function SettlementsPage() {
+  const { business } = useBiz();
+  const businessId = business?.id;
   const [month, setMonth] = useState(currentMonth());
   const [data, setData] = useState<Settlements | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -29,17 +32,24 @@ export default function SettlementsPage() {
   const [paying, setPaying] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
-  const load = useCallback(async (m: string) => {
-    setError(null);
-    setData(null);
-    setSelected(new Set());
-    try {
-      const res = await api().get<Settlements>(`/biz/settlements?month=${m}`);
-      setData(res.data);
-    } catch (e) {
-      setError(e instanceof ApiError ? e.message : '불러오기 실패');
-    }
-  }, []);
+  const load = useCallback(
+    async (m: string) => {
+      setError(null);
+      setData(null);
+      setSelected(new Set());
+      try {
+        const res = await api().get<Settlements>(
+          `/biz/settlements?month=${m}${
+            businessId ? `&businessId=${businessId}` : ''
+          }`,
+        );
+        setData(res.data);
+      } catch (e) {
+        setError(e instanceof ApiError ? e.message : '불러오기 실패');
+      }
+    },
+    [businessId],
+  );
 
   useEffect(() => {
     void load(month);

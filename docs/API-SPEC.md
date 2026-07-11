@@ -30,6 +30,7 @@
 - `POST /confirmations/:id/duplicate` — 이전 확인서 복사
 - `GET /confirmations?month=YYYY-MM` — 목록(캘린더용 일자 집계 포함)
 - `POST /confirmations/:id/send` — 연결 사업장에 전송 or 외부 링크 발급 → `{ share_token?, url? }`
+- `POST /confirmations/:id/revoke` — **(백로그정리)** 공유 링크 무효화(발행자). **SENT 만** 무효화 가능 → `revokedAt` 설정 후 public 열람/서명 403 CONFIRMATION_REVOKED. **SIGNED 는 증빙 보존을 위해 링크 열람 유지 → 409 ALREADY_SIGNED**, DRAFT(미전송) → 409 NOT_REVOCABLE. 반환 `{ revoked, status, revokedAt }`. (웹/앱 UI 노출은 백로그 — API 만 제공.)
 - `GET /confirmations/:id/pdf` — PDF 다운로드
 - `GET /public/confirmations/:token` — 외부 열람
 - `POST /public/confirmations/:token/sign` — 외부 서명(서명자명 + 서명 이미지 base64) → SIGNED, 양측 알림
@@ -47,8 +48,9 @@
 고용노동부 일용직 표준근로계약서 필드 기반. 사업장(발행) ↔ 작업자(서명) 양자. 상태 DRAFT|SENT|SIGNED.
 - **사업장 모드**(발행 사업장 소유자만):
   - `POST /biz/contracts` — 작성(DRAFT). body: `{ businessId, workerProfileId? | (workerName + workerPhone?), title?, startDate(YYYY-MM-DD), endDate?, workplace, jobDescription, workStartTime(HH:mm), workEndTime, breakTime?, wageType(DAILY|HOURLY), wageAmount, payday, payMethod, weeklyHolidayAllowance?(기본 false), overtimeAllowance?(기본 true), socialInsurance?{employment,health,pension,industrialAccident}, specialTerms? }`. 가입 연결은 전화검색 동의자 또는 사업장과 ACCEPTED 연결 작업자만(아니면 403 WORKER_LINK_NOT_ALLOWED). 남의 사업장 → 404 BUSINESS_NOT_FOUND.
-  - `GET /biz/contracts` — 내 모든 사업장 계약서 목록. `GET /biz/contracts/:id` — 상세. `GET /biz/contracts/:id/pdf` — 양측 서명 PDF.
+  - `GET /biz/contracts` — 내 사업장 계약서 목록. **(백로그정리)** `?businessId=` 지정 시 해당 사업장만(미지정=모든 내 사업장, additive). `GET /biz/contracts/:id` — 상세. `GET /biz/contracts/:id/pdf` — 양측 서명 PDF.
   - `PATCH /biz/contracts/:id` — DRAFT + 사업장 미서명일 때만 수정(아니면 409 NOT_EDITABLE). `DELETE` — DRAFT 만(409 NOT_DELETABLE).
+  - `POST /biz/contracts/:id/revoke` — **(백로그정리)** 공유 링크 무효화(사업장 소유자). **SENT 만** 무효화 가능 → `revokedAt` 설정 후 public 열람/서명 403 LABOR_CONTRACT_REVOKED. **SIGNED → 409 ALREADY_SIGNED**(증빙 보존, 링크 열람 유지), DRAFT → 409 NOT_REVOCABLE. 남의 사업장 → 404. 반환 계약서 DTO.
   - `POST /biz/contracts/:id/sign-employer` — 사업장(대표) 서명 `{ signerName, signImageBase64 }`. DRAFT 에서만, 상태는 DRAFT 유지(employerSigned=true). **전송 전 필수 선행**.
   - `POST /biz/contracts/:id/send` — 사업장 서명 완료 후에만(아니면 409 EMPLOYER_SIGNATURE_REQUIRED) → SENT. 연결 작업자면 알림, 수기면 링크 발급. 반환 `{ shareToken, url(=/lc/{token}), sent, linked, notified, alimtalkSent }`.
 - **작업자 측**(가입 연결 작업자만): `GET /contracts`(내가 받은/서명한 계약서 = "내 계약서", SENT·SIGNED), `GET /contracts/:id`, `GET /contracts/:id/pdf`, `POST /contracts/:id/sign`(앱 내 서명, SENT 만 → SIGNED, 재서명 409 ALREADY_SIGNED). 가입 작업자면 서명 여부와 무관하게 SENT 시점부터 "내 계약서"에 자동 연결(workerProfileId).
@@ -80,6 +82,7 @@
 - `GET /biz/inbox` — 수신 확인서 목록 / `POST /biz/confirmations/:id/sign` — 앱 내 서명
 - `GET /biz/settlements?month=` — 작업자별 미지급 집계 / `POST /biz/settlements/pay` — 지급 처리(해당 ledger 반영)
 - `GET /biz/safety-report?month=` — 안전관리 이행 리포트 PDF (safety_logs 집계)
+- **(백로그정리 — 다중 사업장 스코프)** `GET /biz/inbox`·`/biz/settlements`·`/biz/safety-report` 모두 선택적 `?businessId=` 지원(additive). 미지정 시 소유 전체 집계(기존 동작), 지정 시 해당 사업장만. 미소유 businessId 는 빈 결과(타 사업장 데이터 유출 차단). `pay` 는 항상 소유 전체 ledger 대상(스코프 무관).
 
 ## 안전 /safety
 - 스케줄러: 기상청 API 폴링 → 폭염특보/체감온도 기준 대상자에게 푸시+기록(safety_logs, append-only)

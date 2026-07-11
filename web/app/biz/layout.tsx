@@ -12,21 +12,32 @@ import {
   Building,
   Logout,
   Plus,
+  FileText,
+  Chevron,
 } from '@/components/Icons';
-import { BizContext, type BizContextValue, type Me } from './biz-context';
+import {
+  BizContext,
+  type Business,
+  type Me,
+} from './biz-context';
 
 const NAV = [
   { href: '/biz/inbox', label: '수신함', Icon: Inbox },
   { href: '/biz/settlements', label: '정산', Icon: Wallet },
   { href: '/biz/workers', label: '작업자·지시', Icon: Users },
+  { href: '/biz/contracts', label: '계약서', Icon: FileText },
   { href: '/biz/safety', label: '안전 리포트', Icon: Shield },
 ];
+
+/** 선택된 사업장 id 를 저장하는 localStorage 키. */
+const SELECTED_BIZ_KEY = 'jakeobon_selected_biz';
 
 export default function BizLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [me, setMe] = useState<Me | null>(null);
-  const [business, setBusiness] = useState<BizContextValue['business']>(null);
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [tick, setTick] = useState(0);
 
@@ -47,13 +58,23 @@ export default function BizLayout({ children }: { children: ReactNode }) {
         if (meRes.data.hasBusiness) {
           const biz = await api().get<{
             count: number;
-            businesses: { id: string; name: string; inviteCode?: string }[];
+            businesses: Business[];
           }>('/businesses/mine');
           if (!alive) return;
-          const list = biz.data.businesses;
-          setBusiness(Array.isArray(list) && list.length ? list[0] : null);
+          const list = Array.isArray(biz.data.businesses)
+            ? biz.data.businesses
+            : [];
+          setBusinesses(list);
+          // 저장된 선택값이 소유 목록에 있으면 유지, 없으면 첫 사업장.
+          const saved =
+            typeof window !== 'undefined'
+              ? window.localStorage.getItem(SELECTED_BIZ_KEY)
+              : null;
+          const valid = saved && list.some((b) => b.id === saved) ? saved : null;
+          setSelectedId(valid ?? (list.length ? list[0].id : null));
         } else {
-          setBusiness(null);
+          setBusinesses([]);
+          setSelectedId(null);
         }
       } catch (e) {
         if (e instanceof ApiError && e.status === 401) return; // 인터셉터가 리다이렉트
@@ -66,8 +87,21 @@ export default function BizLayout({ children }: { children: ReactNode }) {
     };
   }, [router, pathname, tick]);
 
+  const business =
+    businesses.find((b) => b.id === selectedId) ?? businesses[0] ?? null;
+
+  function selectBusiness(id: string) {
+    setSelectedId(id);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(SELECTED_BIZ_KEY, id);
+    }
+  }
+
   function logout() {
     clearToken();
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(SELECTED_BIZ_KEY);
+    }
     router.replace('/login');
   }
 
@@ -89,9 +123,26 @@ export default function BizLayout({ children }: { children: ReactNode }) {
     </>
   );
 
+  // 다중 소유일 때만 전환 드롭다운 노출(단일 사업장은 기존과 동일).
+  const multi = businesses.length > 1;
+  const switcher =
+    business && multi ? (
+      <BusinessSwitcher
+        businesses={businesses}
+        selectedId={business.id}
+        onSelect={selectBusiness}
+      />
+    ) : null;
+
   return (
     <BizContext.Provider
-      value={{ me, business, reload: () => setTick((t) => t + 1) }}
+      value={{
+        me,
+        business,
+        businesses,
+        selectBusiness,
+        reload: () => setTick((t) => t + 1),
+      }}
     >
       <div className="biz-shell">
         <aside className="biz-sidebar">
@@ -100,20 +151,26 @@ export default function BizLayout({ children }: { children: ReactNode }) {
               <span className="brand-dot" />
               작업온
             </p>
-            <div style={{ marginTop: 10, fontSize: 15, color: 'var(--ink-2)' }}>
-              {business ? (
-                <>
-                  <Building
-                    width={16}
-                    height={16}
-                    style={{ verticalAlign: '-3px', marginRight: 6 }}
-                  />
-                  <b style={{ color: 'var(--ink)' }}>{business.name}</b>
-                </>
-              ) : (
-                me?.name || '사업장 모드'
-              )}
-            </div>
+            {switcher ? (
+              <div style={{ marginTop: 12 }}>{switcher}</div>
+            ) : (
+              <div
+                style={{ marginTop: 10, fontSize: 15, color: 'var(--ink-2)' }}
+              >
+                {business ? (
+                  <>
+                    <Building
+                      width={16}
+                      height={16}
+                      style={{ verticalAlign: '-3px', marginRight: 6 }}
+                    />
+                    <b style={{ color: 'var(--ink)' }}>{business.name}</b>
+                  </>
+                ) : (
+                  me?.name || '사업장 모드'
+                )}
+              </div>
+            )}
           </div>
           {nav}
           <button
@@ -128,14 +185,20 @@ export default function BizLayout({ children }: { children: ReactNode }) {
 
         <div className="biz-topbar">
           <div className="biz-topbar-head">
-            <span className="biz-topbar-biz">
-              <Building
-                width={16}
-                height={16}
-                style={{ verticalAlign: '-3px', marginRight: 6 }}
-              />
-              {business ? business.name : me?.name || '사업장 모드'}
-            </span>
+            {switcher ? (
+              <span style={{ flex: 1, minWidth: 0, marginRight: 10 }}>
+                {switcher}
+              </span>
+            ) : (
+              <span className="biz-topbar-biz">
+                <Building
+                  width={16}
+                  height={16}
+                  style={{ verticalAlign: '-3px', marginRight: 6 }}
+                />
+                {business ? business.name : me?.name || '사업장 모드'}
+              </span>
+            )}
             <button
               type="button"
               className="biz-topbar-logout"
@@ -161,6 +224,87 @@ export default function BizLayout({ children }: { children: ReactNode }) {
         </main>
       </div>
     </BizContext.Provider>
+  );
+}
+
+/**
+ * 사업장 전환 드롭다운 — 소유 사업장이 2개 이상일 때만 노출.
+ * 선택값은 layout 에서 localStorage 에 저장되고 컨텍스트로 전파된다.
+ */
+function BusinessSwitcher({
+  businesses,
+  selectedId,
+  onSelect,
+}: {
+  businesses: Business[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <label
+      className="biz-switcher"
+      style={{ display: 'block', position: 'relative' }}
+    >
+      <span
+        style={{
+          position: 'absolute',
+          width: 1,
+          height: 1,
+          overflow: 'hidden',
+          clip: 'rect(0 0 0 0)',
+        }}
+      >
+        사업장 선택
+      </span>
+      <Building
+        width={16}
+        height={16}
+        aria-hidden
+        style={{
+          position: 'absolute',
+          left: 12,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          color: 'var(--accent-text)',
+          pointerEvents: 'none',
+        }}
+      />
+      <select
+        className="input"
+        aria-label="사업장 선택"
+        value={selectedId}
+        onChange={(e) => onSelect(e.target.value)}
+        style={{
+          width: '100%',
+          paddingLeft: 36,
+          paddingRight: 28,
+          fontWeight: 700,
+          height: 44,
+          minHeight: 44,
+          cursor: 'pointer',
+          appearance: 'none',
+        }}
+      >
+        {businesses.map((b) => (
+          <option key={b.id} value={b.id}>
+            {b.name}
+          </option>
+        ))}
+      </select>
+      <Chevron
+        width={16}
+        height={16}
+        aria-hidden
+        style={{
+          position: 'absolute',
+          right: 10,
+          top: '50%',
+          transform: 'translateY(-50%) rotate(90deg)',
+          color: 'var(--ink-3)',
+          pointerEvents: 'none',
+        }}
+      />
+    </label>
   );
 }
 

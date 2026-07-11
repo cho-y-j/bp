@@ -24,10 +24,13 @@ export class BizController {
     private readonly confirmations: ConfirmationsService,
   ) {}
 
-  // GET /biz/inbox — 수신 확인서 목록·상태
+  // GET /biz/inbox?businessId= — 수신 확인서 목록·상태(businessId 지정 시 해당 사업장만)
   @Get('inbox')
-  inbox(@CurrentUser('userId') userId: string) {
-    return this.biz.inbox(userId);
+  inbox(
+    @CurrentUser('userId') userId: string,
+    @Query('businessId') businessId?: string,
+  ) {
+    return this.biz.inbox(userId, businessId);
   }
 
   // GET /biz/confirmations/:id — 수신 확인서 상세(소유자+자기 사업장 대상만)
@@ -49,13 +52,14 @@ export class BizController {
     return this.confirmations.bizSign(userId, id, dto);
   }
 
-  // GET /biz/settlements?month= — 작업자별 미지급 집계
+  // GET /biz/settlements?month=&businessId= — 작업자별 미지급 집계
   @Get('settlements')
   settlements(
     @CurrentUser('userId') userId: string,
     @Query('month') month: string,
+    @Query('businessId') businessId?: string,
   ) {
-    return this.biz.settlements(userId, month);
+    return this.biz.settlements(userId, month, businessId);
   }
 
   // POST /biz/settlements/pay — 지급 처리(각 ledger 반영)
@@ -64,14 +68,15 @@ export class BizController {
     return this.biz.pay(userId, dto);
   }
 
-  // GET /biz/safety-report?month= — 안전관리 이행 리포트 PDF
+  // GET /biz/safety-report?month=&businessId= — 안전관리 이행 리포트 PDF
   @Get('safety-report')
   async safetyReport(
     @CurrentUser('userId') userId: string,
     @Query('month') month: string,
     @Res() res: Response,
+    @Query('businessId') businessId?: string,
   ): Promise<void> {
-    const buf = await this.biz.safetyReport(userId, month);
+    const buf = await this.biz.safetyReport(userId, month, businessId);
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader(
       'Content-Disposition',

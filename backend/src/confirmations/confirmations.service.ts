@@ -442,6 +442,42 @@ export class ConfirmationsService {
   }
 
   // --------------------------------------------------------------------------
+  // 공유 링크 무효화(revoke) — 발행자만. SENT 만 무효화 가능.
+  //   - SIGNED: 서명 완료 문서는 증빙 보존을 위해 링크 열람을 유지한다(409, 무효화 불가).
+  //   - DRAFT: 아직 링크를 발행(전송)하지 않았으므로 무효화 대상 아님(409).
+  //   - SENT: revokedAt 설정 → 이후 public 열람/서명 403.
+  // --------------------------------------------------------------------------
+  async revoke(userId: string, id: string) {
+    const c = await this.ownedOrThrow(userId, id);
+    if (c.status === ConfirmationStatus.SIGNED) {
+      throw new AppException(
+        'ALREADY_SIGNED',
+        '서명 완료된 확인서는 무효화할 수 없습니다. 증빙 보존을 위해 링크 열람은 유지됩니다.',
+        HttpStatus.CONFLICT,
+      );
+    }
+    if (c.status !== ConfirmationStatus.SENT) {
+      throw new AppException(
+        'NOT_REVOCABLE',
+        '전송(SENT)된 확인서만 무효화할 수 있습니다.',
+        HttpStatus.CONFLICT,
+      );
+    }
+    const revokedAt = c.revokedAt ?? new Date();
+    if (!c.revokedAt) {
+      await this.prisma.confirmation.update({
+        where: { id },
+        data: { revokedAt },
+      });
+    }
+    return {
+      revoked: true,
+      status: c.status,
+      revokedAt: toKstDateTimeStr(revokedAt),
+    };
+  }
+
+  // --------------------------------------------------------------------------
   // PDF (작업확인서 레이아웃 + 한글 폰트 + 서명 이미지 영역)
   // --------------------------------------------------------------------------
   async renderPdf(userId: string, id: string): Promise<Buffer> {

@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   Req,
   Res,
 } from '@nestjs/common';
@@ -33,8 +34,11 @@ export class LaborContractsBizController {
   }
 
   @Get()
-  list(@CurrentUser('userId') userId: string) {
-    return this.service.listForBusiness(userId);
+  list(
+    @CurrentUser('userId') userId: string,
+    @Query('businessId') businessId?: string,
+  ) {
+    return this.service.listForBusiness(userId, businessId);
   }
 
   @Get(':id')
@@ -79,6 +83,16 @@ export class LaborContractsBizController {
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.service.send(userId, id);
+  }
+
+  // 공유 링크 무효화(revoke) — 사업장 소유자만.
+  // SENT 만 무효화 가능. SIGNED(서명 완료)는 증빙 보존을 위해 링크 열람 유지 → 409.
+  @Post(':id/revoke')
+  revoke(
+    @CurrentUser('userId') userId: string,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.service.revoke(userId, id);
   }
 
   @Get(':id/pdf')

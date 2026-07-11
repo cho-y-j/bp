@@ -92,9 +92,11 @@ export class LaborContractsService {
     return toLaborContractDto(created);
   }
 
-  /** 사업장 소유 계약서 목록(모든 내 사업장). */
-  async listForBusiness(userId: string) {
-    const businessIds = await this.myBusinessIds(userId);
+  /** 사업장 소유 계약서 목록. businessId 지정 시 해당 사업장만(미지정=모든 내 사업장). */
+  async listForBusiness(userId: string, businessId?: string) {
+    const owned = await this.myBusinessIds(userId);
+    const businessIds =
+      businessId && owned.includes(businessId) ? [businessId] : owned;
     const rows = await this.prisma.laborContract.findMany({
       where: { businessId: { in: businessIds } },
       orderBy: { createdAt: 'desc' },
@@ -282,6 +284,39 @@ export class LaborContractsService {
       notified,
       alimtalkSent,
     };
+  }
+
+  /**
+   * 공유 링크 무효화(revoke) — 사업장 소유자만. SENT 만 무효화 가능.
+   *   - SIGNED: 서명 완료 계약서는 증빙 보존을 위해 링크 열람을 유지한다(409, 무효화 불가).
+   *   - DRAFT: 아직 전송(링크 발행) 전이므로 무효화 대상 아님(409).
+   *   - SENT: revokedAt 설정 → 이후 public 열람/서명 403.
+   */
+  async revoke(userId: string, id: string) {
+    const c = await this.ownedContractOrThrow(userId, id);
+    if (c.status === LaborContractStatus.SIGNED) {
+      throw new AppException(
+        'ALREADY_SIGNED',
+        '서명 완료된 계약서는 무효화할 수 없습니다. 증빙 보존을 위해 링크 열람은 유지됩니다.',
+        HttpStatus.CONFLICT,
+      );
+    }
+    if (c.status !== LaborContractStatus.SENT) {
+      throw new AppException(
+        'NOT_REVOCABLE',
+        '전송(SENT)된 계약서만 무효화할 수 있습니다.',
+        HttpStatus.CONFLICT,
+      );
+    }
+    if (c.revokedAt) {
+      return toLaborContractDto(c);
+    }
+    const updated = await this.prisma.laborContract.update({
+      where: { id },
+      data: { revokedAt: new Date() },
+      include: { business: { select: { name: true } } },
+    });
+    return toLaborContractDto(updated);
   }
 
   /** 사업장 측 계약서 PDF. */

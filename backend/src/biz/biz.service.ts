@@ -47,8 +47,8 @@ export class BizService {
   // --------------------------------------------------------------------------
   // 수신 확인서함 — 연동 작업자가 send 한 확인서(내 사업장 대상)
   // --------------------------------------------------------------------------
-  async inbox(userId: string) {
-    const businessIds = await this.ownedBusinessIds(userId);
+  async inbox(userId: string, businessId?: string) {
+    const businessIds = await this.scopedBusinessIds(userId, businessId);
     if (businessIds.length === 0) return { count: 0, items: [] };
 
     const rows = await this.prisma.confirmation.findMany({
@@ -85,9 +85,9 @@ export class BizService {
   // --------------------------------------------------------------------------
   // 작업자별 미지급 집계 (SIGNED 확인서 기준, ledger 미수와 대칭)
   // --------------------------------------------------------------------------
-  async settlements(userId: string, month: string) {
+  async settlements(userId: string, month: string, businessId?: string) {
     this.assertMonth(month);
-    const businessIds = await this.ownedBusinessIds(userId);
+    const businessIds = await this.scopedBusinessIds(userId, businessId);
     if (businessIds.length === 0)
       return { month, workers: [], totalOutstanding: 0 };
     const { start, end } = kstMonthRange(month);
@@ -246,13 +246,20 @@ export class BizService {
   // --------------------------------------------------------------------------
   // 안전관리 이행 리포트 PDF
   // --------------------------------------------------------------------------
-  async safetyReport(userId: string, month: string): Promise<Buffer> {
+  async safetyReport(
+    userId: string,
+    month: string,
+    businessId?: string,
+  ): Promise<Buffer> {
     this.assertMonth(month);
-    const businessIds = await this.ownedBusinessIds(userId);
+    const businessIds = await this.scopedBusinessIds(userId, businessId);
     const { start, end } = kstMonthRange(month);
 
     const owned = await this.prisma.business.findMany({
-      where: { ownerId: userId },
+      where: {
+        ownerId: userId,
+        ...(businessIds.length ? { id: { in: businessIds } } : {}),
+      },
       select: { name: true },
       orderBy: { createdAt: 'asc' },
     });
@@ -341,6 +348,21 @@ export class BizService {
       select: { id: true },
     });
     return rows.map((r) => r.id);
+  }
+
+  /**
+   * 조회 대상 사업장 id 집합을 해석한다(다중 사업장 스코프).
+   *  - businessId 미지정: 소유 전체(기존 동작 그대로 — additive).
+   *  - businessId 지정 & 소유: 해당 1건으로 스코프.
+   *  - businessId 지정 & 미소유: 빈 배열(타 사업장 데이터 유출 차단).
+   */
+  private async scopedBusinessIds(
+    userId: string,
+    businessId?: string,
+  ): Promise<string[]> {
+    const owned = await this.ownedBusinessIds(userId);
+    if (!businessId) return owned;
+    return owned.includes(businessId) ? [businessId] : [];
   }
 
   private assertMonth(month: string): void {

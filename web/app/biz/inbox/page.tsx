@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, ApiError } from '@/lib/api';
+import { useBiz } from '../biz-context';
 import { won, dateLabel } from '@/lib/format';
 import PaperConfirmation, {
   type ConfirmationView,
@@ -64,6 +65,8 @@ function toView(it: InboxItem): ConfirmationView {
 }
 
 export default function InboxPage() {
+  const { business } = useBiz();
+  const businessId = business?.id;
   const [items, setItems] = useState<InboxItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<InboxItem | null>(null);
@@ -72,14 +75,14 @@ export default function InboxPage() {
     setError(null);
     try {
       const res = await api().get<{ count: number; items: InboxItem[] }>(
-        '/biz/inbox',
+        `/biz/inbox${businessId ? `?businessId=${businessId}` : ''}`,
       );
       setItems(res.data.items);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : '불러오기 실패');
       setItems([]);
     }
-  }, []);
+  }, [businessId]);
 
   useEffect(() => {
     void load();

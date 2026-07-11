@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { api, authedBlob, ApiError } from '@/lib/api';
+import { useBiz } from '../biz-context';
 import { currentMonth, monthLabel, dateLabel } from '@/lib/format';
 import MonthNav from '@/components/MonthNav';
 import { Shield, Download, AlertTriangle } from '@/components/Icons';
@@ -24,6 +25,8 @@ const SAFETY_TYPES = new Set([
 ]);
 
 export default function SafetyPage() {
+  const { business } = useBiz();
+  const businessId = business?.id;
   const [month, setMonth] = useState(currentMonth());
   const [logs, setLogs] = useState<Notif[] | null>(null);
   const [downloading, setDownloading] = useState(false);
@@ -47,7 +50,11 @@ export default function SafetyPage() {
     setDownloading(true);
     try {
       // 인증 blob 방식: Authorization 헤더로 PDF 스트림을 받아 브라우저에서 열기.
-      const blob = await authedBlob(`/biz/safety-report?month=${month}`);
+      const blob = await authedBlob(
+        `/biz/safety-report?month=${month}${
+          businessId ? `&businessId=${businessId}` : ''
+        }`,
+      );
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
       setTimeout(() => URL.revokeObjectURL(url), 60000);
