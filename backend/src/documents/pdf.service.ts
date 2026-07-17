@@ -11,6 +11,7 @@ import type {
   IncomeReportPdfData,
   LaborContractPdfData,
   SafetyReportPdfData,
+  SiteCostsPdfData,
   StatementPdfData,
 } from './pdf.types';
 
@@ -967,8 +968,14 @@ export class PdfService {
       ['총 공수', `${gongStr}공수`],
     ];
     if (data.totals.teamPayout > 0) {
-      summaryRows.push(['팀 지급분(팀원 몫)', this.krw(data.totals.teamPayout)]);
-      summaryRows.push(['순소득 참고(청구-지급분)', this.krw(data.totals.netBilled)]);
+      summaryRows.push([
+        '팀 지급분(팀원 몫)',
+        this.krw(data.totals.teamPayout),
+      ]);
+      summaryRows.push([
+        '순소득 참고(청구-지급분)',
+        this.krw(data.totals.netBilled),
+      ]);
     }
     for (const [label, value] of summaryRows) {
       text(label, margin, y, 11, gray);
@@ -1008,7 +1015,9 @@ export class PdfService {
       rightText(this.krw(m.paid), mcol.paid, y, 10);
       rightText(this.krw(m.outstanding), mcol.out, y, 10);
       const dg =
-        m.gongsu > 0 ? `${m.daysWorked}일/${m.gongsu}공수` : `${m.daysWorked}일`;
+        m.gongsu > 0
+          ? `${m.daysWorked}일/${m.gongsu}공수`
+          : `${m.daysWorked}일`;
       rightText(dg, mcol.days, y, 10, gray);
       y -= 16;
     }
@@ -1079,6 +1088,158 @@ export class PdfService {
       if (buf) flush();
       y -= 2;
     }
+
+    const bytes = await pdf.save();
+    return Buffer.from(bytes);
+  }
+
+  /** 현장별 인건비 집계 PDF (P5a) — 현장별 표(작업자/팀 행) + 소계 + 총계. 발주처 제출용. */
+  async renderSiteCostsPdf(data: SiteCostsPdfData): Promise<Buffer> {
+    const pdf = await PDFDocument.create();
+    pdf.registerFontkit(fontkit);
+    const fontBytes = await this.loadFontBytes();
+    const font = await pdf.embedFont(fontBytes, { subset: true });
+
+    const A4: [number, number] = [595.28, 841.89];
+    let page: PDFPage = pdf.addPage(A4);
+    const { width, height } = page.getSize();
+    const margin = 48;
+    let y = height - margin;
+    const black = rgb(0.1, 0.1, 0.1);
+    const gray = rgb(0.45, 0.45, 0.45);
+    const line = rgb(0.8, 0.8, 0.8);
+
+    const text = (
+      s: string,
+      x: number,
+      yy: number,
+      size: number,
+      color = black,
+    ) => page.drawText(s ?? '', { x, y: yy, size, font, color });
+    const rightText = (
+      s: string,
+      xRight: number,
+      yy: number,
+      size: number,
+      color = black,
+    ) => text(s, xRight - font.widthOfTextAtSize(s, size), yy, size, color);
+    const pageBreak = (need: number) => {
+      if (y < margin + need) {
+        page = pdf.addPage(A4);
+        y = height - margin;
+      }
+    };
+    const clip = (s: string, maxW: number, size: number): string => {
+      let shown = s ?? '';
+      while (font.widthOfTextAtSize(shown, size) > maxW && shown.length > 1) {
+        shown = shown.slice(0, -1);
+      }
+      return shown !== (s ?? '') ? shown.slice(0, -1) + '…' : shown;
+    };
+
+    // 제목 + 사업장/기간 헤더
+    const titleSize = 20;
+    const t = data.title;
+    text(t, (width - font.widthOfTextAtSize(t, titleSize)) / 2, y, titleSize);
+    y -= 18;
+    text(`사업장: ${data.businessName}`, margin, y, 10, gray);
+    rightText(`기간: ${data.periodLabel}`, width - margin, y, 10, gray);
+    y -= 16;
+    page.drawLine({
+      start: { x: margin, y },
+      end: { x: width - margin, y },
+      thickness: 1,
+      color: black,
+    });
+    y -= 22;
+
+    const col = {
+      name: margin,
+      days: margin + 250,
+      gongsu: margin + 330,
+      amount: width - margin,
+    };
+
+    for (const s of data.sites) {
+      pageBreak(90);
+      // 현장 헤더
+      text(`■ ${clip(s.site, 320, 12)}`, margin, y, 12);
+      y -= 18;
+      // 열 헤더
+      text('작업자/팀', col.name, y, 9, gray);
+      rightText('일수', col.days, y, 9, gray);
+      rightText('공수', col.gongsu, y, 9, gray);
+      rightText('금액', col.amount, y, 9, gray);
+      y -= 6;
+      page.drawLine({
+        start: { x: margin, y },
+        end: { x: width - margin, y },
+        thickness: 0.5,
+        color: line,
+      });
+      y -= 15;
+      for (const e of s.entries) {
+        pageBreak(28);
+        const label = e.isTeam
+          ? `${e.workerName} (팀 ${e.teamMemberCount}명)`
+          : e.workerName;
+        text(clip(label, col.days - col.name - 10, 10), col.name, y, 10);
+        rightText(String(e.days), col.days, y, 10);
+        rightText(e.gongsu > 0 ? String(e.gongsu) : '-', col.gongsu, y, 10);
+        rightText(this.krw(e.amount), col.amount, y, 10);
+        y -= 15;
+      }
+      // 현장 소계
+      page.drawLine({
+        start: { x: margin, y: y + 6 },
+        end: { x: width - margin, y: y + 6 },
+        thickness: 0.5,
+        color: line,
+      });
+      text('소계', col.name, y - 6, 10, gray);
+      rightText(String(s.subtotalDays), col.days, y - 6, 10, gray);
+      rightText(
+        s.subtotalGongsu > 0 ? String(s.subtotalGongsu) : '-',
+        col.gongsu,
+        y - 6,
+        10,
+        gray,
+      );
+      rightText(this.krw(s.subtotalAmount), col.amount, y - 6, 11);
+      y -= 30;
+    }
+
+    if (data.sites.length === 0) {
+      text('해당 기간 서명 완료된 확인서가 없습니다.', margin, y, 10, gray);
+      y -= 20;
+    }
+
+    // 전체 총계
+    pageBreak(50);
+    page.drawLine({
+      start: { x: margin, y: y + 10 },
+      end: { x: width - margin, y: y + 10 },
+      thickness: 1,
+      color: black,
+    });
+    text('전체 총계', col.name, y - 8, 12);
+    rightText(String(data.totalDays), col.days, y - 8, 12);
+    rightText(
+      data.totalGongsu > 0 ? String(data.totalGongsu) : '-',
+      col.gongsu,
+      y - 8,
+      12,
+    );
+    rightText(this.krw(data.totalAmount), col.amount, y - 8, 13);
+    y -= 30;
+    pageBreak(24);
+    text(
+      '※ 작업자 성명은 개인정보 보호를 위해 일부 마스킹되어 있습니다.',
+      margin,
+      y,
+      8,
+      gray,
+    );
 
     const bytes = await pdf.save();
     return Buffer.from(bytes);
@@ -1184,10 +1345,7 @@ export class PdfService {
       y -= 16;
       const clip = (s: string, maxW: number, size: number): string => {
         let shown = s ?? '';
-        while (
-          font.widthOfTextAtSize(shown, size) > maxW &&
-          shown.length > 1
-        ) {
+        while (font.widthOfTextAtSize(shown, size) > maxW && shown.length > 1) {
           shown = shown.slice(0, -1);
         }
         return shown !== (s ?? '') ? shown.slice(0, -1) + '…' : shown;

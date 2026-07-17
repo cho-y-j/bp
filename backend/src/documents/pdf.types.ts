@@ -156,6 +156,34 @@ export interface IncomeReportPdfData {
   taxNoteLines: string[]; // 종소세 안내 문구(한국어)
 }
 
+/** 현장별 인건비 집계 PDF (P5a) — 발주처 제출용. */
+export interface SiteCostsPdfWorker {
+  workerName: string; // 마스킹된 이름(팀이면 반장명 + 팀 표기)
+  isTeam: boolean;
+  teamMemberCount: number;
+  days: number;
+  gongsu: number;
+  amount: number;
+}
+
+export interface SiteCostsPdfSite {
+  site: string;
+  entries: SiteCostsPdfWorker[];
+  subtotalDays: number;
+  subtotalGongsu: number;
+  subtotalAmount: number;
+}
+
+export interface SiteCostsPdfData {
+  title: string; // "현장별 인건비 집계"
+  businessName: string; // 사업장 상호(헤더)
+  periodLabel: string; // "2026-01 ~ 2026-03"
+  sites: SiteCostsPdfSite[];
+  totalDays: number;
+  totalGongsu: number;
+  totalAmount: number;
+}
+
 export interface SafetyReportPdfData {
   title: string; // "안전관리 이행 리포트"
   month: string; // YYYY-MM

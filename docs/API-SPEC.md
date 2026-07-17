@@ -97,6 +97,14 @@
 - `GET /biz/safety-report?month=` — 안전관리 이행 리포트 PDF (safety_logs 집계)
 - **(백로그정리 — 다중 사업장 스코프)** `GET /biz/inbox`·`/biz/settlements`·`/biz/safety-report` 모두 선택적 `?businessId=` 지원(additive). 미지정 시 소유 전체 집계(기존 동작), 지정 시 해당 사업장만. 미소유 businessId 는 빈 결과(타 사업장 데이터 유출 차단). `pay` 는 항상 소유 전체 ledger 대상(스코프 무관).
 
+## 사업장 강화 3종 (P5a — 사업장 모드, 선택적 `?businessId=` additive·미인증 401·이름 서버 마스킹)
+- `GET /biz/site-costs?from=YYYY-MM&to=YYYY-MM&businessId?=` **(P5-1)** — 사업장 대상 **SIGNED 확인서**를 **현장(site)별**로 집계. `{ range, businessName, sites:[{ site, entries:[{ workerProfileId, workerName(마스킹), isTeam, teamMemberCount, days(연인원), gongsu, amount, entryCount }], subtotalAmount, subtotalDays, subtotalGongsu, workerCount }], totals:{ totalAmount, totalDays, totalGongsu, siteCount, entryCount } }`. 일반=작업자별 1행, **팀 확인서=반장 1행(teamMemberCount 인원수·팀 합계)**. **기간 최대 12개월**(초과 400 RANGE_TOO_LONG, from>to 400 INVALID_RANGE). `days`=연인원(man-days: DAILY 일수·GONGSU/팀 공수·그 외 1).
+- `GET /biz/site-costs/pdf?from=&to=&businessId?=` **(P5-1)** — 발주처 제출용 PDF(인증 blob, inline). **사업장 상호·기간 헤더** + 현장별 표(작업자/팀·일수·공수·금액) + 현장 소계 + 전체 총계 + 마스킹 안내.
+- `GET /biz/wage-statement?month=YYYY-MM&businessId?=` **(P5-2)** — **지급(payments.paidAt) 기준** 월별 작업자별 집계 + 소득 유형별 원천징수 산출. `{ month, businessName, marked, workers:[{ workerProfileId, workerName, paidTotal, paymentCount, workDays, business3_3:{incomeTax,localTax,totalTax,netPay}, dailyWage:{...} }], totals:{...}, notes:[], hometaxNote, copyText }`. **business3_3**=지급액 3%+지방 0.3%. **dailyWage(일용)**=일 150,000 공제→과세표준×6%×**45%**(=2.7%)→**1일 세액 1,000원 미만 소액부징수 0**→일수 합산, 지방 10%. 세율은 상수+주석(2026 기준). `notes` 에 "세무상담 아님·세무사 확인 권장"·주민번호 비수집 명시. **주민번호 비수집** → `hometaxNote`(홈택스 직접 입력). `copyText`=홈택스 입력용 복사 텍스트.
+- `POST /biz/wage-statement/mark` **(P5-2)** — body `{ month(YYYY-MM), businessId? }`. 월 마감(홈택스 입력 완료) 표시 → `businesses.wageMarkedMonths` push. **멱등**(`{ businessId, month, marked:true, alreadyMarked }`). 마감 후에도 데이터 계속 조회 가능, GET 응답 `marked` 로 표시(스코프 내 전 사업장 마감 시 true).
+- `GET /biz/today-attendance?businessId?=` **(P5-3)** — 오늘(KST) scheduledAt jobs 를 **현장별 그룹** + work_logs 조인. `{ date, sites:[{ site, workers:[{ jobId, workerName, status:SCHEDULED|ACCEPTED|STARTED|DONE|CANCELLED, scheduledAt(HH:mm), startedAt, finishedAt, condition }], summary:{total,attended,completed,absent} }], summary:{...} }`. total=취소 제외, attended=시작+완료, completed=완료, absent=미출근.
+- **P5a 스키마(additive)**: `businesses.wageMarkedMonths String[] @default([])` (마이그레이션 `20260717130000_p5a_wage_marked_months`).
+
 ## 안전 /safety
 - 스케줄러: 기상청 API 폴링 → 폭염특보/체감온도 기준 대상자에게 푸시+기록(safety_logs, append-only)
 - `POST /safety/:id/ack` — 작업자 "확인" 탭 → 확인 시각 기록

@@ -1,5 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ConfirmationStatus, NotificationType, Prisma } from '@prisma/client';
+import {
+  Confirmation,
+  ConfirmationStatus,
+  JobStatus,
+  NotificationType,
+  Prisma,
+} from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AppException } from '../common/errors';
 import { PdfService } from '../documents/pdf.service';
@@ -7,6 +13,7 @@ import type {
   SafetyReportPdfData,
   SafetyReportRow,
   SafetyReportTbmRow,
+  SiteCostsPdfData,
 } from '../documents/pdf.types';
 import { NotificationsService } from '../notifications/notifications.service';
 import { SAFETY_TYPE_LABEL } from '../common/safety-labels';
@@ -23,10 +30,73 @@ import {
   kstMonthRange,
   toKstDateStr,
   toKstDateTimeStr,
+  toKstTimeStr,
 } from '../confirmations/time.util';
 import { PaySettlementDto } from './dto/pay-settlement.dto';
 import { BadgeService } from '../ledger/badge.service';
 import { selfBadgeStatus } from '../ledger/badge.util';
+import { aggregateSiteCosts, SiteCostInputRow } from './site-costs.util';
+import {
+  aggregateWageStatement,
+  formatWageStatementText,
+  wageStatementNotes,
+  WagePaymentRow,
+} from './wage-statement.util';
+
+/** 확인서의 근로일수(연인원)·공수 기여분. 팀=공수합, GONGSU=수량, DAILY=일수, 그 외=1. */
+export function workUnitsOf(c: Confirmation): {
+  days: number;
+  gongsu: number;
+  isTeam: boolean;
+  teamMemberCount: number;
+} {
+  const te = Array.isArray(c.teamEntries)
+    ? (c.teamEntries as unknown as Array<{ quantity?: number }>)
+    : [];
+  if (te.length > 0) {
+    const gongsu = te.reduce((s, x) => s + (x.quantity ?? 0), 0);
+    return {
+      days: gongsu,
+      gongsu,
+      isTeam: true,
+      teamMemberCount: te.length,
+    };
+  }
+  const calc = c.amountCalc as unknown as {
+    items?: Array<{ type?: string; quantity?: number }>;
+  } | null;
+  const base = calc?.items?.find((i) => i.type === 'BASE');
+  const qty = typeof base?.quantity === 'number' ? base.quantity : 0;
+  if (c.rateType === 'GONGSU') {
+    return { days: qty, gongsu: qty, isTeam: false, teamMemberCount: 0 };
+  }
+  if (c.rateType === 'DAILY') {
+    return {
+      days: qty > 0 ? qty : 1,
+      gongsu: 0,
+      isTeam: false,
+      teamMemberCount: 0,
+    };
+  }
+  // HOURLY / PER_CASE / MONTHLY / UNIT — 일용 일수 개념 약함, 1일로 간주.
+  return { days: 1, gongsu: 0, isTeam: false, teamMemberCount: 0 };
+}
+
+function amountTotalOf(c: Confirmation): number {
+  const calc = c.amountCalc as unknown as { total?: number } | null;
+  return typeof calc?.total === 'number' ? calc.total : 0;
+}
+
+/** 오늘의 출역 — 작업자 1명의 상태 행. */
+export interface AttendanceWorker {
+  jobId: string;
+  workerName: string;
+  status: 'SCHEDULED' | 'ACCEPTED' | 'STARTED' | 'DONE' | 'CANCELLED';
+  scheduledAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+  condition: string | null;
+}
 
 export interface SettlementWorkerGroup {
   workerProfileId: string;
@@ -391,6 +461,337 @@ export class BizService {
       tbm,
     };
     return this.pdf.renderSafetyReportPdf(data);
+  }
+
+  // ==========================================================================
+  //  P5a-1. 현장별 인건비 집계 (SIGNED 확인서 → 현장별·작업자별, 팀 합계) + PDF
+  // ==========================================================================
+  async siteCosts(
+    userId: string,
+    from: string,
+    to: string,
+    businessId?: string,
+  ) {
+    const range = this.resolveSiteRange(from, to);
+    const businessIds = await this.scopedBusinessIds(userId, businessId);
+    const { rows, businessName } = await this.siteCostRows(
+      userId,
+      businessIds,
+      range,
+    );
+    const { sites, totals } = aggregateSiteCosts(rows);
+    return {
+      range: { from: range.from, to: range.to },
+      businessName,
+      sites,
+      totals,
+    };
+  }
+
+  async siteCostsPdf(
+    userId: string,
+    from: string,
+    to: string,
+    businessId?: string,
+  ): Promise<Buffer> {
+    const range = this.resolveSiteRange(from, to);
+    const businessIds = await this.scopedBusinessIds(userId, businessId);
+    const { rows, businessName } = await this.siteCostRows(
+      userId,
+      businessIds,
+      range,
+    );
+    const { sites, totals } = aggregateSiteCosts(rows);
+    const data: SiteCostsPdfData = {
+      title: '현장별 인건비 집계',
+      businessName,
+      periodLabel: `${range.from} ~ ${range.to}`,
+      sites: sites.map((s) => ({
+        site: s.site,
+        entries: s.entries.map((e) => ({
+          workerName: e.workerName,
+          isTeam: e.isTeam,
+          teamMemberCount: e.teamMemberCount,
+          days: e.days,
+          gongsu: e.gongsu,
+          amount: e.amount,
+        })),
+        subtotalDays: s.subtotalDays,
+        subtotalGongsu: s.subtotalGongsu,
+        subtotalAmount: s.subtotalAmount,
+      })),
+      totalDays: totals.totalDays,
+      totalGongsu: totals.totalGongsu,
+      totalAmount: totals.totalAmount,
+    };
+    return this.pdf.renderSiteCostsPdf(data);
+  }
+
+  /** 현장별 인건비 집계용 확인서 → 정규화 행 + 사업장명. */
+  private async siteCostRows(
+    userId: string,
+    businessIds: string[],
+    range: { start: Date; end: Date },
+  ): Promise<{ rows: SiteCostInputRow[]; businessName: string }> {
+    const businessName = await this.scopedBusinessName(userId, businessIds);
+    if (businessIds.length === 0) return { rows: [], businessName };
+    const confirmations = await this.prisma.confirmation.findMany({
+      where: {
+        businessId: { in: businessIds },
+        status: ConfirmationStatus.SIGNED,
+        date: { gte: range.start, lt: range.end },
+      },
+      include: { profile: { select: { id: true, name: true } } },
+      orderBy: { date: 'asc' },
+    });
+    const rows: SiteCostInputRow[] = confirmations.map((c) => {
+      const wu = workUnitsOf(c);
+      return {
+        site: c.site,
+        workerProfileId: c.profile.id,
+        workerName: maskName(c.profile.name),
+        workDate: toKstDateStr(c.date),
+        amount: amountTotalOf(c),
+        days: wu.days,
+        gongsu: wu.gongsu,
+        isTeam: wu.isTeam,
+        teamMemberCount: wu.teamMemberCount,
+      };
+    });
+    return { rows, businessName };
+  }
+
+  /** from&to(YYYY-MM) → [start,end) instant. 최대 12개월. */
+  private resolveSiteRange(
+    from: string,
+    to: string,
+  ): { from: string; to: string; start: Date; end: Date } {
+    this.assertMonth(from);
+    this.assertMonth(to);
+    const [fy, fm] = from.split('-').map((n) => parseInt(n, 10));
+    const [ty, tm] = to.split('-').map((n) => parseInt(n, 10));
+    const startIdx = fy * 12 + (fm - 1);
+    const endIdx = ty * 12 + (tm - 1);
+    if (endIdx < startIdx) {
+      throw new AppException(
+        'INVALID_RANGE',
+        'from 은 to 보다 이후일 수 없습니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (endIdx - startIdx > 11) {
+      throw new AppException(
+        'RANGE_TOO_LONG',
+        '조회 범위는 최대 12개월입니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const start = new Date(`${from}-01T00:00:00+09:00`);
+    const { end } = kstMonthRange(to);
+    return { from, to, start, end };
+  }
+
+  // ==========================================================================
+  //  P5a-2. 일용근로소득 지급명세서 도우미 (지급 paidAt 기준) + 월 마감 표시
+  // ==========================================================================
+  async wageStatement(userId: string, month: string, businessId?: string) {
+    this.assertMonth(month);
+    const businessIds = await this.scopedBusinessIds(userId, businessId);
+    const businessName = await this.scopedBusinessName(userId, businessIds);
+    const { start, end } = kstMonthRange(month);
+
+    const rows: WagePaymentRow[] = [];
+    if (businessIds.length > 0) {
+      const entries = await this.prisma.ledgerEntry.findMany({
+        where: {
+          businessId: { in: businessIds },
+          confirmation: { status: ConfirmationStatus.SIGNED },
+        },
+        include: {
+          confirmation: true,
+          profile: { select: { id: true, name: true } },
+        },
+      });
+      for (const e of entries) {
+        if (!e.confirmation) continue;
+        const payments = Array.isArray(e.payments)
+          ? (e.payments as unknown as PaymentRecord[])
+          : [];
+        // 이 확인서(지급 건)의 당월 지급 합계(부분입금 여러 건이면 합산).
+        let paidInMonth = 0;
+        for (const p of payments) {
+          if (!p.paidAt) continue;
+          const at = new Date(p.paidAt);
+          if (at >= start && at < end) paidInMonth += Math.round(p.amount);
+        }
+        if (paidInMonth <= 0) continue;
+        const wu = workUnitsOf(e.confirmation);
+        rows.push({
+          workerProfileId: e.profile.id,
+          workerName: maskName(e.profile.name),
+          amount: paidInMonth,
+          days: wu.days,
+          workDate: toKstDateStr(e.confirmation.date),
+        });
+      }
+    }
+
+    const { workers, totals } = aggregateWageStatement(rows);
+    const marked = await this.isMonthMarked(userId, businessIds, month);
+    return {
+      month,
+      businessName,
+      marked,
+      workers,
+      totals,
+      notes: wageStatementNotes(),
+      hometaxNote:
+        '주민등록번호는 본 앱에서 수집·저장하지 않습니다. 홈택스 지급명세서 제출 시 직접 입력하세요.',
+      copyText: formatWageStatementText(month, businessName, workers),
+    };
+  }
+
+  /** 월 마감 표시(홈택스 입력 완료). 멱등 — 이미 표시된 월이면 추가 없음. */
+  async wageStatementMark(userId: string, month: string, businessId?: string) {
+    this.assertMonth(month);
+    const business = await this.resolveOwnedBusiness(userId, businessId);
+    const already = business.wageMarkedMonths.includes(month);
+    if (!already) {
+      await this.prisma.business.update({
+        where: { id: business.id },
+        data: { wageMarkedMonths: { push: month } },
+      });
+    }
+    return {
+      businessId: business.id,
+      month,
+      marked: true,
+      alreadyMarked: already,
+    };
+  }
+
+  private async isMonthMarked(
+    userId: string,
+    businessIds: string[],
+    month: string,
+  ): Promise<boolean> {
+    if (businessIds.length === 0) return false;
+    const rows = await this.prisma.business.findMany({
+      where: { id: { in: businessIds }, ownerId: userId },
+      select: { wageMarkedMonths: true },
+    });
+    if (rows.length === 0) return false;
+    // 스코프 내 모든 사업장이 해당 월을 마감했을 때만 marked.
+    return rows.every((b) => b.wageMarkedMonths.includes(month));
+  }
+
+  // ==========================================================================
+  //  P5a-3. 오늘의 출역 현황판 (오늘 KST jobs → 현장별 그룹 + 인원 요약)
+  // ==========================================================================
+  async todayAttendance(userId: string, businessId?: string) {
+    const businessIds = await this.scopedBusinessIds(userId, businessId);
+    const todayStr = toKstDateStr(new Date());
+    const start = kstDate(todayStr);
+    const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+
+    if (businessIds.length === 0) {
+      return {
+        date: todayStr,
+        sites: [],
+        summary: { total: 0, attended: 0, completed: 0, absent: 0 },
+      };
+    }
+
+    const jobs = await this.prisma.job.findMany({
+      where: {
+        businessId: { in: businessIds },
+        scheduledAt: { gte: start, lt: end },
+      },
+      include: {
+        profile: { select: { id: true, name: true } },
+        workLogs: { orderBy: { createdAt: 'desc' }, take: 1 },
+      },
+      orderBy: [{ site: 'asc' }, { scheduledAt: 'asc' }],
+    });
+
+    const siteMap = new Map<string, AttendanceWorker[]>();
+    let total = 0;
+    let attended = 0;
+    let completed = 0;
+
+    for (const j of jobs) {
+      const wl = j.workLogs[0];
+      let status: AttendanceWorker['status'];
+      if (j.status === JobStatus.CANCELLED) status = 'CANCELLED';
+      else if (j.status === JobStatus.DONE) status = 'DONE';
+      else if (j.status === JobStatus.IN_PROGRESS) status = 'STARTED';
+      else if (j.acceptedAt) status = 'ACCEPTED';
+      else status = 'SCHEDULED';
+
+      if (status !== 'CANCELLED') {
+        total += 1;
+        if (status === 'STARTED' || status === 'DONE') attended += 1;
+        if (status === 'DONE') completed += 1;
+      }
+
+      const cond =
+        wl?.conditionCheck &&
+        typeof (wl.conditionCheck as { result?: unknown }).result === 'string'
+          ? ((wl.conditionCheck as { result: string }).result as string)
+          : null;
+
+      const arr = siteMap.get(j.site) ?? [];
+      arr.push({
+        jobId: j.id,
+        workerName: maskName(j.profile.name),
+        status,
+        scheduledAt: toKstTimeStr(j.scheduledAt),
+        startedAt: wl?.startedAt ? toKstTimeStr(wl.startedAt) : null,
+        finishedAt: wl?.finishedAt ? toKstTimeStr(wl.finishedAt) : null,
+        condition: cond,
+      });
+      siteMap.set(j.site, arr);
+    }
+
+    const sites = [...siteMap.entries()].map(([site, workers]) => {
+      const active = workers.filter((w) => w.status !== 'CANCELLED');
+      const siteCompleted = active.filter((w) => w.status === 'DONE').length;
+      const siteAttended = active.filter(
+        (w) => w.status === 'STARTED' || w.status === 'DONE',
+      ).length;
+      return {
+        site,
+        workers,
+        summary: {
+          total: active.length,
+          attended: siteAttended,
+          completed: siteCompleted,
+          absent: active.length - siteAttended,
+        },
+      };
+    });
+
+    return {
+      date: todayStr,
+      sites,
+      summary: { total, attended, completed, absent: total - attended },
+    };
+  }
+
+  /** 스코프 사업장들의 상호를 합쳐 표시(헤더용). */
+  private async scopedBusinessName(
+    userId: string,
+    businessIds: string[],
+  ): Promise<string> {
+    const owned = await this.prisma.business.findMany({
+      where: {
+        ownerId: userId,
+        ...(businessIds.length ? { id: { in: businessIds } } : {}),
+      },
+      select: { name: true },
+      orderBy: { createdAt: 'asc' },
+    });
+    return owned.map((b) => b.name).join(', ') || '내 사업장';
   }
 
   // --------------------------------------------------------------------------
