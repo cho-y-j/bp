@@ -780,3 +780,77 @@ button {
     padding: 20px 16px 60px;
   }
 }
+
+/* ── 작업자 모드 (/w) 전용 유틸 ───────────────────────────── */
+.w-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.w-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.w-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.w-mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.w-mini-table th,
+.w-mini-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  white-space: nowrap;
+}
+.w-mini-table th:first-child,
+.w-mini-table td:first-child {
+  text-align: left;
+}
+.w-mini-table thead th {
+  color: var(--ink-3);
+  font-weight: 700;
+  font-size: 13px;
+}
+.w-table-scroll {
+  overflow-x: auto;
+}
+.w-tabs {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 18px;
+}
+.w-tab {
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 42px;
+}
+.w-tab.on {
+  background: color-mix(in srgb, var(--primary) 13%, transparent);
+  color: var(--accent-text);
+}
+@media (max-width: 640px) {
+  .w-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

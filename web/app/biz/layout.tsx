@@ -14,6 +14,7 @@ import {
   Plus,
   FileText,
   Chevron,
+  Home,
 } from '@/components/Icons';
 import {
   BizContext,
@@ -173,14 +174,30 @@ export default function BizLayout({ children }: { children: ReactNode }) {
             )}
           </div>
           {nav}
-          <button
-            className="biz-nav-item"
-            style={{ marginTop: 'auto', background: 'none', border: 0 }}
-            onClick={logout}
+          <div
+            style={{
+              marginTop: 'auto',
+              borderTop: '1px solid var(--border)',
+              paddingTop: 8,
+            }}
           >
-            <Logout width={20} height={20} />
-            로그아웃
-          </button>
+            <Link
+              href="/w/home"
+              className="biz-nav-item"
+              style={{ color: 'var(--accent-text)', fontWeight: 700 }}
+            >
+              <Home width={20} height={20} />
+              작업자 모드
+            </Link>
+            <button
+              className="biz-nav-item"
+              style={{ background: 'none', border: 0, width: '100%' }}
+              onClick={logout}
+            >
+              <Logout width={20} height={20} />
+              로그아웃
+            </button>
+          </div>
         </aside>
 
         <div className="biz-topbar">
@@ -199,14 +216,24 @@ export default function BizLayout({ children }: { children: ReactNode }) {
                 {business ? business.name : me?.name || '사업장 모드'}
               </span>
             )}
-            <button
-              type="button"
-              className="biz-topbar-logout"
-              onClick={logout}
-            >
-              <Logout width={18} height={18} />
-              로그아웃
-            </button>
+            <span style={{ display: 'flex', gap: 8, flex: '0 0 auto' }}>
+              <Link
+                href="/w/home"
+                className="biz-topbar-logout"
+                style={{ color: 'var(--accent-text)' }}
+              >
+                <Home width={16} height={16} />
+                작업자
+              </Link>
+              <button
+                type="button"
+                className="biz-topbar-logout"
+                onClick={logout}
+              >
+                <Logout width={18} height={18} />
+                로그아웃
+              </button>
+            </span>
           </div>
           <div className="biz-topbar-nav">{nav}</div>
         </div>
@@ -400,6 +427,14 @@ function BusinessGate({ onCreated }: { onCreated: () => void }) {
           사업장 만들기
         </button>
       </div>
+      <Link
+        href="/w/home"
+        className="btn btn-ghost"
+        style={{ marginTop: 14, maxWidth: 240 }}
+      >
+        <Home width={18} height={18} />
+        작업자 모드로 돌아가기
+      </Link>
     </div>
   );
 }

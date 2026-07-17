@@ -9,7 +9,8 @@ import { Phone, Check } from '@/components/Icons';
 function LoginInner() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get('next') || '/biz/inbox';
+  // 명시적 next 가 있으면 그대로, 없으면 로그인 후 사업장 보유 여부로 분기.
+  const next = params.get('next');
 
   const [phase, setPhase] = useState<'phone' | 'code'>('phone');
   const [phone, setPhone] = useState('');
@@ -59,7 +60,24 @@ function LoginInner() {
       });
       const data = (res.data?.data ?? res.data) as { accessToken: string };
       setToken(data.accessToken);
-      router.replace(next);
+      if (next) {
+        router.replace(next);
+      } else {
+        // 사업장 있으면 사업장 수신함, 없으면 작업자 홈으로.
+        let dest = '/w/home';
+        try {
+          const meRes = await axios.get(`${API_URL}/me`, {
+            headers: { Authorization: `Bearer ${data.accessToken}` },
+          });
+          const me = (meRes.data?.data ?? meRes.data) as {
+            hasBusiness?: boolean;
+          };
+          dest = me.hasBusiness ? '/biz/inbox' : '/w/home';
+        } catch {
+          /* /me 실패 시 작업자 홈으로 폴백 */
+        }
+        router.replace(dest);
+      }
     } catch (e) {
       setError(errMsg(e, '인증에 실패했습니다. 코드를 확인하세요.'));
     } finally {
