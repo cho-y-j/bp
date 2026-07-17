@@ -216,6 +216,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logoutConfirm => 'Log out?';
 
   @override
+  String get appLockTitle => 'App lock';
+
+  @override
+  String get appLockSub =>
+      'Protect the app with biometrics or your device passcode';
+
+  @override
+  String get appLockLockedTitle => 'Locked';
+
+  @override
+  String get appLockUnlock => 'Authenticate to continue';
+
+  @override
+  String get appLockReason => 'Unlock the app';
+
+  @override
+  String get appLockUnavailable =>
+      'This device doesn\'t support biometrics or a passcode lock';
+
+  @override
   String get noName => 'No name';
 
   @override

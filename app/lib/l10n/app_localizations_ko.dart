@@ -209,6 +209,24 @@ class AppLocalizationsKo extends AppLocalizations {
   String get logoutConfirm => '로그아웃 하시겠어요?';
 
   @override
+  String get appLockTitle => '앱 잠금';
+
+  @override
+  String get appLockSub => '생체 인증·기기 암호로 앱을 보호해요';
+
+  @override
+  String get appLockLockedTitle => '잠겨 있어요';
+
+  @override
+  String get appLockUnlock => '인증하고 계속하기';
+
+  @override
+  String get appLockReason => '작업온 잠금을 해제합니다';
+
+  @override
+  String get appLockUnavailable => '이 기기는 생체 인증·기기 암호를 지원하지 않아요';
+
+  @override
   String get noName => '이름 없음';
 
   @override

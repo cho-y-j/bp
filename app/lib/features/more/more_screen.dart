@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../core/api_client.dart';
+import '../../core/app_lock.dart';
 import '../../core/env.dart';
 import '../../core/home_widget_bridge.dart';
 import '../../core/kakao_auth.dart';
@@ -184,6 +185,7 @@ class MoreScreen extends ConsumerWidget {
               onTap: () => _push(context, const NotificationsScreen()),
             ),
             const _LanguageTile(),
+            const _AppLockTile(),
             _ConsentTile(
               value: profile?.phoneSearchConsent ?? false,
               onChanged: (v) =>
@@ -471,6 +473,78 @@ class _KakaoLinkTileState extends ConsumerState<_KakaoLinkTile> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 앱 잠금 토글 — 생체 인증/기기 암호. 켤 때 기기 지원 여부를 먼저 확인한다.
+class _AppLockTile extends ConsumerStatefulWidget {
+  const _AppLockTile();
+  @override
+  ConsumerState<_AppLockTile> createState() => _AppLockTileState();
+}
+
+class _AppLockTileState extends ConsumerState<_AppLockTile> {
+  bool _busy = false;
+
+  Future<void> _toggle(bool value) async {
+    final l = context.l;
+    final messenger = ScaffoldMessenger.of(context);
+    final ctl = ref.read(appLockControllerProvider.notifier);
+    setState(() => _busy = true);
+    try {
+      if (value && !await ctl.canUseDeviceAuth()) {
+        messenger.showSnackBar(SnackBar(content: Text(l.appLockUnavailable)));
+        return;
+      }
+      await ctl.setEnabled(value);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l = context.l;
+    final enabled = ref.watch(appLockControllerProvider).enabled;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: c.surface,
+          border: Border.all(color: c.border),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.lock_outline_rounded, size: 22, color: c.ink2),
+            const SizedBox(width: 13),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l.appLockTitle,
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: c.ink)),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(l.appLockSub,
+                        style: TextStyle(fontSize: 13, color: c.ink2)),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+                value: enabled,
+                onChanged: _busy ? null : _toggle,
+                activeTrackColor: c.primary),
+          ],
         ),
       ),
     );

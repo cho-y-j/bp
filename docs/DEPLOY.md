@@ -187,12 +187,15 @@ crontab -e
 
 ### 5-1. 카카오 로그인 → `KAKAO_ENABLED`
 1. https://developers.kakao.com 로그인 → **내 애플리케이션 → 애플리케이션 추가하기** (앱 이름/회사명 입력)
-2. 생성된 앱 → **앱 키** 에서 **REST API 키** 확인/복사
+2. 생성된 앱 → **앱 키** 에서 **네이티브 앱 키**(앱)와 **REST API 키**(백엔드) 확인/복사
 3. **카카오 로그인** 메뉴 → 활성화 ON, **Redirect URI** 에 `https://도메인/api/auth/kakao/callback` 등록
-4. **동의항목**에서 필요한 항목(닉네임 등) 설정
-5. `.env`: `KAKAO_ENABLED=true` 로 변경
+4. **플랫폼** 에 iOS 번들ID(`kr.workon.workon`)·Android 패키지명(`kr.workon.workon`)+키해시 등록
+5. **동의항목**에서 필요한 항목(닉네임 등) 설정
+6. `.env`: `KAKAO_ENABLED=true` 로 변경
    > 참고: 현재 백엔드의 카카오 로그인은 스텁(501) 상태이며, REST 키 실연동은 백로그입니다.
    > 키 발급/앱 설정은 지금 해 두고, 실연동 배포 시 REST 키를 백엔드 환경변수로 주입합니다.
+   > **앱(app/) 쪽 네이티브 앱 키 주입 위치는 아래 6절 "카카오 키 최종 주입 위치"** 를 보세요.
+   > (네이티브 스킴/매니페스트는 이미 빌드 변수 기반으로 준비되어 있어, 키가 없으면 무해한 no-op 입니다.)
 
 ### 5-2. 기상청 단기예보(폭염 알림) → `KMA_SERVICE_KEY`
 1. https://data.go.kr (공공데이터포털) 회원가입/로그인
@@ -237,9 +240,31 @@ crontab -e
       `IPHONEOS_DEPLOYMENT_TARGET` 이 13.0 으로 남아 있음 → Xcode 에서 **15.0 으로 통일**.
 - [ ] **FCM 설정파일 배치**: 5-4 의 `GoogleService-Info.plist` / `google-services.json` / `firebase_options.dart`
       가 있어야 푸시가 동작. 없으면 앱은 푸시만 skip(그 외 정상).
-- [ ] **카카오 로그인 버튼 노출 조건**: 카카오 실연동(5-1) 준비 전에는 버튼을 숨기거나 비활성.
-      전화번호 인증만으로도 온보딩이 완결되는지 확인.
+- [ ] **카카오 로그인 버튼 노출 조건**: 버튼/카카오 연결 UI 는 `--dart-define=KAKAO_APP_KEY` 가
+      **주입된 경우에만** 자동 노출됩니다(미주입 시 전화 인증만 — 온보딩 완결 확인 불필요).
+      dart-define 하나로 전 체인(버튼 노출 → SDK init → 로그인 호출)이 켜집니다.
+- [ ] **앱 잠금(생체/PIN) 문구**: iOS `Info.plist` 의 `NSFaceIDUsageDescription`(한국어) 존재 확인.
+      Android 는 `USE_BIOMETRIC` 권한 + `MainActivity : FlutterFragmentActivity`(local_auth 요건) 반영됨.
+      잠금은 기본 OFF, 더보기 > 설정 > "앱 잠금" 에서 켭니다(생체 미지원 시 기기 암호 폴백).
 - [ ] **권한 사용 설명 문구** 확인: 사진/위치 접근(Info.plist NSPhotoLibrary·NSLocation) 문구 적절성.
+
+### 카카오 키 최종 주입 위치 (키 발급 후 넣는 곳)
+
+카카오 키는 **딱 2군데** 만 넣으면 전체가 동작합니다. 네이티브 스킴/매니페스트는 이미
+빌드 변수(`$(KAKAO_APP_KEY)` / `${KAKAO_APP_KEY}`) 기반으로 준비돼 있어 **키가 없으면 무해**하고,
+키가 있으면 아래 값으로 자동 완성됩니다.
+
+| # | 넣는 곳 | 값 | 무엇이 켜지나 |
+|---|---------|-----|--------------|
+| **1** | **앱 빌드 dart-define** — `flutter build ipa/appbundle --dart-define=KAKAO_APP_KEY=<네이티브앱키>` | 카카오 **네이티브 앱 키** | 로그인/연결 버튼 노출 + 카카오 SDK 초기화 + 로그인 호출(런타임 전 체인) |
+| **2** | **백엔드 `.env`** — `KAKAO_ENABLED=true`(+ 실연동 시 REST 키 env) | `true` / REST 키 | 서버 `/auth/kakao` 검증 활성화 |
+
+> **네이티브 스킴 자동 완성(추가 설정 불필요)**: iOS 는 빌드 설정 `KAKAO_APP_KEY`(기본 빈 값,
+> `ios/Flutter/{Debug,Release}.xcconfig`)로, Android 는 Gradle 프로퍼티 `KAKAO_APP_KEY`(기본 빈 값)로
+> URL 스킴 `kakao<앱키>` / redirect 를 구성합니다. **카카오톡 앱 전환(app-to-app)** 까지 쓰려면
+> 릴리스 빌드 시 이 두 네이티브 빌드 변수에도 **1번과 동일한 네이티브 앱 키**를 넣으세요
+> (예: iOS xcconfig 의 `KAKAO_APP_KEY=<앱키>`, Android `flutter build appbundle -PKAKAO_APP_KEY=<앱키> --dart-define=KAKAO_APP_KEY=<앱키>`).
+> 넣지 않아도 카카오계정(웹) 로그인은 동작하며, 빌드는 키 없이도 깨지지 않습니다.
 
 ---
 

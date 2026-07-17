@@ -209,6 +209,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get logoutConfirm => '要退出登录吗？';
 
   @override
+  String get appLockTitle => '应用锁';
+
+  @override
+  String get appLockSub => '使用生物识别或设备密码保护应用';
+
+  @override
+  String get appLockLockedTitle => '已锁定';
+
+  @override
+  String get appLockUnlock => '验证后继续';
+
+  @override
+  String get appLockReason => '解锁应用';
+
+  @override
+  String get appLockUnavailable => '此设备不支持生物识别或密码锁';
+
+  @override
   String get noName => '无姓名';
 
   @override

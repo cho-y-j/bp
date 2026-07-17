@@ -32,6 +32,12 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // 카카오 로그인 redirect 스킴용 네이티브 앱 키.
+        // gradle 프로퍼티(-PKAKAO_APP_KEY=... 또는 android/gradle.properties)로 주입.
+        // 비어 있으면 스킴이 "kakao://oauth" 로 남고, SDK 미초기화 시 트리거되지 않는 no-op.
+        manifestPlaceholders["KAKAO_APP_KEY"] =
+            (project.findProperty("KAKAO_APP_KEY") as String?) ?: ""
     }
 
     signingConfigs {

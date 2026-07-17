@@ -10,6 +10,31 @@
 		<string>서류 이미지를 선택해 등록하기 위해 사진 보관함에 접근합니다.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>작업 시작·완료 위치 기록을 위해 위치를 사용합니다. 거부해도 앱을 사용할 수 있습니다.</string>
+		<key>NSFaceIDUsageDescription</key>
+		<string>앱 잠금을 해제하기 위해 Face ID를 사용합니다. 원치 않으면 기기 암호로 대신 인증할 수 있습니다.</string>
+		<!-- 카카오 로그인 앱 전환용 URL 스킴. KAKAO_APP_KEY 빌드 설정이 비어 있으면
+		     스킴은 "kakao"(무해)로 남고, 키 주입 시 "kakao{앱키}"로 자동 완성된다. -->
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>kakao</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>kakao$(KAKAO_APP_KEY)</string>
+				</array>
+			</dict>
+		</array>
+		<!-- 카카오톡 앱 존재 확인/전환(app-to-app)에 필요한 스킴 화이트리스트. -->
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>kakaokompassauth</string>
+			<string>kakaolink</string>
+			<string>kakaoplus</string>
+			<string>kakaotalk</string>
+		</array>
 		<!-- ATS(App Transport Security): 소스 Info.plist 에는 임의 HTTP 로드를 두지 않음 →
 		     Release/App Store 는 HTTPS 강제(심사 안전, DEPLOY.md 6절).
 		     Debug 빌드에서만 로컬 백엔드(http://localhost) 접근을 위해

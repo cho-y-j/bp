@@ -478,6 +478,42 @@ abstract class AppLocalizations {
   /// **'로그아웃 하시겠어요?'**
   String get logoutConfirm;
 
+  /// No description provided for @appLockTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 잠금'**
+  String get appLockTitle;
+
+  /// No description provided for @appLockSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'생체 인증·기기 암호로 앱을 보호해요'**
+  String get appLockSub;
+
+  /// No description provided for @appLockLockedTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'잠겨 있어요'**
+  String get appLockLockedTitle;
+
+  /// No description provided for @appLockUnlock.
+  ///
+  /// In ko, this message translates to:
+  /// **'인증하고 계속하기'**
+  String get appLockUnlock;
+
+  /// No description provided for @appLockReason.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업온 잠금을 해제합니다'**
+  String get appLockReason;
+
+  /// No description provided for @appLockUnavailable.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 기기는 생체 인증·기기 암호를 지원하지 않아요'**
+  String get appLockUnavailable;
+
   /// No description provided for @noName.
   ///
   /// In ko, this message translates to:

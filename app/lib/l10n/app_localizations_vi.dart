@@ -212,6 +212,26 @@ class AppLocalizationsVi extends AppLocalizations {
   String get logoutConfirm => 'Đăng xuất chứ?';
 
   @override
+  String get appLockTitle => 'Khóa ứng dụng';
+
+  @override
+  String get appLockSub =>
+      'Bảo vệ ứng dụng bằng sinh trắc học hoặc mật khẩu thiết bị';
+
+  @override
+  String get appLockLockedTitle => 'Đã khóa';
+
+  @override
+  String get appLockUnlock => 'Xác thực để tiếp tục';
+
+  @override
+  String get appLockReason => 'Mở khóa ứng dụng';
+
+  @override
+  String get appLockUnavailable =>
+      'Thiết bị này không hỗ trợ sinh trắc học hoặc khóa bằng mật khẩu';
+
+  @override
   String get noName => 'Chưa có tên';
 
   @override

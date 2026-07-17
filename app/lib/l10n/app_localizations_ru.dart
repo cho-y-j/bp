@@ -214,6 +214,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get logoutConfirm => 'Выйти из аккаунта?';
 
   @override
+  String get appLockTitle => 'Блокировка приложения';
+
+  @override
+  String get appLockSub =>
+      'Защитите приложение биометрией или паролем устройства';
+
+  @override
+  String get appLockLockedTitle => 'Заблокировано';
+
+  @override
+  String get appLockUnlock => 'Пройдите проверку, чтобы продолжить';
+
+  @override
+  String get appLockReason => 'Разблокировать приложение';
+
+  @override
+  String get appLockUnavailable =>
+      'Это устройство не поддерживает биометрию или блокировку паролем';
+
+  @override
   String get noName => 'Без имени';
 
   @override

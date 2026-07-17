@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <!-- 푸시 알림(Android 13+). 위치/카메라/사진 권한은 각 플러그인(geolocator·image_picker)이 병합. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- 앱 잠금(local_auth) 생체 인증 -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
 
     <application
         android:label="작업온"
@@ -43,6 +45,21 @@
                 android:resource="@xml/workon_widget_info" />
         </receiver>
 
+        <!-- 카카오 로그인 redirect 핸들러. KAKAO_APP_KEY 가 비어 있으면 스킴은
+             "kakao://oauth" 로 남고(no-op), 키 주입 시 "kakao{앱키}://oauth" 로 자동 완성. -->
+        <activity
+            android:name="com.kakao.sdk.flutter.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="oauth"
+                    android:scheme="kakao${KAKAO_APP_KEY}" />
+            </intent-filter>
+        </activity>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
@@ -59,5 +76,7 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- 카카오톡 앱 설치 여부 확인/전환(app-to-app 로그인). -->
+        <package android:name="com.kakao.talk" />
     </queries>
 </manifest>

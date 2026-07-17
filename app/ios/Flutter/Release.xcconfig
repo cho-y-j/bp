@@ -1,2 +1,5 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
+
+// 카카오 네이티브 앱 키(비어 있으면 kakao 스킴만 등록 → 무해). 키 발급 시 여기(또는 xcconfig override)에 주입.
+KAKAO_APP_KEY=

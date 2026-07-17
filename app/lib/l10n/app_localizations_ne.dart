@@ -213,6 +213,26 @@ class AppLocalizationsNe extends AppLocalizations {
   String get logoutConfirm => 'लगआउट गर्ने?';
 
   @override
+  String get appLockTitle => 'एप लक';
+
+  @override
+  String get appLockSub =>
+      'बायोमेट्रिक वा उपकरण पासकोडले एप सुरक्षित गर्नुहोस्';
+
+  @override
+  String get appLockLockedTitle => 'लक गरिएको';
+
+  @override
+  String get appLockUnlock => 'जारी राख्न प्रमाणीकरण गर्नुहोस्';
+
+  @override
+  String get appLockReason => 'एप अनलक गर्नुहोस्';
+
+  @override
+  String get appLockUnavailable =>
+      'यो उपकरणले बायोमेट्रिक वा पासकोड लक समर्थन गर्दैन';
+
+  @override
   String get noName => 'नाम छैन';
 
   @override
