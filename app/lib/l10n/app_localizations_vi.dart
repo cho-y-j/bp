@@ -2492,4 +2492,191 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get postCallSettingSub =>
       'Khi quay lại sau khi gọi từ ứng dụng, chúng tôi gợi ý gửi danh thiếp hoặc gửi nhanh';
+
+  @override
+  String get attendBoardTitle => 'Điểm danh hôm nay';
+
+  @override
+  String get attendBoardEmpty => 'Hôm nay không có công việc';
+
+  @override
+  String get attendBoardViewDetail => 'Chạm để xem chi tiết';
+
+  @override
+  String get attendSummaryTotal => 'Tổng';
+
+  @override
+  String get attendSummaryAttended => 'Đã đến';
+
+  @override
+  String get attendSummaryCompleted => 'Hoàn thành';
+
+  @override
+  String get attendSummaryAbsent => 'Vắng';
+
+  @override
+  String attendPeopleCount(int count) {
+    return '$count người';
+  }
+
+  @override
+  String get attendStatusScheduled => 'Dự kiến';
+
+  @override
+  String get attendStatusAccepted => 'Đã nhận';
+
+  @override
+  String get attendStatusStarted => 'Đã bắt đầu';
+
+  @override
+  String get attendStatusDone => 'Xong';
+
+  @override
+  String get attendStatusCancelled => 'Đã hủy';
+
+  @override
+  String attendStartedAt(String time) {
+    return 'Bắt đầu $time';
+  }
+
+  @override
+  String attendScheduledAt(String time) {
+    return 'Dự kiến $time';
+  }
+
+  @override
+  String get attendCondOk => 'Khỏe';
+
+  @override
+  String get attendCondBad => 'Không khỏe';
+
+  @override
+  String get siteCostsTitle => 'Chi phí theo công trường';
+
+  @override
+  String get bizMenuSiteCostsDesc =>
+      'Chi phí theo công trường · PDF nộp chủ đầu tư';
+
+  @override
+  String get siteCostsThisMonth => 'Tháng này';
+
+  @override
+  String get siteCostsLast3 => '3 tháng qua';
+
+  @override
+  String get siteCostsLast6 => '6 tháng qua';
+
+  @override
+  String get siteCostsLast12 => '12 tháng qua';
+
+  @override
+  String siteCostsRangeLabel(String from, String to) {
+    return '$from ~ $to';
+  }
+
+  @override
+  String get siteCostsSubtotal => 'Tạm tính';
+
+  @override
+  String get siteCostsTotalHeader => 'Tổng cộng';
+
+  @override
+  String siteCostsWorkerCount(int count) {
+    return '$count thợ';
+  }
+
+  @override
+  String siteCostsTeamMembers(int count) {
+    return 'Đội $count người';
+  }
+
+  @override
+  String siteCostsEntryCount(int count) {
+    return '$count phiếu';
+  }
+
+  @override
+  String get siteCostsSavePdf => 'Lưu/Chia sẻ PDF';
+
+  @override
+  String siteCostsPdfFail(String error) {
+    return 'Không tạo được PDF ($error)';
+  }
+
+  @override
+  String get siteCostsEmpty => 'Không có phiếu trong kỳ này';
+
+  @override
+  String get wageStmtTitle => 'Bảng chi trả (chốt tháng)';
+
+  @override
+  String get bizMenuWageStmtDesc => 'Bảng chi trả công nhật · chốt tháng';
+
+  @override
+  String get wageStmtEmpty => 'Không có chi trả trong tháng';
+
+  @override
+  String get wageStmtType33 => 'Thu nhập KD 3.3%';
+
+  @override
+  String get wageStmtTypeDaily => 'Công nhật';
+
+  @override
+  String get wageStmtPaidTotal => 'Đã trả';
+
+  @override
+  String get wageStmtIncomeTax => 'Thuế TNCN';
+
+  @override
+  String get wageStmtLocalTax => 'Thuế địa phương';
+
+  @override
+  String get wageStmtTotalTax => 'Tổng khấu trừ';
+
+  @override
+  String get wageStmtNetPay => 'Thực nhận';
+
+  @override
+  String wageStmtPaymentCount(int count) {
+    return '$count lần trả';
+  }
+
+  @override
+  String get wageStmtCopy => 'Sao chép';
+
+  @override
+  String get wageStmtCopied => 'Đã sao chép bảng chi trả';
+
+  @override
+  String get wageStmtMark => 'Chốt tháng này';
+
+  @override
+  String get wageStmtMarked => 'Đã chốt';
+
+  @override
+  String wageStmtMarkedSnack(String month) {
+    return 'Đã chốt bảng $month';
+  }
+
+  @override
+  String get wageStmtAlreadyMarked => 'Tháng đã chốt';
+
+  @override
+  String wageStmtMarkFail(String error) {
+    return 'Không thể chốt ($error)';
+  }
+
+  @override
+  String get wageStmtTotalHeader => 'Tổng đã trả';
+
+  @override
+  String get wageStmtNoticeTitle => 'Lưu ý';
+
+  @override
+  String get wageStmtWorkerTax => 'Khấu trừ theo loại thu nhập';
+
+  @override
+  String siteCostsManDays(String n) {
+    return '$n công';
+  }
 }

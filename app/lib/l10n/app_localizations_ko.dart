@@ -2433,4 +2433,190 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get postCallSettingSub => '앱에서 전화한 뒤 돌아오면 명함·빠른 보내기를 제안해요';
+
+  @override
+  String get attendBoardTitle => '오늘 출역 현황';
+
+  @override
+  String get attendBoardEmpty => '오늘 예정된 작업이 없어요';
+
+  @override
+  String get attendBoardViewDetail => '탭하여 상세 보기';
+
+  @override
+  String get attendSummaryTotal => '전체';
+
+  @override
+  String get attendSummaryAttended => '출근';
+
+  @override
+  String get attendSummaryCompleted => '완료';
+
+  @override
+  String get attendSummaryAbsent => '미출근';
+
+  @override
+  String attendPeopleCount(int count) {
+    return '$count명';
+  }
+
+  @override
+  String get attendStatusScheduled => '예정';
+
+  @override
+  String get attendStatusAccepted => '수락';
+
+  @override
+  String get attendStatusStarted => '시작';
+
+  @override
+  String get attendStatusDone => '완료';
+
+  @override
+  String get attendStatusCancelled => '취소';
+
+  @override
+  String attendStartedAt(String time) {
+    return '$time 시작';
+  }
+
+  @override
+  String attendScheduledAt(String time) {
+    return '$time 예정';
+  }
+
+  @override
+  String get attendCondOk => '컨디션 좋음';
+
+  @override
+  String get attendCondBad => '컨디션 이상';
+
+  @override
+  String get siteCostsTitle => '현장별 인건비';
+
+  @override
+  String get bizMenuSiteCostsDesc => '현장별 인건비 집계·발주처 제출 PDF';
+
+  @override
+  String get siteCostsThisMonth => '이번 달';
+
+  @override
+  String get siteCostsLast3 => '최근 3개월';
+
+  @override
+  String get siteCostsLast6 => '최근 6개월';
+
+  @override
+  String get siteCostsLast12 => '최근 12개월';
+
+  @override
+  String siteCostsRangeLabel(String from, String to) {
+    return '$from ~ $to';
+  }
+
+  @override
+  String get siteCostsSubtotal => '소계';
+
+  @override
+  String get siteCostsTotalHeader => '전체 총계';
+
+  @override
+  String siteCostsWorkerCount(int count) {
+    return '작업자 $count명';
+  }
+
+  @override
+  String siteCostsTeamMembers(int count) {
+    return '팀원 $count명';
+  }
+
+  @override
+  String siteCostsEntryCount(int count) {
+    return '확인서 $count건';
+  }
+
+  @override
+  String get siteCostsSavePdf => 'PDF 저장·공유';
+
+  @override
+  String siteCostsPdfFail(String error) {
+    return 'PDF 를 만들지 못했어요 ($error)';
+  }
+
+  @override
+  String get siteCostsEmpty => '이 기간에 집계할 확인서가 없어요';
+
+  @override
+  String get wageStmtTitle => '지급명세서(월 마감)';
+
+  @override
+  String get bizMenuWageStmtDesc => '일용근로소득 지급명세서·월 마감';
+
+  @override
+  String get wageStmtEmpty => '이 달에 지급한 내역이 없어요';
+
+  @override
+  String get wageStmtType33 => '사업소득 3.3%';
+
+  @override
+  String get wageStmtTypeDaily => '일용근로';
+
+  @override
+  String get wageStmtPaidTotal => '지급액';
+
+  @override
+  String get wageStmtIncomeTax => '소득세';
+
+  @override
+  String get wageStmtLocalTax => '지방소득세';
+
+  @override
+  String get wageStmtTotalTax => '원천징수 합계';
+
+  @override
+  String get wageStmtNetPay => '차인지급액';
+
+  @override
+  String wageStmtPaymentCount(int count) {
+    return '지급 $count건';
+  }
+
+  @override
+  String get wageStmtCopy => '복사';
+
+  @override
+  String get wageStmtCopied => '지급명세서 내용을 복사했어요';
+
+  @override
+  String get wageStmtMark => '이 달 마감';
+
+  @override
+  String get wageStmtMarked => '마감됨';
+
+  @override
+  String wageStmtMarkedSnack(String month) {
+    return '$month 지급명세서를 마감했어요';
+  }
+
+  @override
+  String get wageStmtAlreadyMarked => '이미 마감한 달이에요';
+
+  @override
+  String wageStmtMarkFail(String error) {
+    return '마감하지 못했어요 ($error)';
+  }
+
+  @override
+  String get wageStmtTotalHeader => '전체 지급 총계';
+
+  @override
+  String get wageStmtNoticeTitle => '안내';
+
+  @override
+  String get wageStmtWorkerTax => '소득 유형별 원천징수';
+
+  @override
+  String siteCostsManDays(String n) {
+    return '연인원 $n';
+  }
 }

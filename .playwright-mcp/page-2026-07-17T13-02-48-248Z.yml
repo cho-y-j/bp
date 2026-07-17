@@ -1,0 +1,26 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e3]:
+    - generic [ref=f3e4]:
+      - generic [ref=f3e5]: 사업장 모드
+      - generic [ref=f3e9]:
+        - link "작업자" [ref=f3e10] [cursor=pointer]:
+          - /url: /w/home
+        - button "로그아웃" [ref=f3e14] [cursor=pointer]
+    - generic [ref=f3e17]:
+      - link "수신함" [ref=f3e18] [cursor=pointer]:
+        - /url: /biz/inbox
+      - link "출역 현황" [ref=f3e22] [cursor=pointer]:
+        - /url: /biz/attendance
+      - link "정산" [ref=f3e26] [cursor=pointer]:
+        - /url: /biz/settlements
+      - link "현장 인건비" [ref=f3e29] [cursor=pointer]:
+        - /url: /biz/site-costs
+      - link "지급명세서" [ref=f3e33] [cursor=pointer]:
+        - /url: /biz/wage-statement
+      - link "작업자·지시" [ref=f3e37] [cursor=pointer]:
+        - /url: /biz/workers
+      - link "계약서" [ref=f3e42] [cursor=pointer]:
+        - /url: /biz/contracts
+      - link "안전 리포트" [ref=f3e46] [cursor=pointer]:
+        - /url: /biz/safety
+  - main [ref=f3e49]

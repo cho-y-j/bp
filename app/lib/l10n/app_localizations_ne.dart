@@ -2491,4 +2491,190 @@ class AppLocalizationsNe extends AppLocalizations {
   @override
   String get postCallSettingSub =>
       'एपबाट फोन गरेपछि फर्कँदा नामकार्ड वा छिटो पठाउने सुझाव दिन्छ';
+
+  @override
+  String get attendBoardTitle => 'आजको हाजिरी';
+
+  @override
+  String get attendBoardEmpty => 'आज कुनै काम तालिकाबद्ध छैन';
+
+  @override
+  String get attendBoardViewDetail => 'विवरणका लागि ट्याप गर्नुहोस्';
+
+  @override
+  String get attendSummaryTotal => 'जम्मा';
+
+  @override
+  String get attendSummaryAttended => 'उपस्थित';
+
+  @override
+  String get attendSummaryCompleted => 'सम्पन्न';
+
+  @override
+  String get attendSummaryAbsent => 'अनुपस्थित';
+
+  @override
+  String attendPeopleCount(int count) {
+    return '$count जना';
+  }
+
+  @override
+  String get attendStatusScheduled => 'तालिकाबद्ध';
+
+  @override
+  String get attendStatusAccepted => 'स्वीकृत';
+
+  @override
+  String get attendStatusStarted => 'सुरु';
+
+  @override
+  String get attendStatusDone => 'सम्पन्न';
+
+  @override
+  String get attendStatusCancelled => 'रद्द';
+
+  @override
+  String attendStartedAt(String time) {
+    return '$time सुरु';
+  }
+
+  @override
+  String attendScheduledAt(String time) {
+    return '$time तालिका';
+  }
+
+  @override
+  String get attendCondOk => 'अवस्था राम्रो';
+
+  @override
+  String get attendCondBad => 'अवस्था नराम्रो';
+
+  @override
+  String get siteCostsTitle => 'साइट अनुसार श्रम लागत';
+
+  @override
+  String get bizMenuSiteCostsDesc => 'साइट अनुसार श्रम लागत · PDF';
+
+  @override
+  String get siteCostsThisMonth => 'यो महिना';
+
+  @override
+  String get siteCostsLast3 => 'पछिल्लो ३ महिना';
+
+  @override
+  String get siteCostsLast6 => 'पछिल्लो ६ महिना';
+
+  @override
+  String get siteCostsLast12 => 'पछिल्लो १२ महिना';
+
+  @override
+  String siteCostsRangeLabel(String from, String to) {
+    return '$from ~ $to';
+  }
+
+  @override
+  String get siteCostsSubtotal => 'उप-जम्मा';
+
+  @override
+  String get siteCostsTotalHeader => 'कुल जम्मा';
+
+  @override
+  String siteCostsWorkerCount(int count) {
+    return '$count कामदार';
+  }
+
+  @override
+  String siteCostsTeamMembers(int count) {
+    return 'टोली $count जना';
+  }
+
+  @override
+  String siteCostsEntryCount(int count) {
+    return '$count पुष्टि';
+  }
+
+  @override
+  String get siteCostsSavePdf => 'PDF सुरक्षित/साझा';
+
+  @override
+  String siteCostsPdfFail(String error) {
+    return 'PDF बनाउन सकिएन ($error)';
+  }
+
+  @override
+  String get siteCostsEmpty => 'यस अवधिमा कुनै पुष्टि छैन';
+
+  @override
+  String get wageStmtTitle => 'भुक्तानी विवरण (मासिक)';
+
+  @override
+  String get bizMenuWageStmtDesc => 'दैनिक ज्याला भुक्तानी विवरण · मासिक बन्द';
+
+  @override
+  String get wageStmtEmpty => 'यो महिना कुनै भुक्तानी छैन';
+
+  @override
+  String get wageStmtType33 => 'व्यवसाय आय ३.३%';
+
+  @override
+  String get wageStmtTypeDaily => 'दैनिक ज्याला';
+
+  @override
+  String get wageStmtPaidTotal => 'भुक्तानी';
+
+  @override
+  String get wageStmtIncomeTax => 'आय कर';
+
+  @override
+  String get wageStmtLocalTax => 'स्थानीय आय कर';
+
+  @override
+  String get wageStmtTotalTax => 'जम्मा कट्टी';
+
+  @override
+  String get wageStmtNetPay => 'खुद भुक्तानी';
+
+  @override
+  String wageStmtPaymentCount(int count) {
+    return '$count भुक्तानी';
+  }
+
+  @override
+  String get wageStmtCopy => 'प्रतिलिपि';
+
+  @override
+  String get wageStmtCopied => 'विवरण प्रतिलिपि भयो';
+
+  @override
+  String get wageStmtMark => 'यो महिना बन्द';
+
+  @override
+  String get wageStmtMarked => 'बन्द भयो';
+
+  @override
+  String wageStmtMarkedSnack(String month) {
+    return '$month विवरण बन्द गरियो';
+  }
+
+  @override
+  String get wageStmtAlreadyMarked => 'पहिले नै बन्द भइसकेको';
+
+  @override
+  String wageStmtMarkFail(String error) {
+    return 'बन्द गर्न सकिएन ($error)';
+  }
+
+  @override
+  String get wageStmtTotalHeader => 'कुल भुक्तानी';
+
+  @override
+  String get wageStmtNoticeTitle => 'सूचना';
+
+  @override
+  String get wageStmtWorkerTax => 'आय प्रकार अनुसार कट्टी';
+
+  @override
+  String siteCostsManDays(String n) {
+    return 'जनदिन $n';
+  }
 }

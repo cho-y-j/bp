@@ -1,0 +1,98 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - generic [ref=f2e3]:
+      - generic [ref=f2e4]:
+        - generic [ref=f2e52]:
+          - generic [ref=f2e53]: 사업장 선택
+          - combobox "사업장 선택" [ref=f2e54] [cursor=pointer]:
+            - option "대한건설" [selected]
+            - option "제2현장사업"
+        - generic [ref=f2e9]:
+          - link "작업자" [ref=f2e10] [cursor=pointer]:
+            - /url: /w/home
+          - button "로그아웃" [ref=f2e14] [cursor=pointer]
+      - generic [ref=f2e17]:
+        - link "수신함" [ref=f2e18] [cursor=pointer]:
+          - /url: /biz/inbox
+        - link "출역 현황" [ref=f2e22] [cursor=pointer]:
+          - /url: /biz/attendance
+        - link "정산" [ref=f2e26] [cursor=pointer]:
+          - /url: /biz/settlements
+        - link "현장 인건비" [ref=f2e29] [cursor=pointer]:
+          - /url: /biz/site-costs
+        - link "지급명세서" [ref=f2e33] [cursor=pointer]:
+          - /url: /biz/wage-statement
+        - link "작업자·지시" [ref=f2e37] [cursor=pointer]:
+          - /url: /biz/workers
+        - link "계약서" [ref=f2e42] [cursor=pointer]:
+          - /url: /biz/contracts
+        - link "안전 리포트" [ref=f2e46] [cursor=pointer]:
+          - /url: /biz/safety
+    - main [ref=f2e49]:
+      - heading "오늘의 출역 현황" [level=1] [ref=f2e55]
+      - paragraph [ref=f2e56]: 오늘 예정된 작업의 현장별 출역 상태입니다. 30초마다 자동 갱신됩니다.
+      - generic [ref=f2e95]:
+        - generic [ref=f2e96]:
+          - generic [ref=f2e97]: 2026-07-17
+          - button "오후 10:02:20 갱신" [ref=f2e101] [cursor=pointer]
+        - generic [ref=f2e104]:
+          - generic [ref=f2e105]:
+            - generic [ref=f2e106]: "4"
+            - generic [ref=f2e107]: 오늘 인원
+          - generic [ref=f2e108]:
+            - generic [ref=f2e109]: "2"
+            - generic [ref=f2e110]: 출근
+          - generic [ref=f2e111]:
+            - generic [ref=f2e112]: "1"
+            - generic [ref=f2e113]: 완료
+          - generic [ref=f2e114]:
+            - generic [ref=f2e115]: "2"
+            - generic [ref=f2e116]: 미출근
+      - generic [ref=f2e117]:
+        - generic [ref=f2e118]:
+          - generic [ref=f2e119]: 오늘현장A
+          - generic [ref=f2e123]: 출근 0/2
+        - table [ref=f2e125]:
+          - rowgroup [ref=f2e126]:
+            - row [ref=f2e127]:
+              - columnheader "작업자" [ref=f2e128]
+              - columnheader "상태" [ref=f2e129]
+              - columnheader "시작" [ref=f2e130]
+              - columnheader "컨디션" [ref=f2e131]
+          - rowgroup [ref=f2e132]:
+            - row [ref=f2e133]:
+              - cell "김*수08:00" [ref=f2e134]
+              - cell "예정" [ref=f2e135]
+              - cell "-" [ref=f2e137]
+              - cell "-" [ref=f2e138]
+            - row [ref=f2e139]:
+              - cell "이*호08:00" [ref=f2e140]
+              - cell "수락" [ref=f2e141]
+              - cell "-" [ref=f2e143]
+              - cell "-" [ref=f2e144]
+      - generic [ref=f2e145]:
+        - generic [ref=f2e146]:
+          - generic [ref=f2e147]: 오늘현장B
+          - generic [ref=f2e151]: 출근 2/2 · 완료 1
+        - table [ref=f2e153]:
+          - rowgroup [ref=f2e154]:
+            - row [ref=f2e155]:
+              - columnheader "작업자" [ref=f2e156]
+              - columnheader "상태" [ref=f2e157]
+              - columnheader "시작" [ref=f2e158]
+              - columnheader "컨디션" [ref=f2e159]
+          - rowgroup [ref=f2e160]:
+            - row [ref=f2e161]:
+              - cell "박*장08:00" [ref=f2e162]
+              - cell "작업중" [ref=f2e163]
+              - cell "21:42" [ref=f2e165]
+              - cell [ref=f2e166]
+            - row [ref=f2e171]:
+              - cell "박*장08:00" [ref=f2e172]
+              - cell "완료" [ref=f2e173]
+              - cell "21:42 ~ 21:42" [ref=f2e175]:
+                - text: 21:42
+                - generic [ref=f2e176]: ~ 21:42
+              - cell [ref=f2e177]
+  - button "Open Next.js Dev Tools" [ref=f2e90] [cursor=pointer]
+  - alert [ref=f2e94]

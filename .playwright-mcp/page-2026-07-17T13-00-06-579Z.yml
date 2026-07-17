@@ -1,0 +1,92 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - paragraph [ref=e5]: 작업온
+        - generic [ref=e50]:
+          - generic [ref=e51]: 사업장 선택
+          - combobox "사업장 선택" [ref=e52] [cursor=pointer]:
+            - option "대한건설" [selected]
+            - option "제2현장사업"
+      - link "수신함" [ref=e8] [cursor=pointer]:
+        - /url: /biz/inbox
+      - link "출역 현황" [ref=e12] [cursor=pointer]:
+        - /url: /biz/attendance
+      - link "정산" [ref=e16] [cursor=pointer]:
+        - /url: /biz/settlements
+      - link "현장 인건비" [ref=e19] [cursor=pointer]:
+        - /url: /biz/site-costs
+      - link "지급명세서" [ref=e23] [cursor=pointer]:
+        - /url: /biz/wage-statement
+      - link "작업자·지시" [ref=e27] [cursor=pointer]:
+        - /url: /biz/workers
+      - link "계약서" [ref=e32] [cursor=pointer]:
+        - /url: /biz/contracts
+      - link "안전 리포트" [ref=e36] [cursor=pointer]:
+        - /url: /biz/safety
+      - generic [ref=e39]:
+        - link "작업자 모드" [ref=e40] [cursor=pointer]:
+          - /url: /w/home
+        - button "로그아웃" [ref=e44] [cursor=pointer]
+    - main [ref=e47]:
+      - heading "일용근로소득 지급명세서 도우미" [level=1] [ref=e53]
+      - paragraph [ref=e54]: 지급(입금) 완료 기준 작업자별 지급총액과 원천징수 세액입니다. 소득 유형을 선택해 홈택스에 직접 입력하세요.
+      - generic [ref=e56]:
+        - button "이전 달" [active] [ref=e57] [cursor=pointer]
+        - generic [ref=e60]: 2026년 6월
+        - button "다음 달" [ref=e61] [cursor=pointer]
+      - tablist "소득 유형" [ref=e96]:
+        - tab "사업소득 3.3%" [selected] [ref=e97] [cursor=pointer]
+        - tab "일용근로소득" [ref=e98] [cursor=pointer]
+      - table [ref=e100]:
+        - rowgroup [ref=e101]:
+          - row [ref=e102]:
+            - columnheader "작업자" [ref=e103]
+            - columnheader "일수" [ref=e104]
+            - columnheader "지급총액" [ref=e105]
+            - columnheader "소득세" [ref=e106]
+            - columnheader "지방세" [ref=e107]
+            - columnheader "차인지급액" [ref=e108]
+        - rowgroup [ref=e109]:
+          - row [ref=e110]:
+            - cell "김*수" [ref=e111]
+            - cell "3" [ref=e112]
+            - cell "600,000" [ref=e113]
+            - cell "18,000" [ref=e114]
+            - cell "1,800" [ref=e115]
+            - cell "580,200" [ref=e116]
+          - row [ref=e117]:
+            - cell "박*장" [ref=e118]
+            - cell "2.5" [ref=e119]
+            - cell "420,000" [ref=e120]
+            - cell "12,600" [ref=e121]
+            - cell "1,260" [ref=e122]
+            - cell "406,140" [ref=e123]
+          - row [ref=e124]:
+            - cell "이*호" [ref=e125]
+            - cell "1" [ref=e126]
+            - cell "150,000" [ref=e127]
+            - cell "4,500" [ref=e128]
+            - cell "450" [ref=e129]
+            - cell "145,050" [ref=e130]
+          - row [ref=e131]:
+            - cell "합계" [ref=e132]
+            - cell [ref=e133]
+            - cell "1,170,000" [ref=e134]
+            - cell "35,100" [ref=e135]
+            - cell "3,510" [ref=e136]
+            - cell "1,131,390" [ref=e137]
+      - generic [ref=e138]:
+        - button "홈택스 입력용 복사" [ref=e139] [cursor=pointer]
+        - button "2026년 6월 마감" [ref=e143] [cursor=pointer]
+      - generic [ref=e146]: 주민등록번호는 본 앱에서 수집·저장하지 않습니다. 홈택스 지급명세서 제출 시 직접 입력하세요.
+      - generic [ref=e151]:
+        - generic [ref=e152]: 세액 산출 안내
+        - list [ref=e153]:
+          - listitem [ref=e154]: "사업소득(3.3%): 소득세 3% + 지방소득세 0.3%. 인적용역 사업소득 원천징수 기준."
+          - listitem [ref=e155]: "일용근로소득: 1일 150,000원 근로소득공제 후 6% 산출세액에서 55% 세액공제(실효 2.7%), 1일 세액 1,000원 미만은 소액부징수로 0원."
+          - listitem [ref=e156]: 위 세율·공제는 2026년 기준 참고값입니다. 세법은 매년 개정될 수 있으니 신고 전 홈택스·세무 전문가 확인을 권장합니다.
+          - listitem [ref=e157]: 본 산출은 일반 정보이며 세무 상담이 아닙니다.
+          - listitem [ref=e158]: 주민등록번호는 수집·저장하지 않습니다. 홈택스 지급명세서 제출 시 주민번호는 직접 입력하세요.
+  - button "Open Next.js Dev Tools" [ref=e91] [cursor=pointer]
+  - alert [ref=e95]

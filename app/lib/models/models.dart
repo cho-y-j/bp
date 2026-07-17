@@ -1332,3 +1332,240 @@ class TbmPreset {
         j['text']?.toString() ?? '',
       );
 }
+
+// ─── P5b 사업장 강화 3종 ─────────────────────────────────────────────────
+
+double _pdbl(dynamic v) => v is num ? v.toDouble() : double.tryParse('$v') ?? 0;
+
+/// 출역 현황 인원 요약(전체/출근/완료/미출근).
+class AttendanceSummary {
+  final int total;
+  final int attended;
+  final int completed;
+  final int absent;
+  const AttendanceSummary(
+      this.total, this.attended, this.completed, this.absent);
+  factory AttendanceSummary.fromJson(Map j) => AttendanceSummary(
+        _pint(j['total']),
+        _pint(j['attended']),
+        _pint(j['completed']),
+        _pint(j['absent']),
+      );
+}
+
+/// 출역 현황 — 작업자 1명(현장별 그룹 내).
+/// status: SCHEDULED|ACCEPTED|STARTED|DONE|CANCELLED.
+class AttendanceWorker {
+  final String jobId;
+  final String workerName;
+  final String status;
+  final String scheduledAt; // HH:mm (KST)
+  final String? startedAt;
+  final String? finishedAt;
+  final String? condition; // OK|TIRED|SICK 등
+  AttendanceWorker(this.jobId, this.workerName, this.status, this.scheduledAt,
+      this.startedAt, this.finishedAt, this.condition);
+  factory AttendanceWorker.fromJson(Map j) => AttendanceWorker(
+        j['jobId'].toString(),
+        j['workerName']?.toString() ?? '',
+        j['status']?.toString() ?? 'SCHEDULED',
+        j['scheduledAt']?.toString() ?? '',
+        j['startedAt']?.toString(),
+        j['finishedAt']?.toString(),
+        j['condition']?.toString(),
+      );
+}
+
+/// 출역 현황 — 현장 1곳(작업자 목록 + 인원 요약).
+class AttendanceSite {
+  final String site;
+  final List<AttendanceWorker> workers;
+  final AttendanceSummary summary;
+  AttendanceSite(this.site, this.workers, this.summary);
+  factory AttendanceSite.fromJson(Map j) => AttendanceSite(
+        j['site']?.toString() ?? '',
+        ((j['workers'] as List?) ?? [])
+            .map((e) => AttendanceWorker.fromJson(e as Map))
+            .toList(),
+        AttendanceSummary.fromJson((j['summary'] as Map?) ?? const {}),
+      );
+}
+
+/// 오늘의 출역 현황판 전체.
+class TodayAttendance {
+  final String date; // YYYY-MM-DD (KST)
+  final List<AttendanceSite> sites;
+  final AttendanceSummary summary;
+  TodayAttendance(this.date, this.sites, this.summary);
+  factory TodayAttendance.fromJson(Map j) => TodayAttendance(
+        j['date']?.toString() ?? '',
+        ((j['sites'] as List?) ?? [])
+            .map((e) => AttendanceSite.fromJson(e as Map))
+            .toList(),
+        AttendanceSummary.fromJson((j['summary'] as Map?) ?? const {}),
+      );
+}
+
+/// 현장별 인건비 — 작업자/팀 1행.
+class SiteCostEntry {
+  final String workerName;
+  final bool isTeam;
+  final int teamMemberCount;
+  final double days; // 연인원(man-days)
+  final double gongsu;
+  final int amount;
+  final int entryCount;
+  SiteCostEntry(this.workerName, this.isTeam, this.teamMemberCount, this.days,
+      this.gongsu, this.amount, this.entryCount);
+  factory SiteCostEntry.fromJson(Map j) => SiteCostEntry(
+        j['workerName']?.toString() ?? '',
+        j['isTeam'] == true,
+        _pint(j['teamMemberCount']),
+        _pdbl(j['days']),
+        _pdbl(j['gongsu']),
+        _pint(j['amount']),
+        _pint(j['entryCount']),
+      );
+}
+
+/// 현장별 인건비 — 현장 1곳(소계 + 인원).
+class SiteCostSite {
+  final String site;
+  final List<SiteCostEntry> entries;
+  final int subtotalAmount;
+  final double subtotalDays;
+  final double subtotalGongsu;
+  final int workerCount;
+  SiteCostSite(this.site, this.entries, this.subtotalAmount, this.subtotalDays,
+      this.subtotalGongsu, this.workerCount);
+  factory SiteCostSite.fromJson(Map j) => SiteCostSite(
+        j['site']?.toString() ?? '',
+        ((j['entries'] as List?) ?? [])
+            .map((e) => SiteCostEntry.fromJson(e as Map))
+            .toList(),
+        _pint(j['subtotalAmount']),
+        _pdbl(j['subtotalDays']),
+        _pdbl(j['subtotalGongsu']),
+        _pint(j['workerCount']),
+      );
+}
+
+/// 현장별 인건비 — 전체 총계 헤더.
+class SiteCostTotals {
+  final int totalAmount;
+  final double totalDays;
+  final double totalGongsu;
+  final int siteCount;
+  final int entryCount;
+  SiteCostTotals(this.totalAmount, this.totalDays, this.totalGongsu,
+      this.siteCount, this.entryCount);
+  factory SiteCostTotals.fromJson(Map j) => SiteCostTotals(
+        _pint(j['totalAmount']),
+        _pdbl(j['totalDays']),
+        _pdbl(j['totalGongsu']),
+        _pint(j['siteCount']),
+        _pint(j['entryCount']),
+      );
+}
+
+/// 현장별 인건비 집계 전체.
+class SiteCosts {
+  final String rangeFrom; // YYYY-MM
+  final String rangeTo; // YYYY-MM
+  final String businessName;
+  final List<SiteCostSite> sites;
+  final SiteCostTotals totals;
+  SiteCosts(this.rangeFrom, this.rangeTo, this.businessName, this.sites,
+      this.totals);
+  factory SiteCosts.fromJson(Map j) {
+    final range = (j['range'] as Map?) ?? const {};
+    return SiteCosts(
+      range['from']?.toString() ?? '',
+      range['to']?.toString() ?? '',
+      j['businessName']?.toString() ?? '',
+      ((j['sites'] as List?) ?? [])
+          .map((e) => SiteCostSite.fromJson(e as Map))
+          .toList(),
+      SiteCostTotals.fromJson((j['totals'] as Map?) ?? const {}),
+    );
+  }
+}
+
+/// 지급명세서 — 소득 유형별 세액 산출(소득세·지방소득세·합계·차인지급액).
+class WageTax {
+  final int incomeTax;
+  final int localTax;
+  final int totalTax;
+  final int netPay;
+  const WageTax(this.incomeTax, this.localTax, this.totalTax, this.netPay);
+  factory WageTax.fromJson(Map j) => WageTax(
+        _pint(j['incomeTax']),
+        _pint(j['localTax']),
+        _pint(j['totalTax']),
+        _pint(j['netPay']),
+      );
+}
+
+/// 지급명세서 — 작업자 1명.
+class WageWorker {
+  final String workerName;
+  final int paidTotal;
+  final int paymentCount;
+  final double workDays;
+  final WageTax business33; // 사업소득 3.3%
+  final WageTax dailyWage; // 일용근로
+  WageWorker(this.workerName, this.paidTotal, this.paymentCount, this.workDays,
+      this.business33, this.dailyWage);
+  factory WageWorker.fromJson(Map j) => WageWorker(
+        j['workerName']?.toString() ?? '',
+        _pint(j['paidTotal']),
+        _pint(j['paymentCount']),
+        _pdbl(j['workDays']),
+        WageTax.fromJson((j['business3_3'] as Map?) ?? const {}),
+        WageTax.fromJson((j['dailyWage'] as Map?) ?? const {}),
+      );
+}
+
+/// 지급명세서 — 전체 총계.
+class WageTotals {
+  final int workerCount;
+  final int paidTotal;
+  final int paymentCount;
+  final WageTax business33;
+  final WageTax dailyWage;
+  WageTotals(this.workerCount, this.paidTotal, this.paymentCount,
+      this.business33, this.dailyWage);
+  factory WageTotals.fromJson(Map j) => WageTotals(
+        _pint(j['workerCount']),
+        _pint(j['paidTotal']),
+        _pint(j['paymentCount']),
+        WageTax.fromJson((j['business3_3'] as Map?) ?? const {}),
+        WageTax.fromJson((j['dailyWage'] as Map?) ?? const {}),
+      );
+}
+
+/// 일용근로소득 지급명세서(월 마감) 전체.
+class WageStatement {
+  final String month; // YYYY-MM
+  final String businessName;
+  final bool marked;
+  final List<WageWorker> workers;
+  final WageTotals totals;
+  final List<String> notes;
+  final String hometaxNote;
+  final String copyText;
+  WageStatement(this.month, this.businessName, this.marked, this.workers,
+      this.totals, this.notes, this.hometaxNote, this.copyText);
+  factory WageStatement.fromJson(Map j) => WageStatement(
+        j['month']?.toString() ?? '',
+        j['businessName']?.toString() ?? '',
+        j['marked'] == true,
+        ((j['workers'] as List?) ?? [])
+            .map((e) => WageWorker.fromJson(e as Map))
+            .toList(),
+        WageTotals.fromJson((j['totals'] as Map?) ?? const {}),
+        ((j['notes'] as List?) ?? []).map((e) => e.toString()).toList(),
+        j['hometaxNote']?.toString() ?? '',
+        j['copyText']?.toString() ?? '',
+      );
+}

@@ -4527,6 +4527,330 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'앱에서 전화한 뒤 돌아오면 명함·빠른 보내기를 제안해요'**
   String get postCallSettingSub;
+
+  /// No description provided for @attendBoardTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘 출역 현황'**
+  String get attendBoardTitle;
+
+  /// No description provided for @attendBoardEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘 예정된 작업이 없어요'**
+  String get attendBoardEmpty;
+
+  /// No description provided for @attendBoardViewDetail.
+  ///
+  /// In ko, this message translates to:
+  /// **'탭하여 상세 보기'**
+  String get attendBoardViewDetail;
+
+  /// No description provided for @attendSummaryTotal.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체'**
+  String get attendSummaryTotal;
+
+  /// No description provided for @attendSummaryAttended.
+  ///
+  /// In ko, this message translates to:
+  /// **'출근'**
+  String get attendSummaryAttended;
+
+  /// No description provided for @attendSummaryCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get attendSummaryCompleted;
+
+  /// No description provided for @attendSummaryAbsent.
+  ///
+  /// In ko, this message translates to:
+  /// **'미출근'**
+  String get attendSummaryAbsent;
+
+  /// No description provided for @attendPeopleCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}명'**
+  String attendPeopleCount(int count);
+
+  /// No description provided for @attendStatusScheduled.
+  ///
+  /// In ko, this message translates to:
+  /// **'예정'**
+  String get attendStatusScheduled;
+
+  /// No description provided for @attendStatusAccepted.
+  ///
+  /// In ko, this message translates to:
+  /// **'수락'**
+  String get attendStatusAccepted;
+
+  /// No description provided for @attendStatusStarted.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작'**
+  String get attendStatusStarted;
+
+  /// No description provided for @attendStatusDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'완료'**
+  String get attendStatusDone;
+
+  /// No description provided for @attendStatusCancelled.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소'**
+  String get attendStatusCancelled;
+
+  /// No description provided for @attendStartedAt.
+  ///
+  /// In ko, this message translates to:
+  /// **'{time} 시작'**
+  String attendStartedAt(String time);
+
+  /// No description provided for @attendScheduledAt.
+  ///
+  /// In ko, this message translates to:
+  /// **'{time} 예정'**
+  String attendScheduledAt(String time);
+
+  /// No description provided for @attendCondOk.
+  ///
+  /// In ko, this message translates to:
+  /// **'컨디션 좋음'**
+  String get attendCondOk;
+
+  /// No description provided for @attendCondBad.
+  ///
+  /// In ko, this message translates to:
+  /// **'컨디션 이상'**
+  String get attendCondBad;
+
+  /// No description provided for @siteCostsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'현장별 인건비'**
+  String get siteCostsTitle;
+
+  /// No description provided for @bizMenuSiteCostsDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'현장별 인건비 집계·발주처 제출 PDF'**
+  String get bizMenuSiteCostsDesc;
+
+  /// No description provided for @siteCostsThisMonth.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 달'**
+  String get siteCostsThisMonth;
+
+  /// No description provided for @siteCostsLast3.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 3개월'**
+  String get siteCostsLast3;
+
+  /// No description provided for @siteCostsLast6.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 6개월'**
+  String get siteCostsLast6;
+
+  /// No description provided for @siteCostsLast12.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 12개월'**
+  String get siteCostsLast12;
+
+  /// No description provided for @siteCostsRangeLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'{from} ~ {to}'**
+  String siteCostsRangeLabel(String from, String to);
+
+  /// No description provided for @siteCostsSubtotal.
+  ///
+  /// In ko, this message translates to:
+  /// **'소계'**
+  String get siteCostsSubtotal;
+
+  /// No description provided for @siteCostsTotalHeader.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 총계'**
+  String get siteCostsTotalHeader;
+
+  /// No description provided for @siteCostsWorkerCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'작업자 {count}명'**
+  String siteCostsWorkerCount(int count);
+
+  /// No description provided for @siteCostsTeamMembers.
+  ///
+  /// In ko, this message translates to:
+  /// **'팀원 {count}명'**
+  String siteCostsTeamMembers(int count);
+
+  /// No description provided for @siteCostsEntryCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인서 {count}건'**
+  String siteCostsEntryCount(int count);
+
+  /// No description provided for @siteCostsSavePdf.
+  ///
+  /// In ko, this message translates to:
+  /// **'PDF 저장·공유'**
+  String get siteCostsSavePdf;
+
+  /// No description provided for @siteCostsPdfFail.
+  ///
+  /// In ko, this message translates to:
+  /// **'PDF 를 만들지 못했어요 ({error})'**
+  String siteCostsPdfFail(String error);
+
+  /// No description provided for @siteCostsEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 기간에 집계할 확인서가 없어요'**
+  String get siteCostsEmpty;
+
+  /// No description provided for @wageStmtTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급명세서(월 마감)'**
+  String get wageStmtTitle;
+
+  /// No description provided for @bizMenuWageStmtDesc.
+  ///
+  /// In ko, this message translates to:
+  /// **'일용근로소득 지급명세서·월 마감'**
+  String get bizMenuWageStmtDesc;
+
+  /// No description provided for @wageStmtEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 달에 지급한 내역이 없어요'**
+  String get wageStmtEmpty;
+
+  /// No description provided for @wageStmtType33.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업소득 3.3%'**
+  String get wageStmtType33;
+
+  /// No description provided for @wageStmtTypeDaily.
+  ///
+  /// In ko, this message translates to:
+  /// **'일용근로'**
+  String get wageStmtTypeDaily;
+
+  /// No description provided for @wageStmtPaidTotal.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급액'**
+  String get wageStmtPaidTotal;
+
+  /// No description provided for @wageStmtIncomeTax.
+  ///
+  /// In ko, this message translates to:
+  /// **'소득세'**
+  String get wageStmtIncomeTax;
+
+  /// No description provided for @wageStmtLocalTax.
+  ///
+  /// In ko, this message translates to:
+  /// **'지방소득세'**
+  String get wageStmtLocalTax;
+
+  /// No description provided for @wageStmtTotalTax.
+  ///
+  /// In ko, this message translates to:
+  /// **'원천징수 합계'**
+  String get wageStmtTotalTax;
+
+  /// No description provided for @wageStmtNetPay.
+  ///
+  /// In ko, this message translates to:
+  /// **'차인지급액'**
+  String get wageStmtNetPay;
+
+  /// No description provided for @wageStmtPaymentCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급 {count}건'**
+  String wageStmtPaymentCount(int count);
+
+  /// No description provided for @wageStmtCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'복사'**
+  String get wageStmtCopy;
+
+  /// No description provided for @wageStmtCopied.
+  ///
+  /// In ko, this message translates to:
+  /// **'지급명세서 내용을 복사했어요'**
+  String get wageStmtCopied;
+
+  /// No description provided for @wageStmtMark.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 달 마감'**
+  String get wageStmtMark;
+
+  /// No description provided for @wageStmtMarked.
+  ///
+  /// In ko, this message translates to:
+  /// **'마감됨'**
+  String get wageStmtMarked;
+
+  /// No description provided for @wageStmtMarkedSnack.
+  ///
+  /// In ko, this message translates to:
+  /// **'{month} 지급명세서를 마감했어요'**
+  String wageStmtMarkedSnack(String month);
+
+  /// No description provided for @wageStmtAlreadyMarked.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 마감한 달이에요'**
+  String get wageStmtAlreadyMarked;
+
+  /// No description provided for @wageStmtMarkFail.
+  ///
+  /// In ko, this message translates to:
+  /// **'마감하지 못했어요 ({error})'**
+  String wageStmtMarkFail(String error);
+
+  /// No description provided for @wageStmtTotalHeader.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 지급 총계'**
+  String get wageStmtTotalHeader;
+
+  /// No description provided for @wageStmtNoticeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'안내'**
+  String get wageStmtNoticeTitle;
+
+  /// No description provided for @wageStmtWorkerTax.
+  ///
+  /// In ko, this message translates to:
+  /// **'소득 유형별 원천징수'**
+  String get wageStmtWorkerTax;
+
+  /// No description provided for @siteCostsManDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'연인원 {n}'**
+  String siteCostsManDays(String n);
 }
 
 class _AppLocalizationsDelegate

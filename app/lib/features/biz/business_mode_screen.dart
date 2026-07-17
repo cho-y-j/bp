@@ -13,6 +13,9 @@ import 'jobs_screen.dart';
 import 'safety_screen.dart';
 import 'contracts_screen.dart';
 import 'tbm_records_screen.dart';
+import 'attendance_board_screen.dart';
+import 'site_costs_screen.dart';
+import 'wage_statement_screen.dart';
 
 /// 사업장 모드 진입 — hasBusiness 없으면 생성 플로우, 있으면 사업장 홈.
 class BusinessModeScreen extends ConsumerWidget {
@@ -137,6 +140,7 @@ class _BizHome extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(18, 12, 18, 32),
       children: [
+        const AttendanceBoardCard(),
         const _SelfBadgeCard(),
         Container(
           decoration: BoxDecoration(
@@ -188,6 +192,18 @@ class _BizHome extends ConsumerWidget {
           title: l.lcKicker,
           subtitle: l.lcMenuDesc,
           onTap: () => _push(context, const ContractsScreen()),
+        ),
+        _MenuCard(
+          icon: Icons.receipt_long_outlined,
+          title: l.siteCostsTitle,
+          subtitle: l.bizMenuSiteCostsDesc,
+          onTap: () => _push(context, const SiteCostsScreen()),
+        ),
+        _MenuCard(
+          icon: Icons.request_quote_outlined,
+          title: l.wageStmtTitle,
+          subtitle: l.bizMenuWageStmtDesc,
+          onTap: () => _push(context, const WageStatementScreen()),
         ),
         _MenuCard(
           icon: Icons.groups_outlined,

@@ -2500,4 +2500,191 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get postCallSettingSub =>
       'When you return after calling from the app, we suggest sending a card or quick send';
+
+  @override
+  String get attendBoardTitle => 'Today\'s Attendance';
+
+  @override
+  String get attendBoardEmpty => 'No work scheduled today';
+
+  @override
+  String get attendBoardViewDetail => 'Tap for details';
+
+  @override
+  String get attendSummaryTotal => 'Total';
+
+  @override
+  String get attendSummaryAttended => 'On site';
+
+  @override
+  String get attendSummaryCompleted => 'Done';
+
+  @override
+  String get attendSummaryAbsent => 'Absent';
+
+  @override
+  String attendPeopleCount(int count) {
+    return '$count people';
+  }
+
+  @override
+  String get attendStatusScheduled => 'Scheduled';
+
+  @override
+  String get attendStatusAccepted => 'Accepted';
+
+  @override
+  String get attendStatusStarted => 'Started';
+
+  @override
+  String get attendStatusDone => 'Done';
+
+  @override
+  String get attendStatusCancelled => 'Cancelled';
+
+  @override
+  String attendStartedAt(String time) {
+    return 'Started $time';
+  }
+
+  @override
+  String attendScheduledAt(String time) {
+    return 'Scheduled $time';
+  }
+
+  @override
+  String get attendCondOk => 'Feeling good';
+
+  @override
+  String get attendCondBad => 'Not well';
+
+  @override
+  String get siteCostsTitle => 'Labor Cost by Site';
+
+  @override
+  String get bizMenuSiteCostsDesc => 'Labor cost per site · client-ready PDF';
+
+  @override
+  String get siteCostsThisMonth => 'This month';
+
+  @override
+  String get siteCostsLast3 => 'Last 3 months';
+
+  @override
+  String get siteCostsLast6 => 'Last 6 months';
+
+  @override
+  String get siteCostsLast12 => 'Last 12 months';
+
+  @override
+  String siteCostsRangeLabel(String from, String to) {
+    return '$from ~ $to';
+  }
+
+  @override
+  String get siteCostsSubtotal => 'Subtotal';
+
+  @override
+  String get siteCostsTotalHeader => 'Grand total';
+
+  @override
+  String siteCostsWorkerCount(int count) {
+    return '$count workers';
+  }
+
+  @override
+  String siteCostsTeamMembers(int count) {
+    return 'Team of $count';
+  }
+
+  @override
+  String siteCostsEntryCount(int count) {
+    return '$count confirmations';
+  }
+
+  @override
+  String get siteCostsSavePdf => 'Save/Share PDF';
+
+  @override
+  String siteCostsPdfFail(String error) {
+    return 'Couldn\'t create PDF ($error)';
+  }
+
+  @override
+  String get siteCostsEmpty => 'No confirmations in this period';
+
+  @override
+  String get wageStmtTitle => 'Payment Statement (Monthly)';
+
+  @override
+  String get bizMenuWageStmtDesc =>
+      'Daily-wage payment statement · monthly close';
+
+  @override
+  String get wageStmtEmpty => 'No payments made this month';
+
+  @override
+  String get wageStmtType33 => 'Business income 3.3%';
+
+  @override
+  String get wageStmtTypeDaily => 'Daily wage';
+
+  @override
+  String get wageStmtPaidTotal => 'Paid';
+
+  @override
+  String get wageStmtIncomeTax => 'Income tax';
+
+  @override
+  String get wageStmtLocalTax => 'Local income tax';
+
+  @override
+  String get wageStmtTotalTax => 'Total withheld';
+
+  @override
+  String get wageStmtNetPay => 'Net pay';
+
+  @override
+  String wageStmtPaymentCount(int count) {
+    return '$count payments';
+  }
+
+  @override
+  String get wageStmtCopy => 'Copy';
+
+  @override
+  String get wageStmtCopied => 'Copied statement text';
+
+  @override
+  String get wageStmtMark => 'Close this month';
+
+  @override
+  String get wageStmtMarked => 'Closed';
+
+  @override
+  String wageStmtMarkedSnack(String month) {
+    return 'Closed the $month statement';
+  }
+
+  @override
+  String get wageStmtAlreadyMarked => 'Already closed';
+
+  @override
+  String wageStmtMarkFail(String error) {
+    return 'Couldn\'t close ($error)';
+  }
+
+  @override
+  String get wageStmtTotalHeader => 'Total paid';
+
+  @override
+  String get wageStmtNoticeTitle => 'Notes';
+
+  @override
+  String get wageStmtWorkerTax => 'Withholding by income type';
+
+  @override
+  String siteCostsManDays(String n) {
+    return '$n man-days';
+  }
 }

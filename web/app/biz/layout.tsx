@@ -15,6 +15,9 @@ import {
   FileText,
   Chevron,
   Home,
+  Clock,
+  Coins,
+  Copy,
 } from '@/components/Icons';
 import {
   BizContext,
@@ -24,7 +27,10 @@ import {
 
 const NAV = [
   { href: '/biz/inbox', label: '수신함', Icon: Inbox },
+  { href: '/biz/attendance', label: '출역 현황', Icon: Clock },
   { href: '/biz/settlements', label: '정산', Icon: Wallet },
+  { href: '/biz/site-costs', label: '현장 인건비', Icon: Coins },
+  { href: '/biz/wage-statement', label: '지급명세서', Icon: Copy },
   { href: '/biz/workers', label: '작업자·지시', Icon: Users },
   { href: '/biz/contracts', label: '계약서', Icon: FileText },
   { href: '/biz/safety', label: '안전 리포트', Icon: Shield },

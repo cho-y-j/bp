@@ -59,6 +59,32 @@ final jobsProvider =
   return items.map((e) => JobItem.fromJson(e as Map)).toList();
 });
 
+/// P5b — 오늘의 출역 현황판(현장별 인원 요약 + 작업자 상태).
+final todayAttendanceProvider =
+    FutureProvider<TodayAttendance>((ref) async {
+  final api = ref.watch(apiClientProvider);
+  final res = await api.get('/biz/today-attendance');
+  return TodayAttendance.fromJson(res as Map);
+});
+
+/// P5b — 현장별 인건비 집계(기간 from~to, YYYY-MM).
+final siteCostsProvider =
+    FutureProvider.family<SiteCosts, ({String from, String to})>(
+        (ref, range) async {
+  final api = ref.watch(apiClientProvider);
+  final res = await api.get('/biz/site-costs',
+      query: {'from': range.from, 'to': range.to});
+  return SiteCosts.fromJson(res as Map);
+});
+
+/// P5b — 일용근로소득 지급명세서(월).
+final wageStatementProvider =
+    FutureProvider.family<WageStatement, String>((ref, month) async {
+  final api = ref.watch(apiClientProvider);
+  final res = await api.get('/biz/wage-statement', query: {'month': month});
+  return WageStatement.fromJson(res as Map);
+});
+
 void invalidateBiz(WidgetRef ref) {
   ref.invalidate(myBusinessesProvider);
   ref.invalidate(allConnectionsProvider);
@@ -192,6 +218,21 @@ class BizRepo {
     final bytes =
         await api.getBytes('/biz/safety-report', query: {'month': month});
     return Uint8List.fromList(bytes);
+  }
+
+  // P5b — 현장별 인건비 PDF (발주처 제출용, 인증 blob)
+  Future<Uint8List> siteCostsPdf(
+      {required String from, required String to}) async {
+    final bytes = await api
+        .getBytes('/biz/site-costs/pdf', query: {'from': from, 'to': to});
+    return Uint8List.fromList(bytes);
+  }
+
+  // P5b — 지급명세서 월 마감(멱등). alreadyMarked 반환.
+  Future<bool> markWageStatement(String month) async {
+    final res =
+        await api.post('/biz/wage-statement/mark', body: {'month': month});
+    return (res as Map)['alreadyMarked'] == true;
   }
 }
 

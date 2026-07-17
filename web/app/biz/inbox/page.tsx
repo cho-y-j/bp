@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { api, ApiError } from '@/lib/api';
 import { useBiz } from '../biz-context';
 import { won, dateLabel } from '@/lib/format';
@@ -10,8 +11,88 @@ import PaperConfirmation, {
 import SignaturePad, {
   type SignaturePadHandle,
 } from '@/components/SignaturePad';
-import { FileText, Pen, CheckCircle } from '@/components/Icons';
+import { FileText, Pen, CheckCircle, Clock, Chevron } from '@/components/Icons';
 import BizPaymentBadge from '@/components/BizPaymentBadge';
+import { AttendanceStats, type TodayAttendance } from '../attendance/shared';
+
+/** 사업장 홈 상단 — 오늘 출역 요약 카드(상세는 /biz/attendance). */
+function TodayAttendanceCard({ businessId }: { businessId?: string }) {
+  const [data, setData] = useState<TodayAttendance | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await api().get<TodayAttendance>(
+          `/biz/today-attendance${businessId ? `?businessId=${businessId}` : ''}`,
+        );
+        if (alive) setData(res.data);
+      } catch {
+        if (alive) setFailed(true);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [businessId]);
+
+  if (failed) return null;
+
+  return (
+    <Link
+      href="/biz/attendance"
+      className="card"
+      style={{
+        display: 'block',
+        padding: 18,
+        marginBottom: 18,
+        textDecoration: 'none',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 14,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 16,
+            fontWeight: 800,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <Clock width={18} height={18} />
+          오늘의 출역
+        </span>
+        <span
+          style={{
+            fontSize: 14,
+            color: 'var(--accent-text)',
+            fontWeight: 700,
+            display: 'inline-flex',
+            alignItems: 'center',
+          }}
+        >
+          상세 보기
+          <Chevron width={16} height={16} />
+        </span>
+      </div>
+      {data ? (
+        <AttendanceStats summary={data.summary} />
+      ) : (
+        <div className="empty" style={{ padding: '8px 0' }}>
+          <span className="spinner" />
+        </div>
+      )}
+    </Link>
+  );
+}
 
 interface InboxItem {
   id: string;
@@ -95,6 +176,8 @@ export default function InboxPage() {
       <p className="page-sub">
         작업자가 보낸 작업확인서입니다. 확인 후 앱에서 바로 서명하세요.
       </p>
+
+      <TodayAttendanceCard businessId={businessId} />
 
       <BizPaymentBadge businessId={businessId} />
 

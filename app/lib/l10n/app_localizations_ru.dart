@@ -2498,4 +2498,190 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get postCallSettingSub =>
       'Когда вы вернётесь после звонка из приложения, предложим отправить визитку или быструю отправку';
+
+  @override
+  String get attendBoardTitle => 'Явка сегодня';
+
+  @override
+  String get attendBoardEmpty => 'На сегодня работ не запланировано';
+
+  @override
+  String get attendBoardViewDetail => 'Нажмите для деталей';
+
+  @override
+  String get attendSummaryTotal => 'Всего';
+
+  @override
+  String get attendSummaryAttended => 'Вышли';
+
+  @override
+  String get attendSummaryCompleted => 'Готово';
+
+  @override
+  String get attendSummaryAbsent => 'Не вышли';
+
+  @override
+  String attendPeopleCount(int count) {
+    return '$count чел.';
+  }
+
+  @override
+  String get attendStatusScheduled => 'Запланир.';
+
+  @override
+  String get attendStatusAccepted => 'Принято';
+
+  @override
+  String get attendStatusStarted => 'Начал';
+
+  @override
+  String get attendStatusDone => 'Готово';
+
+  @override
+  String get attendStatusCancelled => 'Отменено';
+
+  @override
+  String attendStartedAt(String time) {
+    return 'Начал в $time';
+  }
+
+  @override
+  String attendScheduledAt(String time) {
+    return 'Планово $time';
+  }
+
+  @override
+  String get attendCondOk => 'Хорошее сост.';
+
+  @override
+  String get attendCondBad => 'Плохое сост.';
+
+  @override
+  String get siteCostsTitle => 'Затраты по объектам';
+
+  @override
+  String get bizMenuSiteCostsDesc => 'Затраты по объектам · PDF для заказчика';
+
+  @override
+  String get siteCostsThisMonth => 'Этот месяц';
+
+  @override
+  String get siteCostsLast3 => '3 месяца';
+
+  @override
+  String get siteCostsLast6 => '6 месяцев';
+
+  @override
+  String get siteCostsLast12 => '12 месяцев';
+
+  @override
+  String siteCostsRangeLabel(String from, String to) {
+    return '$from ~ $to';
+  }
+
+  @override
+  String get siteCostsSubtotal => 'Итог по объекту';
+
+  @override
+  String get siteCostsTotalHeader => 'Общий итог';
+
+  @override
+  String siteCostsWorkerCount(int count) {
+    return 'Рабочих: $count';
+  }
+
+  @override
+  String siteCostsTeamMembers(int count) {
+    return 'Бригада $count';
+  }
+
+  @override
+  String siteCostsEntryCount(int count) {
+    return 'Актов: $count';
+  }
+
+  @override
+  String get siteCostsSavePdf => 'Сохранить/отправить PDF';
+
+  @override
+  String siteCostsPdfFail(String error) {
+    return 'Не удалось создать PDF ($error)';
+  }
+
+  @override
+  String get siteCostsEmpty => 'Нет актов за этот период';
+
+  @override
+  String get wageStmtTitle => 'Ведомость выплат (месяц)';
+
+  @override
+  String get bizMenuWageStmtDesc => 'Ведомость подёнщиков · закрытие месяца';
+
+  @override
+  String get wageStmtEmpty => 'В этом месяце выплат нет';
+
+  @override
+  String get wageStmtType33 => 'Доход ИП 3,3%';
+
+  @override
+  String get wageStmtTypeDaily => 'Подёнщик';
+
+  @override
+  String get wageStmtPaidTotal => 'Выплата';
+
+  @override
+  String get wageStmtIncomeTax => 'Подох. налог';
+
+  @override
+  String get wageStmtLocalTax => 'Местный налог';
+
+  @override
+  String get wageStmtTotalTax => 'Итого удержано';
+
+  @override
+  String get wageStmtNetPay => 'К выплате';
+
+  @override
+  String wageStmtPaymentCount(int count) {
+    return 'Выплат: $count';
+  }
+
+  @override
+  String get wageStmtCopy => 'Копировать';
+
+  @override
+  String get wageStmtCopied => 'Ведомость скопирована';
+
+  @override
+  String get wageStmtMark => 'Закрыть месяц';
+
+  @override
+  String get wageStmtMarked => 'Закрыто';
+
+  @override
+  String wageStmtMarkedSnack(String month) {
+    return 'Ведомость $month закрыта';
+  }
+
+  @override
+  String get wageStmtAlreadyMarked => 'Месяц уже закрыт';
+
+  @override
+  String wageStmtMarkFail(String error) {
+    return 'Не удалось закрыть ($error)';
+  }
+
+  @override
+  String get wageStmtTotalHeader => 'Всего выплачено';
+
+  @override
+  String get wageStmtNoticeTitle => 'Примечания';
+
+  @override
+  String get wageStmtWorkerTax => 'Удержание по типу дохода';
+
+  @override
+  String siteCostsManDays(String n) {
+    return 'Чел.-дней: $n';
+  }
 }

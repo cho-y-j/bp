@@ -1,0 +1,92 @@
+- generic [ref=f15e1]:
+  - generic [ref=f15e2]:
+    - complementary [ref=f15e3]:
+      - generic [ref=f15e4]:
+        - paragraph [ref=f15e5]: 작업온
+        - generic [ref=f15e50]:
+          - generic [ref=f15e51]: 사업장 선택
+          - combobox "사업장 선택" [ref=f15e52] [cursor=pointer]:
+            - option "대한건설" [selected]
+            - option "제2현장사업"
+      - link "수신함" [ref=f15e8] [cursor=pointer]:
+        - /url: /biz/inbox
+      - link "출역 현황" [ref=f15e12] [cursor=pointer]:
+        - /url: /biz/attendance
+      - link "정산" [ref=f15e16] [cursor=pointer]:
+        - /url: /biz/settlements
+      - link "현장 인건비" [ref=f15e19] [cursor=pointer]:
+        - /url: /biz/site-costs
+      - link "지급명세서" [ref=f15e23] [cursor=pointer]:
+        - /url: /biz/wage-statement
+      - link "작업자·지시" [ref=f15e27] [cursor=pointer]:
+        - /url: /biz/workers
+      - link "계약서" [ref=f15e32] [cursor=pointer]:
+        - /url: /biz/contracts
+      - link "안전 리포트" [ref=f15e36] [cursor=pointer]:
+        - /url: /biz/safety
+      - generic [ref=f15e39]:
+        - link "작업자 모드" [ref=f15e40] [cursor=pointer]:
+          - /url: /w/home
+        - button "로그아웃" [ref=f15e44] [cursor=pointer]
+    - main [ref=f15e47]:
+      - heading "일용근로소득 지급명세서 도우미" [level=1] [ref=f15e53]
+      - paragraph [ref=f15e54]: 지급(입금) 완료 기준 작업자별 지급총액과 원천징수 세액입니다. 소득 유형을 선택해 홈택스에 직접 입력하세요.
+      - generic [ref=f15e56]:
+        - button "이전 달" [ref=f15e57] [cursor=pointer]
+        - generic [ref=f15e60]: 2026년 6월
+        - button "다음 달" [ref=f15e61] [cursor=pointer]
+      - tablist "소득 유형" [ref=f15e64]:
+        - tab "사업소득 3.3%" [ref=f15e65] [cursor=pointer]
+        - tab "일용근로소득" [active] [selected] [ref=f15e66] [cursor=pointer]
+      - table [ref=f15e68]:
+        - rowgroup [ref=f15e69]:
+          - row [ref=f15e70]:
+            - columnheader "작업자" [ref=f15e71]
+            - columnheader "일수" [ref=f15e72]
+            - columnheader "지급총액" [ref=f15e73]
+            - columnheader "소득세" [ref=f15e74]
+            - columnheader "지방세" [ref=f15e75]
+            - columnheader "차인지급액" [ref=f15e76]
+        - rowgroup [ref=f15e77]:
+          - row [ref=f15e137]:
+            - cell "김*수" [ref=f15e79]
+            - cell "3" [ref=f15e80]
+            - cell "600,000" [ref=f15e81]
+            - cell "4,050" [ref=f15e138]
+            - cell "400" [ref=f15e139]
+            - cell "595,550" [ref=f15e140]
+          - row [ref=f15e141]:
+            - cell "박*장" [ref=f15e86]
+            - cell "2.5" [ref=f15e87]
+            - cell "420,000" [ref=f15e88]
+            - cell "0" [ref=f15e142]
+            - cell "0" [ref=f15e143]
+            - cell "420,000" [ref=f15e144]
+          - row [ref=f15e145]:
+            - cell "이*호" [ref=f15e93]
+            - cell "1" [ref=f15e94]
+            - cell "150,000" [ref=f15e95]
+            - cell "0" [ref=f15e146]
+            - cell "0" [ref=f15e147]
+            - cell "150,000" [ref=f15e148]
+          - row [ref=f15e149]:
+            - cell "합계" [ref=f15e100]
+            - cell [ref=f15e101]
+            - cell "1,170,000" [ref=f15e102]
+            - cell "4,050" [ref=f15e150]
+            - cell "400" [ref=f15e151]
+            - cell "1,165,550" [ref=f15e152]
+      - generic [ref=f15e106]:
+        - button "홈택스 입력용 복사" [ref=f15e107] [cursor=pointer]
+        - button "2026년 6월 마감" [ref=f15e111] [cursor=pointer]
+      - generic [ref=f15e114]: 주민등록번호는 본 앱에서 수집·저장하지 않습니다. 홈택스 지급명세서 제출 시 직접 입력하세요.
+      - generic [ref=f15e119]:
+        - generic [ref=f15e120]: 세액 산출 안내
+        - list [ref=f15e121]:
+          - listitem [ref=f15e122]: "사업소득(3.3%): 소득세 3% + 지방소득세 0.3%. 인적용역 사업소득 원천징수 기준."
+          - listitem [ref=f15e123]: "일용근로소득: 1일 150,000원 근로소득공제 후 6% 산출세액에서 55% 세액공제(실효 2.7%), 1일 세액 1,000원 미만은 소액부징수로 0원."
+          - listitem [ref=f15e124]: 위 세율·공제는 2026년 기준 참고값입니다. 세법은 매년 개정될 수 있으니 신고 전 홈택스·세무 전문가 확인을 권장합니다.
+          - listitem [ref=f15e125]: 본 산출은 일반 정보이며 세무 상담이 아닙니다.
+          - listitem [ref=f15e126]: 주민등록번호는 수집·저장하지 않습니다. 홈택스 지급명세서 제출 시 주민번호는 직접 입력하세요.
+  - button "Open Next.js Dev Tools" [ref=f15e132] [cursor=pointer]
+  - alert [ref=f15e136]

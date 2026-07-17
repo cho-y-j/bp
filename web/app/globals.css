@@ -854,3 +854,27 @@ button {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ── 데이터 표 (P5c 출역/인건비/지급명세서) ───────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.data-table th,
+.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  white-space: nowrap;
+}
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.data-table thead th {
+  color: var(--ink-3);
+  font-weight: 700;
+  font-size: 13px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}

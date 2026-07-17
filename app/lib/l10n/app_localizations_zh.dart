@@ -2429,4 +2429,190 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get postCallSettingSub => '从应用拨打电话后返回时，建议发送名片或快速发送';
+
+  @override
+  String get attendBoardTitle => '今日出勤';
+
+  @override
+  String get attendBoardEmpty => '今天没有排定的作业';
+
+  @override
+  String get attendBoardViewDetail => '点按查看详情';
+
+  @override
+  String get attendSummaryTotal => '全部';
+
+  @override
+  String get attendSummaryAttended => '出勤';
+
+  @override
+  String get attendSummaryCompleted => '完成';
+
+  @override
+  String get attendSummaryAbsent => '未出勤';
+
+  @override
+  String attendPeopleCount(int count) {
+    return '$count人';
+  }
+
+  @override
+  String get attendStatusScheduled => '预定';
+
+  @override
+  String get attendStatusAccepted => '已接受';
+
+  @override
+  String get attendStatusStarted => '已开始';
+
+  @override
+  String get attendStatusDone => '完成';
+
+  @override
+  String get attendStatusCancelled => '已取消';
+
+  @override
+  String attendStartedAt(String time) {
+    return '$time 开始';
+  }
+
+  @override
+  String attendScheduledAt(String time) {
+    return '$time 预定';
+  }
+
+  @override
+  String get attendCondOk => '状态良好';
+
+  @override
+  String get attendCondBad => '状态不佳';
+
+  @override
+  String get siteCostsTitle => '各现场人工费';
+
+  @override
+  String get bizMenuSiteCostsDesc => '按现场汇总人工费·可提交PDF';
+
+  @override
+  String get siteCostsThisMonth => '本月';
+
+  @override
+  String get siteCostsLast3 => '近3个月';
+
+  @override
+  String get siteCostsLast6 => '近6个月';
+
+  @override
+  String get siteCostsLast12 => '近12个月';
+
+  @override
+  String siteCostsRangeLabel(String from, String to) {
+    return '$from ~ $to';
+  }
+
+  @override
+  String get siteCostsSubtotal => '小计';
+
+  @override
+  String get siteCostsTotalHeader => '总计';
+
+  @override
+  String siteCostsWorkerCount(int count) {
+    return '作业者$count人';
+  }
+
+  @override
+  String siteCostsTeamMembers(int count) {
+    return '队员$count人';
+  }
+
+  @override
+  String siteCostsEntryCount(int count) {
+    return '确认单$count份';
+  }
+
+  @override
+  String get siteCostsSavePdf => '保存·分享PDF';
+
+  @override
+  String siteCostsPdfFail(String error) {
+    return '无法生成PDF ($error)';
+  }
+
+  @override
+  String get siteCostsEmpty => '该期间没有可汇总的确认单';
+
+  @override
+  String get wageStmtTitle => '支付明细(月结)';
+
+  @override
+  String get bizMenuWageStmtDesc => '日工工资支付明细·月结';
+
+  @override
+  String get wageStmtEmpty => '本月没有支付记录';
+
+  @override
+  String get wageStmtType33 => '经营所得3.3%';
+
+  @override
+  String get wageStmtTypeDaily => '日工';
+
+  @override
+  String get wageStmtPaidTotal => '支付额';
+
+  @override
+  String get wageStmtIncomeTax => '所得税';
+
+  @override
+  String get wageStmtLocalTax => '地方所得税';
+
+  @override
+  String get wageStmtTotalTax => '预扣合计';
+
+  @override
+  String get wageStmtNetPay => '实付额';
+
+  @override
+  String wageStmtPaymentCount(int count) {
+    return '支付$count笔';
+  }
+
+  @override
+  String get wageStmtCopy => '复制';
+
+  @override
+  String get wageStmtCopied => '已复制明细内容';
+
+  @override
+  String get wageStmtMark => '结算本月';
+
+  @override
+  String get wageStmtMarked => '已结算';
+
+  @override
+  String wageStmtMarkedSnack(String month) {
+    return '已结算$month明细';
+  }
+
+  @override
+  String get wageStmtAlreadyMarked => '该月已结算';
+
+  @override
+  String wageStmtMarkFail(String error) {
+    return '无法结算 ($error)';
+  }
+
+  @override
+  String get wageStmtTotalHeader => '支付总计';
+
+  @override
+  String get wageStmtNoticeTitle => '提示';
+
+  @override
+  String get wageStmtWorkerTax => '按所得类型预扣';
+
+  @override
+  String siteCostsManDays(String n) {
+    return '用工$n人日';
+  }
 }
