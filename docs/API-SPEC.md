@@ -4,9 +4,12 @@
 > 외부(미가입자) 접근 경로는 `/public/*` — 토큰 기반, 로그인 불필요.
 
 ## 인증 /auth
+> **토큰 정책**: 액세스 토큰(JWT) 수명 **30분**(`ACCESS_TOKEN_TTL` env, 기본 `30m`). 로그인 시 **불투명 리프레시 토큰**(랜덤 hex 64자, DB 에 sha256 해시만 저장)을 함께 발급. 만료 시 앱이 `/auth/refresh` 로 자동 연장 → 앱을 쓰는 한 재로그인 없음. **하위 호환**: 기존에 발급된 7일 액세스 토큰은 만료까지 그대로 유효(가드 변경 없음).
 - `POST /auth/phone/request` — 전화번호 인증코드 발송 (개발: mock, 응답에 코드 노출은 dev 환경만)
-- `POST /auth/phone/verify` — 코드 검증 → 신규면 가입 + JWT, 기존이면 로그인 + JWT
-- `POST /auth/kakao` — 카카오 액세스토큰 검증 → 가입/로그인 (KAKAO_ENABLED=false 면 501 스텁)
+- `POST /auth/phone/verify` — 코드 검증 → 신규면 가입, 기존이면 로그인. 응답에 `accessToken` + **`refreshToken`**(additive) + `isNew` + `profile`. body 에 선택적 `deviceId`(리프레시 토큰에 기록).
+- `POST /auth/kakao` — 카카오 액세스토큰 검증 → 가입/로그인 (KAKAO_ENABLED=false 면 501 스텁). 응답에 `accessToken`+`refreshToken`. 선택적 `deviceId`.
+- `POST /auth/refresh` **(@Public)** — `{ refreshToken, deviceId? }` → 유효 리프레시면 새 `{ accessToken, refreshToken }`. **회전(rotation)**: 기존 리프레시 폐기 + 새 리프레시 발급, 만료 **180일 재연장(슬라이딩)**. **재사용 감지**: 이미 회전(폐기)된 토큰 재사용 시 해당 프로필 전체 리프레시 폐기(탈취 방어) + 401 `REFRESH_REUSED`. 미존재 401 `REFRESH_INVALID`, 만료 401 `REFRESH_EXPIRED`.
+- `POST /auth/logout` — `{ refreshToken }` (인증 필요) → 해당 리프레시 폐기(해당 기기 세션만 종료, 다른 기기 유지). 반환 `{ revoked }`. **프로필당 활성 리프레시 상한 5개**(기기 5대, 발급 시 초과분은 오래된 것부터 폐기). 만료·오래 폐기된 리프레시는 **정리 크론(주 1회, 일 03:00 KST)** 으로 삭제.
 - `POST /auth/kakao/link` **(P1)** — 로그인 상태에서 카카오 토큰 제출 → 기존(전화 인증) 계정에 kakaoId 연결. 멱등, 충돌 시 409(KAKAO_ALREADY_LINKED), 비활성 501. 반환: ProfileDto
 - `GET /me` / `PATCH /me` — 프로필 조회·수정 (전화검색 동의 토글 + **P1: bizNumber/bizName/bizAddress** 세금계산서 공급자 정보 + **P3a: payoutBank/payoutAccount/payoutHolder** 수금 안내용 입금 계좌(선택 입력) + **P3b: cardEnabled(bool)·cardIntro(<=80자)** QR 명함 노출·소개). ProfileDto 에 `bizNumber/bizName/bizAddress`·`payoutBank/payoutAccount/payoutHolder`·`cardEnabled/cardIntro` 노출
 

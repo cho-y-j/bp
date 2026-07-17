@@ -12,11 +12,20 @@ class ApiException implements Exception {
   String toString() => message;
 }
 
-/// dio 래퍼: `{data,error}` 봉투 언래핑 + JWT 주입 + 401 처리.
+/// dio 래퍼: `{data,error}` 봉투 언래핑 + JWT 주입 + 401 자동 리프레시.
+///
+/// 401 처리:
+///  - 요청이 401 을 받으면 저장된 리프레시 토큰으로 `POST /auth/refresh` 를
+///    호출해 새 액세스+리프레시를 받고, 원 요청을 1회 재시도한다.
+///  - 동시에 여러 요청이 401 을 받아도 리프레시는 **1회로 합류**한다(single-flight).
+///  - 리프레시 실패(리프레시 없음/만료/재사용 감지) 시에만 강제 로그아웃 콜백.
 class ApiClient {
   final Dio _dio;
   final TokenStore _tokens;
   void Function()? onUnauthorized;
+
+  /// 진행 중인 리프레시(single-flight). null 이면 진행 중 아님.
+  Future<bool>? _refreshing;
 
   ApiClient({TokenStore? tokens, Dio? dio})
       : _tokens = tokens ?? TokenStore(),
@@ -37,11 +46,91 @@ class ApiClient {
         }
         handler.next(options);
       },
+      onResponse: (response, handler) async {
+        // 401 이고, 재시도 대상이면 리프레시 후 원 요청 1회 재시도.
+        if (response.statusCode == 401 &&
+            _shouldTryRefresh(response.requestOptions)) {
+          final ok = await _refreshOnce();
+          if (ok) {
+            final opts = response.requestOptions;
+            opts.extra['__retried'] = true;
+            final token = await _tokens.read();
+            if (token != null && token.isNotEmpty) {
+              opts.headers['authorization'] = 'Bearer $token';
+            }
+            try {
+              final retried = await _dio.fetch<dynamic>(opts);
+              handler.resolve(retried);
+              return;
+            } catch (_) {
+              // 재시도 실패 → 원래 401 그대로 전달
+            }
+          } else {
+            // 리프레시 실패 시에만 강제 로그아웃.
+            onUnauthorized?.call();
+          }
+        }
+        handler.next(response);
+      },
     ));
   }
 
   Dio get raw => _dio;
   TokenStore get tokens => _tokens;
+
+  /// 이 요청에 대해 리프레시를 시도해도 되는가.
+  ///  - 이미 재시도한 요청(무한 루프 방지) 제외
+  ///  - 인증 엔드포인트(/auth/*) 자체는 제외(재귀 방지)
+  bool _shouldTryRefresh(RequestOptions options) {
+    if (options.extra['__retried'] == true) return false;
+    final path = options.path;
+    if (path.contains('/auth/refresh') ||
+        path.contains('/auth/phone') ||
+        path.contains('/auth/kakao') ||
+        path.contains('/auth/logout')) {
+      return false;
+    }
+    return true;
+  }
+
+  /// 리프레시를 single-flight 로 실행한다. 진행 중이면 그 Future 에 합류.
+  Future<bool> _refreshOnce() {
+    final existing = _refreshing;
+    if (existing != null) return existing;
+    final future = _performRefresh();
+    _refreshing = future;
+    future.whenComplete(() {
+      _refreshing = null;
+    });
+    return future;
+  }
+
+  /// 저장된 리프레시 토큰으로 새 토큰을 받아 저장한다. 성공 여부 반환.
+  Future<bool> _performRefresh() async {
+    final refresh = await _tokens.readRefresh();
+    if (refresh == null || refresh.isEmpty) return false;
+    try {
+      final res = await _dio.post<dynamic>(
+        '/auth/refresh',
+        data: {'refreshToken': refresh},
+      );
+      if (res.statusCode == 200) {
+        final body = res.data;
+        final data = (body is Map && body['data'] is Map)
+            ? body['data'] as Map
+            : (body is Map ? body : const {});
+        final newAccess = data['accessToken']?.toString();
+        final newRefresh = data['refreshToken']?.toString();
+        if (newAccess != null && newAccess.isNotEmpty) {
+          await _tokens.writeTokens(newAccess, newRefresh);
+          return true;
+        }
+      }
+    } catch (_) {
+      // 네트워크 등 → 실패로 간주
+    }
+    return false;
+  }
 
   Future<dynamic> get(String path, {Map<String, dynamic>? query}) =>
       _unwrap(_dio.get(path, queryParameters: query));
@@ -59,6 +148,7 @@ class ApiClient {
       _unwrap(_dio.post(path, data: form));
 
   /// 인증 헤더가 붙은 GET 으로 PDF 등 바이너리를 받는다(인증 blob).
+  /// 401 자동 리프레시·재시도는 인터셉터가 처리하므로, 여기서는 실패만 판정.
   Future<List<int>> getBytes(String path, {Map<String, dynamic>? query}) async {
     final res = await _dio.get<List<int>>(
       path,
@@ -66,7 +156,6 @@ class ApiClient {
       options: Options(responseType: ResponseType.bytes),
     );
     if (res.statusCode == 401) {
-      onUnauthorized?.call();
       throw ApiException('UNAUTHORIZED', '로그인이 필요합니다.', 401);
     }
     if (res.statusCode == null || res.statusCode! >= 400) {
@@ -85,7 +174,7 @@ class ApiClient {
     }
     final status = res.statusCode ?? 0;
     if (status == 401) {
-      onUnauthorized?.call();
+      // 인터셉터가 이미 리프레시 시도 후에도 401 이면 로그아웃 필요.
       throw ApiException('UNAUTHORIZED', '로그인이 필요합니다.', 401);
     }
     final data = res.data;

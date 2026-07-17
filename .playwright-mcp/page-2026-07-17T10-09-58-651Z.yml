@@ -1,0 +1,53 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e19] [cursor=pointer]
+  - alert [ref=e13]
+  - generic [ref=e38]:
+    - complementary [ref=e39]:
+      - generic [ref=e40]:
+        - paragraph [ref=e41]: 작업온
+        - generic [ref=e43]: 작업자 님· 작업자 모드
+      - link "홈" [ref=e44] [cursor=pointer]:
+        - /url: /w/home
+      - link "확인서" [ref=e48] [cursor=pointer]:
+        - /url: /w/confirmations
+      - link "장부" [ref=e52] [cursor=pointer]:
+        - /url: /w/ledger
+      - link "서류" [ref=e55] [cursor=pointer]:
+        - /url: /w/documents
+      - link "소득" [ref=e58] [cursor=pointer]:
+        - /url: /w/income
+      - generic [ref=e62]:
+        - link "사업장 만들기" [ref=e63] [cursor=pointer]:
+          - /url: /biz
+        - button "로그아웃" [ref=e67] [cursor=pointer]
+    - main [ref=e70]:
+      - heading "홈" [level=1] [ref=e71]
+      - paragraph [ref=e72]: 2026년 7월 요약과 확인이 필요한 항목입니다.
+      - generic [ref=e73]:
+        - generic [ref=e74]:
+          - generic [ref=e75]: 일한 날
+          - generic [ref=e76]: 0일
+        - generic [ref=e77]:
+          - generic [ref=e78]: 공수
+          - generic [ref=e79]: 0공수
+        - generic [ref=e80]:
+          - generic [ref=e81]: 미수
+          - generic [ref=e82]: 0원
+        - generic [ref=e83]:
+          - generic [ref=e84]: 입금
+          - generic [ref=e85]: 0원
+      - generic [ref=e86]:
+        - heading "최근 확인서" [level=2] [ref=e87]
+        - link "전체 보기" [ref=e88] [cursor=pointer]:
+          - /url: /w/confirmations
+      - generic [ref=e91]:
+        - paragraph [ref=e95]: 이번 달 확인서가 없습니다
+        - link "확인서 작성" [ref=e96] [cursor=pointer]:
+          - /url: /w/confirmations
+      - generic [ref=e99]:
+        - heading "만료 임박 서류" [level=2] [ref=e100]
+        - link "서류 관리" [ref=e101] [cursor=pointer]:
+          - /url: /w/documents
+      - paragraph [ref=e107]: 30일 내 만료 예정 서류가 없습니다
+      - heading "대기 알림" [level=2] [ref=e109]
+      - paragraph [ref=e114]: 새 알림이 없습니다

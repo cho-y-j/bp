@@ -49,12 +49,12 @@ class AuthController extends StateNotifier<AuthState> {
     return (res as Map)['devCode']?.toString();
   }
 
-  /// 코드 검증 → 저장 + 프로필 로드.
+  /// 코드 검증 → 저장(액세스+리프레시) + 프로필 로드.
   Future<AuthResult> verify(String phone, String code) async {
     final res =
         await _api.post('/auth/phone/verify', body: {'phone': phone, 'code': code});
     final auth = AuthResult.fromJson(res as Map);
-    await _api.tokens.write(auth.accessToken);
+    await _api.tokens.writeTokens(auth.accessToken, auth.refreshToken);
     state = AuthState(AuthStatus.authenticated, auth.profile);
     return auth;
   }
@@ -93,7 +93,7 @@ class AuthController extends StateNotifier<AuthState> {
     final res =
         await _api.post('/auth/kakao', body: {'accessToken': kakaoAccessToken});
     final auth = AuthResult.fromJson(res as Map);
-    await _api.tokens.write(auth.accessToken);
+    await _api.tokens.writeTokens(auth.accessToken, auth.refreshToken);
     state = AuthState(AuthStatus.authenticated, auth.profile);
     return auth;
   }
@@ -131,7 +131,16 @@ class AuthController extends StateNotifier<AuthState> {
     } catch (_) {}
   }
 
+  /// 로그아웃: 서버에 해당 리프레시 폐기 요청(실패해도 로컬은 정리) 후 로컬 클리어.
   Future<void> logout() async {
+    try {
+      final refresh = await _api.tokens.readRefresh();
+      if (refresh != null && refresh.isNotEmpty) {
+        await _api.post('/auth/logout', body: {'refreshToken': refresh});
+      }
+    } catch (_) {
+      // 네트워크/토큰 만료 등은 무시 — 로컬 정리는 항상 수행한다.
+    }
     await _api.tokens.clear();
     state = const AuthState(AuthStatus.unauthenticated, null);
   }

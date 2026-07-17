@@ -4,6 +4,21 @@ import * as bcrypt from 'bcryptjs';
 import { AuthService } from './auth.service';
 import { AppException } from '../common/errors';
 import { SmsService } from './sms/sms.service';
+import { RefreshTokenService } from './refresh-token.service';
+
+/** 로그인 경로 단위 테스트용 리프레시 서비스 목. issue 만 사용. */
+function makeRefreshMock() {
+  return {
+    issue: jest.fn().mockResolvedValue({
+      token: 'refresh-opaque-token',
+      expiresAt: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
+    }),
+    rotate: jest.fn(),
+    revoke: jest.fn(),
+    revokeAllForProfile: jest.fn(),
+    cleanup: jest.fn(),
+  } as unknown as RefreshTokenService;
+}
 
 /**
  * AuthService 단위 테스트: OTP 만료/시도 제한/쿨다운 + JWT 발급.
@@ -64,13 +79,15 @@ function makeService(overrides: {
     sendVerificationCode: jest.fn().mockResolvedValue(undefined),
   };
 
+  const refreshTokens = makeRefreshMock();
   const service = new AuthService(
     prisma as never,
     jwt as unknown as JwtService,
     config as unknown as ConfigService,
     sms,
+    refreshTokens,
   );
-  return { service, prisma, jwt, sms };
+  return { service, prisma, jwt, sms, refreshTokens };
 }
 
 describe('AuthService', () => {
@@ -188,8 +205,12 @@ describe('AuthService', () => {
         expect.objectContaining({ data: { verified: true } }),
       );
       expect(prisma.profile.create).toHaveBeenCalledTimes(1);
-      expect(jwt.sign).toHaveBeenCalledWith({ sub: 'profile-new' });
+      expect(jwt.sign).toHaveBeenCalledWith(
+        { sub: 'profile-new' },
+        { expiresIn: '30m' },
+      );
       expect(res.accessToken).toBe('signed.jwt.token');
+      expect(res.refreshToken).toBe('refresh-opaque-token');
       expect(res.isNew).toBe(true);
       expect(res.profile.name).toBeNull();
     });
@@ -270,6 +291,7 @@ describe('AuthService', () => {
         jwt as unknown as JwtService,
         config as unknown as ConfigService,
         sms,
+        makeRefreshMock(),
       );
       return { service, prisma };
     }

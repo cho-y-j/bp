@@ -10,16 +10,24 @@ import {
   ProfileDto,
 } from '../users/profile.mapper';
 import { SMS_SERVICE, SmsService } from './sms/sms.service';
+import { RefreshTokenService } from './refresh-token.service';
 
 const OTP_TTL_MS = 3 * 60 * 1000; // 만료 3분
 const OTP_COOLDOWN_MS = 30 * 1000; // 재요청 쿨다운 30초
 const OTP_MAX_ATTEMPTS = 5; // 검증 시도 5회 제한
 const BCRYPT_ROUNDS = 10;
+const DEFAULT_ACCESS_TTL = '30m'; // 액세스 토큰 수명(단축). 만료 시 리프레시로 자동 연장.
 
 export interface AuthResult {
   accessToken: string;
+  refreshToken: string;
   isNew: boolean;
   profile: ProfileDto;
+}
+
+export interface RefreshResult {
+  accessToken: string;
+  refreshToken: string;
 }
 
 @Injectable()
@@ -31,6 +39,7 @@ export class AuthService {
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
     @Inject(SMS_SERVICE) private readonly sms: SmsService,
+    private readonly refreshTokens: RefreshTokenService,
   ) {}
 
   private isDev(): boolean {
@@ -52,7 +61,21 @@ export class AuthService {
   }
 
   private signToken(profileId: string): string {
-    return this.jwt.sign({ sub: profileId });
+    // 액세스 토큰 수명은 30분으로 단축(기본). 만료 시 리프레시 토큰으로 자동 연장.
+    // 기존에 발급된 7일 토큰은 만료까지 그대로 유효(가드 변경 없음, 하위 호환).
+    const expiresIn = (this.config.get<string>('ACCESS_TOKEN_TTL') ??
+      DEFAULT_ACCESS_TTL) as `${number}${'d' | 'h' | 'm' | 's'}`;
+    return this.jwt.sign({ sub: profileId }, { expiresIn });
+  }
+
+  /** 로그인 성공 시 액세스 + 리프레시 토큰을 함께 발급한다. */
+  private async issueTokens(
+    profileId: string,
+    deviceId?: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const accessToken = this.signToken(profileId);
+    const { token } = await this.refreshTokens.issue(profileId, deviceId);
+    return { accessToken, refreshToken: token };
   }
 
   // --------------------------------------------------------------------------
@@ -95,7 +118,11 @@ export class AuthService {
   // --------------------------------------------------------------------------
   // POST /auth/phone/verify
   // --------------------------------------------------------------------------
-  async verifyPhoneCode(rawPhone: string, code: string): Promise<AuthResult> {
+  async verifyPhoneCode(
+    rawPhone: string,
+    code: string,
+    deviceId?: string,
+  ): Promise<AuthResult> {
     const phone = this.normalizePhone(rawPhone);
 
     // 가장 최근의 미검증 OTP 사용
@@ -170,8 +197,9 @@ export class AuthService {
       isNew = true;
     }
 
+    const tokens = await this.issueTokens(profile.id, deviceId);
     return {
-      accessToken: this.signToken(profile.id),
+      ...tokens,
       isNew,
       profile: toProfileDto(profile),
     };
@@ -180,7 +208,7 @@ export class AuthService {
   // --------------------------------------------------------------------------
   // POST /auth/kakao — 키 없으면 501 스텁, 있으면 실제 호출
   // --------------------------------------------------------------------------
-  async kakaoLogin(accessToken: string): Promise<AuthResult> {
+  async kakaoLogin(accessToken: string, deviceId?: string): Promise<AuthResult> {
     if (!this.kakaoEnabled()) {
       throw new AppException(
         'NOT_IMPLEMENTED',
@@ -206,11 +234,34 @@ export class AuthService {
       isNew = true;
     }
 
+    const tokens = await this.issueTokens(profile.id, deviceId);
     return {
-      accessToken: this.signToken(profile.id),
+      ...tokens,
       isNew,
       profile: toProfileDto(profile),
     };
+  }
+
+  // --------------------------------------------------------------------------
+  // POST /auth/refresh (@Public) — 유효 리프레시 → 새 액세스 + 리프레시 회전
+  // --------------------------------------------------------------------------
+  async refresh(rawToken: string, deviceId?: string): Promise<RefreshResult> {
+    const { profileId, refresh } = await this.refreshTokens.rotate(
+      rawToken,
+      deviceId,
+    );
+    return {
+      accessToken: this.signToken(profileId),
+      refreshToken: refresh.token,
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // POST /auth/logout — 해당 리프레시 토큰 폐기(해당 기기 세션만 종료)
+  // --------------------------------------------------------------------------
+  async logout(userId: string, rawToken: string): Promise<{ revoked: boolean }> {
+    const revoked = await this.refreshTokens.revoke(userId, rawToken);
+    return { revoked };
   }
 
   private kakaoEnabled(): boolean {

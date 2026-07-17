@@ -1,4 +1,10 @@
-import { IsString, Length, Matches } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 
 export class PhoneVerifyDto {
   @IsString()
@@ -10,4 +16,10 @@ export class PhoneVerifyDto {
   @IsString()
   @Length(6, 6, { message: '인증코드는 6자리입니다.' })
   code!: string;
+
+  // 기기 식별자(선택) — 발급되는 리프레시 토큰에 기록
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  deviceId?: string;
 }

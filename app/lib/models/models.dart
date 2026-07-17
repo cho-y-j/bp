@@ -146,11 +146,13 @@ class CardData {
 
 class AuthResult {
   final String accessToken;
+  final String? refreshToken;
   final bool isNew;
   final Profile profile;
-  AuthResult(this.accessToken, this.isNew, this.profile);
+  AuthResult(this.accessToken, this.refreshToken, this.isNew, this.profile);
   factory AuthResult.fromJson(Map j) => AuthResult(
         j['accessToken'].toString(),
+        j['refreshToken']?.toString(),
         j['isNew'] == true,
         Profile.fromJson(j['profile'] as Map),
       );

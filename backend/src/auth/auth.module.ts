@@ -5,6 +5,8 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { SMS_SERVICE } from './sms/sms.service';
 import { MockSmsService } from './sms/mock-sms.service';
+import { RefreshTokenService } from './refresh-token.service';
+import { RefreshTokenScheduler } from './refresh-token.scheduler';
 
 @Module({
   imports: [
@@ -24,9 +26,11 @@ import { MockSmsService } from './sms/mock-sms.service';
   controllers: [AuthController],
   providers: [
     AuthService,
+    RefreshTokenService,
+    RefreshTokenScheduler,
     // SMS 발송: dev/mock 구현. 실제 발송사로 교체 시 이 provider 만 바꾼다.
     { provide: SMS_SERVICE, useClass: MockSmsService },
   ],
-  exports: [JwtModule],
+  exports: [JwtModule, RefreshTokenService],
 })
 export class AuthModule {}

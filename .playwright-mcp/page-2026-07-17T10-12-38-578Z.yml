@@ -1,0 +1,79 @@
+- generic [ref=f1e1]:
+  - generic [ref=f1e2]:
+    - complementary [ref=f1e3]:
+      - generic [ref=f1e4]:
+        - paragraph [ref=f1e5]: 작업온
+        - generic [ref=f1e7]: 작업자 님· 작업자 모드
+      - link "홈" [ref=f1e8] [cursor=pointer]:
+        - /url: /w/home
+      - link "확인서" [ref=f1e12] [cursor=pointer]:
+        - /url: /w/confirmations
+      - link "장부" [ref=f1e16] [cursor=pointer]:
+        - /url: /w/ledger
+      - link "서류" [ref=f1e19] [cursor=pointer]:
+        - /url: /w/documents
+      - link "소득" [ref=f1e22] [cursor=pointer]:
+        - /url: /w/income
+      - generic [ref=f1e26]:
+        - link "사업장 만들기" [ref=f1e27] [cursor=pointer]:
+          - /url: /biz
+        - button "로그아웃" [ref=f1e31] [cursor=pointer]
+    - main [ref=f1e34]:
+      - heading "장부" [level=1] [ref=f1e37]
+      - paragraph [ref=f1e38]: 회사별 미수와 입금 현황을 관리합니다.
+      - generic [ref=f1e39]:
+        - generic [ref=f1e40]:
+          - button "이전 달" [ref=f1e41] [cursor=pointer]
+          - generic [ref=f1e44]: 2026년 7월
+          - button "다음 달" [ref=f1e45] [cursor=pointer]
+        - button "월간 명세서 PDF" [ref=f1e48] [cursor=pointer]
+      - generic [ref=f1e51]:
+        - generic [ref=f1e52]:
+          - generic [ref=f1e53]: 일한 날
+          - generic [ref=f1e54]: 1일
+        - generic [ref=f1e55]:
+          - generic [ref=f1e56]: 총 청구
+          - generic [ref=f1e57]: 270,000원
+        - generic [ref=f1e58]:
+          - generic [ref=f1e59]: 미수
+          - generic [ref=f1e60]: 270,000원
+        - generic [ref=f1e61]:
+          - generic [ref=f1e62]: 입금
+          - generic [ref=f1e63]: 0원
+      - heading "회사별 미수" [level=2] [ref=f1e64]
+      - generic [ref=f1e66]:
+        - generic [ref=f1e67]: 대
+        - generic [ref=f1e68]:
+          - generic [ref=f1e69]: 대성건설
+          - generic [ref=f1e70]: 1일 · 입금 0원
+        - generic [ref=f1e71]: 270,000원
+      - heading "개별 항목" [level=2] [ref=f1e73]
+      - generic [ref=f1e75]:
+        - generic [ref=f1e76]:
+          - generic [ref=f1e77]: 대성건설
+          - generic [ref=f1e78]: 반포 자이 신축현장 · 2026.07.17 (금)
+        - generic [ref=f1e79]:
+          - generic [ref=f1e80]: 270,000원
+          - generic [ref=f1e81]: 미수
+        - generic [ref=f1e82]:
+          - button "입금 기록" [active] [ref=f1e83] [cursor=pointer]
+          - button "자동 독촉 OFF" [ref=f1e86] [cursor=pointer]
+          - button "독촉" [ref=f1e90] [cursor=pointer]
+      - generic [ref=f1e104]:
+        - generic [ref=f1e106]:
+          - heading "입금 기록" [level=2] [ref=f1e107]
+          - button "닫기" [ref=f1e108] [cursor=pointer]
+        - generic [ref=f1e111]:
+          - paragraph [ref=f1e112]: 대성건설 · 잔액 270,000원
+          - generic [ref=f1e113]:
+            - generic [ref=f1e114]: 입금액 (원)
+            - textbox "입금액 (원)" [ref=f1e115]: "270000"
+          - generic [ref=f1e116]:
+            - generic [ref=f1e117]: 입금일 (선택)
+            - textbox "입금일 (선택)" [ref=f1e118]
+          - generic [ref=f1e119]:
+            - generic [ref=f1e120]: 메모 (선택)
+            - textbox "메모 (선택)" [ref=f1e121]
+          - button "입금 기록" [ref=f1e122] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=f1e98] [cursor=pointer]
+  - alert [ref=f1e102]
