@@ -10,6 +10,7 @@ import '../../providers/auth.dart';
 import '../../providers/data.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/common.dart';
+import '../sms/sms_share.dart';
 
 /// 내 QR 명함 (P3b) — 로컬 QR 렌더 + 링크 공유 + 한 줄 소개/공개 토글 + 링크 재발급.
 class QrCardScreen extends ConsumerStatefulWidget {
@@ -102,6 +103,11 @@ class _QrCardScreenState extends ConsumerState<QrCardScreen> {
     }
   }
 
+  Future<void> _sms(String url) async {
+    await composeSms(context, ref,
+        recipients: const [], body: context.l.smsCardShareBody(url));
+  }
+
   Future<void> _share(String url) async {
     final l = context.l;
     final box = context.findRenderObject() as RenderBox?;
@@ -148,6 +154,21 @@ class _QrCardScreenState extends ConsumerState<QrCardScreen> {
               _QrCard(card: card),
               const SizedBox(height: 12),
               _UrlRow(url: card.url, onShare: () => _share(card.url)),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () => _sms(card.url),
+                icon: const Icon(Icons.sms_outlined, size: 18),
+                label: Text(l.smsSendSms,
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w700)),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(48),
+                  foregroundColor: c.accentText,
+                  side: BorderSide(color: c.border),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
               const SizedBox(height: 8),
               Center(
                 child: Text(l.qrCardViewCount(card.viewCount),

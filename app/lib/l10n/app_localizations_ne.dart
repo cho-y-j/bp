@@ -2329,4 +2329,166 @@ class AppLocalizationsNe extends AppLocalizations {
   String qrCardDocExpiryLabel(String date) {
     return 'म्याद $date';
   }
+
+  @override
+  String get smsSendSms => 'म्यासेजबाट पठाउनुहोस्';
+
+  @override
+  String get smsSharedInstead => 'म्यासेज समर्थन नभएकाले सेयर खोलियो';
+
+  @override
+  String get smsFailed => 'म्यासेज एप खोल्न सकिएन';
+
+  @override
+  String get callButtonLabel => 'फोन गर्नुहोस्';
+
+  @override
+  String get callFailed => 'फोन गर्न सकिएन';
+
+  @override
+  String smsConfBodyNamed(String name, String site, String link) {
+    return '$name, $site को कार्य पुष्टिपत्रमा हस्ताक्षर गरिदिनुहोस्: $link';
+  }
+
+  @override
+  String smsConfBodyPlain(String site, String link) {
+    return '$site को कार्य पुष्टिपत्रमा हस्ताक्षर गरिदिनुहोस्: $link';
+  }
+
+  @override
+  String smsCardShareBody(String link) {
+    return 'मेरो नामकार्ड पठाउँदैछु: $link';
+  }
+
+  @override
+  String smsDocBundleBody(String link) {
+    return 'कागजात पठाउँदैछु: $link';
+  }
+
+  @override
+  String get smsRecipientTitle => 'प्राप्तकर्ता';
+
+  @override
+  String get smsRecipientHint => 'फोन नम्बर लेख्नुहोस्';
+
+  @override
+  String get smsPickConnection => 'सम्पर्कबाट छान्नुहोस्';
+
+  @override
+  String get smsOpenCompose => 'म्यासेज लेख्ने विन्डो खोल्नुहोस्';
+
+  @override
+  String get quickSendMenuTitle => 'छिटो पठाउनुहोस्';
+
+  @override
+  String get quickSendMenuSub =>
+      'नामकार्ड·कागजात एकै ट्यापमा म्यासेजबाट पठाउनुहोस्';
+
+  @override
+  String get quickSendTitle => 'छिटो पठाउनुहोस्';
+
+  @override
+  String get quickSendAddTemplate => 'टेम्प्लेट थप्नुहोस्';
+
+  @override
+  String get quickSendPickTemplate => 'पठाउने टेम्प्लेट छान्नुहोस्';
+
+  @override
+  String get quickSendBuiltinSection => 'पूर्वनिर्धारित टेम्प्लेट';
+
+  @override
+  String get quickSendCustomSection => 'मेरा टेम्प्लेट';
+
+  @override
+  String quickSendNoDoc(String type) {
+    return '\'$type\' कागजात छैन। पहिले कागजात वालेटमा दर्ता गर्नुहोस्';
+  }
+
+  @override
+  String get quickSendAttachImage => 'तस्बिरका रूपमा संलग्न';
+
+  @override
+  String get quickSendAttachImageSub =>
+      'लिंकको सट्टा कागजातको तस्बिर सिधै संलग्न गर्नुहोस्';
+
+  @override
+  String get tplCardTitle => 'नामकार्ड';
+
+  @override
+  String tplCardBody(String name, String me, String link) {
+    return 'नमस्ते $name, $me ले नामकार्ड पठाउँदैछ: $link';
+  }
+
+  @override
+  String get tplBizTitle => 'व्यवसाय दर्ता प्रमाणपत्र';
+
+  @override
+  String tplBizBody(String name, String me, String link) {
+    return '$name, $me ले व्यवसाय दर्ता प्रमाणपत्र पठाउँदैछ: $link';
+  }
+
+  @override
+  String get tplBankTitle => 'बैंक कापी';
+
+  @override
+  String tplBankBody(String name, String me, String link) {
+    return '$name, $me ले बैंक कापी पठाउँदैछ: $link';
+  }
+
+  @override
+  String get tplEditorTitle => 'टेम्प्लेट थप्नुहोस्';
+
+  @override
+  String get tplFieldTitle => 'शीर्षक';
+
+  @override
+  String get tplFieldBody => 'मुख्य पाठ';
+
+  @override
+  String get tplFieldBodyHint => 'जस्तै: नमस्ते, सामग्री पठाउँदैछु';
+
+  @override
+  String get tplVarsHelp => 'प्रयोग गर्न मिल्ने भेरिएबल';
+
+  @override
+  String get tplFieldLink => 'जोड्ने';
+
+  @override
+  String get tplLinkNone => 'छैन';
+
+  @override
+  String get tplLinkCard => 'नामकार्ड लिंक';
+
+  @override
+  String get tplLinkDoc => 'कागजात लिंक';
+
+  @override
+  String get tplFieldDocType => 'कागजात प्रकार';
+
+  @override
+  String get tplDocTypeHint => 'जस्तै: व्यवसाय दर्ता, बैंक कापी';
+
+  @override
+  String get tplSaveTemplate => 'टेम्प्लेट सेभ गर्नुहोस्';
+
+  @override
+  String get tplNeedTitleBody => 'शीर्षक र मुख्य पाठ लेख्नुहोस्';
+
+  @override
+  String postCallTitle(String name) {
+    return 'भर्खरै $name सँग कुरा गर्नुभयो?';
+  }
+
+  @override
+  String get postCallSendCard => 'नामकार्ड पठाउनुहोस्';
+
+  @override
+  String get postCallQuickSend => 'छिटो पठाउनुहोस्';
+
+  @override
+  String get postCallSettingTitle => 'फोनपछि पठाउने सुझाव';
+
+  @override
+  String get postCallSettingSub =>
+      'एपबाट फोन गरेपछि फर्कँदा नामकार्ड वा छिटो पठाउने सुझाव दिन्छ';
 }

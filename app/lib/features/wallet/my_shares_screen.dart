@@ -7,6 +7,7 @@ import '../../core/format.dart';
 import '../../models/models.dart';
 import '../../providers/wallet.dart';
 import '../../l10n/l10n_ext.dart';
+import '../sms/sms_share.dart';
 
 class MySharesScreen extends ConsumerWidget {
   const MySharesScreen({super.key});
@@ -111,6 +112,14 @@ class MySharesScreen extends ConsumerWidget {
                                   },
                                   icon: const Icon(Icons.share_rounded, size: 18),
                                   label: Text(l.wshareReshare),
+                                ),
+                              if (s.active)
+                                TextButton.icon(
+                                  onPressed: () => composeSms(context, ref,
+                                      recipients: const [],
+                                      body: l.smsDocBundleBody(_shareUrl(s))),
+                                  icon: const Icon(Icons.sms_outlined, size: 18),
+                                  label: Text(l.smsSendSms),
                                 ),
                               const Spacer(),
                               if (s.active)

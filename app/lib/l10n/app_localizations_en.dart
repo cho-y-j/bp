@@ -2338,4 +2338,166 @@ class AppLocalizationsEn extends AppLocalizations {
   String qrCardDocExpiryLabel(String date) {
     return 'Expires $date';
   }
+
+  @override
+  String get smsSendSms => 'Send by text';
+
+  @override
+  String get smsSharedInstead =>
+      'Texting isn\'t supported, so we opened Share instead';
+
+  @override
+  String get smsFailed => 'Couldn\'t open the messaging app';
+
+  @override
+  String get callButtonLabel => 'Call';
+
+  @override
+  String get callFailed => 'Couldn\'t place the call';
+
+  @override
+  String smsConfBodyNamed(String name, String site, String link) {
+    return '$name, please sign the work confirmation for $site: $link';
+  }
+
+  @override
+  String smsConfBodyPlain(String site, String link) {
+    return 'Please sign the work confirmation for $site: $link';
+  }
+
+  @override
+  String smsCardShareBody(String link) {
+    return 'Here is my business card: $link';
+  }
+
+  @override
+  String smsDocBundleBody(String link) {
+    return 'Here are the documents: $link';
+  }
+
+  @override
+  String get smsRecipientTitle => 'Recipient';
+
+  @override
+  String get smsRecipientHint => 'Enter phone number';
+
+  @override
+  String get smsPickConnection => 'Pick from contacts';
+
+  @override
+  String get smsOpenCompose => 'Open message composer';
+
+  @override
+  String get quickSendMenuTitle => 'Quick send';
+
+  @override
+  String get quickSendMenuSub => 'Text a business card or documents in one tap';
+
+  @override
+  String get quickSendTitle => 'Quick send';
+
+  @override
+  String get quickSendAddTemplate => 'Add template';
+
+  @override
+  String get quickSendPickTemplate => 'Choose a template to send';
+
+  @override
+  String get quickSendBuiltinSection => 'Default templates';
+
+  @override
+  String get quickSendCustomSection => 'My templates';
+
+  @override
+  String quickSendNoDoc(String type) {
+    return 'No \'$type\' document. Add it to your document wallet first';
+  }
+
+  @override
+  String get quickSendAttachImage => 'Attach as image';
+
+  @override
+  String get quickSendAttachImageSub =>
+      'Attach the document image directly instead of a link';
+
+  @override
+  String get tplCardTitle => 'Business card';
+
+  @override
+  String tplCardBody(String name, String me, String link) {
+    return 'Hello $name, $me is sending you a business card: $link';
+  }
+
+  @override
+  String get tplBizTitle => 'Business registration';
+
+  @override
+  String tplBizBody(String name, String me, String link) {
+    return '$name, $me is sending the business registration: $link';
+  }
+
+  @override
+  String get tplBankTitle => 'Bankbook copy';
+
+  @override
+  String tplBankBody(String name, String me, String link) {
+    return '$name, $me is sending a copy of the bankbook: $link';
+  }
+
+  @override
+  String get tplEditorTitle => 'Add template';
+
+  @override
+  String get tplFieldTitle => 'Title';
+
+  @override
+  String get tplFieldBody => 'Message';
+
+  @override
+  String get tplFieldBodyHint => 'e.g. Hello, sending you the file';
+
+  @override
+  String get tplVarsHelp => 'Available variables';
+
+  @override
+  String get tplFieldLink => 'Attachment';
+
+  @override
+  String get tplLinkNone => 'None';
+
+  @override
+  String get tplLinkCard => 'Card link';
+
+  @override
+  String get tplLinkDoc => 'Document link';
+
+  @override
+  String get tplFieldDocType => 'Document type';
+
+  @override
+  String get tplDocTypeHint => 'e.g. Business registration, bankbook copy';
+
+  @override
+  String get tplSaveTemplate => 'Save template';
+
+  @override
+  String get tplNeedTitleBody => 'Enter a title and message';
+
+  @override
+  String postCallTitle(String name) {
+    return 'Did you just talk with $name?';
+  }
+
+  @override
+  String get postCallSendCard => 'Send card';
+
+  @override
+  String get postCallQuickSend => 'Quick send';
+
+  @override
+  String get postCallSettingTitle => 'Suggest sending after a call';
+
+  @override
+  String get postCallSettingSub =>
+      'When you return after calling from the app, we suggest sending a card or quick send';
 }

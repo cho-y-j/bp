@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
 import '../../core/api_client.dart';
 import '../../core/app_lock.dart';
+import '../../core/call_log.dart';
 import '../../core/env.dart';
 import '../../core/home_widget_bridge.dart';
 import '../../core/kakao_auth.dart';
@@ -19,6 +20,7 @@ import '../jobs/my_jobs_screen.dart';
 import '../tax/tax_invoice_screen.dart';
 import '../ledger/income_report_screen.dart';
 import '../notifications/notifications_screen.dart';
+import '../sms/quick_send_screen.dart';
 import 'qr_card_screen.dart';
 
 class MoreScreen extends ConsumerWidget {
@@ -132,6 +134,12 @@ class MoreScreen extends ConsumerWidget {
               onTap: () => _push(context, const QrCardScreen()),
             ),
             _Tile(
+              icon: Icons.bolt_rounded,
+              title: l.quickSendMenuTitle,
+              subtitle: l.quickSendMenuSub,
+              onTap: () => _push(context, const QuickSendScreen()),
+            ),
+            _Tile(
               icon: Icons.storefront_outlined,
               title: profile?.hasBusiness == true ? l.menuBizHome : l.menuBizMode,
               subtitle: l.menuBizSub,
@@ -186,6 +194,7 @@ class MoreScreen extends ConsumerWidget {
             ),
             const _LanguageTile(),
             const _AppLockTile(),
+            const _PostCallTile(),
             _ConsentTile(
               value: profile?.phoneSearchConsent ?? false,
               onChanged: (v) =>
@@ -543,6 +552,56 @@ class _AppLockTileState extends ConsumerState<_AppLockTile> {
             Switch(
                 value: enabled,
                 onChanged: _busy ? null : _toggle,
+                activeTrackColor: c.primary),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 통화 후 보내기 제안 토글 — 기본 ON(권한 불필요라 안전).
+class _PostCallTile extends ConsumerWidget {
+  const _PostCallTile();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = context.c;
+    final l = context.l;
+    final enabled = ref.watch(callLogControllerProvider).enabled;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: c.surface,
+          border: Border.all(color: c.border),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.call_end_rounded, size: 22, color: c.ink2),
+            const SizedBox(width: 13),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l.postCallSettingTitle,
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: c.ink)),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(l.postCallSettingSub,
+                        style: TextStyle(fontSize: 13, color: c.ink2)),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+                value: enabled,
+                onChanged: (v) =>
+                    ref.read(callLogControllerProvider.notifier).setEnabled(v),
                 activeTrackColor: c.primary),
           ],
         ),

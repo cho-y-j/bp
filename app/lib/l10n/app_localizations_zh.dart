@@ -2270,4 +2270,163 @@ class AppLocalizationsZh extends AppLocalizations {
   String qrCardDocExpiryLabel(String date) {
     return '到期 $date';
   }
+
+  @override
+  String get smsSendSms => '用短信发送';
+
+  @override
+  String get smsSharedInstead => '不支持短信，已改用分享打开';
+
+  @override
+  String get smsFailed => '无法打开短信应用';
+
+  @override
+  String get callButtonLabel => '拨打电话';
+
+  @override
+  String get callFailed => '无法拨打电话';
+
+  @override
+  String smsConfBodyNamed(String name, String site, String link) {
+    return '$name，请签署 $site 的作业确认书：$link';
+  }
+
+  @override
+  String smsConfBodyPlain(String site, String link) {
+    return '请签署 $site 的作业确认书：$link';
+  }
+
+  @override
+  String smsCardShareBody(String link) {
+    return '给您发送名片：$link';
+  }
+
+  @override
+  String smsDocBundleBody(String link) {
+    return '给您发送证件：$link';
+  }
+
+  @override
+  String get smsRecipientTitle => '收件人';
+
+  @override
+  String get smsRecipientHint => '输入电话号码';
+
+  @override
+  String get smsPickConnection => '从联系人中选择';
+
+  @override
+  String get smsOpenCompose => '打开短信编辑窗口';
+
+  @override
+  String get quickSendMenuTitle => '快速发送';
+
+  @override
+  String get quickSendMenuSub => '一键用短信发送名片或证件';
+
+  @override
+  String get quickSendTitle => '快速发送';
+
+  @override
+  String get quickSendAddTemplate => '添加模板';
+
+  @override
+  String get quickSendPickTemplate => '请选择要发送的模板';
+
+  @override
+  String get quickSendBuiltinSection => '默认模板';
+
+  @override
+  String get quickSendCustomSection => '我的模板';
+
+  @override
+  String quickSendNoDoc(String type) {
+    return '没有‘$type’证件。请先在证件夹中登记';
+  }
+
+  @override
+  String get quickSendAttachImage => '以图片附加';
+
+  @override
+  String get quickSendAttachImageSub => '直接附加证件图片，而不是链接';
+
+  @override
+  String get tplCardTitle => '名片';
+
+  @override
+  String tplCardBody(String name, String me, String link) {
+    return '$name您好，$me 给您发送名片：$link';
+  }
+
+  @override
+  String get tplBizTitle => '营业执照';
+
+  @override
+  String tplBizBody(String name, String me, String link) {
+    return '$name，$me 给您发送营业执照：$link';
+  }
+
+  @override
+  String get tplBankTitle => '存折复印件';
+
+  @override
+  String tplBankBody(String name, String me, String link) {
+    return '$name，$me 给您发送存折复印件：$link';
+  }
+
+  @override
+  String get tplEditorTitle => '添加模板';
+
+  @override
+  String get tplFieldTitle => '标题';
+
+  @override
+  String get tplFieldBody => '正文';
+
+  @override
+  String get tplFieldBodyHint => '例如：您好，给您发送资料';
+
+  @override
+  String get tplVarsHelp => '可用变量';
+
+  @override
+  String get tplFieldLink => '关联';
+
+  @override
+  String get tplLinkNone => '无';
+
+  @override
+  String get tplLinkCard => '名片链接';
+
+  @override
+  String get tplLinkDoc => '证件链接';
+
+  @override
+  String get tplFieldDocType => '证件类型';
+
+  @override
+  String get tplDocTypeHint => '例如：营业执照、存折复印件';
+
+  @override
+  String get tplSaveTemplate => '保存模板';
+
+  @override
+  String get tplNeedTitleBody => '请输入标题和正文';
+
+  @override
+  String postCallTitle(String name) {
+    return '刚才和 $name 通话了吗？';
+  }
+
+  @override
+  String get postCallSendCard => '发送名片';
+
+  @override
+  String get postCallQuickSend => '快速发送';
+
+  @override
+  String get postCallSettingTitle => '通话后发送建议';
+
+  @override
+  String get postCallSettingSub => '从应用拨打电话后返回时，建议发送名片或快速发送';
 }

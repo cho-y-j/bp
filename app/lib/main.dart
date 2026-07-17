@@ -3,8 +3,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'l10n/app_localizations.dart';
 import 'core/app_lock.dart';
+import 'core/call_log.dart';
 import 'features/auth/lock_screen.dart';
 import 'providers/locale.dart';
 import 'theme/app_theme.dart';
@@ -17,8 +19,20 @@ Future<void> main() async {
   // 앱 잠금 초기값을 미리 읽어 콜드 스타트 시점부터 잠금 게이트가 동작하게 한다.
   final prefs = await SharedPreferences.getInstance();
   final lockEnabled = prefs.getBool(appLockPrefKey) ?? false;
+  // 통화 후 제안: 설정(기본 ON) + 최근 기록한 통화(앱 재시작 후 10분 내면 제안).
+  final postCallEnabled =
+      (prefs.getString(CallLogController.prefEnabledKey) ?? '1') != '0';
+  RecordedCall? lastCall;
+  final rawCall = prefs.getString(CallLogController.prefLastCallKey);
+  if (rawCall != null && rawCall.isNotEmpty) {
+    try {
+      lastCall = RecordedCall.fromJson(jsonDecode(rawCall) as Map);
+    } catch (_) {}
+  }
   runApp(ProviderScopeApp(overrides: [
     appLockInitialEnabledProvider.overrideWithValue(lockEnabled),
+    callLogInitialEnabledProvider.overrideWithValue(postCallEnabled),
+    callLogInitialLastCallProvider.overrideWithValue(lastCall),
   ]));
 }
 

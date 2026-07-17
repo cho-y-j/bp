@@ -2336,4 +2336,166 @@ class AppLocalizationsRu extends AppLocalizations {
   String qrCardDocExpiryLabel(String date) {
     return 'Истекает $date';
   }
+
+  @override
+  String get smsSendSms => 'Отправить SMS';
+
+  @override
+  String get smsSharedInstead => 'SMS не поддерживается, открыли «Поделиться»';
+
+  @override
+  String get smsFailed => 'Не удалось открыть приложение сообщений';
+
+  @override
+  String get callButtonLabel => 'Позвонить';
+
+  @override
+  String get callFailed => 'Не удалось позвонить';
+
+  @override
+  String smsConfBodyNamed(String name, String site, String link) {
+    return '$name, подпишите акт выполненных работ по $site: $link';
+  }
+
+  @override
+  String smsConfBodyPlain(String site, String link) {
+    return 'Подпишите акт выполненных работ по $site: $link';
+  }
+
+  @override
+  String smsCardShareBody(String link) {
+    return 'Отправляю визитку: $link';
+  }
+
+  @override
+  String smsDocBundleBody(String link) {
+    return 'Отправляю документы: $link';
+  }
+
+  @override
+  String get smsRecipientTitle => 'Получатель';
+
+  @override
+  String get smsRecipientHint => 'Введите номер телефона';
+
+  @override
+  String get smsPickConnection => 'Выбрать из контактов';
+
+  @override
+  String get smsOpenCompose => 'Открыть окно сообщения';
+
+  @override
+  String get quickSendMenuTitle => 'Быстрая отправка';
+
+  @override
+  String get quickSendMenuSub =>
+      'Отправляйте визитку или документы одним касанием';
+
+  @override
+  String get quickSendTitle => 'Быстрая отправка';
+
+  @override
+  String get quickSendAddTemplate => 'Добавить шаблон';
+
+  @override
+  String get quickSendPickTemplate => 'Выберите шаблон для отправки';
+
+  @override
+  String get quickSendBuiltinSection => 'Стандартные шаблоны';
+
+  @override
+  String get quickSendCustomSection => 'Мои шаблоны';
+
+  @override
+  String quickSendNoDoc(String type) {
+    return 'Нет документа «$type». Сначала добавьте его в кошелёк документов';
+  }
+
+  @override
+  String get quickSendAttachImage => 'Прикрепить как изображение';
+
+  @override
+  String get quickSendAttachImageSub =>
+      'Прикрепить изображение документа вместо ссылки';
+
+  @override
+  String get tplCardTitle => 'Визитка';
+
+  @override
+  String tplCardBody(String name, String me, String link) {
+    return 'Здравствуйте, $name! $me отправляет визитку: $link';
+  }
+
+  @override
+  String get tplBizTitle => 'Свидетельство о регистрации';
+
+  @override
+  String tplBizBody(String name, String me, String link) {
+    return '$name, $me отправляет свидетельство о регистрации: $link';
+  }
+
+  @override
+  String get tplBankTitle => 'Копия счёта';
+
+  @override
+  String tplBankBody(String name, String me, String link) {
+    return '$name, $me отправляет копию банковской книжки: $link';
+  }
+
+  @override
+  String get tplEditorTitle => 'Добавить шаблон';
+
+  @override
+  String get tplFieldTitle => 'Заголовок';
+
+  @override
+  String get tplFieldBody => 'Текст';
+
+  @override
+  String get tplFieldBodyHint => 'напр.: Здравствуйте, отправляю материалы';
+
+  @override
+  String get tplVarsHelp => 'Доступные переменные';
+
+  @override
+  String get tplFieldLink => 'Вложение';
+
+  @override
+  String get tplLinkNone => 'Нет';
+
+  @override
+  String get tplLinkCard => 'Ссылка на визитку';
+
+  @override
+  String get tplLinkDoc => 'Ссылка на документ';
+
+  @override
+  String get tplFieldDocType => 'Тип документа';
+
+  @override
+  String get tplDocTypeHint => 'напр.: свидетельство, копия счёта';
+
+  @override
+  String get tplSaveTemplate => 'Сохранить шаблон';
+
+  @override
+  String get tplNeedTitleBody => 'Введите заголовок и текст';
+
+  @override
+  String postCallTitle(String name) {
+    return 'Только что говорили с $name?';
+  }
+
+  @override
+  String get postCallSendCard => 'Отправить визитку';
+
+  @override
+  String get postCallQuickSend => 'Быстрая отправка';
+
+  @override
+  String get postCallSettingTitle => 'Предлагать отправку после звонка';
+
+  @override
+  String get postCallSettingSub =>
+      'Когда вы вернётесь после звонка из приложения, предложим отправить визитку или быструю отправку';
 }

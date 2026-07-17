@@ -7,6 +7,7 @@ import '../../models/models.dart';
 import '../../providers/auth.dart';
 import '../../providers/data.dart';
 import '../../widgets/common.dart';
+import '../sms/sms_share.dart';
 import 'share_helper.dart';
 
 final _confDetailProvider =
@@ -45,6 +46,35 @@ class _Body extends ConsumerStatefulWidget {
 
 class _BodyState extends ConsumerState<_Body> {
   bool _sending = false;
+
+  /// 문자로 보내기 — 수기 상대 전화 자동 수신인 + 서명 부탁 본문 프리필.
+  Future<void> _sendSms() async {
+    final l = context.l;
+    final conf = widget.conf;
+    final url = confirmationUrl(conf.shareToken);
+    final phone = extractPhone(conf.contact);
+    final name = (conf.contact != null &&
+            conf.contact!.trim().isNotEmpty &&
+            phone == null)
+        ? conf.contact!.trim()
+        : null;
+    final body = name != null
+        ? l.smsConfBodyNamed(name, conf.siteName, url)
+        : l.smsConfBodyPlain(conf.siteName, url);
+    await composeSms(
+      context,
+      ref,
+      recipients: phone != null ? [phone] : const [],
+      body: body,
+    );
+  }
+
+  Future<void> _call() async {
+    final phone = extractPhone(widget.conf.contact);
+    if (phone == null) return;
+    await launchCallAndRecord(context, ref,
+        name: widget.conf.companyName, phone: phone);
+  }
 
   Future<void> _send() async {
     setState(() => _sending = true);
@@ -202,6 +232,45 @@ class _BodyState extends ConsumerState<_Body> {
                   icon: Icons.send_rounded,
                   loading: _sending,
                   onPressed: _send,
+                ),
+                const SizedBox(height: 8),
+                // 카톡 공유(재전송=기존) 옆에 문자로 보내기 / 전화 걸기.
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _sendSms,
+                        icon: const Icon(Icons.sms_outlined, size: 18),
+                        label: Text(l.smsSendSms,
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w700)),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(46),
+                          foregroundColor: c.accentText,
+                          side: BorderSide(color: c.border),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(11)),
+                        ),
+                      ),
+                    ),
+                    if (extractPhone(conf.contact) != null) ...[
+                      const SizedBox(width: 8),
+                      OutlinedButton.icon(
+                        onPressed: _call,
+                        icon: const Icon(Icons.call_rounded, size: 18),
+                        label: Text(l.callButtonLabel,
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w700)),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(46),
+                          foregroundColor: c.ink2,
+                          side: BorderSide(color: c.border),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(11)),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Text(

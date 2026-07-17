@@ -2274,4 +2274,163 @@ class AppLocalizationsKo extends AppLocalizations {
   String qrCardDocExpiryLabel(String date) {
     return '만료 $date';
   }
+
+  @override
+  String get smsSendSms => '문자로 보내기';
+
+  @override
+  String get smsSharedInstead => '문자를 지원하지 않아 공유로 열었어요';
+
+  @override
+  String get smsFailed => '문자 앱을 열지 못했어요';
+
+  @override
+  String get callButtonLabel => '전화 걸기';
+
+  @override
+  String get callFailed => '전화를 걸지 못했어요';
+
+  @override
+  String smsConfBodyNamed(String name, String site, String link) {
+    return '$name님, $site 작업확인서 서명 부탁드립니다: $link';
+  }
+
+  @override
+  String smsConfBodyPlain(String site, String link) {
+    return '$site 작업확인서 서명 부탁드립니다: $link';
+  }
+
+  @override
+  String smsCardShareBody(String link) {
+    return '명함을 보내드려요: $link';
+  }
+
+  @override
+  String smsDocBundleBody(String link) {
+    return '서류를 보내드려요: $link';
+  }
+
+  @override
+  String get smsRecipientTitle => '받는 사람';
+
+  @override
+  String get smsRecipientHint => '전화번호 입력';
+
+  @override
+  String get smsPickConnection => '연결 상대에서 선택';
+
+  @override
+  String get smsOpenCompose => '문자 작성창 열기';
+
+  @override
+  String get quickSendMenuTitle => '빠른 보내기';
+
+  @override
+  String get quickSendMenuSub => '명함·서류를 문자로 바로 전송';
+
+  @override
+  String get quickSendTitle => '빠른 보내기';
+
+  @override
+  String get quickSendAddTemplate => '템플릿 추가';
+
+  @override
+  String get quickSendPickTemplate => '보낼 템플릿을 선택하세요';
+
+  @override
+  String get quickSendBuiltinSection => '기본 템플릿';
+
+  @override
+  String get quickSendCustomSection => '내 템플릿';
+
+  @override
+  String quickSendNoDoc(String type) {
+    return '‘$type’ 서류가 없어요. 서류 지갑에 먼저 등록하세요';
+  }
+
+  @override
+  String get quickSendAttachImage => '이미지로 첨부';
+
+  @override
+  String get quickSendAttachImageSub => '링크 대신 서류 이미지를 직접 첨부해요';
+
+  @override
+  String get tplCardTitle => '명함';
+
+  @override
+  String tplCardBody(String name, String me, String link) {
+    return '$name님, 안녕하세요. $me 명함을 보내드려요: $link';
+  }
+
+  @override
+  String get tplBizTitle => '사업자등록증';
+
+  @override
+  String tplBizBody(String name, String me, String link) {
+    return '$name님, $me 사업자등록증을 보내드려요: $link';
+  }
+
+  @override
+  String get tplBankTitle => '통장사본';
+
+  @override
+  String tplBankBody(String name, String me, String link) {
+    return '$name님, $me 통장사본을 보내드려요: $link';
+  }
+
+  @override
+  String get tplEditorTitle => '템플릿 추가';
+
+  @override
+  String get tplFieldTitle => '제목';
+
+  @override
+  String get tplFieldBody => '본문';
+
+  @override
+  String get tplFieldBodyHint => '예: 안녕하세요, 자료 보내드립니다';
+
+  @override
+  String get tplVarsHelp => '사용 가능한 변수';
+
+  @override
+  String get tplFieldLink => '연결';
+
+  @override
+  String get tplLinkNone => '없음';
+
+  @override
+  String get tplLinkCard => '명함 링크';
+
+  @override
+  String get tplLinkDoc => '서류 링크';
+
+  @override
+  String get tplFieldDocType => '서류 유형';
+
+  @override
+  String get tplDocTypeHint => '예: 사업자등록증, 통장사본';
+
+  @override
+  String get tplSaveTemplate => '템플릿 저장';
+
+  @override
+  String get tplNeedTitleBody => '제목과 본문을 입력하세요';
+
+  @override
+  String postCallTitle(String name) {
+    return '방금 $name님과 통화하셨나요?';
+  }
+
+  @override
+  String get postCallSendCard => '명함 보내기';
+
+  @override
+  String get postCallQuickSend => '빠른 보내기';
+
+  @override
+  String get postCallSettingTitle => '통화 후 보내기 제안';
+
+  @override
+  String get postCallSettingSub => '앱에서 전화한 뒤 돌아오면 명함·빠른 보내기를 제안해요';
 }

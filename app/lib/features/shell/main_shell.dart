@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_colors.dart';
+import '../../core/call_log.dart';
 import '../../core/push.dart';
 import '../../providers/drafts.dart';
 import '../../l10n/l10n_ext.dart';
@@ -9,6 +10,7 @@ import '../calendar/calendar_screen.dart';
 import '../ledger/ledger_screen.dart';
 import '../more/more_screen.dart';
 import '../confirmation/confirmation_form_screen.dart';
+import '../../widgets/post_call_card.dart';
 
 /// 탭 인덱스 (다른 화면에서 탭 전환 시 사용).
 final shellTabProvider = StateProvider<int>((ref) => 0);
@@ -59,8 +61,18 @@ class _MainShellState extends ConsumerState<MainShell> {
             content: Text(l.navDraftsFailed(ev.failed))));
       }
     });
+    // 통화 후 제안 카드 표시 여부(없으면 상단 여백을 만들지 않는다).
+    final hasPostCall =
+        ref.watch(callLogControllerProvider).suggestion != null;
     return Scaffold(
-      body: IndexedStack(index: index, children: _tabs),
+      body: Column(
+        children: [
+          // 통화 후 제안 카드 — 모든 탭 상단(현재 화면 상단)에 노출.
+          if (hasPostCall)
+            SafeArea(bottom: false, child: const PostCallCard()),
+          Expanded(child: IndexedStack(index: index, children: _tabs)),
+        ],
+      ),
       bottomNavigationBar: _WonTabBar(
         index: index,
         onTap: (i) => ref.read(shellTabProvider.notifier).state = i,

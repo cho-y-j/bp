@@ -2330,4 +2330,166 @@ class AppLocalizationsVi extends AppLocalizations {
   String qrCardDocExpiryLabel(String date) {
     return 'Hết hạn $date';
   }
+
+  @override
+  String get smsSendSms => 'Gửi bằng tin nhắn';
+
+  @override
+  String get smsSharedInstead => 'Không hỗ trợ tin nhắn, đã mở Chia sẻ';
+
+  @override
+  String get smsFailed => 'Không mở được ứng dụng tin nhắn';
+
+  @override
+  String get callButtonLabel => 'Gọi điện';
+
+  @override
+  String get callFailed => 'Không gọi được';
+
+  @override
+  String smsConfBodyNamed(String name, String site, String link) {
+    return '$name ơi, vui lòng ký xác nhận công việc $site: $link';
+  }
+
+  @override
+  String smsConfBodyPlain(String site, String link) {
+    return 'Vui lòng ký xác nhận công việc $site: $link';
+  }
+
+  @override
+  String smsCardShareBody(String link) {
+    return 'Gửi bạn danh thiếp: $link';
+  }
+
+  @override
+  String smsDocBundleBody(String link) {
+    return 'Gửi bạn giấy tờ: $link';
+  }
+
+  @override
+  String get smsRecipientTitle => 'Người nhận';
+
+  @override
+  String get smsRecipientHint => 'Nhập số điện thoại';
+
+  @override
+  String get smsPickConnection => 'Chọn từ danh bạ';
+
+  @override
+  String get smsOpenCompose => 'Mở cửa sổ soạn tin';
+
+  @override
+  String get quickSendMenuTitle => 'Gửi nhanh';
+
+  @override
+  String get quickSendMenuSub =>
+      'Gửi danh thiếp·giấy tờ qua tin nhắn chỉ một chạm';
+
+  @override
+  String get quickSendTitle => 'Gửi nhanh';
+
+  @override
+  String get quickSendAddTemplate => 'Thêm mẫu';
+
+  @override
+  String get quickSendPickTemplate => 'Chọn mẫu để gửi';
+
+  @override
+  String get quickSendBuiltinSection => 'Mẫu mặc định';
+
+  @override
+  String get quickSendCustomSection => 'Mẫu của tôi';
+
+  @override
+  String quickSendNoDoc(String type) {
+    return 'Không có giấy tờ \'$type\'. Hãy thêm vào ví giấy tờ trước';
+  }
+
+  @override
+  String get quickSendAttachImage => 'Đính kèm dạng ảnh';
+
+  @override
+  String get quickSendAttachImageSub =>
+      'Đính kèm ảnh giấy tờ trực tiếp thay vì liên kết';
+
+  @override
+  String get tplCardTitle => 'Danh thiếp';
+
+  @override
+  String tplCardBody(String name, String me, String link) {
+    return 'Chào $name, $me gửi bạn danh thiếp: $link';
+  }
+
+  @override
+  String get tplBizTitle => 'Giấy phép kinh doanh';
+
+  @override
+  String tplBizBody(String name, String me, String link) {
+    return '$name ơi, $me gửi giấy phép kinh doanh: $link';
+  }
+
+  @override
+  String get tplBankTitle => 'Bản sao sổ ngân hàng';
+
+  @override
+  String tplBankBody(String name, String me, String link) {
+    return '$name ơi, $me gửi bản sao sổ ngân hàng: $link';
+  }
+
+  @override
+  String get tplEditorTitle => 'Thêm mẫu';
+
+  @override
+  String get tplFieldTitle => 'Tiêu đề';
+
+  @override
+  String get tplFieldBody => 'Nội dung';
+
+  @override
+  String get tplFieldBodyHint => 'vd: Xin chào, gửi bạn tài liệu';
+
+  @override
+  String get tplVarsHelp => 'Biến có thể dùng';
+
+  @override
+  String get tplFieldLink => 'Đính kèm';
+
+  @override
+  String get tplLinkNone => 'Không';
+
+  @override
+  String get tplLinkCard => 'Liên kết danh thiếp';
+
+  @override
+  String get tplLinkDoc => 'Liên kết giấy tờ';
+
+  @override
+  String get tplFieldDocType => 'Loại giấy tờ';
+
+  @override
+  String get tplDocTypeHint => 'vd: Giấy phép kinh doanh, bản sao sổ ngân hàng';
+
+  @override
+  String get tplSaveTemplate => 'Lưu mẫu';
+
+  @override
+  String get tplNeedTitleBody => 'Nhập tiêu đề và nội dung';
+
+  @override
+  String postCallTitle(String name) {
+    return 'Bạn vừa gọi cho $name phải không?';
+  }
+
+  @override
+  String get postCallSendCard => 'Gửi danh thiếp';
+
+  @override
+  String get postCallQuickSend => 'Gửi nhanh';
+
+  @override
+  String get postCallSettingTitle => 'Gợi ý gửi sau cuộc gọi';
+
+  @override
+  String get postCallSettingSub =>
+      'Khi quay lại sau khi gọi từ ứng dụng, chúng tôi gợi ý gửi danh thiếp hoặc gửi nhanh';
 }

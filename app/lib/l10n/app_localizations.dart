@@ -4245,6 +4245,288 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'만료 {date}'**
   String qrCardDocExpiryLabel(String date);
+
+  /// No description provided for @smsSendSms.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자로 보내기'**
+  String get smsSendSms;
+
+  /// No description provided for @smsSharedInstead.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자를 지원하지 않아 공유로 열었어요'**
+  String get smsSharedInstead;
+
+  /// No description provided for @smsFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자 앱을 열지 못했어요'**
+  String get smsFailed;
+
+  /// No description provided for @callButtonLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화 걸기'**
+  String get callButtonLabel;
+
+  /// No description provided for @callFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화를 걸지 못했어요'**
+  String get callFailed;
+
+  /// No description provided for @smsConfBodyNamed.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name}님, {site} 작업확인서 서명 부탁드립니다: {link}'**
+  String smsConfBodyNamed(String name, String site, String link);
+
+  /// No description provided for @smsConfBodyPlain.
+  ///
+  /// In ko, this message translates to:
+  /// **'{site} 작업확인서 서명 부탁드립니다: {link}'**
+  String smsConfBodyPlain(String site, String link);
+
+  /// No description provided for @smsCardShareBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'명함을 보내드려요: {link}'**
+  String smsCardShareBody(String link);
+
+  /// No description provided for @smsDocBundleBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'서류를 보내드려요: {link}'**
+  String smsDocBundleBody(String link);
+
+  /// No description provided for @smsRecipientTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'받는 사람'**
+  String get smsRecipientTitle;
+
+  /// No description provided for @smsRecipientHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화번호 입력'**
+  String get smsRecipientHint;
+
+  /// No description provided for @smsPickConnection.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결 상대에서 선택'**
+  String get smsPickConnection;
+
+  /// No description provided for @smsOpenCompose.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자 작성창 열기'**
+  String get smsOpenCompose;
+
+  /// No description provided for @quickSendMenuTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'빠른 보내기'**
+  String get quickSendMenuTitle;
+
+  /// No description provided for @quickSendMenuSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'명함·서류를 문자로 바로 전송'**
+  String get quickSendMenuSub;
+
+  /// No description provided for @quickSendTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'빠른 보내기'**
+  String get quickSendTitle;
+
+  /// No description provided for @quickSendAddTemplate.
+  ///
+  /// In ko, this message translates to:
+  /// **'템플릿 추가'**
+  String get quickSendAddTemplate;
+
+  /// No description provided for @quickSendPickTemplate.
+  ///
+  /// In ko, this message translates to:
+  /// **'보낼 템플릿을 선택하세요'**
+  String get quickSendPickTemplate;
+
+  /// No description provided for @quickSendBuiltinSection.
+  ///
+  /// In ko, this message translates to:
+  /// **'기본 템플릿'**
+  String get quickSendBuiltinSection;
+
+  /// No description provided for @quickSendCustomSection.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 템플릿'**
+  String get quickSendCustomSection;
+
+  /// No description provided for @quickSendNoDoc.
+  ///
+  /// In ko, this message translates to:
+  /// **'‘{type}’ 서류가 없어요. 서류 지갑에 먼저 등록하세요'**
+  String quickSendNoDoc(String type);
+
+  /// No description provided for @quickSendAttachImage.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미지로 첨부'**
+  String get quickSendAttachImage;
+
+  /// No description provided for @quickSendAttachImageSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'링크 대신 서류 이미지를 직접 첨부해요'**
+  String get quickSendAttachImageSub;
+
+  /// No description provided for @tplCardTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'명함'**
+  String get tplCardTitle;
+
+  /// No description provided for @tplCardBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name}님, 안녕하세요. {me} 명함을 보내드려요: {link}'**
+  String tplCardBody(String name, String me, String link);
+
+  /// No description provided for @tplBizTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자등록증'**
+  String get tplBizTitle;
+
+  /// No description provided for @tplBizBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name}님, {me} 사업자등록증을 보내드려요: {link}'**
+  String tplBizBody(String name, String me, String link);
+
+  /// No description provided for @tplBankTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'통장사본'**
+  String get tplBankTitle;
+
+  /// No description provided for @tplBankBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name}님, {me} 통장사본을 보내드려요: {link}'**
+  String tplBankBody(String name, String me, String link);
+
+  /// No description provided for @tplEditorTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'템플릿 추가'**
+  String get tplEditorTitle;
+
+  /// No description provided for @tplFieldTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목'**
+  String get tplFieldTitle;
+
+  /// No description provided for @tplFieldBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'본문'**
+  String get tplFieldBody;
+
+  /// No description provided for @tplFieldBodyHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 안녕하세요, 자료 보내드립니다'**
+  String get tplFieldBodyHint;
+
+  /// No description provided for @tplVarsHelp.
+  ///
+  /// In ko, this message translates to:
+  /// **'사용 가능한 변수'**
+  String get tplVarsHelp;
+
+  /// No description provided for @tplFieldLink.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결'**
+  String get tplFieldLink;
+
+  /// No description provided for @tplLinkNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'없음'**
+  String get tplLinkNone;
+
+  /// No description provided for @tplLinkCard.
+  ///
+  /// In ko, this message translates to:
+  /// **'명함 링크'**
+  String get tplLinkCard;
+
+  /// No description provided for @tplLinkDoc.
+  ///
+  /// In ko, this message translates to:
+  /// **'서류 링크'**
+  String get tplLinkDoc;
+
+  /// No description provided for @tplFieldDocType.
+  ///
+  /// In ko, this message translates to:
+  /// **'서류 유형'**
+  String get tplFieldDocType;
+
+  /// No description provided for @tplDocTypeHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'예: 사업자등록증, 통장사본'**
+  String get tplDocTypeHint;
+
+  /// No description provided for @tplSaveTemplate.
+  ///
+  /// In ko, this message translates to:
+  /// **'템플릿 저장'**
+  String get tplSaveTemplate;
+
+  /// No description provided for @tplNeedTitleBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'제목과 본문을 입력하세요'**
+  String get tplNeedTitleBody;
+
+  /// No description provided for @postCallTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'방금 {name}님과 통화하셨나요?'**
+  String postCallTitle(String name);
+
+  /// No description provided for @postCallSendCard.
+  ///
+  /// In ko, this message translates to:
+  /// **'명함 보내기'**
+  String get postCallSendCard;
+
+  /// No description provided for @postCallQuickSend.
+  ///
+  /// In ko, this message translates to:
+  /// **'빠른 보내기'**
+  String get postCallQuickSend;
+
+  /// No description provided for @postCallSettingTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'통화 후 보내기 제안'**
+  String get postCallSettingTitle;
+
+  /// No description provided for @postCallSettingSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱에서 전화한 뒤 돌아오면 명함·빠른 보내기를 제안해요'**
+  String get postCallSettingSub;
 }
 
 class _AppLocalizationsDelegate
