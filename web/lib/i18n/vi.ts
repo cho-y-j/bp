@@ -26,6 +26,7 @@ const vi: Record<MessageKey, string> = {
   paperMemo: 'Ghi chú',
   paperSignHead: 'Chữ ký người giao việc',
   paperSignedBy: '{name} đã ký',
+  paperSignConfirmed: 'Đã ký',
 
   paperTeam: 'Danh sách tổ',
   paperTeamName: 'Họ tên',
@@ -109,6 +110,7 @@ const vi: Record<MessageKey, string> = {
   shareValidUntil: 'Xem được đến {date}',
   shareExpiry: 'Hết hạn {date}',
   shareNoExpiry: 'Không có hạn',
+  docExpired: 'Đã hết hạn',
   shareMasked: 'Bản che thông tin',
   shareView: 'Xem',
   shareDownload: 'Tải về',

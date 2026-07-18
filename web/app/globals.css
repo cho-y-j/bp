@@ -26,6 +26,7 @@
   --shadow: 0 1px 3px rgba(26, 34, 51, 0.1);
   --shadow-lift: 0 6px 20px rgba(26, 34, 51, 0.14);
   --field-bg: #faf9f6;
+  --seal: #c0392b; /* 인영(도장) 붉은 인주색 */
   color-scheme: light;
 }
 
@@ -53,6 +54,7 @@
     --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
     --shadow-lift: 0 8px 24px rgba(0, 0, 0, 0.5);
     --field-bg: #212c40;
+    --seal: #f0674f; /* 다크 배경 위 인영 */
     color-scheme: dark;
   }
 }
@@ -376,6 +378,69 @@ button {
   font-weight: 700;
 }
 
+/* 서명란 — 도장(인영) 박스. 서명의 시각적 클라이맥스. */
+.sign-plate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 12px;
+  background: var(--surface-2);
+  padding: 16px 18px;
+  position: relative;
+}
+.sign-plate-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.sign-plate-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.sign-plate-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--deposited-badge);
+}
+.seal {
+  position: relative;
+  flex: 0 0 auto;
+  width: 66px;
+  height: 66px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2.5px solid var(--seal);
+  color: var(--seal);
+  background: color-mix(in srgb, var(--seal) 6%, transparent);
+  transform: rotate(-7deg);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--seal) 25%, transparent);
+}
+.seal::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--seal) 55%, transparent);
+}
+.seal-name {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1.05;
+  text-align: center;
+  padding: 0 2px;
+}
+
 /* 캔버스 서명 패드 */
 .sign-canvas-wrap {
   position: relative;
@@ -418,6 +483,94 @@ button {
   font-size: 14px;
   font-weight: 600;
   pointer-events: none;
+}
+
+/* ============================================================
+   QR 명함(/p) — 종이 명함 메타포
+   ============================================================ */
+.namecard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.namecard-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--primary) 16%, var(--surface)),
+    var(--surface)
+  );
+  border-bottom: 1px solid var(--border);
+}
+.namecard-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.namecard-kind {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+}
+.namecard-body {
+  padding: 24px 22px 20px;
+}
+.namecard-name {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0;
+  color: var(--ink);
+}
+.namecard-role {
+  margin: 10px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent-text);
+}
+.namecard-intro {
+  margin: 14px 0 0;
+  font-size: 16px;
+  color: var(--ink-2);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+.namecard-verify {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: color-mix(in srgb, var(--deposited) 9%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--deposited) 30%, transparent);
+  color: var(--deposited-badge);
+}
+.namecard-verify-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.namecard-verify-txt b {
+  font-size: 16px;
+  font-weight: 800;
+}
+.namecard-verify-txt span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
 }
 
 /* 가입 유도 배너 */
@@ -533,6 +686,71 @@ button {
 }
 
 /* ============================================================
+   루트 랜딩 — 한 문장 + 큰 CTA 1개 (죽은 공간 제거·수직 중앙)
+   ============================================================ */
+.landing {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.landing-hero {
+  width: 100%;
+  max-width: 560px;
+}
+.landing-title {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 16px 0 14px;
+  line-height: 1.25;
+}
+.landing-sub {
+  font-size: 18px;
+  color: var(--ink-2);
+  line-height: 1.55;
+  margin: 0 0 30px;
+}
+.landing-cta {
+  max-width: 340px;
+}
+.landing-note {
+  margin: 18px 0 0;
+  font-size: 14px;
+  color: var(--ink-3);
+  line-height: 1.55;
+}
+.landing-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.landing-feature {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 14px;
+}
+.landing-feature svg {
+  color: var(--accent-text);
+}
+@media (max-width: 480px) {
+  .landing-title {
+    font-size: 28px;
+  }
+}
+
+/* ============================================================
    사업장 웹 레이아웃 (데스크톱 겸용)
    ============================================================ */
 .biz-shell {
@@ -576,7 +794,8 @@ button {
   flex: 1 1 auto;
   min-width: 0;
   padding: 28px 32px 60px;
-  max-width: 1000px;
+  /* 880px 로 조여 행이 과도하게 늘어나지 않도록(이름↔금액 시선 이동 단축). */
+  max-width: 880px;
 }
 .biz-topbar {
   display: none;
@@ -635,6 +854,10 @@ button {
 }
 .row-item:last-child {
   border-bottom: 0;
+}
+button.row-item:hover,
+a.row-item:hover {
+  background: var(--surface-2) !important;
 }
 .avatar {
   width: 46px;
@@ -870,6 +1093,9 @@ button {
 }
 .data-table tbody tr:last-child td {
   border-bottom: 0;
+}
+.data-table tbody tr:hover {
+  background: var(--surface-2);
 }
 .data-table thead th {
   color: var(--ink-3);

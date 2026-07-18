@@ -26,6 +26,7 @@ const ru: Record<MessageKey, string> = {
   paperMemo: 'Примечание',
   paperSignHead: 'Подпись заказчика',
   paperSignedBy: '{name} подписал(а)',
+  paperSignConfirmed: 'Подписано',
 
   paperTeam: 'Список бригады',
   paperTeamName: 'Имя',
@@ -109,6 +110,7 @@ const ru: Record<MessageKey, string> = {
   shareValidUntil: 'Доступно до {date}',
   shareExpiry: 'Истекает {date}',
   shareNoExpiry: 'Без срока',
+  docExpired: 'Истёк',
   shareMasked: 'С маскировкой',
   shareView: 'Открыть',
   shareDownload: 'Скачать',

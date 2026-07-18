@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, ApiError, absoluteUrl } from '@/lib/api';
-import { dateLabel, ddayBadge } from '@/lib/format';
+import { dateLabel, expiryBadge } from '@/lib/format';
 import {
   Folder,
   Upload,
@@ -196,7 +196,7 @@ export default function DocumentsPage() {
               <div className="card">
                 {docs.map((d) => {
                   const on = selected.has(d.id);
-                  const badge = d.dday !== null ? ddayBadge(d.dday) : null;
+                  const badge = expiryBadge(d.dday);
                   return (
                     <div
                       key={d.id}

@@ -6,19 +6,15 @@ export function won(n: number | null | undefined): string {
 }
 
 /**
- * 언어별 천단위 그룹핑만 적용한 숫자 문자열(통화기호 없음).
- * ru 는 공백, ne 는 인도식(라크) 그룹핑 등 각 로케일 규칙을 따른다.
- */
-export function grouped(n: number | null | undefined, lang: Lang): string {
-  return new Intl.NumberFormat(LANG_LOCALE[lang]).format(n ?? 0);
-}
-
-/**
- * 통화 표기(원화 고정). 한국어는 "1,234원", 그 외 언어는 "₩1,234"(언어별 천단위).
- * 통화 자체는 항상 원화(KRW) — 환산하지 않는다.
+ * 통화 표기(원화 고정) — 전 언어 공통 서식.
+ * 금액의 천단위 구분은 **항상 한국식 콤마**(1,050,000)로 고정한다.
+ * 로케일별 구분자(ru 공백·ne 라크·일부 로케일 점(.))는 한국 금액을
+ * 오독(예: "₩1.050.000" → 1.05로 오해)시키므로 폐기한다.
+ * 한국어는 "1,050,000원", 그 외 언어는 "₩1,050,000".
+ * (won() 과 동일한 콤마 서식 — formatMoney 일원화)
  */
 export function money(n: number | null | undefined, lang: Lang): string {
-  const g = grouped(n, lang);
+  const g = won(n); // 항상 ko-KR 콤마
   return lang === 'ko' ? `${g}원` : `₩${g}`;
 }
 
@@ -69,11 +65,37 @@ export function monthLabel(month: string): string {
   return `${y}년 ${m}월`;
 }
 
-/** D-day 숫자 → 배지 텍스트/클래스 */
-export function ddayBadge(dday: number | null): { text: string; cls: string } {
-  if (dday === null || dday === undefined) return { text: '', cls: 'calm' };
-  if (dday < 0) return { text: `D+${-dday}`, cls: 'warn' };
-  if (dday === 0) return { text: 'D-day', cls: 'warn' };
+export interface DdayBadge {
+  text: string;
+  cls: string;
+}
+
+/**
+ * 서류 만료 배지 (앱 규칙과 통일 — app_ko.arb docExpired/walletExpiring).
+ * · 만료 지남 → "만료됨" 빨강(warn)  (D+N 부호 표기 폐기 — 40~60대 오독 방지)
+ * · 30일 이내 → "D-N" 임박(soon)
+ * · 31~90일  → "D-N" 차분(calm)
+ * · 90일 초과 → 배지 없음(null). 날짜만 표기(원거리 D-day 노이즈 제거).
+ */
+export function expiryBadge(dday: number | null | undefined): DdayBadge | null {
+  if (dday === null || dday === undefined) return null;
+  if (dday < 0) return { text: '만료됨', cls: 'warn' };
+  if (dday === 0) return { text: '오늘 만료', cls: 'warn' };
   if (dday <= 30) return { text: `D-${dday}`, cls: 'soon' };
-  return { text: `D-${dday}`, cls: 'calm' };
+  if (dday <= 90) return { text: `D-${dday}`, cls: 'calm' };
+  return null;
+}
+
+/**
+ * 수금 D-day 배지 (앱 규칙과 통일 — ddayText: collectDday/statusOverdue).
+ * · 기한 지남 → "기한 지남" 빨강(warn)  (D+N 부호 폐기)
+ * · 오늘/임박(≤30) → "수금 D-N" 임박(soon)
+ * · 그 외 → "수금 D-N" 차분(calm)
+ */
+export function collectBadge(dday: number | null | undefined): DdayBadge | null {
+  if (dday === null || dday === undefined) return null;
+  if (dday < 0) return { text: '기한 지남', cls: 'warn' };
+  if (dday === 0) return { text: '수금 D-day', cls: 'soon' };
+  if (dday <= 30) return { text: `수금 D-${dday}`, cls: 'soon' };
+  return { text: `수금 D-${dday}`, cls: 'calm' };
 }

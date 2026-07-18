@@ -26,6 +26,7 @@ const zh: Record<MessageKey, string> = {
   paperMemo: '备注',
   paperSignHead: '派工方签名',
   paperSignedBy: '{name} 已签名',
+  paperSignConfirmed: '已签名',
 
   paperTeam: '团队名单',
   paperTeamName: '姓名',
@@ -103,6 +104,7 @@ const zh: Record<MessageKey, string> = {
   shareValidUntil: '有效期至 {date}',
   shareExpiry: '到期 {date}',
   shareNoExpiry: '无到期日',
+  docExpired: '已过期',
   shareMasked: '打码版',
   shareView: '查看',
   shareDownload: '下载',

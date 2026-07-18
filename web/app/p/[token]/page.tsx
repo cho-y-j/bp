@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { apiGet, classifyLoadError } from '@/lib/api';
 import StatusScreen from '@/components/StatusScreen';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { Shield, CheckCircle, Truck } from '@/components/Icons';
 import { formatDate } from '@/lib/format';
 import { createT } from '@/lib/i18n';
 import { resolveServerLang } from '@/lib/i18n/server';
@@ -107,78 +108,44 @@ export default async function PublicProfilePage({
       <div className="lang-bar">
         <LanguageSwitcher current={lang} />
       </div>
-      <header style={{ marginBottom: 18 }}>
+      <header style={{ marginBottom: 16 }}>
         <p className="brand-kicker">
           <span className="brand-dot" />
           작업온 · {t('kickerCard')}
         </p>
       </header>
 
-      {/* 이름 + 서류 유효 배지 */}
-      <section
-        className="card"
-        style={{ padding: '26px 22px', marginBottom: 16 }}
-      >
-        <h1
-          style={{
-            fontSize: 30,
-            fontWeight: 800,
-            margin: '0 0 12px',
-            lineHeight: 1.2,
-            color: 'var(--ink)',
-          }}
-        >
-          {p.name}
-        </h1>
-
-        {p.docValidity.valid ? (
-          <span
-            className="badge done"
-            style={{ fontSize: 15, padding: '6px 12px' }}
-          >
-            {t('cardValidDocs')} ✓
+      {/* 종이 명함 — 이름·업종·소개 + 서류 유효 인증 스트립 */}
+      <section className="namecard">
+        <div className="namecard-top">
+          <span className="namecard-brand">
+            <span className="brand-dot" />
+            {t('brand')}
           </span>
-        ) : null}
-
-        {p.intro ? (
-          <p
-            style={{
-              marginTop: 16,
-              marginBottom: 0,
-              fontSize: 17,
-              color: 'var(--ink-2)',
-              lineHeight: 1.55,
-              whiteSpace: 'pre-wrap',
-            }}
-          >
-            {p.intro}
-          </p>
+          <span className="namecard-kind">{t('kickerCard')}</span>
+        </div>
+        <div className="namecard-body">
+          <h1 className="namecard-name">{p.name}</h1>
+          {p.industryTags.length > 0 ? (
+            <p className="namecard-role">{p.industryTags.join(' · ')}</p>
+          ) : null}
+          {p.intro ? <p className="namecard-intro">{p.intro}</p> : null}
+        </div>
+        {p.docValidity.valid ? (
+          <div className="namecard-verify">
+            <Shield width={22} height={22} />
+            <span className="namecard-verify-txt">
+              <b>{t('cardValidDocs')}</b>
+              <span>{t('cardValidDocsDesc')}</span>
+            </span>
+            <CheckCircle width={22} height={22} />
+          </div>
         ) : null}
       </section>
 
-      {/* 업종 */}
-      {p.industryTags.length > 0 ? (
-        <Section title={t('cardIndustryTitle')}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {p.industryTags.map((tag) => (
-              <Chip key={tag}>{tag}</Chip>
-            ))}
-          </div>
-        </Section>
-      ) : null}
-
-      {/* 서류 유효 상세(유형·개수만 — 파일/상세 비노출) */}
+      {/* 서류 유효 유형(종류·개수만 — 파일/상세 비노출) */}
       {p.docValidity.valid && p.docValidity.types.length > 0 ? (
         <Section title={t('cardValidDocs')}>
-          <p
-            style={{
-              margin: '0 0 10px',
-              fontSize: 15,
-              color: 'var(--ink-2)',
-            }}
-          >
-            {t('cardValidDocsDesc')}
-          </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {p.docValidity.types.map((type) => (
               <Chip key={type} tone="done">
@@ -194,7 +161,14 @@ export default async function PublicProfilePage({
         <Section title={t('cardEquipmentTitle')}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {p.equipments.map((eq, i) => (
-              <Chip key={`${eq.type}-${i}`}>{eq.type}</Chip>
+              <Chip key={`${eq.type}-${i}`}>
+                <Truck
+                  width={15}
+                  height={15}
+                  style={{ marginRight: 5, verticalAlign: '-2px' }}
+                />
+                {eq.type}
+              </Chip>
             ))}
           </div>
         </Section>

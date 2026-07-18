@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api, ApiError } from '@/lib/api';
-import { won, currentMonth, monthLabel, dateLabel, ddayBadge } from '@/lib/format';
+import { won, currentMonth, monthLabel, dateLabel, expiryBadge } from '@/lib/format';
 import {
   FileText,
   Folder,
@@ -182,7 +182,7 @@ export default function WorkerHome() {
       ) : (
         <div className="card">
           {expiring.map((d) => {
-            const badge = ddayBadge(d.dday);
+            const badge = expiryBadge(d.dday);
             return (
               <div key={d.id} className="row-item">
                 <span className="avatar">
@@ -204,7 +204,9 @@ export default function WorkerHome() {
                     만료 {d.expiryDate ? dateLabel(d.expiryDate) : '-'}
                   </span>
                 </span>
-                <span className={`badge ${badge.cls}`}>{badge.text}</span>
+                {badge ? (
+                  <span className={`badge ${badge.cls}`}>{badge.text}</span>
+                ) : null}
               </div>
             );
           })}

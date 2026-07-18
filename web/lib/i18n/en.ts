@@ -26,6 +26,7 @@ const en: Record<MessageKey, string> = {
   paperMemo: 'Note',
   paperSignHead: 'Requester signature',
   paperSignedBy: 'Signed by {name}',
+  paperSignConfirmed: 'Signed',
 
   paperTeam: 'Team roster',
   paperTeamName: 'Name',
@@ -107,6 +108,7 @@ const en: Record<MessageKey, string> = {
   shareValidUntil: 'Viewable until {date}',
   shareExpiry: 'Expires {date}',
   shareNoExpiry: 'No expiry',
+  docExpired: 'Expired',
   shareMasked: 'Masked copy',
   shareView: 'View',
   shareDownload: 'Download',

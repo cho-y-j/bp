@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { apiGet, classifyLoadError, absoluteUrl } from '@/lib/api';
-import { formatDate, ddayBadge } from '@/lib/format';
+import { formatDate } from '@/lib/format';
 import { FileText, Download } from '@/components/Icons';
 import StatusScreen from '@/components/StatusScreen';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -107,7 +107,16 @@ export default async function SharePage({
 
       <div style={{ display: 'grid', gap: 14, marginTop: 18 }}>
         {s.documents.map((d) => {
-          const badge = ddayBadge(d.dday);
+          // 만료 배지(앱 규칙 통일): 지남→"만료됨" 빨강, 90일 이내만 D-N, 원거리는 생략.
+          const dd = d.dday;
+          const badge =
+            dd === null || dd === undefined
+              ? null
+              : dd < 0
+                ? { text: t('docExpired'), cls: 'warn' }
+                : dd <= 90
+                  ? { text: `D-${dd}`, cls: dd <= 30 ? 'soon' : 'calm' }
+                  : null;
           const url = absoluteUrl(d.fileUrl);
           // 다운로드는 ?download=1 → 백엔드가 Content-Disposition: attachment 로 응답.
           const downloadUrl = `${url}${url.includes('?') ? '&' : '?'}download=1`;
@@ -146,7 +155,7 @@ export default async function SharePage({
                     {d.masked ? ` · ${t('shareMasked')}` : ''}
                   </div>
                 </div>
-                {d.dday !== null ? (
+                {badge ? (
                   <span className={`badge ${badge.cls} num`}>{badge.text}</span>
                 ) : null}
               </div>

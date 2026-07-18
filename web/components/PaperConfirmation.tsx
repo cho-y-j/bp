@@ -2,6 +2,14 @@ import { money, formatDate } from '@/lib/format';
 import { createT, type Lang, type MessageKey } from '@/lib/i18n';
 import { Check } from './Icons';
 
+/** 인영(도장)에 새길 텍스트. 이름이 짧으면 그대로, 길면 성(첫 2자)만. */
+function sealText(name?: string | null): string {
+  const n = (name ?? '').trim();
+  if (!n) return '확인';
+  if (n.length <= 3) return n;
+  return n.slice(0, 2);
+}
+
 /** 금액 항목 type → 번역 키. OTHER/미지의 유형은 서버 label 을 그대로 쓴다. */
 const AMOUNT_TYPE_KEY: Record<string, MessageKey> = {
   BASE: 'amtBase',
@@ -240,23 +248,24 @@ export default function PaperConfirmation({
           <div className="sign-zone">
             <div className="sign-head">
               <span className="k">{t('paperSignHead')}</span>
+              {c.signedAt ? (
+                <span className="num" style={{ fontSize: 13, color: 'var(--ink-3)', fontWeight: 600 }}>
+                  {c.signedAt}
+                </span>
+              ) : null}
             </div>
-            <div className="sign-stamp">
-              <Check width={20} height={20} />
-              <span>
-                {t('paperSignedBy', { name: c.signerName ?? '' })}
-                {c.signedAt ? (
-                  <span
-                    className="num"
-                    style={{
-                      color: 'var(--ink-3)',
-                      fontWeight: 500,
-                      marginLeft: 6,
-                    }}
-                  >
-                    {c.signedAt}
-                  </span>
-                ) : null}
+            <div className="sign-plate">
+              <div className="sign-plate-info">
+                <span className="sign-plate-name">{c.signerName ?? '-'}</span>
+                <span className="sign-plate-status">
+                  <Check width={16} height={16} />
+                  {t('paperSignConfirmed')}
+                </span>
+              </div>
+              {/* 서명자 인영(도장) — 서명 이미지 대체 시각요소. 서버가 서명
+                  이미지를 공개 API로 제공하면 여기에 실제 획을 렌더한다. */}
+              <span className="seal" aria-hidden>
+                <span className="seal-name">{sealText(c.signerName)}</span>
               </span>
             </div>
           </div>

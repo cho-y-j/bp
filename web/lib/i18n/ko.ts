@@ -31,6 +31,7 @@ const ko = {
   paperMemo: '메모',
   paperSignHead: '지시자 서명',
   paperSignedBy: '{name} 님 서명 완료',
+  paperSignConfirmed: '서명 완료',
 
   // 팀 명단 (P2a 웹 이월 — 팀 확인서 명단 표)
   paperTeam: '팀 명단',
@@ -115,6 +116,7 @@ const ko = {
   shareValidUntil: '유효기간 {date}까지 열람 가능',
   shareExpiry: '만료 {date}',
   shareNoExpiry: '만료일 없음',
+  docExpired: '만료됨',
   shareMasked: '마스킹본',
   shareView: '보기',
   shareDownload: '다운로드',

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError } from '@/lib/api';
-import { won, currentMonth, dateLabel, ddayBadge } from '@/lib/format';
+import { won, currentMonth, dateLabel, collectBadge } from '@/lib/format';
 import MonthNav from '@/components/MonthNav';
 import {
   Wallet,
@@ -162,7 +162,7 @@ export default function LedgerPage() {
       ) : (
         <div className="card">
           {companies.map((g, i) => {
-            const badge = g.dday !== null ? ddayBadge(g.dday) : null;
+            const badge = collectBadge(g.dday);
             return (
               <div key={g.businessId ?? `m${i}`} className="row-item">
                 <span className="avatar">{g.companyName.slice(0, 1)}</span>

@@ -26,6 +26,7 @@ const ne: Record<MessageKey, string> = {
   paperMemo: 'टिप्पणी',
   paperSignHead: 'काम दिनेको हस्ताक्षर',
   paperSignedBy: '{name} ले हस्ताक्षर गर्नुभयो',
+  paperSignConfirmed: 'हस्ताक्षर भयो',
 
   paperTeam: 'टोली सूची',
   paperTeamName: 'नाम',
@@ -107,6 +108,7 @@ const ne: Record<MessageKey, string> = {
   shareValidUntil: '{date} सम्म हेर्न मिल्ने',
   shareExpiry: 'म्याद {date}',
   shareNoExpiry: 'म्याद छैन',
+  docExpired: 'म्याद सकियो',
   shareMasked: 'ढाकिएको प्रति',
   shareView: 'हेर्नुहोस्',
   shareDownload: 'डाउनलोड',
