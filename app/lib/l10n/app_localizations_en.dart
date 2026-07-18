@@ -2801,5 +2801,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickSendPickContact => 'Pick from contacts';
 
   @override
+  String get partnersAdd => 'Add partner';
+
+  @override
+  String get partnerNameLabel => 'Name';
+
+  @override
+  String get partnerPhoneLabel => 'Phone';
+
+  @override
+  String get partnerNameRequired => 'Please enter a name';
+
+  @override
+  String get partnerAdded => 'Partner added';
+
+  @override
+  String get partnerDuplicate => 'This partner is already registered';
+
+  @override
+  String get partnerNoRecord => 'No records';
+
+  @override
+  String get partnerSavePromptTitle => 'Save this number as a partner?';
+
+  @override
+  String get partnerSavePromptLater => 'Later';
+
+  @override
   String get confPickPartner => 'Pick from partners';
 }

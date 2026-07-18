@@ -2798,5 +2798,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String get quickSendPickContact => 'Выбрать из контактов';
 
   @override
+  String get partnersAdd => 'Добавить контрагента';
+
+  @override
+  String get partnerNameLabel => 'Название';
+
+  @override
+  String get partnerPhoneLabel => 'Телефон';
+
+  @override
+  String get partnerNameRequired => 'Введите название';
+
+  @override
+  String get partnerAdded => 'Контрагент добавлен';
+
+  @override
+  String get partnerDuplicate => 'Такой контрагент уже есть';
+
+  @override
+  String get partnerNoRecord => 'Нет записей';
+
+  @override
+  String get partnerSavePromptTitle => 'Сохранить этот номер как контрагента?';
+
+  @override
+  String get partnerSavePromptLater => 'Позже';
+
+  @override
   String get confPickPartner => 'Выбрать из клиентов';
 }

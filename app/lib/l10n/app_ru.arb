@@ -868,5 +868,14 @@
   "partnerLinkedNote": "Связанные клиенты используют данные компании",
   "quickSendPickPartner": "Выбрать из клиентов",
   "quickSendPickContact": "Выбрать из контактов",
+  "partnersAdd": "Добавить контрагента",
+  "partnerNameLabel": "Название",
+  "partnerPhoneLabel": "Телефон",
+  "partnerNameRequired": "Введите название",
+  "partnerAdded": "Контрагент добавлен",
+  "partnerDuplicate": "Такой контрагент уже есть",
+  "partnerNoRecord": "Нет записей",
+  "partnerSavePromptTitle": "Сохранить этот номер как контрагента?",
+  "partnerSavePromptLater": "Позже",
   "confPickPartner": "Выбрать из клиентов"
 }

@@ -868,5 +868,14 @@
   "partnerLinkedNote": "已连接的客户沿用企业信息",
   "quickSendPickPartner": "从客户中选择",
   "quickSendPickContact": "从通讯录中选择",
+  "partnersAdd": "添加往来单位",
+  "partnerNameLabel": "名称",
+  "partnerPhoneLabel": "电话",
+  "partnerNameRequired": "请输入名称",
+  "partnerAdded": "已添加往来单位",
+  "partnerDuplicate": "该往来单位已存在",
+  "partnerNoRecord": "无记录",
+  "partnerSavePromptTitle": "将此号码保存为往来单位？",
+  "partnerSavePromptLater": "以后再说",
   "confPickPartner": "从客户中选择"
 }

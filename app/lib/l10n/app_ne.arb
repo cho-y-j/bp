@@ -868,5 +868,14 @@
   "partnerLinkedNote": "जोडिएका ग्राहकहरू व्यवसाय जानकारी अनुसरण गर्छन्",
   "quickSendPickPartner": "ग्राहकबाट छान्नुहोस्",
   "quickSendPickContact": "सम्पर्कबाट छान्नुहोस्",
+  "partnersAdd": "साझेदार थप्नुहोस्",
+  "partnerNameLabel": "नाम",
+  "partnerPhoneLabel": "फोन",
+  "partnerNameRequired": "कृपया नाम लेख्नुहोस्",
+  "partnerAdded": "साझेदार थपियो",
+  "partnerDuplicate": "यो साझेदार पहिले नै दर्ता छ",
+  "partnerNoRecord": "कुनै रेकर्ड छैन",
+  "partnerSavePromptTitle": "यो नम्बरलाई साझेदारको रूपमा सुरक्षित गर्ने?",
+  "partnerSavePromptLater": "पछि",
   "confPickPartner": "ग्राहकबाट छान्नुहोस्"
 }

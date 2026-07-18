@@ -2728,5 +2728,32 @@ class AppLocalizationsZh extends AppLocalizations {
   String get quickSendPickContact => '从通讯录中选择';
 
   @override
+  String get partnersAdd => '添加往来单位';
+
+  @override
+  String get partnerNameLabel => '名称';
+
+  @override
+  String get partnerPhoneLabel => '电话';
+
+  @override
+  String get partnerNameRequired => '请输入名称';
+
+  @override
+  String get partnerAdded => '已添加往来单位';
+
+  @override
+  String get partnerDuplicate => '该往来单位已存在';
+
+  @override
+  String get partnerNoRecord => '无记录';
+
+  @override
+  String get partnerSavePromptTitle => '将此号码保存为往来单位？';
+
+  @override
+  String get partnerSavePromptLater => '以后再说';
+
+  @override
   String get confPickPartner => '从客户中选择';
 }

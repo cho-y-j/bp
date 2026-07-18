@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../core/api_client.dart';
 import '../../core/contact_picker.dart';
 import '../../core/image_compress.dart';
+import '../../core/partner_prompt_store.dart';
 import '../../core/sms_template.dart';
 import '../../l10n/l10n_ext.dart';
 import '../../models/models.dart';
@@ -233,6 +234,48 @@ class QuickSendScreen extends ConsumerWidget {
       body: body,
       attachments: attachments,
     );
+    // 문자 작성창 복귀 후 — 직접 입력/연락처 선택 번호면 거래처 저장 제안(1회).
+    if (!context.mounted) return;
+    await _maybeSuggestSavePartner(context, ref, config);
+  }
+
+  /// 전송 복귀 후, 아직 거래처가 아닌 직접 입력/연락처 번호를 저장할지 1회 제안.
+  ///  - 거래처 칩·팀원 칩·프리셋(이미 아는 상대)은 제안하지 않는다.
+  ///  - 같은 번호는 재제안하지 않는다(로컬 기록).
+  ///  - 연락처 피커로 고른 경우 이름을 프리필한다.
+  Future<void> _maybeSuggestSavePartner(
+      BuildContext context, WidgetRef ref, _SendConfig config) async {
+    if (config.source != _RecipientSource.manual &&
+        config.source != _RecipientSource.contactPicker) {
+      return;
+    }
+    final norm = PartnerPromptStore.normPhone(config.recipient);
+    if (norm.length < 8) return; // 전화번호로 보기 어려움(이름만 등).
+
+    // 이미 거래처면(번호 일치) 제안 안 함.
+    final partners =
+        ref.read(partnersProvider).valueOrNull ?? const <Partner>[];
+    final exists = partners
+        .any((p) => PartnerPromptStore.normPhone(p.phone ?? '') == norm);
+    if (exists) return;
+
+    // 같은 번호 재제안 방지 — 띄우기 전에 먼저 기록(닫아도 다시 안 뜨게).
+    if (await PartnerPromptStore.wasSeen(norm)) return;
+    await PartnerPromptStore.markSeen(norm);
+    if (!context.mounted) return;
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (_) => _SavePartnerDialog(
+        phone: config.recipient.trim(),
+        presetName: config.recipientName,
+      ),
+    );
+    if (saved == true && context.mounted) {
+      ref.invalidate(partnersProvider);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l.partnerAdded)));
+    }
   }
 
   DocumentItem? _findDoc(List<DocumentItem> docs, String? typeKeyword) {
@@ -276,13 +319,23 @@ class QuickSendScreen extends ConsumerWidget {
   }
 }
 
+/// 수신인 번호의 출처 — 전송 후 "거래처 저장" 제안 여부 판단에 쓴다.
+///  - manual/contactPicker: 아직 거래처가 아닐 수 있음 → 제안 대상.
+///  - partnerChip: 이미 거래처 → 제안 안 함.
+///  - teamChip/preset: 이미 아는 상대(팀원·통화복귀·상세) → 제안 안 함.
+enum _RecipientSource { manual, contactPicker, partnerChip, teamChip, preset }
+
 /// 수신인/첨부 설정 결과.
 class _SendConfig {
   final String recipient; // 전화번호(빈 문자열 허용)
   final String? recipientName;
   final bool attachImage;
+  final _RecipientSource source;
   const _SendConfig(
-      {required this.recipient, this.recipientName, this.attachImage = false});
+      {required this.recipient,
+      this.recipientName,
+      this.attachImage = false,
+      this.source = _RecipientSource.manual});
 }
 
 class _TemplateTile extends StatelessWidget {
@@ -372,12 +425,17 @@ class _RecipientSheetState extends ConsumerState<_RecipientSheet> {
   late final TextEditingController _phone;
   late final TextEditingController _name;
   bool _attachImage = false;
+  // 수신인 번호 출처(전송 후 거래처 저장 제안 판단). 프리셋은 이미 아는 상대.
+  late _RecipientSource _source;
 
   @override
   void initState() {
     super.initState();
     _phone = TextEditingController(text: widget.presetRecipient ?? '');
     _name = TextEditingController(text: widget.presetRecipientName ?? '');
+    _source = (widget.presetRecipient ?? '').trim().isNotEmpty
+        ? _RecipientSource.preset
+        : _RecipientSource.manual;
   }
 
   /// 기기 연락처 시스템 피커(권한 불필요). 결과가 있으면 수신인 채움.
@@ -387,6 +445,7 @@ class _RecipientSheetState extends ConsumerState<_RecipientSheet> {
     setState(() {
       _phone.text = picked.phone;
       if (picked.name.isNotEmpty) _name.text = picked.name;
+      _source = _RecipientSource.contactPicker;
     });
   }
 
@@ -429,6 +488,9 @@ class _RecipientSheetState extends ConsumerState<_RecipientSheet> {
           TextField(
             controller: _phone,
             keyboardType: TextInputType.phone,
+            // 사용자가 직접 타이핑하면 출처를 manual 로 되돌린다(칩 선택 후 수정 포함).
+            // (칩/피커는 controller.text 를 프로그램적으로 세팅 → onChanged 미발생)
+            onChanged: (_) => _source = _RecipientSource.manual,
             style: TextStyle(fontSize: 17, color: c.ink),
             decoration: InputDecoration(
               hintText: l.smsRecipientHint,
@@ -475,6 +537,7 @@ class _RecipientSheetState extends ConsumerState<_RecipientSheet> {
                     onPressed: () => setState(() {
                       _phone.text = p.phone ?? '';
                       _name.text = p.name;
+                      _source = _RecipientSource.partnerChip;
                     }),
                     backgroundColor: c.surface2,
                     side: BorderSide(color: c.border),
@@ -498,6 +561,7 @@ class _RecipientSheetState extends ConsumerState<_RecipientSheet> {
                     onPressed: () => setState(() {
                       _phone.text = m.phone ?? '';
                       _name.text = m.name;
+                      _source = _RecipientSource.teamChip;
                     }),
                     backgroundColor: c.surface2,
                     side: BorderSide(color: c.border),
@@ -549,11 +613,126 @@ class _RecipientSheetState extends ConsumerState<_RecipientSheet> {
                 recipientName:
                     _name.text.trim().isEmpty ? null : _name.text.trim(),
                 attachImage: _attachImage,
+                source: _source,
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+/// 전송 후 "이 번호를 거래처로 저장할까요?" 다이얼로그 — 이름 1필드(피커면 프리필).
+class _SavePartnerDialog extends ConsumerStatefulWidget {
+  final String phone;
+  final String? presetName;
+  const _SavePartnerDialog({required this.phone, this.presetName});
+  @override
+  ConsumerState<_SavePartnerDialog> createState() =>
+      _SavePartnerDialogState();
+}
+
+class _SavePartnerDialogState extends ConsumerState<_SavePartnerDialog> {
+  late final TextEditingController _name;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _name = TextEditingController(text: widget.presetName ?? '');
+  }
+
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final messenger = ScaffoldMessenger.of(context);
+    // 이름을 비우면 전화번호를 이름으로 대체(최소한 저장은 되게).
+    final name =
+        _name.text.trim().isEmpty ? widget.phone : _name.text.trim();
+    setState(() => _saving = true);
+    try {
+      await ref
+          .read(partnersRepoProvider)
+          .create(name: name, phone: widget.phone);
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() => _saving = false);
+      // 이미 있으면(409) 조용히 닫음 — 이미 거래처이므로 목적 달성.
+      if (e.status == 409) {
+        Navigator.pop(context, false);
+        return;
+      }
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _saving = false);
+      messenger.showSnackBar(SnackBar(content: Text('$e')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l = context.l;
+    return AlertDialog(
+      backgroundColor: c.surface,
+      title: Text(l.partnerSavePromptTitle,
+          style: TextStyle(
+              fontSize: 17, fontWeight: FontWeight.w800, color: c.ink)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.phone_outlined, size: 16, color: c.ink3),
+              const SizedBox(width: 6),
+              Text(widget.phone,
+                  style: TextStyle(fontSize: 14, color: c.ink2)),
+            ],
+          ),
+          const SizedBox(height: 14),
+          TextField(
+            controller: _name,
+            autofocus: true,
+            style: TextStyle(fontSize: 16, color: c.ink),
+            decoration: InputDecoration(
+              labelText: l.partnerNameLabel,
+              filled: true,
+              fillColor: c.fieldBg,
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: c.border)),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _saving ? null : () => Navigator.pop(context, false),
+          child: Text(l.partnerSavePromptLater,
+              style: TextStyle(color: c.ink3)),
+        ),
+        FilledButton(
+          onPressed: _saving ? null : _save,
+          style: FilledButton.styleFrom(
+              backgroundColor: c.primary, foregroundColor: c.primaryInk),
+          child: _saving
+              ? SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: c.primaryInk))
+              : Text(l.partnerSave),
+        ),
+      ],
     );
   }
 }

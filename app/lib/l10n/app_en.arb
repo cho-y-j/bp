@@ -868,5 +868,14 @@
   "partnerLinkedNote": "Linked partners follow the business profile",
   "quickSendPickPartner": "Pick from partners",
   "quickSendPickContact": "Pick from contacts",
+  "partnersAdd": "Add partner",
+  "partnerNameLabel": "Name",
+  "partnerPhoneLabel": "Phone",
+  "partnerNameRequired": "Please enter a name",
+  "partnerAdded": "Partner added",
+  "partnerDuplicate": "This partner is already registered",
+  "partnerNoRecord": "No records",
+  "partnerSavePromptTitle": "Save this number as a partner?",
+  "partnerSavePromptLater": "Later",
   "confPickPartner": "Pick from partners"
 }

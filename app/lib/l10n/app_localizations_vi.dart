@@ -2793,5 +2793,32 @@ class AppLocalizationsVi extends AppLocalizations {
   String get quickSendPickContact => 'Chọn từ danh bạ';
 
   @override
+  String get partnersAdd => 'Thêm đối tác';
+
+  @override
+  String get partnerNameLabel => 'Tên';
+
+  @override
+  String get partnerPhoneLabel => 'Số điện thoại';
+
+  @override
+  String get partnerNameRequired => 'Vui lòng nhập tên';
+
+  @override
+  String get partnerAdded => 'Đã thêm đối tác';
+
+  @override
+  String get partnerDuplicate => 'Đối tác này đã tồn tại';
+
+  @override
+  String get partnerNoRecord => 'Chưa có ghi nhận';
+
+  @override
+  String get partnerSavePromptTitle => 'Lưu số này thành đối tác?';
+
+  @override
+  String get partnerSavePromptLater => 'Để sau';
+
+  @override
   String get confPickPartner => 'Chọn từ đối tác';
 }

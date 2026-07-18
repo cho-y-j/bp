@@ -1,7 +1,23 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:workon/core/partner_prompt_store.dart';
 import 'package:workon/models/models.dart';
 
 void main() {
+  group('PartnerPromptStore.normPhone', () {
+    test('하이픈·공백·기호 제거 후 숫자만 남긴다', () {
+      expect(PartnerPromptStore.normPhone('010-1234-5678'), '01012345678');
+      expect(PartnerPromptStore.normPhone(' 010 1234 5678 '), '01012345678');
+      expect(PartnerPromptStore.normPhone('+82 10-1234-5678'), '821012345678');
+    });
+    test('같은 번호 다른 표기는 같은 키로 정규화(중복 판정 근거)', () {
+      expect(PartnerPromptStore.normPhone('010-1234-5678'),
+          PartnerPromptStore.normPhone('01012345678'));
+    });
+    test('숫자가 없으면 빈 문자열', () {
+      expect(PartnerPromptStore.normPhone('이름만'), '');
+    });
+  });
+
   group('Partner.fromJson', () {
     test('수기 거래처(id 있음) — isManual true, 숫자 파싱', () {
       final p = Partner.fromJson({

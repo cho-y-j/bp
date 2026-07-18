@@ -2791,5 +2791,33 @@ class AppLocalizationsNe extends AppLocalizations {
   String get quickSendPickContact => 'सम्पर्कबाट छान्नुहोस्';
 
   @override
+  String get partnersAdd => 'साझेदार थप्नुहोस्';
+
+  @override
+  String get partnerNameLabel => 'नाम';
+
+  @override
+  String get partnerPhoneLabel => 'फोन';
+
+  @override
+  String get partnerNameRequired => 'कृपया नाम लेख्नुहोस्';
+
+  @override
+  String get partnerAdded => 'साझेदार थपियो';
+
+  @override
+  String get partnerDuplicate => 'यो साझेदार पहिले नै दर्ता छ';
+
+  @override
+  String get partnerNoRecord => 'कुनै रेकर्ड छैन';
+
+  @override
+  String get partnerSavePromptTitle =>
+      'यो नम्बरलाई साझेदारको रूपमा सुरक्षित गर्ने?';
+
+  @override
+  String get partnerSavePromptLater => 'पछि';
+
+  @override
   String get confPickPartner => 'ग्राहकबाट छान्नुहोस्';
 }

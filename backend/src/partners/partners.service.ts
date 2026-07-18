@@ -8,6 +8,7 @@ import {
   type PartnerLedgerRef,
 } from './partners.util';
 import { UpdatePartnerDto } from './dto/update-partner.dto';
+import { CreatePartnerDto } from './dto/create-partner.dto';
 
 @Injectable()
 export class PartnersService {
@@ -49,6 +50,75 @@ export class PartnersService {
       this.logger.warn(
         `[partner-upsert] ${profileId}/${name ?? ''}: ${(err as Error).message}`,
       );
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // 수동 생성 — 확인서를 쓴 적 없는 거래처를 사용자가 직접 등록.
+  //   식별 키 (profileId, name). 1단계 자동 수집과 같은 자연 키를 쓰되,
+  //   여기서는 upsert(기존 행 갱신)가 아니라 **중복이면 409** 를 택한다.
+  //   근거:
+  //   - 자동 수집 훅(upsertFromManualCounterparty)은 name/phone 만 만지는
+  //     idempotent 백그라운드 동작이지만, 이 POST 는 사용자가 명시적으로 "추가"
+  //     하는 행위이고 alias/bizNumber/email/memo 까지 실어 온다. 같은 이름의 기존
+  //     행을 조용히 덮으면 이미 채워둔 보강값을 파괴할 수 있다.
+  //   - 사용자가 이미 있는 이름을 다시 넣는 것은 실수일 가능성이 높으므로 409 로
+  //     알려 주는 편이 UX 상 낫다(앱은 "이미 등록됨" 안내로 처리). 자연 키
+  //     (profileId, name) 의 유일성은 두 경로에서 동일하게 유지된다.
+  // --------------------------------------------------------------------------
+  async create(userId: string, dto: CreatePartnerDto): Promise<PartnerListItem> {
+    const name = dto.name?.trim();
+    if (!name) {
+      throw new AppException(
+        'PARTNER_NAME_REQUIRED',
+        '거래처 이름을 입력해 주세요.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const norm = (v: string | undefined) => {
+      const t = v?.trim();
+      return t ? t : null;
+    };
+    try {
+      const created = await this.prisma.partner.create({
+        data: {
+          profileId: userId,
+          name,
+          phone: norm(dto.phone),
+          alias: norm(dto.alias),
+          bizNumber: norm(dto.bizNumber),
+          email: norm(dto.email),
+          memo: norm(dto.memo),
+        },
+      });
+      // 확인서 0건 수동 거래처 — 통계는 0/미수 0/작업일 없음으로 반환(GET 과 동형).
+      return {
+        id: created.id,
+        businessId: null,
+        linked: false,
+        name: created.name,
+        phone: created.phone,
+        alias: created.alias,
+        bizNumber: created.bizNumber,
+        email: created.email,
+        memo: created.memo,
+        confirmationCount: 0,
+        outstanding: 0,
+        paid: 0,
+        lastWorkedDate: null,
+      };
+    } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2002'
+      ) {
+        throw new AppException(
+          'PARTNER_DUPLICATE',
+          '이미 등록된 거래처예요.',
+          HttpStatus.CONFLICT,
+        );
+      }
+      throw err;
     }
   }
 

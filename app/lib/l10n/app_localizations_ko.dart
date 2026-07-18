@@ -2732,5 +2732,32 @@ class AppLocalizationsKo extends AppLocalizations {
   String get quickSendPickContact => '연락처에서 선택';
 
   @override
+  String get partnersAdd => '거래처 추가';
+
+  @override
+  String get partnerNameLabel => '이름';
+
+  @override
+  String get partnerPhoneLabel => '전화번호';
+
+  @override
+  String get partnerNameRequired => '이름을 입력해 주세요';
+
+  @override
+  String get partnerAdded => '거래처를 추가했어요';
+
+  @override
+  String get partnerDuplicate => '이미 등록된 거래처예요';
+
+  @override
+  String get partnerNoRecord => '기록 없음';
+
+  @override
+  String get partnerSavePromptTitle => '이 번호를 거래처로 저장할까요?';
+
+  @override
+  String get partnerSavePromptLater => '나중에';
+
+  @override
   String get confPickPartner => '거래처에서 선택';
 }

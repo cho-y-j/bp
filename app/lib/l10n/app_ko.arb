@@ -1724,5 +1724,14 @@
   "partnerLinkedNote": "연결된 거래처는 사업장 정보를 따릅니다",
   "quickSendPickPartner": "거래처에서 선택",
   "quickSendPickContact": "연락처에서 선택",
+  "partnersAdd": "거래처 추가",
+  "partnerNameLabel": "이름",
+  "partnerPhoneLabel": "전화번호",
+  "partnerNameRequired": "이름을 입력해 주세요",
+  "partnerAdded": "거래처를 추가했어요",
+  "partnerDuplicate": "이미 등록된 거래처예요",
+  "partnerNoRecord": "기록 없음",
+  "partnerSavePromptTitle": "이 번호를 거래처로 저장할까요?",
+  "partnerSavePromptLater": "나중에",
   "confPickPartner": "거래처에서 선택"
 }

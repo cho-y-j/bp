@@ -5062,6 +5062,60 @@ abstract class AppLocalizations {
   /// **'연락처에서 선택'**
   String get quickSendPickContact;
 
+  /// No description provided for @partnersAdd.
+  ///
+  /// In ko, this message translates to:
+  /// **'거래처 추가'**
+  String get partnersAdd;
+
+  /// No description provided for @partnerNameLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름'**
+  String get partnerNameLabel;
+
+  /// No description provided for @partnerPhoneLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화번호'**
+  String get partnerPhoneLabel;
+
+  /// No description provided for @partnerNameRequired.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름을 입력해 주세요'**
+  String get partnerNameRequired;
+
+  /// No description provided for @partnerAdded.
+  ///
+  /// In ko, this message translates to:
+  /// **'거래처를 추가했어요'**
+  String get partnerAdded;
+
+  /// No description provided for @partnerDuplicate.
+  ///
+  /// In ko, this message translates to:
+  /// **'이미 등록된 거래처예요'**
+  String get partnerDuplicate;
+
+  /// No description provided for @partnerNoRecord.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록 없음'**
+  String get partnerNoRecord;
+
+  /// No description provided for @partnerSavePromptTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 번호를 거래처로 저장할까요?'**
+  String get partnerSavePromptTitle;
+
+  /// No description provided for @partnerSavePromptLater.
+  ///
+  /// In ko, this message translates to:
+  /// **'나중에'**
+  String get partnerSavePromptLater;
+
   /// No description provided for @confPickPartner.
   ///
   /// In ko, this message translates to:

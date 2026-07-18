@@ -868,5 +868,14 @@
   "partnerLinkedNote": "Đối tác đã liên kết dùng thông tin doanh nghiệp",
   "quickSendPickPartner": "Chọn từ đối tác",
   "quickSendPickContact": "Chọn từ danh bạ",
+  "partnersAdd": "Thêm đối tác",
+  "partnerNameLabel": "Tên",
+  "partnerPhoneLabel": "Số điện thoại",
+  "partnerNameRequired": "Vui lòng nhập tên",
+  "partnerAdded": "Đã thêm đối tác",
+  "partnerDuplicate": "Đối tác này đã tồn tại",
+  "partnerNoRecord": "Chưa có ghi nhận",
+  "partnerSavePromptTitle": "Lưu số này thành đối tác?",
+  "partnerSavePromptLater": "Để sau",
   "confPickPartner": "Chọn từ đối tác"
 }

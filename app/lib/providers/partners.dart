@@ -16,6 +16,26 @@ class PartnersRepo {
   final ApiClient api;
   PartnersRepo(this.api);
 
+  /// 수동 추가 — 확인서를 쓴 적 없는 거래처 등록. 중복 이름은 서버가 409.
+  Future<Partner> create({
+    required String name,
+    String? phone,
+    String? alias,
+    String? bizNumber,
+    String? email,
+    String? memo,
+  }) async {
+    final res = await api.post('/partners', body: {
+      'name': name,
+      'phone': ?phone,
+      'alias': ?alias,
+      'bizNumber': ?bizNumber,
+      'email': ?email,
+      'memo': ?memo,
+    });
+    return Partner.fromJson(res as Map);
+  }
+
   /// 보강 정보 수정 → 갱신된 거래처. 빈 문자열은 서버가 null(비우기) 처리.
   Future<Partner> patch(
     String id, {
