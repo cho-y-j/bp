@@ -174,6 +174,7 @@ model Profile {
   tbmAttendances  TbmAttendee[]   @relation("TbmAttendeeProfile") // 가입 작업자로서 참석한 TBM (P2c)
   tbmAuthored     TbmRecord[]     @relation("TbmAuthor") // 작성한 TBM 기록 (P2c)
   refreshTokens   RefreshToken[]  @relation("ProfileRefreshTokens") // 자동 로그인 연장용 리프레시 토큰
+  partners        Partner[] // 거래처 보강 정보 (확인서 수기 상대 자동 수집 + 선택 보강)
 
   @@index([phone])
   @@map("profiles")
@@ -479,6 +480,40 @@ model LedgerEntry {
   @@index([dueDate])
   @@index([sourceConfirmationId]) // 팀 확인서 → 팀원 파생 항목 조회
   @@map("ledger_entries")
+}
+
+// ============================================================================
+//  partners — 거래처 (확인서/장부의 수기 상대 자동 수집 + 선택 보강)
+//   - 자동 수집: 확인서 생성/수정 시 수기 상대(businessId 없는 companyName)를 upsert.
+//     GET /partners 조회 시에도 누락분을 lazy 백필(별도 백필 엔드포인트/데이터
+//     마이그레이션 불필요 — 확인서가 원천, 이 테이블은 "보강 정보" 저장소).
+//   - 통계(확인서 건수·미수 잔액·최근 작업일)는 이 테이블에 저장하지 않고 조회 시
+//     confirmations/ledger 에서 파생 계산한다(정합성·staleness 회피).
+//   - 식별 키 = (profileId, name). name = 확인서 companyName = 장부 counterpartyName.
+//     장부 by-company·확인서 집계가 모두 companyName(=name)만으로 그룹핑하므로 name 을
+//     자연 키로 삼는다. phone(연락처)은 name 하위의 가변 속성(문자/전화용)으로 두어,
+//     같은 상호에 연락처가 여러 개여도 통계가 파편화되지 않게 한다.
+//     ※ (profileId, name, phone) 을 키로 하면 phone 이 바뀔 때 상대가 쪼개져 미수/건수가
+//        분리되므로 채택하지 않음. 연결(businessId) 상대는 businesses 가 원천이라 이 테이블에
+//        행을 만들지 않고 GET 응답에서 파생만 한다.
+// ============================================================================
+model Partner {
+  id        String   @id @default(uuid())
+  profileId String // 소유 작업자
+  name      String // 상대 상호/이름 (확인서 companyName)
+  phone     String? // 최근 알려진 연락처 (확인서 manualContact) — 문자/전화용, 자동 갱신
+  alias     String? // 별칭 (사용자 보강)
+  bizNumber String? // 사업자등록번호 (보강 — 2단계 세금계산서용)
+  email     String? // 이메일 (보강 — 2단계 세금계산서 수신용)
+  memo      String? // 메모 (보강)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, name]) // 소유자별 상호 유일 — 자동 수집 upsert 키
+  @@index([profileId])
+  @@map("partners")
 }
 
 // ============================================================================

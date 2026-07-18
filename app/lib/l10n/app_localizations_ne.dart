@@ -2708,4 +2708,88 @@ class AppLocalizationsNe extends AppLocalizations {
   String siteCostsManDays(String n) {
     return 'जनदिन $n';
   }
+
+  @override
+  String get partnersMenuTitle => 'ग्राहक';
+
+  @override
+  String get partnersMenuSub => 'पुष्टि पत्रका पक्ष स्वतः जम्मा हुन्छन्';
+
+  @override
+  String get partnersTitle => 'ग्राहक';
+
+  @override
+  String get partnersSearchHint => 'नाम वा फोन खोज्नुहोस्';
+
+  @override
+  String get partnersEmpty => 'पुष्टि पत्र लेखेपछि ग्राहक स्वतः जम्मा हुन्छन्';
+
+  @override
+  String get partnerLinkedBadge => 'जोडिएको';
+
+  @override
+  String get partnerSettledLabel => 'भुक्तानी सकियो';
+
+  @override
+  String partnerConfCount(int count) {
+    return '$count पुष्टि पत्र';
+  }
+
+  @override
+  String get partnerOutstandingLabel => 'बाँकी रकम';
+
+  @override
+  String get partnerPaidLabel => 'प्राप्त रकम';
+
+  @override
+  String get partnerConfLabel => 'पुष्टि पत्र';
+
+  @override
+  String get partnerLastWorked => 'पछिल्लो काम';
+
+  @override
+  String get partnerActionSms => 'एसएमएस पठाउनुहोस्';
+
+  @override
+  String get partnerActionCall => 'फोन गर्नुहोस्';
+
+  @override
+  String get partnerActionWriteConf => 'पुष्टि पत्र लेख्नुहोस्';
+
+  @override
+  String get partnerNoPhone => 'फोन नम्बर छैन';
+
+  @override
+  String get partnerEditTitle => 'ग्राहक जानकारी';
+
+  @override
+  String get partnerAlias => 'उपनाम';
+
+  @override
+  String get partnerBizNumber => 'व्यवसाय दर्ता नम्बर';
+
+  @override
+  String get partnerEmail => 'इमेल';
+
+  @override
+  String get partnerMemo => 'टिपोट';
+
+  @override
+  String get partnerSave => 'सुरक्षित गर्नुहोस्';
+
+  @override
+  String get partnerSaved => 'सुरक्षित भयो';
+
+  @override
+  String get partnerLinkedNote =>
+      'जोडिएका ग्राहकहरू व्यवसाय जानकारी अनुसरण गर्छन्';
+
+  @override
+  String get quickSendPickPartner => 'ग्राहकबाट छान्नुहोस्';
+
+  @override
+  String get quickSendPickContact => 'सम्पर्कबाट छान्नुहोस्';
+
+  @override
+  String get confPickPartner => 'ग्राहकबाट छान्नुहोस्';
 }

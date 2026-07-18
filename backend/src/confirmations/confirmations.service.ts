@@ -16,6 +16,7 @@ import { FileStorageService } from '../documents/file-storage.service';
 import { PdfService } from '../documents/pdf.service';
 import type { ConfirmationPdfData } from '../documents/pdf.types';
 import { NotificationsService } from '../notifications/notifications.service';
+import { PartnersService } from '../partners/partners.service';
 import { maskName } from '../common/phone.util';
 import {
   calcAmount,
@@ -54,6 +55,7 @@ export class ConfirmationsService {
     private readonly pdf: PdfService,
     private readonly notifications: NotificationsService,
     private readonly config: ConfigService,
+    private readonly partners: PartnersService,
   ) {}
 
   // --------------------------------------------------------------------------
@@ -147,6 +149,15 @@ export class ConfirmationsService {
       return confirmation;
     });
 
+    // 자동 수집: 수기 상대를 거래처로 upsert (연결 상대는 businesses 가 원천).
+    if (!businessId) {
+      await this.partners.safeUpsertFromManualCounterparty(
+        userId,
+        companyName,
+        manualContact,
+      );
+    }
+
     return toConfirmationDto(created);
   }
 
@@ -202,6 +213,13 @@ export class ConfirmationsService {
       });
       return confirmation;
     });
+    if (!src.businessId) {
+      await this.partners.safeUpsertFromManualCounterparty(
+        userId,
+        src.companyName,
+        src.manualContact,
+      );
+    }
     return toConfirmationDto(created);
   }
 
@@ -405,6 +423,14 @@ export class ConfirmationsService {
       }
       return u;
     });
+    // 자동 수집: 수기 상대 이름/연락처가 바뀌었으면 거래처 갱신.
+    if (!c.businessId && (dto.companyName !== undefined || dto.contact !== undefined)) {
+      await this.partners.safeUpsertFromManualCounterparty(
+        userId,
+        (data.companyName as string | undefined) ?? c.companyName,
+        (data.manualContact as string | undefined) ?? c.manualContact,
+      );
+    }
     return toConfirmationDto(updated);
   }
 

@@ -20,6 +20,7 @@ import { ConnectionsModule } from './connections/connections.module';
 import { JobsModule } from './jobs/jobs.module';
 import { BizModule } from './biz/biz.module';
 import { SafetyModule } from './safety/safety.module';
+import { PartnersModule } from './partners/partners.module';
 import { validateEnv } from './common/env.validation';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -50,6 +51,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     JobsModule,
     BizModule,
     SafetyModule,
+    PartnersModule,
   ],
   providers: [
     // 전역 성공 봉투 { data }

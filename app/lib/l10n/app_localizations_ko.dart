@@ -2650,4 +2650,87 @@ class AppLocalizationsKo extends AppLocalizations {
   String siteCostsManDays(String n) {
     return '연인원 $n';
   }
+
+  @override
+  String get partnersMenuTitle => '거래처';
+
+  @override
+  String get partnersMenuSub => '확인서 상대가 자동으로 모여요';
+
+  @override
+  String get partnersTitle => '거래처';
+
+  @override
+  String get partnersSearchHint => '이름·전화 검색';
+
+  @override
+  String get partnersEmpty => '확인서를 작성하면 거래처가 자동으로 모여요';
+
+  @override
+  String get partnerLinkedBadge => '연결';
+
+  @override
+  String get partnerSettledLabel => '정산 완료';
+
+  @override
+  String partnerConfCount(int count) {
+    return '확인서 $count건';
+  }
+
+  @override
+  String get partnerOutstandingLabel => '미수 잔액';
+
+  @override
+  String get partnerPaidLabel => '입금 합계';
+
+  @override
+  String get partnerConfLabel => '확인서';
+
+  @override
+  String get partnerLastWorked => '최근 작업일';
+
+  @override
+  String get partnerActionSms => '문자 보내기';
+
+  @override
+  String get partnerActionCall => '전화 걸기';
+
+  @override
+  String get partnerActionWriteConf => '확인서 쓰기';
+
+  @override
+  String get partnerNoPhone => '연락처 없음';
+
+  @override
+  String get partnerEditTitle => '거래처 정보';
+
+  @override
+  String get partnerAlias => '별칭';
+
+  @override
+  String get partnerBizNumber => '사업자등록번호';
+
+  @override
+  String get partnerEmail => '이메일';
+
+  @override
+  String get partnerMemo => '메모';
+
+  @override
+  String get partnerSave => '저장';
+
+  @override
+  String get partnerSaved => '저장했어요';
+
+  @override
+  String get partnerLinkedNote => '연결된 거래처는 사업장 정보를 따릅니다';
+
+  @override
+  String get quickSendPickPartner => '거래처에서 선택';
+
+  @override
+  String get quickSendPickContact => '연락처에서 선택';
+
+  @override
+  String get confPickPartner => '거래처에서 선택';
 }

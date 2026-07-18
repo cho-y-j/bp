@@ -529,6 +529,58 @@ class Team {
       );
 }
 
+/// 거래처(확인서 상대). 수기 입력분(id 있음)과 연결(승격) 사업장(id null)을 합친 목록.
+class Partner {
+  final String? id; // 수기 거래처 행 id. 연결(승격) 상대는 null → 편집/삭제 불가.
+  final String? businessId; // 연결 상대면 사업장 id
+  final bool linked; // true=연결(승격) 거래처, false=수기
+  final String name;
+  final String? phone; // 문자/전화용
+  final String? alias; // 보강(수기만)
+  final String? bizNumber;
+  final String? email;
+  final String? memo;
+  final int confirmationCount; // 확인서 건수
+  final int outstanding; // 미수 잔액(원)
+  final int paid; // 입금 합계(원)
+  final String? lastWorkedDate; // 'YYYY-MM-DD' KST, 없으면 null
+
+  Partner({
+    required this.id,
+    required this.businessId,
+    required this.linked,
+    required this.name,
+    required this.phone,
+    required this.alias,
+    required this.bizNumber,
+    required this.email,
+    required this.memo,
+    required this.confirmationCount,
+    required this.outstanding,
+    required this.paid,
+    required this.lastWorkedDate,
+  });
+
+  /// 수기 거래처 여부(편집/삭제 가능). 연결 상대는 false.
+  bool get isManual => id != null;
+
+  factory Partner.fromJson(Map j) => Partner(
+        id: j['id'] as String?,
+        businessId: j['businessId'] as String?,
+        linked: j['linked'] == true,
+        name: j['name']?.toString() ?? '',
+        phone: j['phone'] as String?,
+        alias: j['alias'] as String?,
+        bizNumber: j['bizNumber'] as String?,
+        email: j['email'] as String?,
+        memo: j['memo'] as String?,
+        confirmationCount: _pint(j['confirmationCount']),
+        outstanding: _pint(j['outstanding']),
+        paid: _pint(j['paid']),
+        lastWorkedDate: j['lastWorkedDate'] as String?,
+      );
+}
+
 class ExpiringDoc {
   final String id;
   final String type;

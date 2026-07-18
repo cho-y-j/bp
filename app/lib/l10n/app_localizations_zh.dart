@@ -2646,4 +2646,87 @@ class AppLocalizationsZh extends AppLocalizations {
   String siteCostsManDays(String n) {
     return '用工$n人日';
   }
+
+  @override
+  String get partnersMenuTitle => '客户';
+
+  @override
+  String get partnersMenuSub => '确认单对象会自动汇集';
+
+  @override
+  String get partnersTitle => '客户';
+
+  @override
+  String get partnersSearchHint => '搜索姓名·电话';
+
+  @override
+  String get partnersEmpty => '填写确认单后客户会自动汇集';
+
+  @override
+  String get partnerLinkedBadge => '已连接';
+
+  @override
+  String get partnerSettledLabel => '已结清';
+
+  @override
+  String partnerConfCount(int count) {
+    return '确认单 $count 份';
+  }
+
+  @override
+  String get partnerOutstandingLabel => '未收款';
+
+  @override
+  String get partnerPaidLabel => '已收款';
+
+  @override
+  String get partnerConfLabel => '确认单';
+
+  @override
+  String get partnerLastWorked => '最近作业日';
+
+  @override
+  String get partnerActionSms => '发短信';
+
+  @override
+  String get partnerActionCall => '拨打电话';
+
+  @override
+  String get partnerActionWriteConf => '写确认单';
+
+  @override
+  String get partnerNoPhone => '无联系电话';
+
+  @override
+  String get partnerEditTitle => '客户信息';
+
+  @override
+  String get partnerAlias => '别名';
+
+  @override
+  String get partnerBizNumber => '营业执照号';
+
+  @override
+  String get partnerEmail => '电子邮箱';
+
+  @override
+  String get partnerMemo => '备注';
+
+  @override
+  String get partnerSave => '保存';
+
+  @override
+  String get partnerSaved => '已保存';
+
+  @override
+  String get partnerLinkedNote => '已连接的客户沿用企业信息';
+
+  @override
+  String get quickSendPickPartner => '从客户中选择';
+
+  @override
+  String get quickSendPickContact => '从通讯录中选择';
+
+  @override
+  String get confPickPartner => '从客户中选择';
 }

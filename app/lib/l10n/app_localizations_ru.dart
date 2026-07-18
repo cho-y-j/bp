@@ -2715,4 +2715,88 @@ class AppLocalizationsRu extends AppLocalizations {
   String siteCostsManDays(String n) {
     return 'Чел.-дней: $n';
   }
+
+  @override
+  String get partnersMenuTitle => 'Клиенты';
+
+  @override
+  String get partnersMenuSub => 'Контрагенты собираются автоматически';
+
+  @override
+  String get partnersTitle => 'Клиенты';
+
+  @override
+  String get partnersSearchHint => 'Поиск по имени или телефону';
+
+  @override
+  String get partnersEmpty => 'Клиенты появятся после создания подтверждения';
+
+  @override
+  String get partnerLinkedBadge => 'Связан';
+
+  @override
+  String get partnerSettledLabel => 'Оплачено';
+
+  @override
+  String partnerConfCount(int count) {
+    return 'Подтверждений: $count';
+  }
+
+  @override
+  String get partnerOutstandingLabel => 'Задолженность';
+
+  @override
+  String get partnerPaidLabel => 'Оплачено';
+
+  @override
+  String get partnerConfLabel => 'Подтверждения';
+
+  @override
+  String get partnerLastWorked => 'Последняя работа';
+
+  @override
+  String get partnerActionSms => 'Отправить SMS';
+
+  @override
+  String get partnerActionCall => 'Позвонить';
+
+  @override
+  String get partnerActionWriteConf => 'Новое подтверждение';
+
+  @override
+  String get partnerNoPhone => 'Нет номера телефона';
+
+  @override
+  String get partnerEditTitle => 'Данные клиента';
+
+  @override
+  String get partnerAlias => 'Псевдоним';
+
+  @override
+  String get partnerBizNumber => 'Рег. номер';
+
+  @override
+  String get partnerEmail => 'Эл. почта';
+
+  @override
+  String get partnerMemo => 'Заметка';
+
+  @override
+  String get partnerSave => 'Сохранить';
+
+  @override
+  String get partnerSaved => 'Сохранено';
+
+  @override
+  String get partnerLinkedNote =>
+      'Связанные клиенты используют данные компании';
+
+  @override
+  String get quickSendPickPartner => 'Выбрать из клиентов';
+
+  @override
+  String get quickSendPickContact => 'Выбрать из контактов';
+
+  @override
+  String get confPickPartner => 'Выбрать из клиентов';
 }

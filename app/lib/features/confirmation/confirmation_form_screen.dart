@@ -10,6 +10,7 @@ import '../../models/models.dart';
 import '../../providers/data.dart';
 import '../../providers/biz.dart';
 import '../../providers/drafts.dart';
+import '../../providers/partners.dart';
 import '../../widgets/common.dart';
 import 'share_helper.dart';
 
@@ -39,7 +40,15 @@ class _TeamRow {
 class ConfirmationFormScreen extends ConsumerStatefulWidget {
   final DateTime? initialDate;
   final Confirmation? copyFrom;
-  const ConfirmationFormScreen({super.key, this.initialDate, this.copyFrom});
+  final String? prefillCompany; // 거래처 상세에서 넘어온 수기 상대 회사명
+  final String? prefillContact; // 거래처 상세에서 넘어온 수기 상대 연락처
+  const ConfirmationFormScreen({
+    super.key,
+    this.initialDate,
+    this.copyFrom,
+    this.prefillCompany,
+    this.prefillContact,
+  });
   @override
   ConsumerState<ConfirmationFormScreen> createState() => _FormState();
 }
@@ -76,6 +85,16 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
     _date = widget.initialDate ?? DateTime.now();
     final cf = widget.copyFrom;
     if (cf != null) _applyCopy(cf);
+    // 거래처 상세 "확인서 쓰기" 프리필(수기 상대). copyFrom 과 병존 시 copyFrom 우선.
+    if (cf == null) {
+      if ((widget.prefillCompany ?? '').isNotEmpty) {
+        _company.text = widget.prefillCompany!;
+        _useBusiness = false;
+      }
+      if ((widget.prefillContact ?? '').isNotEmpty) {
+        _contact.text = widget.prefillContact!;
+      }
+    }
     for (final ctl in [_rate, _qty, _company, _contact, _site, _work]) {
       ctl.addListener(() => setState(() {}));
     }
@@ -940,6 +959,11 @@ class _CounterpartySection extends StatelessWidget {
           )
         else
           Column(children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: _PickPartnerButton(company: company, contact: contact),
+            ),
+            const SizedBox(height: 8),
             TextField(
               controller: company,
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: c.ink),
@@ -1716,5 +1740,77 @@ class _TeamTotalBox extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// 확인서 폼 수기 상대 입력 편의 — 거래처 목록에서 하나 골라 회사명/연락처 채움.
+class _PickPartnerButton extends ConsumerWidget {
+  final TextEditingController company;
+  final TextEditingController contact;
+  const _PickPartnerButton({required this.company, required this.contact});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = context.c;
+    final l = context.l;
+    return OutlinedButton.icon(
+      onPressed: () => _pick(context, ref),
+      icon: Icon(Icons.contacts_outlined, size: 18, color: c.ink),
+      label: Text(l.confPickPartner,
+          style:
+              TextStyle(color: c.ink, fontSize: 14, fontWeight: FontWeight.w700)),
+      style: OutlinedButton.styleFrom(
+        side: BorderSide(color: c.border),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      ),
+    );
+  }
+
+  Future<void> _pick(BuildContext context, WidgetRef ref) async {
+    final c = context.c;
+    final l = context.l;
+    final partners = await ref.read(partnersProvider.future);
+    if (!context.mounted) return;
+    if (partners.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l.partnersEmpty)));
+      return;
+    }
+    final picked = await showModalBottomSheet<Partner>(
+      context: context,
+      backgroundColor: c.surface,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(18))),
+      builder: (ctx) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+              child: Text(l.confPickPartner,
+                  style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
+            ),
+            for (final p in partners)
+              ListTile(
+                title: Text(p.name,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: c.ink)),
+                subtitle: (p.phone ?? '').isNotEmpty
+                    ? Text(p.phone!, style: TextStyle(color: c.ink3))
+                    : null,
+                onTap: () => Navigator.pop(ctx, p),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (picked == null) return;
+    company.text = picked.name;
+    if ((picked.phone ?? '').isNotEmpty) contact.text = picked.phone!;
   }
 }

@@ -4905,6 +4905,168 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'연인원 {n}'**
   String siteCostsManDays(String n);
+
+  /// No description provided for @partnersMenuTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'거래처'**
+  String get partnersMenuTitle;
+
+  /// No description provided for @partnersMenuSub.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인서 상대가 자동으로 모여요'**
+  String get partnersMenuSub;
+
+  /// No description provided for @partnersTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'거래처'**
+  String get partnersTitle;
+
+  /// No description provided for @partnersSearchHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름·전화 검색'**
+  String get partnersSearchHint;
+
+  /// No description provided for @partnersEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인서를 작성하면 거래처가 자동으로 모여요'**
+  String get partnersEmpty;
+
+  /// No description provided for @partnerLinkedBadge.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결'**
+  String get partnerLinkedBadge;
+
+  /// No description provided for @partnerSettledLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'정산 완료'**
+  String get partnerSettledLabel;
+
+  /// No description provided for @partnerConfCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인서 {count}건'**
+  String partnerConfCount(int count);
+
+  /// No description provided for @partnerOutstandingLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'미수 잔액'**
+  String get partnerOutstandingLabel;
+
+  /// No description provided for @partnerPaidLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'입금 합계'**
+  String get partnerPaidLabel;
+
+  /// No description provided for @partnerConfLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인서'**
+  String get partnerConfLabel;
+
+  /// No description provided for @partnerLastWorked.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 작업일'**
+  String get partnerLastWorked;
+
+  /// No description provided for @partnerActionSms.
+  ///
+  /// In ko, this message translates to:
+  /// **'문자 보내기'**
+  String get partnerActionSms;
+
+  /// No description provided for @partnerActionCall.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화 걸기'**
+  String get partnerActionCall;
+
+  /// No description provided for @partnerActionWriteConf.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인서 쓰기'**
+  String get partnerActionWriteConf;
+
+  /// No description provided for @partnerNoPhone.
+  ///
+  /// In ko, this message translates to:
+  /// **'연락처 없음'**
+  String get partnerNoPhone;
+
+  /// No description provided for @partnerEditTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'거래처 정보'**
+  String get partnerEditTitle;
+
+  /// No description provided for @partnerAlias.
+  ///
+  /// In ko, this message translates to:
+  /// **'별칭'**
+  String get partnerAlias;
+
+  /// No description provided for @partnerBizNumber.
+  ///
+  /// In ko, this message translates to:
+  /// **'사업자등록번호'**
+  String get partnerBizNumber;
+
+  /// No description provided for @partnerEmail.
+  ///
+  /// In ko, this message translates to:
+  /// **'이메일'**
+  String get partnerEmail;
+
+  /// No description provided for @partnerMemo.
+  ///
+  /// In ko, this message translates to:
+  /// **'메모'**
+  String get partnerMemo;
+
+  /// No description provided for @partnerSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장'**
+  String get partnerSave;
+
+  /// No description provided for @partnerSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장했어요'**
+  String get partnerSaved;
+
+  /// No description provided for @partnerLinkedNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'연결된 거래처는 사업장 정보를 따릅니다'**
+  String get partnerLinkedNote;
+
+  /// No description provided for @quickSendPickPartner.
+  ///
+  /// In ko, this message translates to:
+  /// **'거래처에서 선택'**
+  String get quickSendPickPartner;
+
+  /// No description provided for @quickSendPickContact.
+  ///
+  /// In ko, this message translates to:
+  /// **'연락처에서 선택'**
+  String get quickSendPickContact;
+
+  /// No description provided for @confPickPartner.
+  ///
+  /// In ko, this message translates to:
+  /// **'거래처에서 선택'**
+  String get confPickPartner;
 }
 
 class _AppLocalizationsDelegate

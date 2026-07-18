@@ -2710,4 +2710,88 @@ class AppLocalizationsVi extends AppLocalizations {
   String siteCostsManDays(String n) {
     return '$n công';
   }
+
+  @override
+  String get partnersMenuTitle => 'Đối tác';
+
+  @override
+  String get partnersMenuSub => 'Đối tác được tập hợp tự động';
+
+  @override
+  String get partnersTitle => 'Đối tác';
+
+  @override
+  String get partnersSearchHint => 'Tìm tên hoặc số điện thoại';
+
+  @override
+  String get partnersEmpty => 'Đối tác sẽ xuất hiện khi bạn lập phiếu xác nhận';
+
+  @override
+  String get partnerLinkedBadge => 'Đã liên kết';
+
+  @override
+  String get partnerSettledLabel => 'Đã tất toán';
+
+  @override
+  String partnerConfCount(int count) {
+    return '$count phiếu xác nhận';
+  }
+
+  @override
+  String get partnerOutstandingLabel => 'Còn phải thu';
+
+  @override
+  String get partnerPaidLabel => 'Đã nhận';
+
+  @override
+  String get partnerConfLabel => 'Phiếu xác nhận';
+
+  @override
+  String get partnerLastWorked => 'Làm gần nhất';
+
+  @override
+  String get partnerActionSms => 'Gửi tin nhắn';
+
+  @override
+  String get partnerActionCall => 'Gọi điện';
+
+  @override
+  String get partnerActionWriteConf => 'Lập phiếu xác nhận';
+
+  @override
+  String get partnerNoPhone => 'Không có số điện thoại';
+
+  @override
+  String get partnerEditTitle => 'Thông tin đối tác';
+
+  @override
+  String get partnerAlias => 'Biệt danh';
+
+  @override
+  String get partnerBizNumber => 'Mã số doanh nghiệp';
+
+  @override
+  String get partnerEmail => 'Email';
+
+  @override
+  String get partnerMemo => 'Ghi chú';
+
+  @override
+  String get partnerSave => 'Lưu';
+
+  @override
+  String get partnerSaved => 'Đã lưu';
+
+  @override
+  String get partnerLinkedNote =>
+      'Đối tác đã liên kết dùng thông tin doanh nghiệp';
+
+  @override
+  String get quickSendPickPartner => 'Chọn từ đối tác';
+
+  @override
+  String get quickSendPickContact => 'Chọn từ danh bạ';
+
+  @override
+  String get confPickPartner => 'Chọn từ đối tác';
 }

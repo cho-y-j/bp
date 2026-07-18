@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../core/api_client.dart';
+import '../../core/contact_picker.dart';
 import '../../core/image_compress.dart';
 import '../../core/sms_template.dart';
 import '../../l10n/l10n_ext.dart';
 import '../../models/models.dart';
 import '../../providers/auth.dart';
 import '../../providers/data.dart';
+import '../../providers/partners.dart';
 import '../../providers/wallet.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/common.dart';
@@ -162,6 +164,7 @@ class QuickSendScreen extends ConsumerWidget {
       builder: (_) => _RecipientSheet(
         canAttachImage: canImage,
         presetRecipient: presetRecipient,
+        presetRecipientName: presetRecipientName,
       ),
     );
     if (config == null || !context.mounted) return;
@@ -356,21 +359,35 @@ class _TemplateTile extends StatelessWidget {
 class _RecipientSheet extends ConsumerStatefulWidget {
   final bool canAttachImage;
   final String? presetRecipient;
+  final String? presetRecipientName;
   const _RecipientSheet(
-      {required this.canAttachImage, this.presetRecipient});
+      {required this.canAttachImage,
+      this.presetRecipient,
+      this.presetRecipientName});
   @override
   ConsumerState<_RecipientSheet> createState() => _RecipientSheetState();
 }
 
 class _RecipientSheetState extends ConsumerState<_RecipientSheet> {
   late final TextEditingController _phone;
-  final _name = TextEditingController();
+  late final TextEditingController _name;
   bool _attachImage = false;
 
   @override
   void initState() {
     super.initState();
     _phone = TextEditingController(text: widget.presetRecipient ?? '');
+    _name = TextEditingController(text: widget.presetRecipientName ?? '');
+  }
+
+  /// 기기 연락처 시스템 피커(권한 불필요). 결과가 있으면 수신인 채움.
+  Future<void> _pickFromContacts() async {
+    final picked = await ContactPicker().pick();
+    if (picked == null || !mounted) return;
+    setState(() {
+      _phone.text = picked.phone;
+      if (picked.name.isNotEmpty) _name.text = picked.name;
+    });
   }
 
   @override
@@ -391,6 +408,10 @@ class _RecipientSheetState extends ConsumerState<_RecipientSheet> {
         for (final m in t.members)
           if ((m.phone ?? '').trim().isNotEmpty) m
     ];
+    // 전화번호가 있는 거래처(빠른 선택 후보).
+    final partners = ref.watch(partnersProvider).valueOrNull ?? const <Partner>[];
+    final partnerCandidates =
+        partners.where((p) => (p.phone ?? '').trim().isNotEmpty).toList();
     return Padding(
       padding: EdgeInsets.only(
           left: 18,
@@ -419,6 +440,48 @@ class _RecipientSheetState extends ConsumerState<_RecipientSheet> {
                   borderSide: BorderSide(color: c.border)),
             ),
           ),
+          const SizedBox(height: 8),
+          // 기기 연락처 시스템 피커(권한 불필요).
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: _pickFromContacts,
+              icon: Icon(Icons.contacts_outlined, size: 18, color: c.ink),
+              label: Text(l.quickSendPickContact,
+                  style: TextStyle(
+                      color: c.ink, fontSize: 14, fontWeight: FontWeight.w700)),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: c.border),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              ),
+            ),
+          ),
+          if (partnerCandidates.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(l.quickSendPickPartner,
+                style: TextStyle(
+                    fontSize: 13, fontWeight: FontWeight.w700, color: c.ink3)),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final p in partnerCandidates)
+                  ActionChip(
+                    label: Text(p.name),
+                    onPressed: () => setState(() {
+                      _phone.text = p.phone ?? '';
+                      _name.text = p.name;
+                    }),
+                    backgroundColor: c.surface2,
+                    side: BorderSide(color: c.border),
+                  ),
+              ],
+            ),
+          ],
           if (candidates.isNotEmpty) ...[
             const SizedBox(height: 12),
             Text(l.smsPickConnection,

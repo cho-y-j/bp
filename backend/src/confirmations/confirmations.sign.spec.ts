@@ -44,12 +44,16 @@ describe('ConfirmationsService.applySignature — 서명 동시성(TOCTOU)', () 
       writeFile: jest.fn().mockResolvedValue(undefined),
     };
     const notifications = { create: jest.fn().mockResolvedValue({}) };
+    const partners = {
+      safeUpsertFromManualCounterparty: jest.fn().mockResolvedValue(undefined),
+    };
     const svc = new ConfirmationsService(
       prisma as never,
       storage as never,
       {} as never,
       notifications as never,
       {} as never,
+      partners as never,
     );
     return { svc, prisma };
   }

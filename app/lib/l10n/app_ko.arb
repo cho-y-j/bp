@@ -1690,5 +1690,39 @@
         "type": "String"
       }
     }
-  }
+  },
+  "partnersMenuTitle": "거래처",
+  "partnersMenuSub": "확인서 상대가 자동으로 모여요",
+  "partnersTitle": "거래처",
+  "partnersSearchHint": "이름·전화 검색",
+  "partnersEmpty": "확인서를 작성하면 거래처가 자동으로 모여요",
+  "partnerLinkedBadge": "연결",
+  "partnerSettledLabel": "정산 완료",
+  "partnerConfCount": "확인서 {count}건",
+  "@partnerConfCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "partnerOutstandingLabel": "미수 잔액",
+  "partnerPaidLabel": "입금 합계",
+  "partnerConfLabel": "확인서",
+  "partnerLastWorked": "최근 작업일",
+  "partnerActionSms": "문자 보내기",
+  "partnerActionCall": "전화 걸기",
+  "partnerActionWriteConf": "확인서 쓰기",
+  "partnerNoPhone": "연락처 없음",
+  "partnerEditTitle": "거래처 정보",
+  "partnerAlias": "별칭",
+  "partnerBizNumber": "사업자등록번호",
+  "partnerEmail": "이메일",
+  "partnerMemo": "메모",
+  "partnerSave": "저장",
+  "partnerSaved": "저장했어요",
+  "partnerLinkedNote": "연결된 거래처는 사업장 정보를 따릅니다",
+  "quickSendPickPartner": "거래처에서 선택",
+  "quickSendPickContact": "연락처에서 선택",
+  "confPickPartner": "거래처에서 선택"
 }

@@ -16,6 +16,7 @@ import '../wallet/my_contracts_screen.dart';
 import '../wallet/my_tbm_screen.dart';
 import '../biz/business_mode_screen.dart';
 import '../team/team_screen.dart';
+import '../partners/partners_screen.dart';
 import '../jobs/my_jobs_screen.dart';
 import '../tax/tax_invoice_screen.dart';
 import '../ledger/income_report_screen.dart';
@@ -150,6 +151,12 @@ class MoreScreen extends ConsumerWidget {
               title: l.teamMenuTitle,
               subtitle: l.teamMenuSub,
               onTap: () => _push(context, const TeamScreen()),
+            ),
+            _Tile(
+              icon: Icons.contacts_outlined,
+              title: l.partnersMenuTitle,
+              subtitle: l.partnersMenuSub,
+              onTap: () => _push(context, const PartnersScreen()),
             ),
             _Tile(
               icon: Icons.description_outlined,

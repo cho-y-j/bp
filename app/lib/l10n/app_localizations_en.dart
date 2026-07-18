@@ -2718,4 +2718,88 @@ class AppLocalizationsEn extends AppLocalizations {
   String siteCostsManDays(String n) {
     return '$n man-days';
   }
+
+  @override
+  String get partnersMenuTitle => 'Partners';
+
+  @override
+  String get partnersMenuSub => 'Clients are gathered automatically';
+
+  @override
+  String get partnersTitle => 'Partners';
+
+  @override
+  String get partnersSearchHint => 'Search name or phone';
+
+  @override
+  String get partnersEmpty =>
+      'Partners appear here once you write a confirmation';
+
+  @override
+  String get partnerLinkedBadge => 'Linked';
+
+  @override
+  String get partnerSettledLabel => 'Settled';
+
+  @override
+  String partnerConfCount(int count) {
+    return '$count confirmations';
+  }
+
+  @override
+  String get partnerOutstandingLabel => 'Outstanding';
+
+  @override
+  String get partnerPaidLabel => 'Paid';
+
+  @override
+  String get partnerConfLabel => 'Confirmations';
+
+  @override
+  String get partnerLastWorked => 'Last worked';
+
+  @override
+  String get partnerActionSms => 'Send SMS';
+
+  @override
+  String get partnerActionCall => 'Call';
+
+  @override
+  String get partnerActionWriteConf => 'New confirmation';
+
+  @override
+  String get partnerNoPhone => 'No phone number';
+
+  @override
+  String get partnerEditTitle => 'Partner info';
+
+  @override
+  String get partnerAlias => 'Alias';
+
+  @override
+  String get partnerBizNumber => 'Business number';
+
+  @override
+  String get partnerEmail => 'Email';
+
+  @override
+  String get partnerMemo => 'Memo';
+
+  @override
+  String get partnerSave => 'Save';
+
+  @override
+  String get partnerSaved => 'Saved';
+
+  @override
+  String get partnerLinkedNote => 'Linked partners follow the business profile';
+
+  @override
+  String get quickSendPickPartner => 'Pick from partners';
+
+  @override
+  String get quickSendPickContact => 'Pick from contacts';
+
+  @override
+  String get confPickPartner => 'Pick from partners';
 }
