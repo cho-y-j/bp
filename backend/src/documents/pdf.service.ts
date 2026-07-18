@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { PDFDocument, PDFPage, rgb } from 'pdf-lib';
+import { PDFDocument, PDFFont, PDFPage, rgb } from 'pdf-lib';
 import fontkit from '@pdf-lib/fontkit';
 import sharp from 'sharp';
 import heicConvert from 'heic-convert';
@@ -67,6 +67,25 @@ const ALLOWED_IMAGE_MIME = new Set([
   'image/heic',
   'image/heif',
 ]);
+
+// ── 디자인 토큰 (DESIGN-UI.md 컬러 팔레트) ──────────────────────────────────
+const INK = rgb(0.102, 0.133, 0.2); // #1A2233 딥 네이비 (본문/헤딩)
+const MUTED = rgb(0.4, 0.43, 0.49); // 라벨/보조 텍스트
+const ORANGE = rgb(0.957, 0.467, 0.047); // #F4770C 안전 오렌지 (브랜드 포인트)
+const ORANGE_DARK = rgb(0.761, 0.255, 0.047); // #C2410C 미수/강조 금액
+const GREEN = rgb(0.082, 0.502, 0.239); // #15803D 입금
+const PAPER = rgb(0.969, 0.965, 0.953); // #F7F6F3 종이톤 (표 헤더/줄무늬)
+const BORDER = rgb(0.886, 0.875, 0.847); // #E2DFD8 옅은 종이 경계
+const TOTAL_FILL = rgb(0.992, 0.949, 0.906); // #FDF2E7 합계 박스 배경(옅은 오렌지)
+const STAMP_FILL = rgb(0.997, 0.994, 0.988); // 서명 박스 배경
+const A4: [number, number] = [595.28, 841.89];
+const MARGIN = 48;
+const FOOTER_TEXT = '작업온에서 발행 · workon';
+
+interface Fonts {
+  regular: PDFFont;
+  bold: PDFFont;
+}
 
 @Injectable()
 export class PdfService {
@@ -195,81 +214,420 @@ export class PdfService {
 
   // ==========================================================================
   //  한글 폰트 임베드 (확인서/명세서 PDF)
-  //  - 시스템 폰트를 backend/assets/fonts 에 복사해 로컬 임베드(외부 다운로드 불가).
-  //  - fontkit 등록 + subset:true 로 사용 글리프만 서브셋(용량 최소화).
+  //  - 로컬 OFL 폰트(NanumGothic Regular/Bold)를 전체 임베드한다.
+  //  - ★ subset:true 는 @pdf-lib/fontkit 의 서브셋 매핑 버그로 숫자(0~9)·다수
+  //    한글 글리프가 렌더되지 않는다(2026-07-18 감사 ★1). 반드시 subset:false
+  //    (전체 임베드)로 사용한다. 검증: pdftoppm 래스터 렌더 후 육안/픽셀 검사.
   // ==========================================================================
-  private fontBytesCache: Buffer | null = null;
+  private fontRegularCache: Buffer | null = null;
+  private fontBoldCache: Buffer | null = null;
 
-  private async loadFontBytes(): Promise<Buffer> {
-    if (this.fontBytesCache) return this.fontBytesCache;
+  private async loadFontFile(fileName: string): Promise<Buffer> {
     // dist 빌드/소스 실행 모두에서 찾도록 후보 경로 탐색
     const candidates = [
-      path.resolve(__dirname, '../../assets/fonts/NanumGothic-Regular.ttf'),
-      path.resolve(process.cwd(), 'assets/fonts/NanumGothic-Regular.ttf'),
+      path.resolve(__dirname, `../../assets/fonts/${fileName}`),
+      path.resolve(process.cwd(), `assets/fonts/${fileName}`),
     ];
     for (const p of candidates) {
       try {
-        const bytes = await fs.readFile(p);
-        this.fontBytesCache = bytes;
-        return bytes;
+        return await fs.readFile(p);
       } catch {
         // 다음 후보
       }
     }
     throw new AppException(
       'FONT_NOT_FOUND',
-      '한글 폰트 파일을 찾을 수 없습니다 (assets/fonts).',
+      `한글 폰트 파일을 찾을 수 없습니다 (assets/fonts/${fileName}).`,
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
+  }
+
+  /** 문서용 폰트(정체/굵게)를 등록·임베드한다. subset:false 필수. */
+  private async embedFonts(pdf: PDFDocument): Promise<Fonts> {
+    pdf.registerFontkit(fontkit);
+    if (!this.fontRegularCache) {
+      this.fontRegularCache = await this.loadFontFile(
+        'NanumGothic-Regular.ttf',
+      );
+    }
+    if (!this.fontBoldCache) {
+      this.fontBoldCache = await this.loadFontFile('NanumGothic-Bold.ttf');
+    }
+    const regular = await pdf.embedFont(this.fontRegularCache, {
+      subset: false,
+    });
+    const bold = await pdf.embedFont(this.fontBoldCache, { subset: false });
+    return { regular, bold };
   }
 
   private krw(n: number): string {
     return `${Math.round(n).toLocaleString('ko-KR')}원`;
   }
 
+  private issueDate(): string {
+    const d = new Date();
+    const p = (v: number) => String(v).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
+  /** 폭 초과 문자열을 말줄임(…)으로 자른다. */
+  private clip(font: PDFFont, s: string, size: number, maxW: number): string {
+    const src = s ?? '';
+    let shown = src;
+    while (font.widthOfTextAtSize(shown, size) > maxW && shown.length > 1) {
+      shown = shown.slice(0, -1);
+    }
+    return shown !== src ? shown.slice(0, -1) + '…' : shown;
+  }
+
+  // ── 공통 레이아웃 헬퍼 ────────────────────────────────────────────────
+  /**
+   * 문서 상단 헤더: 문서명(크게·굵게) + 부제 + 우측 발행처/발행일(+옵션).
+   * 하단에 네이비 괘선 + 좌측 오렌지 포인트. 본문 시작 y 를 반환한다.
+   */
+  private drawHeader(
+    page: PDFPage,
+    fonts: Fonts,
+    title: string,
+    subtitle: string | null,
+    rightExtra: string[] = [],
+  ): number {
+    const W = page.getWidth();
+    const H = page.getHeight();
+    const top = H - MARGIN;
+    const titleSize = 24;
+    page.drawText(title, {
+      x: MARGIN,
+      y: top - titleSize,
+      size: titleSize,
+      font: fonts.bold,
+      color: INK,
+    });
+    if (subtitle) {
+      page.drawText(subtitle, {
+        x: MARGIN,
+        y: top - titleSize - 16,
+        size: 11,
+        font: fonts.regular,
+        color: MUTED,
+      });
+    }
+    const rlines = [
+      '발행처  작업온 (workon)',
+      `발행일  ${this.issueDate()}`,
+      ...rightExtra,
+    ];
+    let ry = top - 6;
+    for (const l of rlines) {
+      const w = fonts.regular.widthOfTextAtSize(l, 9);
+      page.drawText(l, {
+        x: W - MARGIN - w,
+        y: ry,
+        size: 9,
+        font: fonts.regular,
+        color: MUTED,
+      });
+      ry -= 13;
+    }
+    // 괘선은 제목/부제 아래이면서 우측 발행정보 블록보다도 아래에 오도록 한다.
+    const titleRuleY = top - titleSize - (subtitle ? 30 : 16);
+    const ruleY = Math.min(titleRuleY, ry + 3);
+    page.drawLine({
+      start: { x: MARGIN, y: ruleY },
+      end: { x: W - MARGIN, y: ruleY },
+      thickness: 1.2,
+      color: INK,
+    });
+    page.drawRectangle({
+      x: MARGIN,
+      y: ruleY - 1.5,
+      width: 70,
+      height: 3,
+      color: ORANGE,
+    });
+    return ruleY - 26;
+  }
+
+  /** 모든 페이지 하단에 "작업온에서 발행" 푸터 + (다중페이지 시)쪽 번호. */
+  private stampFooters(pdf: PDFDocument, fonts: Fonts): void {
+    const pages = pdf.getPages();
+    const total = pages.length;
+    pages.forEach((page, i) => {
+      const W = page.getWidth();
+      const fy = 30;
+      page.drawLine({
+        start: { x: MARGIN, y: fy + 13 },
+        end: { x: W - MARGIN, y: fy + 13 },
+        thickness: 0.5,
+        color: BORDER,
+      });
+      page.drawText(FOOTER_TEXT, {
+        x: MARGIN,
+        y: fy,
+        size: 8,
+        font: fonts.regular,
+        color: MUTED,
+      });
+      if (total > 1) {
+        const pn = `${i + 1} / ${total}`;
+        const w = fonts.regular.widthOfTextAtSize(pn, 8);
+        page.drawText(pn, {
+          x: W - MARGIN - w,
+          y: fy,
+          size: 8,
+          font: fonts.regular,
+          color: MUTED,
+        });
+      }
+    });
+  }
+
+  /** 섹션 제목(오렌지 좌측 바 + 굵은 라벨). 본문 시작 y 반환. */
+  private sectionTitle(
+    page: PDFPage,
+    fonts: Fonts,
+    label: string,
+    y: number,
+    rightNote?: string,
+  ): number {
+    page.drawRectangle({
+      x: MARGIN,
+      y: y - 1,
+      width: 4,
+      height: 13,
+      color: ORANGE,
+    });
+    page.drawText(label, {
+      x: MARGIN + 12,
+      y,
+      size: 12,
+      font: fonts.bold,
+      color: INK,
+    });
+    if (rightNote) {
+      const W = page.getWidth();
+      const w = fonts.regular.widthOfTextAtSize(rightNote, 10);
+      page.drawText(rightNote, {
+        x: W - MARGIN - w,
+        y,
+        size: 10,
+        font: fonts.regular,
+        color: MUTED,
+      });
+    }
+    return y - 22;
+  }
+
+  /** 라벨/값 2열 괘선 표. 본문 다음 y 반환. */
+  private drawKeyValueTable(
+    page: PDFPage,
+    fonts: Fonts,
+    x: number,
+    yTop: number,
+    width: number,
+    rows: Array<[string, string]>,
+    labelColW = 120,
+  ): number {
+    const rowH = 24;
+    let y = yTop;
+    rows.forEach(([label, value], i) => {
+      const rowBot = y - rowH;
+      if (i % 2 === 1) {
+        page.drawRectangle({ x, y: rowBot, width, height: rowH, color: PAPER });
+      }
+      const baseY = rowBot + 8;
+      page.drawText(label, {
+        x: x + 12,
+        y: baseY,
+        size: 10.5,
+        font: fonts.regular,
+        color: MUTED,
+      });
+      const valMaxW = width - labelColW - 20;
+      page.drawText(this.clip(fonts.regular, value ?? '', 11, valMaxW), {
+        x: x + labelColW,
+        y: baseY,
+        size: 11,
+        font: fonts.regular,
+        color: INK,
+      });
+      page.drawLine({
+        start: { x, y: rowBot },
+        end: { x: x + width, y: rowBot },
+        thickness: 0.4,
+        color: BORDER,
+      });
+      y = rowBot;
+    });
+    // 외곽 박스 + 상단 괘선 + 라벨/값 구분선
+    page.drawRectangle({
+      x,
+      y,
+      width,
+      height: yTop - y,
+      borderColor: BORDER,
+      borderWidth: 0.8,
+    });
+    page.drawLine({
+      start: { x: x + labelColW - 12, y: yTop },
+      end: { x: x + labelColW - 12, y },
+      thickness: 0.4,
+      color: BORDER,
+    });
+    return y - 16;
+  }
+
+  /** 합계 강조 박스(옅은 오렌지 배경 + 오렌지 테두리 + 큰 굵은 금액). */
+  private drawTotalBox(
+    page: PDFPage,
+    fonts: Fonts,
+    x: number,
+    yTop: number,
+    width: number,
+    label: string,
+    value: string,
+  ): number {
+    const boxH = 42;
+    const boxY = yTop - boxH;
+    page.drawRectangle({
+      x,
+      y: boxY,
+      width,
+      height: boxH,
+      color: TOTAL_FILL,
+      borderColor: ORANGE,
+      borderWidth: 1.2,
+    });
+    page.drawText(label, {
+      x: x + 16,
+      y: boxY + boxH / 2 - 5,
+      size: 12,
+      font: fonts.bold,
+      color: INK,
+    });
+    const vSize = 16;
+    const w = fonts.bold.widthOfTextAtSize(value, vSize);
+    page.drawText(value, {
+      x: x + width - 16 - w,
+      y: boxY + boxH / 2 - 6,
+      size: vSize,
+      font: fonts.bold,
+      color: ORANGE_DARK,
+    });
+    return boxY - 16;
+  }
+
+  /**
+   * 서명 도장 박스: 라벨 + 이중 테두리 박스(서명 이미지 or 미서명) + 서명자명 + 일시.
+   * 박스 하단 y 를 반환한다.
+   */
+  private async drawSignatureStamp(
+    pdf: PDFDocument,
+    page: PDFPage,
+    fonts: Fonts,
+    x: number,
+    yTop: number,
+    width: number,
+    label: string,
+    signerName?: string | null,
+    signedAt?: string | null,
+    png?: Buffer | null,
+  ): Promise<number> {
+    page.drawText(label, {
+      x,
+      y: yTop,
+      size: 10,
+      font: fonts.bold,
+      color: MUTED,
+    });
+    const boxH = 66;
+    const boxY = yTop - 10 - boxH;
+    // 이중 테두리로 "도장/직인" 느낌
+    page.drawRectangle({
+      x,
+      y: boxY,
+      width,
+      height: boxH,
+      color: STAMP_FILL,
+      borderColor: BORDER,
+      borderWidth: 1,
+    });
+    page.drawRectangle({
+      x: x + 3,
+      y: boxY + 3,
+      width: width - 6,
+      height: boxH - 6,
+      borderColor: rgb(0.93, 0.91, 0.87),
+      borderWidth: 0.4,
+    });
+    if (png) {
+      try {
+        const img = await pdf.embedPng(png);
+        const scale = Math.min(
+          (width - 16) / img.width,
+          (boxH - 16) / img.height,
+          1,
+        );
+        const w = img.width * scale;
+        const h = img.height * scale;
+        page.drawImage(img, {
+          x: x + (width - w) / 2,
+          y: boxY + (boxH - h) / 2,
+          width: w,
+          height: h,
+        });
+      } catch (e) {
+        this.logger.warn(`서명 이미지 삽입 실패: ${(e as Error).message}`);
+      }
+    } else {
+      const t = '(미서명)';
+      const w = fonts.regular.widthOfTextAtSize(t, 11);
+      page.drawText(t, {
+        x: x + (width - w) / 2,
+        y: boxY + boxH / 2 - 4,
+        size: 11,
+        font: fonts.regular,
+        color: MUTED,
+      });
+    }
+    const infoY = boxY - 15;
+    page.drawText(
+      signerName ? `서명자  ${signerName}` : '서명자  ____________',
+      {
+        x,
+        y: infoY,
+        size: 10,
+        font: fonts.regular,
+        color: INK,
+      },
+    );
+    if (signedAt) {
+      page.drawText(`서명일시  ${signedAt}`, {
+        x,
+        y: infoY - 14,
+        size: 8,
+        font: fonts.regular,
+        color: MUTED,
+      });
+    }
+    return infoY - (signedAt ? 14 : 0);
+  }
+
   /** 작업확인서 PDF (종이 확인서 레이아웃). 서명 이미지가 있으면 서명란에 삽입. */
   async renderConfirmationPdf(data: ConfirmationPdfData): Promise<Buffer> {
     const pdf = await PDFDocument.create();
-    pdf.registerFontkit(fontkit);
-    const fontBytes = await this.loadFontBytes();
-    const font = await pdf.embedFont(fontBytes, { subset: true });
+    const fonts = await this.embedFonts(pdf);
+    const page = pdf.addPage(A4);
+    const W = page.getWidth();
+    const contentW = W - 2 * MARGIN;
 
-    const page = pdf.addPage([595.28, 841.89]); // A4 pt
-    const { width, height } = page.getSize();
-    const margin = 48;
-    let y = height - margin;
+    let y = this.drawHeader(page, fonts, data.title, data.site || null, [
+      `상태  ${data.statusLabel}`,
+    ]);
 
-    const black = rgb(0.1, 0.1, 0.1);
-    const gray = rgb(0.45, 0.45, 0.45);
-    const line = rgb(0.8, 0.8, 0.8);
-
-    const text = (
-      s: string,
-      x: number,
-      yy: number,
-      size: number,
-      color = black,
-    ) => page.drawText(s ?? '', { x, y: yy, size, font, color });
-
-    // 제목
-    const titleSize = 22;
-    const titleWidth = font.widthOfTextAtSize(data.title, titleSize);
-    text(data.title, (width - titleWidth) / 2, y, titleSize);
-    y -= 14;
-    text(`상태: ${data.statusLabel}`, width - margin - 90, y, 9, gray);
-    y -= 20;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 1.2,
-      color: black,
-    });
-    y -= 24;
-
-    // 필드 표 (라벨 | 값)
-    const rows: Array<[string, string]> = [
+    // 기본 정보 표
+    const infoRows: Array<[string, string]> = [
       ['작성일', data.date],
-      ['현장/장소', data.site],
       [
         '지시자(회사)',
         data.companyName + (data.contact ? ` (${data.contact})` : ''),
@@ -279,285 +637,324 @@ export class PdfService {
       ['작업 시간', data.timeRange],
       ['단가 유형', data.rateTypeLabel],
     ];
-    const labelX = margin;
-    const valueX = margin + 110;
-    const rowH = 22;
-    for (const [label, value] of rows) {
-      text(label, labelX, y, 11, gray);
-      // 값이 길면 자름(간단 처리)
-      const v = value ?? '';
-      const maxW = width - margin - valueX;
-      let shown = v;
-      while (font.widthOfTextAtSize(shown, 11) > maxW && shown.length > 1) {
-        shown = shown.slice(0, -2);
-      }
-      if (shown !== v) shown = shown.slice(0, -1) + '…';
-      text(shown, valueX, y, 11);
-      y -= rowH;
-      page.drawLine({
-        start: { x: margin, y: y + rowH - 6 },
-        end: { x: width - margin, y: y + rowH - 6 },
-        thickness: 0.5,
-        color: line,
-      });
-    }
+    y = this.drawKeyValueTable(page, fonts, MARGIN, y, contentW, infoRows, 110);
 
     // 장비 섹션(옵션)
     if (data.equipment) {
-      y -= 8;
-      text('■ 장비', margin, y, 12);
-      y -= rowH;
+      y = this.sectionTitle(page, fonts, '장비', y);
       const e = data.equipment;
       const parts = [
-        e.name ? `장비명: ${e.name}` : null,
-        e.vehicleNumber ? `차량번호: ${e.vehicleNumber}` : null,
-        e.spec ? `규격: ${e.spec}` : null,
-        `유도원: ${e.guide ? '있음' : '없음'}`,
+        e.name ? `장비명 ${e.name}` : null,
+        e.vehicleNumber ? `차량번호 ${e.vehicleNumber}` : null,
+        e.spec ? `규격 ${e.spec}` : null,
+        `유도원 ${e.guide ? '있음' : '없음'}`,
       ].filter(Boolean) as string[];
-      text(parts.join('   '), margin, y, 10, gray);
-      y -= rowH;
+      page.drawText(this.clip(fonts.regular, parts.join('   '), 10, contentW), {
+        x: MARGIN,
+        y,
+        size: 10,
+        font: fonts.regular,
+        color: INK,
+      });
+      y -= 24;
     }
 
-    // 팀(반장) 명단 표 — 팀 확인서면 이름/공수/단가/금액 렌더
+    const amtRight = W - MARGIN;
+
+    // 팀(반장) 명단 표
     if (data.teamEntries && data.teamEntries.length > 0) {
-      y -= 8;
-      text('■ 팀 명단', margin, y, 12);
-      y -= 20;
-      const tcol = {
-        name: margin,
-        gongsu: margin + 220,
-        rate: margin + 320,
-        amount: width - margin,
+      y = this.sectionTitle(page, fonts, '팀 명단', y);
+      const c = {
+        name: MARGIN + 12,
+        gongsu: MARGIN + 250,
+        rate: MARGIN + 360,
+        amount: amtRight - 12,
       };
-      text('이름', tcol.name, y, 10, gray);
-      const gHdr = '공수';
-      text(gHdr, tcol.gongsu - font.widthOfTextAtSize(gHdr, 10), y, 10, gray);
-      const rHdr = '단가';
-      text(rHdr, tcol.rate - font.widthOfTextAtSize(rHdr, 10), y, 10, gray);
-      const aHdr = '금액';
-      text(aHdr, tcol.amount - font.widthOfTextAtSize(aHdr, 10), y, 10, gray);
-      y -= 6;
-      page.drawLine({
-        start: { x: margin, y },
-        end: { x: width - margin, y },
-        thickness: 0.6,
-        color: line,
+      // 헤더 밴드
+      page.drawRectangle({
+        x: MARGIN,
+        y: y - 6,
+        width: contentW,
+        height: 20,
+        color: PAPER,
       });
-      y -= 18;
+      const hy = y - 2;
+      page.drawText('이름', {
+        x: c.name,
+        y: hy,
+        size: 10,
+        font: fonts.bold,
+        color: MUTED,
+      });
+      const rh = (t: string, xr: number) =>
+        page.drawText(t, {
+          x: xr - fonts.bold.widthOfTextAtSize(t, 10),
+          y: hy,
+          size: 10,
+          font: fonts.bold,
+          color: MUTED,
+        });
+      rh('공수', c.gongsu);
+      rh('단가', c.rate);
+      rh('금액', c.amount);
+      y -= 22;
       for (const m of data.teamEntries) {
-        text(m.name, tcol.name, y, 11);
-        const g = `${m.quantity}공수`;
-        text(g, tcol.gongsu - font.widthOfTextAtSize(g, 10), y, 10, gray);
-        const r = m.rate.toLocaleString('ko-KR');
-        text(r, tcol.rate - font.widthOfTextAtSize(r, 10), y, 10, gray);
-        const a = this.krw(m.amount);
-        text(a, tcol.amount - font.widthOfTextAtSize(a, 11), y, 11);
-        y -= rowH;
+        page.drawText(this.clip(fonts.regular, m.name, 11, 200), {
+          x: c.name,
+          y,
+          size: 11,
+          font: fonts.regular,
+          color: INK,
+        });
+        const cell = (t: string, xr: number, bold = false) =>
+          page.drawText(t, {
+            x:
+              xr - (bold ? fonts.bold : fonts.regular).widthOfTextAtSize(t, 11),
+            y,
+            size: 11,
+            font: bold ? fonts.bold : fonts.regular,
+            color: INK,
+          });
+        cell(`${m.quantity}`, c.gongsu);
+        cell(m.rate.toLocaleString('ko-KR'), c.rate);
+        cell(this.krw(m.amount), c.amount, true);
+        page.drawLine({
+          start: { x: MARGIN, y: y - 7 },
+          end: { x: W - MARGIN, y: y - 7 },
+          thickness: 0.4,
+          color: BORDER,
+        });
+        y -= 22;
       }
-      page.drawLine({
-        start: { x: margin, y: y + 8 },
-        end: { x: width - margin, y: y + 8 },
-        thickness: 0.6,
-        color: line,
-      });
-      y -= 4;
+      y -= 6;
     }
 
     // 금액 표
-    y -= 8;
-    text('■ 금액', margin, y, 12);
-    y -= 20;
-    const col = { item: margin, detail: margin + 150, amount: width - margin };
-    text('항목', col.item, y, 10, gray);
-    text('단가 × 수량', col.detail, y, 10, gray);
-    const amtHdr = '금액';
-    text(amtHdr, col.amount - font.widthOfTextAtSize(amtHdr, 10), y, 10, gray);
-    y -= 6;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 0.6,
-      color: line,
+    y = this.sectionTitle(page, fonts, '금액 내역', y);
+    const col = {
+      item: MARGIN + 12,
+      detail: MARGIN + 170,
+      amount: amtRight - 12,
+    };
+    page.drawRectangle({
+      x: MARGIN,
+      y: y - 6,
+      width: contentW,
+      height: 20,
+      color: PAPER,
     });
-    y -= 18;
-    for (const li of data.lines) {
-      text(li.label, col.item, y, 11);
-      text(li.detail, col.detail, y, 10, gray);
-      const a = this.krw(li.amount);
-      text(a, col.amount - font.widthOfTextAtSize(a, 11), y, 11);
-      y -= rowH;
-    }
-    // 팀 확인서는 항목 라인이 없으므로 팀 합계를 금액 표에 한 줄로 표기.
+    const hy = y - 2;
+    page.drawText('항목', {
+      x: col.item,
+      y: hy,
+      size: 10,
+      font: fonts.bold,
+      color: MUTED,
+    });
+    page.drawText('단가 × 수량', {
+      x: col.detail,
+      y: hy,
+      size: 10,
+      font: fonts.bold,
+      color: MUTED,
+    });
+    const amtHdr = '금액';
+    page.drawText(amtHdr, {
+      x: col.amount - fonts.bold.widthOfTextAtSize(amtHdr, 10),
+      y: hy,
+      size: 10,
+      font: fonts.bold,
+      color: MUTED,
+    });
+    y -= 22;
+    const amountRow = (label: string, detail: string, amount: number) => {
+      page.drawText(this.clip(fonts.regular, label, 11, 150), {
+        x: col.item,
+        y,
+        size: 11,
+        font: fonts.regular,
+        color: INK,
+      });
+      page.drawText(
+        this.clip(fonts.regular, detail, 10, col.amount - col.detail - 80),
+        {
+          x: col.detail,
+          y,
+          size: 10,
+          font: fonts.regular,
+          color: MUTED,
+        },
+      );
+      const a = this.krw(amount);
+      page.drawText(a, {
+        x: col.amount - fonts.regular.widthOfTextAtSize(a, 11),
+        y,
+        size: 11,
+        font: fonts.regular,
+        color: INK,
+      });
+      page.drawLine({
+        start: { x: MARGIN, y: y - 7 },
+        end: { x: W - MARGIN, y: y - 7 },
+        thickness: 0.4,
+        color: BORDER,
+      });
+      y -= 22;
+    };
+    for (const li of data.lines) amountRow(li.label, li.detail, li.amount);
     if (
       data.teamEntries &&
       data.teamEntries.length > 0 &&
       data.lines.length === 0
     ) {
-      text('팀 작업 합계', col.item, y, 11);
-      text(`팀원 ${data.teamEntries.length}명`, col.detail, y, 10, gray);
-      const a = this.krw(data.subtotal);
-      text(a, col.amount - font.widthOfTextAtSize(a, 11), y, 11);
-      y -= rowH;
+      amountRow(
+        '팀 작업 합계',
+        `팀원 ${data.teamEntries.length}명`,
+        data.subtotal,
+      );
     }
-    page.drawLine({
-      start: { x: margin, y: y + 8 },
-      end: { x: width - margin, y: y + 8 },
-      thickness: 0.6,
-      color: line,
-    });
 
-    // 합계/부가세/총액
-    const putRight = (
-      label: string,
-      value: string,
-      size: number,
-      bold = false,
-    ) => {
-      text(label, col.detail, y, size, gray);
-      const c = bold ? black : black;
-      text(value, col.amount - font.widthOfTextAtSize(value, size), y, size, c);
-      y -= size + 8;
+    // 공급가/부가세 + 합계 강조 박스
+    y -= 4;
+    const putRight = (label: string, value: string) => {
+      page.drawText(label, {
+        x: col.detail,
+        y,
+        size: 11,
+        font: fonts.regular,
+        color: MUTED,
+      });
+      page.drawText(value, {
+        x: col.amount - fonts.regular.widthOfTextAtSize(value, 11),
+        y,
+        size: 11,
+        font: fonts.regular,
+        color: INK,
+      });
+      y -= 20;
     };
-    putRight('공급가 합계', this.krw(data.subtotal), 11);
+    putRight('공급가 합계', this.krw(data.subtotal));
     if (data.vatRate > 0) {
       putRight(
         `부가세 (${Math.round(data.vatRate * 100)}%)`,
         this.krw(data.vat),
-        11,
       );
     }
-    putRight('청구 합계', this.krw(data.total), 14, true);
+    y -= 2;
+    y = this.drawTotalBox(
+      page,
+      fonts,
+      MARGIN + contentW / 2,
+      y + 12,
+      contentW / 2,
+      '청구 합계',
+      this.krw(data.total),
+    );
 
     // 특이사항
     if (data.notes) {
-      y -= 6;
-      text('특이사항', margin, y, 11, gray);
-      y -= 18;
-      // 줄바꿈 간단 처리
-      const maxW = width - 2 * margin;
-      let buf = '';
-      const flush = () => {
-        if (buf) {
-          text(buf, margin, y, 10);
-          y -= 16;
-          buf = '';
-        }
-      };
-      for (const ch of data.notes) {
-        const test = buf + ch;
-        if (font.widthOfTextAtSize(test, 10) > maxW || ch === '\n') {
-          flush();
-          if (ch !== '\n') buf = ch;
-        } else {
-          buf = test;
-        }
-      }
-      flush();
+      y -= 2;
+      y = this.sectionTitle(page, fonts, '특이사항', y);
+      y = this.drawWrapped(
+        page,
+        fonts,
+        data.notes,
+        MARGIN,
+        y,
+        contentW,
+        10,
+        MUTED,
+      );
     }
 
-    // 서명란 (하단)
-    const sigY = margin + 90;
-    page.drawLine({
-      start: { x: margin, y: sigY + 70 },
-      end: { x: width - margin, y: sigY + 70 },
-      thickness: 0.5,
-      color: line,
-    });
-    text('서명', margin, sigY + 50, 12, gray);
-    if (data.signerName) {
-      text(`서명자: ${data.signerName}`, margin, sigY + 28, 11);
-      if (data.signedAt) {
-        text(`서명일시: ${data.signedAt}`, margin, sigY + 10, 9, gray);
-      }
-    } else {
-      text('(미서명)', margin, sigY + 28, 11, gray);
-    }
-    // 서명 이미지 박스
-    const boxX = width - margin - 180;
-    const boxW = 180;
-    const boxH = 70;
-    page.drawRectangle({
-      x: boxX,
-      y: sigY,
-      width: boxW,
-      height: boxH,
-      borderColor: line,
-      borderWidth: 1,
-    });
-    if (data.signImagePng) {
-      try {
-        const img = await pdf.embedPng(data.signImagePng);
-        const scale = Math.min(
-          (boxW - 12) / img.width,
-          (boxH - 12) / img.height,
-          1,
-        );
-        const w = img.width * scale;
-        const h = img.height * scale;
-        page.drawImage(img, {
-          x: boxX + (boxW - w) / 2,
-          y: sigY + (boxH - h) / 2,
-          width: w,
-          height: h,
-        });
-      } catch (e) {
-        this.logger.warn(`서명 이미지 삽입 실패: ${(e as Error).message}`);
-      }
-    }
-    text('(서명란)', boxX + 6, sigY + boxH + 4, 8, gray);
+    // 서명 도장 박스 (하단 우측)
+    const sigTop = MARGIN + 130;
+    await this.drawSignatureStamp(
+      pdf,
+      page,
+      fonts,
+      W - MARGIN - 200,
+      sigTop,
+      200,
+      '작업 확인 서명',
+      data.signerName,
+      data.signedAt,
+      data.signImagePng,
+    );
 
+    this.stampFooters(pdf, fonts);
     const bytes = await pdf.save();
     return Buffer.from(bytes);
   }
 
+  /** 지정 폭 내 자동 줄바꿈 렌더. 다음 y 반환. */
+  private drawWrapped(
+    page: PDFPage,
+    fonts: Fonts,
+    s: string,
+    x: number,
+    yStart: number,
+    maxW: number,
+    size: number,
+    color = INK,
+    lineGap = 6,
+  ): number {
+    let y = yStart;
+    let buf = '';
+    const flush = () => {
+      page.drawText(buf, { x, y, size, font: fonts.regular, color });
+      y -= size + lineGap;
+      buf = '';
+    };
+    for (const ch of s) {
+      if (ch === '\n') {
+        flush();
+        continue;
+      }
+      const test = buf + ch;
+      if (fonts.regular.widthOfTextAtSize(test, size) > maxW) {
+        flush();
+        buf = ch;
+      } else {
+        buf = test;
+      }
+    }
+    if (buf) flush();
+    return y;
+  }
+
   /**
    * 표준근로계약서 PDF — 고용노동부 일용직 표준근로계약서 항목 + 양측 서명.
-   *  - 조항을 번호로 나열하고, 하단에 사업장/근로자 두 서명란을 둔다.
-   *  - 정본 안내(한국어본이 정본) 문구를 하단에 표기한다.
    */
   async renderLaborContractPdf(data: LaborContractPdfData): Promise<Buffer> {
     const pdf = await PDFDocument.create();
-    pdf.registerFontkit(fontkit);
-    const fontBytes = await this.loadFontBytes();
-    const font = await pdf.embedFont(fontBytes, { subset: true });
-
-    const A4: [number, number] = [595.28, 841.89];
+    const fonts = await this.embedFonts(pdf);
     let page: PDFPage = pdf.addPage(A4);
-    const { width, height } = page.getSize();
-    const margin = 48;
-    let y = height - margin;
+    const W = page.getWidth();
+    const H = page.getHeight();
+    const contentW = W - 2 * MARGIN;
 
-    const black = rgb(0.1, 0.1, 0.1);
-    const gray = rgb(0.45, 0.45, 0.45);
-    const line = rgb(0.8, 0.8, 0.8);
-
-    const text = (
-      s: string,
-      x: number,
-      yy: number,
-      size: number,
-      color = black,
-    ) => page.drawText(s ?? '', { x, y: yy, size, font, color });
+    let y = this.drawHeader(page, fonts, data.title, null, [
+      `상태  ${data.statusLabel}`,
+    ]);
 
     const ensureSpace = (need: number) => {
-      if (y < margin + need) {
+      if (y < MARGIN + need) {
         page = pdf.addPage(A4);
-        y = height - margin;
+        y = H - MARGIN;
       }
     };
-
-    // 여러 줄 래핑 렌더 (지정 폭 내에서 자동 줄바꿈)
     const wrapped = (
       s: string,
       x: number,
       size: number,
       maxW: number,
-      color = black,
+      color = INK,
     ) => {
       let buf = '';
       const flush = () => {
         ensureSpace(40);
-        text(buf, x, y, size, color);
+        page.drawText(buf, { x, y, size, font: fonts.regular, color });
         y -= size + 6;
         buf = '';
       };
@@ -567,7 +964,7 @@ export class PdfService {
           continue;
         }
         const test = buf + ch;
-        if (font.widthOfTextAtSize(test, size) > maxW) {
+        if (fonts.regular.widthOfTextAtSize(test, size) > maxW) {
           flush();
           buf = ch;
         } else {
@@ -577,50 +974,29 @@ export class PdfService {
       if (buf) flush();
     };
 
-    // 제목
-    const titleSize = 22;
-    const titleWidth = font.widthOfTextAtSize(data.title, titleSize);
-    text(data.title, (width - titleWidth) / 2, y, titleSize);
-    y -= 14;
-    text(`상태: ${data.statusLabel}`, width - margin - 90, y, 9, gray);
-    y -= 18;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 1.2,
-      color: black,
-    });
-    y -= 22;
-
     // 당사자
-    text('■ 계약 당사자', margin, y, 12);
-    y -= 20;
+    y = this.sectionTitle(page, fonts, '계약 당사자', y);
     const bizLine = [
-      `사업주(갑): ${data.businessName}`,
+      `사업주(갑)  ${data.businessName}`,
       data.businessNumber ? `사업자번호 ${data.businessNumber}` : null,
     ]
       .filter(Boolean)
-      .join('   ');
-    wrapped(bizLine, margin, 11, width - 2 * margin);
+      .join('    ');
+    wrapped(bizLine, MARGIN, 11, contentW);
     if (data.businessAddress) {
-      wrapped(
-        `주소: ${data.businessAddress}`,
-        margin,
-        10,
-        width - 2 * margin,
-        gray,
-      );
+      wrapped(`주소  ${data.businessAddress}`, MARGIN, 10, contentW, MUTED);
     }
     const workerLine = [
-      `근로자(을): ${data.workerName}`,
+      `근로자(을)  ${data.workerName}`,
       data.workerPhone ? `연락처 ${data.workerPhone}` : null,
     ]
       .filter(Boolean)
-      .join('   ');
-    wrapped(workerLine, margin, 11, width - 2 * margin);
-    y -= 6;
+      .join('    ');
+    wrapped(workerLine, MARGIN, 11, contentW);
+    y -= 10;
 
-    // 조항 표 (라벨 | 값)
+    // 조항 (라벨 | 값)
+    y = this.sectionTitle(page, fonts, '계약 내용', y);
     const rows: Array<[string, string]> = [
       [
         '1. 근로계약기간',
@@ -638,30 +1014,39 @@ export class PdfService {
       ['6. 임금 지급일', data.payday],
       ['7. 지급 방법', data.payMethod],
     ];
-    const labelX = margin;
-    const valueX = margin + 120;
-    const valueMaxW = width - margin - valueX;
-    text('■ 계약 내용', margin, y, 12);
-    y -= 20;
+    const labelX = MARGIN;
+    const valueX = MARGIN + 120;
+    const valueMaxW = contentW - 120;
     for (const [label, value] of rows) {
       ensureSpace(48);
       const yStart = y;
-      text(label, labelX, y, 11, gray);
+      page.drawText(label, {
+        x: labelX,
+        y,
+        size: 11,
+        font: fonts.bold,
+        color: MUTED,
+      });
       wrapped(value, valueX, 11, valueMaxW);
-      // 값이 한 줄이면 y 가 한 줄만 줄었을 것. 라벨-값 정렬 유지 위해 최소 rowH 확보.
-      if (yStart - y < 22) y = yStart - 22;
+      if (yStart - y < 24) y = yStart - 24;
       page.drawLine({
-        start: { x: margin, y: y + 8 },
-        end: { x: width - margin, y: y + 8 },
+        start: { x: MARGIN, y: y + 8 },
+        end: { x: W - MARGIN, y: y + 8 },
         thickness: 0.4,
-        color: line,
+        color: BORDER,
       });
     }
-    y -= 8;
+    y -= 10;
 
-    // 8. 주휴·연장수당 문구
+    // 8. 수당
     ensureSpace(60);
-    text('8. 수당', margin, y, 11, gray);
+    page.drawText('8. 수당', {
+      x: MARGIN,
+      y,
+      size: 11,
+      font: fonts.bold,
+      color: MUTED,
+    });
     y -= 18;
     const allowanceNote = [
       data.weeklyHolidayAllowance
@@ -671,12 +1056,18 @@ export class PdfService {
         ? '연장·야간·휴일근로 시 근로기준법에 따라 통상임금의 50%를 가산하여 지급한다.'
         : '연장·야간·휴일 가산수당: 별도 정하지 않음.',
     ].join('\n');
-    wrapped(allowanceNote, margin + 12, 10, width - 2 * margin - 12, gray);
-    y -= 6;
+    wrapped(allowanceNote, MARGIN + 12, 10, contentW - 12, MUTED);
+    y -= 8;
 
     // 9. 4대보험
     ensureSpace(40);
-    text('9. 사회보험 적용', margin, y, 11, gray);
+    page.drawText('9. 사회보험 적용', {
+      x: MARGIN,
+      y,
+      size: 11,
+      font: fonts.bold,
+      color: MUTED,
+    });
     y -= 18;
     const si = data.socialInsurance ?? {};
     const check = (b?: boolean) => (b ? '[적용]' : '[미적용]');
@@ -685,106 +1076,66 @@ export class PdfService {
       `건강보험 ${check(si.health)}`,
       `국민연금 ${check(si.pension)}`,
       `산재보험 ${check(si.industrialAccident)}`,
-    ].join('   ');
-    wrapped(siText, margin + 12, 10, width - 2 * margin - 12);
-    y -= 6;
+    ].join('    ');
+    wrapped(siText, MARGIN + 12, 10, contentW - 12);
+    y -= 8;
 
     // 10. 특약사항
     if (data.specialTerms) {
       ensureSpace(40);
-      text('10. 특약사항', margin, y, 11, gray);
+      page.drawText('10. 특약사항', {
+        x: MARGIN,
+        y,
+        size: 11,
+        font: fonts.bold,
+        color: MUTED,
+      });
       y -= 18;
-      wrapped(data.specialTerms, margin + 12, 10, width - 2 * margin - 12);
-      y -= 6;
+      wrapped(data.specialTerms, MARGIN + 12, 10, contentW - 12);
+      y -= 8;
     }
 
-    // 정본 안내 (한국어본이 정본)
+    // 정본 안내
     ensureSpace(30);
-    y -= 6;
     wrapped(
       '※ 본 계약서의 정본은 한국어본입니다. 번역본은 이해를 돕기 위한 참고용입니다.',
-      margin,
+      MARGIN,
       9,
-      width - 2 * margin,
-      gray,
+      contentW,
+      MUTED,
     );
-    y -= 4;
+    y -= 6;
 
-    // 서명란 (사업장 / 근로자 2개 박스) — 페이지 하단에 배치
-    ensureSpace(160);
-    const boxTop = Math.max(y - 10, margin + 130);
-    y = boxTop;
-    page.drawLine({
-      start: { x: margin, y: y + 6 },
-      end: { x: width - margin, y: y + 6 },
-      thickness: 0.6,
-      color: line,
-    });
-    y -= 16;
-    const halfW = (width - 2 * margin - 20) / 2;
-    const boxH = 70;
-    const drawSignBox = async (
-      x: number,
-      label: string,
-      signerName?: string | null,
-      signedAt?: string | null,
-      png?: Buffer | null,
-    ) => {
-      text(label, x, y, 11, gray);
-      const boxY = y - boxH - 6;
-      page.drawRectangle({
-        x,
-        y: boxY,
-        width: halfW,
-        height: boxH,
-        borderColor: line,
-        borderWidth: 1,
-      });
-      if (png) {
-        try {
-          const img = await pdf.embedPng(png);
-          const scale = Math.min(
-            (halfW - 12) / img.width,
-            (boxH - 12) / img.height,
-            1,
-          );
-          const w = img.width * scale;
-          const h = img.height * scale;
-          page.drawImage(img, {
-            x: x + (halfW - w) / 2,
-            y: boxY + (boxH - h) / 2,
-            width: w,
-            height: h,
-          });
-        } catch (e) {
-          this.logger.warn(`서명 이미지 삽입 실패: ${(e as Error).message}`);
-        }
-      } else {
-        text('(미서명)', x + 8, boxY + boxH / 2, 10, gray);
-      }
-      text(
-        signerName ? `성명: ${signerName}` : '성명: ____________',
-        x,
-        boxY - 14,
-        10,
-      );
-      if (signedAt) text(`서명일시: ${signedAt}`, x, boxY - 28, 8, gray);
-    };
-    await drawSignBox(
-      margin,
+    // 서명 도장 박스 2개
+    ensureSpace(170);
+    const boxTop = Math.max(y - 10, MARGIN + 140);
+    const halfW = (contentW - 24) / 2;
+    await this.drawSignatureStamp(
+      pdf,
+      page,
+      fonts,
+      MARGIN,
+      boxTop,
+      halfW,
       '사업주(갑)',
       data.employerSignerName,
       data.employerSignedAt,
       data.employerSignPng,
     );
-    await drawSignBox(
-      margin + halfW + 20,
+    await this.drawSignatureStamp(
+      pdf,
+      page,
+      fonts,
+      MARGIN + halfW + 24,
+      boxTop,
+      halfW,
       '근로자(을)',
       data.workerSignerName,
       data.workerSignedAt,
       data.workerSignPng,
     );
 
+    this.stampFooters(pdf, fonts);
     const bytes = await pdf.save();
     return Buffer.from(bytes);
   }
@@ -792,107 +1143,146 @@ export class PdfService {
   /** 월간 명세서 PDF (상대별 소계 + 총계 표). */
   async renderStatementPdf(data: StatementPdfData): Promise<Buffer> {
     const pdf = await PDFDocument.create();
-    pdf.registerFontkit(fontkit);
-    const fontBytes = await this.loadFontBytes();
-    const font = await pdf.embedFont(fontBytes, { subset: true });
+    const fonts = await this.embedFonts(pdf);
+    let page: PDFPage = pdf.addPage(A4);
+    const W = page.getWidth();
+    const H = page.getHeight();
+    const contentW = W - 2 * MARGIN;
 
-    let page: PDFPage = pdf.addPage([595.28, 841.89]);
-    const { width, height } = page.getSize();
-    const margin = 48;
-    let y = height - margin;
-    const black = rgb(0.1, 0.1, 0.1);
-    const gray = rgb(0.45, 0.45, 0.45);
-    const line = rgb(0.8, 0.8, 0.8);
+    let y = this.drawHeader(
+      page,
+      fonts,
+      data.title,
+      `${data.month}  ·  작업자 ${data.workerName}`,
+    );
 
-    const text = (
-      s: string,
-      x: number,
-      yy: number,
-      size: number,
-      color = black,
-    ) => page.drawText(s ?? '', { x, y: yy, size, font, color });
-    const rightText = (
-      s: string,
-      xRight: number,
-      yy: number,
-      size: number,
-      color = black,
-    ) => text(s, xRight - font.widthOfTextAtSize(s, size), yy, size, color);
+    y = this.sectionTitle(page, fonts, '상대별 청구·수금 현황', y);
 
-    const titleSize = 20;
-    const t = `${data.title} (${data.month})`;
-    text(t, (width - font.widthOfTextAtSize(t, titleSize)) / 2, y, titleSize);
-    y -= 18;
-    text(`작업자: ${data.workerName}`, margin, y, 10, gray);
-    y -= 16;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 1,
-      color: black,
-    });
-    y -= 22;
-
-    // 표 헤더
     const cols = {
-      company: margin,
-      days: margin + 240,
-      amount: margin + 320,
-      paid: margin + 420,
-      out: width - margin,
+      company: MARGIN + 12,
+      days: MARGIN + 202,
+      amount: MARGIN + 307,
+      paid: MARGIN + 402,
+      out: W - MARGIN - 12,
     };
-    text('상대(회사)', cols.company, y, 10, gray);
-    rightText('일수', cols.days + 30, y, 10, gray);
-    rightText('청구액', cols.amount + 60, y, 10, gray);
-    rightText('입금', cols.paid + 50, y, 10, gray);
-    rightText('미수', cols.out, y, 10, gray);
-    y -= 6;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 0.6,
-      color: line,
-    });
-    y -= 18;
-
-    const rowH = 20;
-    const ensureSpace = () => {
-      if (y < margin + 80) {
-        page = pdf.addPage([595.28, 841.89]);
-        y = height - margin;
-      }
+    const right = (
+      s: string,
+      xr: number,
+      yy: number,
+      size: number,
+      color = INK,
+      bold = false,
+    ) => {
+      const f = bold ? fonts.bold : fonts.regular;
+      page.drawText(s, {
+        x: xr - f.widthOfTextAtSize(s, size),
+        y: yy,
+        size,
+        font: f,
+        color,
+      });
     };
 
+    const drawHead = () => {
+      page.drawRectangle({
+        x: MARGIN,
+        y: y - 6,
+        width: contentW,
+        height: 20,
+        color: PAPER,
+      });
+      const hy = y - 2;
+      page.drawText('상대(회사)', {
+        x: cols.company,
+        y: hy,
+        size: 10,
+        font: fonts.bold,
+        color: MUTED,
+      });
+      right('일수', cols.days, hy, 10, MUTED, true);
+      right('청구액', cols.amount, hy, 10, MUTED, true);
+      right('입금', cols.paid, hy, 10, MUTED, true);
+      right('미수', cols.out, hy, 10, MUTED, true);
+      y -= 24;
+    };
+    drawHead();
+
+    const rowH = 22;
+    let i = 0;
     for (const g of data.groups) {
-      ensureSpace();
-      // 회사명 길면 자름
-      let name = g.companyName || '(미지정)';
-      const maxW = 220;
-      while (font.widthOfTextAtSize(name, 11) > maxW && name.length > 1) {
-        name = name.slice(0, -1);
+      if (y < MARGIN + 90) {
+        page = pdf.addPage(A4);
+        y = H - MARGIN;
+        drawHead();
       }
-      text(name, cols.company, y, 11);
-      rightText(String(g.days), cols.days + 30, y, 11);
-      rightText(this.krw(g.subtotal), cols.amount + 60, y, 11);
-      rightText(this.krw(g.paid), cols.paid + 50, y, 11);
-      rightText(this.krw(g.outstanding), cols.out, y, 11);
+      const rowBot = y - rowH + 6;
+      if (i % 2 === 1) {
+        page.drawRectangle({
+          x: MARGIN,
+          y: rowBot,
+          width: contentW,
+          height: rowH,
+          color: PAPER,
+        });
+      }
+      const name = this.clip(
+        fonts.regular,
+        g.companyName || '(미지정)',
+        11,
+        170,
+      );
+      page.drawText(name, {
+        x: cols.company,
+        y,
+        size: 11,
+        font: fonts.regular,
+        color: INK,
+      });
+      right(String(g.days), cols.days, y, 11);
+      right(this.krw(g.subtotal), cols.amount, y, 11);
+      right(this.krw(g.paid), cols.paid, y, 11, g.paid > 0 ? GREEN : INK);
+      right(
+        this.krw(g.outstanding),
+        cols.out,
+        y,
+        11,
+        g.outstanding > 0 ? ORANGE_DARK : INK,
+      );
+      page.drawLine({
+        start: { x: MARGIN, y: y - 7 },
+        end: { x: W - MARGIN, y: y - 7 },
+        thickness: 0.4,
+        color: BORDER,
+      });
       y -= rowH;
+      i += 1;
     }
 
-    // 총계
+    // 총계 강조 밴드
     y -= 4;
-    page.drawLine({
-      start: { x: margin, y: y + 10 },
-      end: { x: width - margin, y: y + 10 },
-      thickness: 1,
-      color: black,
+    page.drawRectangle({
+      x: MARGIN,
+      y: y - 24,
+      width: contentW,
+      height: 28,
+      color: TOTAL_FILL,
+      borderColor: ORANGE,
+      borderWidth: 1.2,
     });
-    text('총계', cols.company, y - 8, 12);
-    rightText(String(data.totalDays), cols.days + 30, y - 8, 12);
-    rightText(this.krw(data.totalAmount), cols.amount + 60, y - 8, 12);
-    rightText(this.krw(data.totalPaid), cols.paid + 50, y - 8, 12);
-    rightText(this.krw(data.totalOutstanding), cols.out, y - 8, 12);
+    const ty = y - 15;
+    page.drawText('총계', {
+      x: cols.company,
+      y: ty,
+      size: 12,
+      font: fonts.bold,
+      color: INK,
+    });
+    right(String(data.totalDays), cols.days, ty, 12, INK, true);
+    right(this.krw(data.totalAmount), cols.amount, ty, 12, INK, true);
+    right(this.krw(data.totalPaid), cols.paid, ty, 12, GREEN, true);
+    right(this.krw(data.totalOutstanding), cols.out, ty, 12, ORANGE_DARK, true);
 
+    this.stampFooters(pdf, fonts);
     const bytes = await pdf.save();
     return Buffer.from(bytes);
   }
@@ -900,72 +1290,51 @@ export class PdfService {
   /** 연간(기간별) 소득 리포트 PDF — 총계 + 월별 추이 표 + 상대별 표 + 종소세 안내 (P2d). */
   async renderIncomeReportPdf(data: IncomeReportPdfData): Promise<Buffer> {
     const pdf = await PDFDocument.create();
-    pdf.registerFontkit(fontkit);
-    const fontBytes = await this.loadFontBytes();
-    const font = await pdf.embedFont(fontBytes, { subset: true });
-
-    const A4: [number, number] = [595.28, 841.89];
+    const fonts = await this.embedFonts(pdf);
     let page: PDFPage = pdf.addPage(A4);
-    const { width, height } = page.getSize();
-    const margin = 48;
-    let y = height - margin;
-    const black = rgb(0.1, 0.1, 0.1);
-    const gray = rgb(0.45, 0.45, 0.45);
-    const line = rgb(0.8, 0.8, 0.8);
+    const W = page.getWidth();
+    const H = page.getHeight();
+    const contentW = W - 2 * MARGIN;
 
-    const text = (
+    let y = this.drawHeader(
+      page,
+      fonts,
+      data.title,
+      `${data.periodLabel}  ·  작업자 ${data.workerName}`,
+    );
+
+    const right = (
       s: string,
-      x: number,
+      xr: number,
       yy: number,
       size: number,
-      color = black,
-    ) => page.drawText(s ?? '', { x, y: yy, size, font, color });
-    const rightText = (
-      s: string,
-      xRight: number,
-      yy: number,
-      size: number,
-      color = black,
-    ) => text(s, xRight - font.widthOfTextAtSize(s, size), yy, size, color);
+      color = INK,
+      bold = false,
+    ) => {
+      const f = bold ? fonts.bold : fonts.regular;
+      page.drawText(s, {
+        x: xr - f.widthOfTextAtSize(s, size),
+        y: yy,
+        size,
+        font: f,
+        color,
+      });
+    };
     const pageBreak = (need: number) => {
-      if (y < margin + need) {
+      if (y < MARGIN + need) {
         page = pdf.addPage(A4);
-        y = height - margin;
+        y = H - MARGIN;
       }
     };
-    const clip = (s: string, maxW: number, size: number): string => {
-      let shown = s ?? '';
-      while (font.widthOfTextAtSize(shown, size) > maxW && shown.length > 1) {
-        shown = shown.slice(0, -1);
-      }
-      return shown !== (s ?? '') ? shown.slice(0, -1) + '…' : shown;
-    };
-
-    // 제목
-    const titleSize = 20;
-    const t = `${data.title} (${data.periodLabel})`;
-    text(t, (width - font.widthOfTextAtSize(t, titleSize)) / 2, y, titleSize);
-    y -= 18;
-    text(`작업자: ${data.workerName}`, margin, y, 10, gray);
-    y -= 16;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 1,
-      color: black,
-    });
-    y -= 24;
 
     // 총계 요약
-    text('■ 총계', margin, y, 12);
-    y -= 20;
-    const gongStr = `${data.totals.totalGongsu}`;
+    y = this.sectionTitle(page, fonts, '총계', y);
     const summaryRows: Array<[string, string]> = [
       ['총 청구액', this.krw(data.totals.totalBilled)],
       ['총 입금', this.krw(data.totals.totalPaid)],
       ['총 미수', this.krw(data.totals.totalOutstanding)],
       ['총 일한 날', `${data.totals.totalDays}일`],
-      ['총 공수', `${gongStr}공수`],
+      ['총 공수', `${data.totals.totalGongsu}공수`],
     ];
     if (data.totals.teamPayout > 0) {
       summaryRows.push([
@@ -978,107 +1347,179 @@ export class PdfService {
       ]);
     }
     for (const [label, value] of summaryRows) {
-      text(label, margin, y, 11, gray);
-      rightText(value, width - margin, y, 11);
+      page.drawText(label, {
+        x: MARGIN,
+        y,
+        size: 11,
+        font: fonts.regular,
+        color: MUTED,
+      });
+      const color = label.includes('미수')
+        ? ORANGE_DARK
+        : label.includes('입금')
+          ? GREEN
+          : INK;
+      right(value, W - MARGIN, y, 11, color, label.includes('청구'));
       y -= 18;
     }
-    y -= 10;
+    y -= 12;
 
     // 월별 추이 표
     pageBreak(120);
-    text('■ 월별 추이', margin, y, 12);
-    y -= 20;
+    y = this.sectionTitle(page, fonts, '월별 추이', y);
     const mcol = {
-      month: margin,
-      billed: margin + 170,
-      paid: margin + 290,
-      out: margin + 400,
-      days: width - margin,
+      month: MARGIN + 4,
+      billed: MARGIN + 190,
+      paid: MARGIN + 300,
+      out: MARGIN + 410,
+      days: W - MARGIN,
     };
-    text('월', mcol.month, y, 10, gray);
-    rightText('청구액', mcol.billed, y, 10, gray);
-    rightText('입금', mcol.paid, y, 10, gray);
-    rightText('미수', mcol.out, y, 10, gray);
-    rightText('일수/공수', mcol.days, y, 10, gray);
-    y -= 6;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 0.6,
-      color: line,
+    page.drawRectangle({
+      x: MARGIN,
+      y: y - 6,
+      width: contentW,
+      height: 20,
+      color: PAPER,
     });
-    y -= 16;
+    let hy = y - 2;
+    page.drawText('월', {
+      x: mcol.month,
+      y: hy,
+      size: 10,
+      font: fonts.bold,
+      color: MUTED,
+    });
+    right('청구액', mcol.billed, hy, 10, MUTED, true);
+    right('입금', mcol.paid, hy, 10, MUTED, true);
+    right('미수', mcol.out, hy, 10, MUTED, true);
+    right('일수/공수', mcol.days, hy, 10, MUTED, true);
+    y -= 24;
     for (const m of data.monthly) {
       pageBreak(30);
-      text(m.month, mcol.month, y, 10);
-      rightText(this.krw(m.billed), mcol.billed, y, 10);
-      rightText(this.krw(m.paid), mcol.paid, y, 10);
-      rightText(this.krw(m.outstanding), mcol.out, y, 10);
+      page.drawText(m.month, {
+        x: mcol.month,
+        y,
+        size: 10,
+        font: fonts.regular,
+        color: INK,
+      });
+      right(this.krw(m.billed), mcol.billed, y, 10);
+      right(this.krw(m.paid), mcol.paid, y, 10, m.paid > 0 ? GREEN : INK);
+      right(
+        this.krw(m.outstanding),
+        mcol.out,
+        y,
+        10,
+        m.outstanding > 0 ? ORANGE_DARK : INK,
+      );
       const dg =
         m.gongsu > 0
           ? `${m.daysWorked}일/${m.gongsu}공수`
           : `${m.daysWorked}일`;
-      rightText(dg, mcol.days, y, 10, gray);
-      y -= 16;
-    }
-    y -= 12;
-
-    // 상대별 표
-    pageBreak(100);
-    text('■ 상대별 합계', margin, y, 12);
-    y -= 20;
-    const ccol = {
-      name: margin,
-      count: margin + 200,
-      total: margin + 300,
-      paid: margin + 400,
-      out: width - margin,
-    };
-    text('상대(회사)', ccol.name, y, 10, gray);
-    rightText('건수', ccol.count, y, 10, gray);
-    rightText('총액', ccol.total, y, 10, gray);
-    rightText('입금', ccol.paid, y, 10, gray);
-    rightText('미수', ccol.out, y, 10, gray);
-    y -= 6;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 0.6,
-      color: line,
-    });
-    y -= 16;
-    if (data.companies.length === 0) {
-      text('기록 없음', ccol.name, y, 10, gray);
-      y -= 16;
-    }
-    for (const c of data.companies) {
-      pageBreak(30);
-      text(clip(c.companyName || '(미지정)', 180, 11), ccol.name, y, 11);
-      rightText(`${c.count}건`, ccol.count, y, 10, gray);
-      rightText(this.krw(c.total), ccol.total, y, 10);
-      rightText(this.krw(c.paid), ccol.paid, y, 10);
-      rightText(this.krw(c.outstanding), ccol.out, y, 10);
-      y -= 16;
+      right(dg, mcol.days, y, 10, MUTED);
+      page.drawLine({
+        start: { x: MARGIN, y: y - 6 },
+        end: { x: W - MARGIN, y: y - 6 },
+        thickness: 0.3,
+        color: BORDER,
+      });
+      y -= 18;
     }
     y -= 14;
 
+    // 상대별 표
+    pageBreak(100);
+    y = this.sectionTitle(page, fonts, '상대별 합계', y);
+    const ccol = {
+      name: MARGIN + 4,
+      count: MARGIN + 220,
+      total: MARGIN + 320,
+      paid: MARGIN + 420,
+      out: W - MARGIN,
+    };
+    page.drawRectangle({
+      x: MARGIN,
+      y: y - 6,
+      width: contentW,
+      height: 20,
+      color: PAPER,
+    });
+    hy = y - 2;
+    page.drawText('상대(회사)', {
+      x: ccol.name,
+      y: hy,
+      size: 10,
+      font: fonts.bold,
+      color: MUTED,
+    });
+    right('건수', ccol.count, hy, 10, MUTED, true);
+    right('총액', ccol.total, hy, 10, MUTED, true);
+    right('입금', ccol.paid, hy, 10, MUTED, true);
+    right('미수', ccol.out, hy, 10, MUTED, true);
+    y -= 24;
+    if (data.companies.length === 0) {
+      page.drawText('기록 없음', {
+        x: ccol.name,
+        y,
+        size: 10,
+        font: fonts.regular,
+        color: MUTED,
+      });
+      y -= 18;
+    }
+    for (const c of data.companies) {
+      pageBreak(30);
+      page.drawText(
+        this.clip(fonts.regular, c.companyName || '(미지정)', 11, 200),
+        {
+          x: ccol.name,
+          y,
+          size: 11,
+          font: fonts.regular,
+          color: INK,
+        },
+      );
+      right(`${c.count}건`, ccol.count, y, 10, MUTED);
+      right(this.krw(c.total), ccol.total, y, 10);
+      right(this.krw(c.paid), ccol.paid, y, 10, c.paid > 0 ? GREEN : INK);
+      right(
+        this.krw(c.outstanding),
+        ccol.out,
+        y,
+        10,
+        c.outstanding > 0 ? ORANGE_DARK : INK,
+      );
+      page.drawLine({
+        start: { x: MARGIN, y: y - 6 },
+        end: { x: W - MARGIN, y: y - 6 },
+        thickness: 0.3,
+        color: BORDER,
+      });
+      y -= 18;
+    }
+    y -= 16;
+
     // 종소세 안내
     pageBreak(120);
-    text('■ 종합소득세 안내', margin, y, 12);
-    y -= 20;
-    const noteMaxW = width - 2 * margin - 12;
+    y = this.sectionTitle(page, fonts, '종합소득세 안내', y);
+    const noteMaxW = contentW - 12;
     for (const noteLine of data.taxNoteLines) {
-      // 간단 래핑
       let buf = '';
       const flush = () => {
         pageBreak(24);
-        text(`· ${buf}`, margin, y, 9, gray);
+        page.drawText(`· ${buf}`, {
+          x: MARGIN,
+          y,
+          size: 9,
+          font: fonts.regular,
+          color: MUTED,
+        });
         y -= 14;
         buf = '';
       };
       for (const ch of noteLine) {
         const test = buf + ch;
-        if (font.widthOfTextAtSize(`· ${test}`, 9) > noteMaxW) {
+        if (fonts.regular.widthOfTextAtSize(`· ${test}`, 9) > noteMaxW) {
           flush();
           buf = ch;
         } else {
@@ -1089,6 +1530,7 @@ export class PdfService {
       y -= 2;
     }
 
+    this.stampFooters(pdf, fonts);
     const bytes = await pdf.save();
     return Buffer.from(bytes);
   }
@@ -1096,151 +1538,188 @@ export class PdfService {
   /** 현장별 인건비 집계 PDF (P5a) — 현장별 표(작업자/팀 행) + 소계 + 총계. 발주처 제출용. */
   async renderSiteCostsPdf(data: SiteCostsPdfData): Promise<Buffer> {
     const pdf = await PDFDocument.create();
-    pdf.registerFontkit(fontkit);
-    const fontBytes = await this.loadFontBytes();
-    const font = await pdf.embedFont(fontBytes, { subset: true });
-
-    const A4: [number, number] = [595.28, 841.89];
+    const fonts = await this.embedFonts(pdf);
     let page: PDFPage = pdf.addPage(A4);
-    const { width, height } = page.getSize();
-    const margin = 48;
-    let y = height - margin;
-    const black = rgb(0.1, 0.1, 0.1);
-    const gray = rgb(0.45, 0.45, 0.45);
-    const line = rgb(0.8, 0.8, 0.8);
+    const W = page.getWidth();
+    const H = page.getHeight();
+    const contentW = W - 2 * MARGIN;
 
-    const text = (
-      s: string,
-      x: number,
-      yy: number,
-      size: number,
-      color = black,
-    ) => page.drawText(s ?? '', { x, y: yy, size, font, color });
-    const rightText = (
-      s: string,
-      xRight: number,
-      yy: number,
-      size: number,
-      color = black,
-    ) => text(s, xRight - font.widthOfTextAtSize(s, size), yy, size, color);
-    const pageBreak = (need: number) => {
-      if (y < margin + need) {
-        page = pdf.addPage(A4);
-        y = height - margin;
-      }
-    };
-    const clip = (s: string, maxW: number, size: number): string => {
-      let shown = s ?? '';
-      while (font.widthOfTextAtSize(shown, size) > maxW && shown.length > 1) {
-        shown = shown.slice(0, -1);
-      }
-      return shown !== (s ?? '') ? shown.slice(0, -1) + '…' : shown;
-    };
-
-    // 제목 + 사업장/기간 헤더
-    const titleSize = 20;
-    const t = data.title;
-    text(t, (width - font.widthOfTextAtSize(t, titleSize)) / 2, y, titleSize);
-    y -= 18;
-    text(`사업장: ${data.businessName}`, margin, y, 10, gray);
-    rightText(`기간: ${data.periodLabel}`, width - margin, y, 10, gray);
-    y -= 16;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 1,
-      color: black,
-    });
-    y -= 22;
+    let y = this.drawHeader(
+      page,
+      fonts,
+      data.title,
+      `사업장  ${data.businessName}`,
+      [`기간  ${data.periodLabel}`],
+    );
 
     const col = {
-      name: margin,
-      days: margin + 250,
-      gongsu: margin + 330,
-      amount: width - margin,
+      name: MARGIN + 4,
+      days: MARGIN + 270,
+      gongsu: MARGIN + 360,
+      amount: W - MARGIN,
+    };
+    const right = (
+      s: string,
+      xr: number,
+      yy: number,
+      size: number,
+      color = INK,
+      bold = false,
+    ) => {
+      const f = bold ? fonts.bold : fonts.regular;
+      page.drawText(s, {
+        x: xr - f.widthOfTextAtSize(s, size),
+        y: yy,
+        size,
+        font: f,
+        color,
+      });
+    };
+    const pageBreak = (need: number) => {
+      if (y < MARGIN + need) {
+        page = pdf.addPage(A4);
+        y = H - MARGIN;
+      }
     };
 
     for (const s of data.sites) {
-      pageBreak(90);
-      // 현장 헤더
-      text(`■ ${clip(s.site, 320, 12)}`, margin, y, 12);
-      y -= 18;
+      pageBreak(100);
+      y = this.sectionTitle(
+        page,
+        fonts,
+        this.clip(fonts.bold, s.site, 12, 320),
+        y,
+      );
       // 열 헤더
-      text('작업자/팀', col.name, y, 9, gray);
-      rightText('일수', col.days, y, 9, gray);
-      rightText('공수', col.gongsu, y, 9, gray);
-      rightText('금액', col.amount, y, 9, gray);
-      y -= 6;
-      page.drawLine({
-        start: { x: margin, y },
-        end: { x: width - margin, y },
-        thickness: 0.5,
-        color: line,
+      page.drawRectangle({
+        x: MARGIN,
+        y: y - 6,
+        width: contentW,
+        height: 18,
+        color: PAPER,
       });
-      y -= 15;
+      const hy = y - 2;
+      page.drawText('작업자/팀', {
+        x: col.name,
+        y: hy,
+        size: 9,
+        font: fonts.bold,
+        color: MUTED,
+      });
+      right('일수', col.days, hy, 9, MUTED, true);
+      right('공수', col.gongsu, hy, 9, MUTED, true);
+      right('금액', col.amount, hy, 9, MUTED, true);
+      y -= 22;
       for (const e of s.entries) {
         pageBreak(28);
         const label = e.isTeam
           ? `${e.workerName} (팀 ${e.teamMemberCount}명)`
           : e.workerName;
-        text(clip(label, col.days - col.name - 10, 10), col.name, y, 10);
-        rightText(String(e.days), col.days, y, 10);
-        rightText(e.gongsu > 0 ? String(e.gongsu) : '-', col.gongsu, y, 10);
-        rightText(this.krw(e.amount), col.amount, y, 10);
-        y -= 15;
+        page.drawText(
+          this.clip(fonts.regular, label, 10, col.days - col.name - 10),
+          {
+            x: col.name,
+            y,
+            size: 10,
+            font: fonts.regular,
+            color: INK,
+          },
+        );
+        right(String(e.days), col.days, y, 10);
+        right(e.gongsu > 0 ? String(e.gongsu) : '-', col.gongsu, y, 10);
+        right(this.krw(e.amount), col.amount, y, 10);
+        page.drawLine({
+          start: { x: MARGIN, y: y - 6 },
+          end: { x: W - MARGIN, y: y - 6 },
+          thickness: 0.3,
+          color: BORDER,
+        });
+        y -= 18;
       }
       // 현장 소계
-      page.drawLine({
-        start: { x: margin, y: y + 6 },
-        end: { x: width - margin, y: y + 6 },
-        thickness: 0.5,
-        color: line,
+      page.drawRectangle({
+        x: MARGIN,
+        y: y - 12,
+        width: contentW,
+        height: 20,
+        color: PAPER,
       });
-      text('소계', col.name, y - 6, 10, gray);
-      rightText(String(s.subtotalDays), col.days, y - 6, 10, gray);
-      rightText(
+      const sy = y - 6;
+      page.drawText('소계', {
+        x: col.name,
+        y: sy,
+        size: 10,
+        font: fonts.bold,
+        color: INK,
+      });
+      right(String(s.subtotalDays), col.days, sy, 10, INK, true);
+      right(
         s.subtotalGongsu > 0 ? String(s.subtotalGongsu) : '-',
         col.gongsu,
-        y - 6,
+        sy,
         10,
-        gray,
+        INK,
+        true,
       );
-      rightText(this.krw(s.subtotalAmount), col.amount, y - 6, 11);
-      y -= 30;
+      right(this.krw(s.subtotalAmount), col.amount, sy, 11, INK, true);
+      y -= 34;
     }
 
     if (data.sites.length === 0) {
-      text('해당 기간 서명 완료된 확인서가 없습니다.', margin, y, 10, gray);
+      page.drawText('해당 기간 서명 완료된 확인서가 없습니다.', {
+        x: MARGIN,
+        y,
+        size: 10,
+        font: fonts.regular,
+        color: MUTED,
+      });
       y -= 20;
     }
 
-    // 전체 총계
-    pageBreak(50);
-    page.drawLine({
-      start: { x: margin, y: y + 10 },
-      end: { x: width - margin, y: y + 10 },
-      thickness: 1,
-      color: black,
+    // 전체 총계 강조 박스
+    pageBreak(60);
+    page.drawRectangle({
+      x: MARGIN,
+      y: y - 24,
+      width: contentW,
+      height: 28,
+      color: TOTAL_FILL,
+      borderColor: ORANGE,
+      borderWidth: 1.2,
     });
-    text('전체 총계', col.name, y - 8, 12);
-    rightText(String(data.totalDays), col.days, y - 8, 12);
-    rightText(
+    const ty = y - 15;
+    page.drawText('전체 총계', {
+      x: col.name,
+      y: ty,
+      size: 12,
+      font: fonts.bold,
+      color: INK,
+    });
+    right(String(data.totalDays), col.days, ty, 12, INK, true);
+    right(
       data.totalGongsu > 0 ? String(data.totalGongsu) : '-',
       col.gongsu,
-      y - 8,
+      ty,
       12,
+      INK,
+      true,
     );
-    rightText(this.krw(data.totalAmount), col.amount, y - 8, 13);
-    y -= 30;
+    right(this.krw(data.totalAmount), col.amount, ty, 13, ORANGE_DARK, true);
+    y -= 40;
+
     pageBreak(24);
-    text(
+    page.drawText(
       '※ 작업자 성명은 개인정보 보호를 위해 일부 마스킹되어 있습니다.',
-      margin,
-      y,
-      8,
-      gray,
+      {
+        x: MARGIN,
+        y,
+        size: 8,
+        font: fonts.regular,
+        color: MUTED,
+      },
     );
 
+    this.stampFooters(pdf, fonts);
     const bytes = await pdf.save();
     return Buffer.from(bytes);
   }
@@ -1248,162 +1727,268 @@ export class PdfService {
   /** 안전관리 이행 리포트 PDF (유형별 건수 + 발송/확인 기록 표). */
   async renderSafetyReportPdf(data: SafetyReportPdfData): Promise<Buffer> {
     const pdf = await PDFDocument.create();
-    pdf.registerFontkit(fontkit);
-    const fontBytes = await this.loadFontBytes();
-    const font = await pdf.embedFont(fontBytes, { subset: true });
+    const fonts = await this.embedFonts(pdf);
+    let page: PDFPage = pdf.addPage(A4);
+    const W = page.getWidth();
+    const H = page.getHeight();
+    const contentW = W - 2 * MARGIN;
 
-    let page: PDFPage = pdf.addPage([595.28, 841.89]);
-    const { width, height } = page.getSize();
-    const margin = 48;
-    let y = height - margin;
-    const black = rgb(0.1, 0.1, 0.1);
-    const gray = rgb(0.45, 0.45, 0.45);
-    const line = rgb(0.8, 0.8, 0.8);
+    let y = this.drawHeader(
+      page,
+      fonts,
+      data.title,
+      `${data.month}  ·  ${data.businessName}`,
+      [`총 ${data.totalCount}건`],
+    );
 
-    const text = (
+    const right = (
       s: string,
-      x: number,
+      xr: number,
       yy: number,
       size: number,
-      color = black,
-    ) => page.drawText(s ?? '', { x, y: yy, size, font, color });
-
-    const titleSize = 20;
-    const t = `${data.title} (${data.month})`;
-    text(t, (width - font.widthOfTextAtSize(t, titleSize)) / 2, y, titleSize);
-    y -= 18;
-    text(`사업장: ${data.businessName}`, margin, y, 10, gray);
-    text(
-      `총 ${data.totalCount}건`,
-      width - margin - font.widthOfTextAtSize(`총 ${data.totalCount}건`, 10),
-      y,
-      10,
-      gray,
-    );
-    y -= 16;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 1,
-      color: black,
-    });
-    y -= 24;
+      color = INK,
+      bold = false,
+    ) => {
+      const f = bold ? fonts.bold : fonts.regular;
+      page.drawText(s, {
+        x: xr - f.widthOfTextAtSize(s, size),
+        y: yy,
+        size,
+        font: f,
+        color,
+      });
+    };
+    const pageBreak = (need: number) => {
+      if (y < MARGIN + need) {
+        page = pdf.addPage(A4);
+        y = H - MARGIN;
+      }
+    };
 
     // 유형별 건수
-    text('■ 유형별 건수', margin, y, 12);
-    y -= 20;
+    y = this.sectionTitle(page, fonts, '유형별 건수', y);
     if (data.byType.length === 0) {
-      text('기록 없음', margin, y, 10, gray);
+      page.drawText('기록 없음', {
+        x: MARGIN,
+        y,
+        size: 10,
+        font: fonts.regular,
+        color: MUTED,
+      });
       y -= 18;
     }
     for (const b of data.byType) {
-      text(b.typeLabel, margin, y, 11);
-      const c = `${b.count}건`;
-      text(c, width - margin - font.widthOfTextAtSize(c, 11), y, 11);
-      y -= 18;
-    }
-    y -= 10;
-
-    const pageBreak = (need: number) => {
-      if (y < margin + need) {
-        page = pdf.addPage([595.28, 841.89]);
-        y = height - margin;
-      }
-    };
-
-    // TBM(안전점검회의) 월간 목록 (P2c)
-    if (data.tbm && data.tbm.length > 0) {
-      pageBreak(80);
-      text('■ TBM(안전점검회의)', margin, y, 12);
-      const tbmTotal = `총 ${data.tbm.length}회`;
-      text(
-        tbmTotal,
-        width - margin - font.widthOfTextAtSize(tbmTotal, 10),
+      page.drawText(b.typeLabel, {
+        x: MARGIN + 4,
         y,
-        10,
-        gray,
-      );
-      y -= 20;
-      const tcol = {
-        date: margin,
-        site: margin + 88,
-        hazards: margin + 210,
-        att: width - margin,
-      };
-      text('일자', tcol.date, y, 10, gray);
-      text('현장', tcol.site, y, 10, gray);
-      text('위험요인', tcol.hazards, y, 10, gray);
-      const attHdr = '참석/확인';
-      text(attHdr, tcol.att - font.widthOfTextAtSize(attHdr, 10), y, 10, gray);
-      y -= 6;
-      page.drawLine({
-        start: { x: margin, y },
-        end: { x: width - margin, y },
-        thickness: 0.6,
-        color: line,
+        size: 11,
+        font: fonts.regular,
+        color: INK,
       });
-      y -= 16;
-      const clip = (s: string, maxW: number, size: number): string => {
-        let shown = s ?? '';
-        while (font.widthOfTextAtSize(shown, size) > maxW && shown.length > 1) {
-          shown = shown.slice(0, -1);
-        }
-        return shown !== (s ?? '') ? shown.slice(0, -1) + '…' : shown;
+      right(`${b.count}건`, W - MARGIN, y, 11, INK, true);
+      page.drawLine({
+        start: { x: MARGIN, y: y - 6 },
+        end: { x: W - MARGIN, y: y - 6 },
+        thickness: 0.3,
+        color: BORDER,
+      });
+      y -= 20;
+    }
+    y -= 12;
+
+    // TBM
+    if (data.tbm && data.tbm.length > 0) {
+      pageBreak(90);
+      y = this.sectionTitle(
+        page,
+        fonts,
+        'TBM(안전점검회의)',
+        y,
+        `총 ${data.tbm.length}회`,
+      );
+      const tcol = {
+        date: MARGIN + 4,
+        site: MARGIN + 92,
+        hazards: MARGIN + 220,
+        att: W - MARGIN,
       };
+      page.drawRectangle({
+        x: MARGIN,
+        y: y - 6,
+        width: contentW,
+        height: 18,
+        color: PAPER,
+      });
+      const hy = y - 2;
+      page.drawText('일자', {
+        x: tcol.date,
+        y: hy,
+        size: 10,
+        font: fonts.bold,
+        color: MUTED,
+      });
+      page.drawText('현장', {
+        x: tcol.site,
+        y: hy,
+        size: 10,
+        font: fonts.bold,
+        color: MUTED,
+      });
+      page.drawText('위험요인', {
+        x: tcol.hazards,
+        y: hy,
+        size: 10,
+        font: fonts.bold,
+        color: MUTED,
+      });
+      right('참석/확인', tcol.att, hy, 10, MUTED, true);
+      y -= 22;
       for (const t of data.tbm) {
         pageBreak(30);
-        text(t.date, tcol.date, y, 10);
-        text(clip(t.site, tcol.hazards - tcol.site - 8, 10), tcol.site, y, 10);
-        text(
-          clip(t.hazards || '-', tcol.att - tcol.hazards - 60, 10),
-          tcol.hazards,
+        page.drawText(t.date, {
+          x: tcol.date,
           y,
-          10,
-          gray,
+          size: 10,
+          font: fonts.regular,
+          color: INK,
+        });
+        page.drawText(
+          this.clip(fonts.regular, t.site, 10, tcol.hazards - tcol.site - 8),
+          {
+            x: tcol.site,
+            y,
+            size: 10,
+            font: fonts.regular,
+            color: INK,
+          },
         );
-        const att = `${t.attendeeCount}/${t.ackCount}`;
-        text(att, tcol.att - font.widthOfTextAtSize(att, 10), y, 10);
-        y -= 18;
+        page.drawText(
+          this.clip(
+            fonts.regular,
+            t.hazards || '-',
+            10,
+            tcol.att - tcol.hazards - 60,
+          ),
+          {
+            x: tcol.hazards,
+            y,
+            size: 10,
+            font: fonts.regular,
+            color: MUTED,
+          },
+        );
+        right(`${t.attendeeCount}/${t.ackCount}`, tcol.att, y, 10, INK, true);
+        page.drawLine({
+          start: { x: MARGIN, y: y - 6 },
+          end: { x: W - MARGIN, y: y - 6 },
+          thickness: 0.3,
+          color: BORDER,
+        });
+        y -= 20;
       }
-      y -= 10;
+      y -= 12;
     }
 
-    // 발송/확인 기록 표
-    pageBreak(60);
-    text('■ 발송 · 확인 기록', margin, y, 12);
-    y -= 20;
+    // 발송·확인 기록
+    pageBreak(70);
+    y = this.sectionTitle(page, fonts, '발송 · 확인 기록', y);
     const cols = {
-      date: margin,
-      type: margin + 110,
-      target: margin + 250,
-      ack: margin + 360,
+      date: MARGIN + 4,
+      type: MARGIN + 116,
+      target: MARGIN + 256,
+      ack: MARGIN + 366,
     };
-    text('일자', cols.date, y, 10, gray);
-    text('유형', cols.type, y, 10, gray);
-    text('대상', cols.target, y, 10, gray);
-    text('확인시각', cols.ack, y, 10, gray);
-    y -= 6;
-    page.drawLine({
-      start: { x: margin, y },
-      end: { x: width - margin, y },
-      thickness: 0.6,
-      color: line,
+    page.drawRectangle({
+      x: MARGIN,
+      y: y - 6,
+      width: contentW,
+      height: 18,
+      color: PAPER,
     });
-    y -= 16;
-
-    const rowH = 18;
+    const hy = y - 2;
+    page.drawText('일자', {
+      x: cols.date,
+      y: hy,
+      size: 10,
+      font: fonts.bold,
+      color: MUTED,
+    });
+    page.drawText('유형', {
+      x: cols.type,
+      y: hy,
+      size: 10,
+      font: fonts.bold,
+      color: MUTED,
+    });
+    page.drawText('대상', {
+      x: cols.target,
+      y: hy,
+      size: 10,
+      font: fonts.bold,
+      color: MUTED,
+    });
+    page.drawText('확인시각', {
+      x: cols.ack,
+      y: hy,
+      size: 10,
+      font: fonts.bold,
+      color: MUTED,
+    });
+    y -= 22;
+    let i = 0;
     for (const r of data.rows) {
-      if (y < margin + 40) {
-        page = pdf.addPage([595.28, 841.89]);
-        y = height - margin;
+      if (y < MARGIN + 50) {
+        page = pdf.addPage(A4);
+        y = H - MARGIN;
       }
-      text(r.date, cols.date, y, 10);
-      text(r.typeLabel, cols.type, y, 10);
-      text(r.targetName, cols.target, y, 10);
-      text(r.ackAt ?? '-', cols.ack, y, 10, r.ackAt ? black : gray);
-      y -= rowH;
+      if (i % 2 === 1) {
+        page.drawRectangle({
+          x: MARGIN,
+          y: y - 6,
+          width: contentW,
+          height: 18,
+          color: PAPER,
+        });
+      }
+      page.drawText(r.date, {
+        x: cols.date,
+        y,
+        size: 10,
+        font: fonts.regular,
+        color: INK,
+      });
+      page.drawText(
+        this.clip(fonts.regular, r.typeLabel, 10, cols.target - cols.type - 8),
+        {
+          x: cols.type,
+          y,
+          size: 10,
+          font: fonts.regular,
+          color: INK,
+        },
+      );
+      page.drawText(
+        this.clip(fonts.regular, r.targetName, 10, cols.ack - cols.target - 8),
+        {
+          x: cols.target,
+          y,
+          size: 10,
+          font: fonts.regular,
+          color: INK,
+        },
+      );
+      page.drawText(r.ackAt ?? '-', {
+        x: cols.ack,
+        y,
+        size: 10,
+        font: fonts.regular,
+        color: r.ackAt ? GREEN : MUTED,
+      });
+      y -= 18;
+      i += 1;
     }
 
+    this.stampFooters(pdf, fonts);
     const bytes = await pdf.save();
     return Buffer.from(bytes);
   }
