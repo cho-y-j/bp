@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
-import '../../core/format.dart';
 import '../../models/models.dart';
 import '../../l10n/l10n_ext.dart';
+import '../../widgets/common.dart';
 
 /// 서류 유형별 아이콘.
 IconData docTypeIcon(String type) {
@@ -52,7 +52,7 @@ class DocStatusBadge extends StatelessWidget {
       bg = c.warnBg;
       fg = c.warnInk;
       icon = Icons.warning_amber_rounded;
-    } else if (status == 'EXPIRING_SOON') {
+    } else if (status == 'EXPIRING' || status == 'EXPIRING_SOON') {
       bg = c.receivable.withValues(alpha: 0.12);
       fg = c.receivableBadge;
       icon = Icons.schedule_rounded;
@@ -61,7 +61,7 @@ class DocStatusBadge extends StatelessWidget {
       fg = c.depositedBadge;
       icon = Icons.check_rounded;
     }
-    final label = status == 'EXPIRED' ? l.docExpired : ddayLabel(doc.dday);
+    final label = status == 'EXPIRED' ? l.docExpired : ddayUnified(l, doc.dday);
     return _pill(bg, fg, label, icon);
   }
 

@@ -692,7 +692,7 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                 children: [
                   PrimaryButton(
                     label: l.confSaveSend,
-                    icon: Icons.send_rounded,
+                    icon: Icons.send_outlined,
                     loading: _saving,
                     onPressed: _valid ? _submit : null,
                   ),

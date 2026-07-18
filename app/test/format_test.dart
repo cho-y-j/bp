@@ -29,8 +29,16 @@ void main() {
     test('ddayText (상태별, l10n)', () {
       final l = lookupAppLocalizations(const Locale('ko'));
       expect(ddayText(l, 3, 'PENDING'), '수금 D-3');
-      expect(ddayText(l, -6, 'OVERDUE'), '기한 지남');
+      expect(ddayText(l, -6, 'OVERDUE'), '+6일');
       expect(ddayText(l, null, 'PAID'), '입금완료');
+    });
+
+    test('ddayUnified (통일 규칙: 임박 D-N · 당일 · 지남 +N일)', () {
+      final l = lookupAppLocalizations(const Locale('ko'));
+      expect(ddayUnified(l, 7), 'D-7');
+      expect(ddayUnified(l, 0), 'D-day');
+      expect(ddayUnified(l, -5), '+5일');
+      expect(ddayUnified(l, null), '');
     });
   });
 

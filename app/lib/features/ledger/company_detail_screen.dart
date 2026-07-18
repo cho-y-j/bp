@@ -207,12 +207,88 @@ class _EntryTile extends ConsumerWidget {
                 ),
               ),
             ),
-            if (showControls) _RemindControls(entry: entry),
+            // 주 행동 [입금 기록] 1개 + 나머지(독촉·발송 이력)는 ⋯ 시트로.
+            if (showControls)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 6, 10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _openPaymentSheet(context, ref, entry),
+                        icon: Icon(Icons.check_rounded,
+                            size: 18, color: c.accentText),
+                        label: Text(l.ledgerRecordPayment,
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: c.accentText)),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(44),
+                          side: BorderSide(color: c.primary, width: 1.4),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(11)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    IconButton(
+                      tooltip: l.ledgerEntryActions,
+                      onPressed: () =>
+                          _openEntryActionsSheet(context, ref, entry),
+                      icon: Icon(Icons.more_horiz_rounded, color: c.ink2),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
     );
   }
+}
+
+/// 장부 항목 부가 행동(자동 독촉·지금 보내기·발송 이력) — ⋯ 시트.
+void _openEntryActionsSheet(
+    BuildContext context, WidgetRef ref, LedgerEntry entry) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: context.c.bg,
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+    builder: (ctx) {
+      final c = ctx.c;
+      return SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 14, 18, 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                      color: c.borderStrong,
+                      borderRadius: BorderRadius.circular(2)),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(ctx.l.ledgerEntryActions,
+                  style: TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
+              const SizedBox(height: 2),
+              Text(entry.companyName,
+                  style: TextStyle(fontSize: 13.5, color: c.ink2)),
+              _RemindControls(entry: entry),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }
 
 /// 자동 수금 안내 토글 + 지금 안내 보내기 + 발송 이력 (P3a).
@@ -327,7 +403,7 @@ class _RemindControlsState extends ConsumerState<_RemindControls> {
                       height: 16,
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: c.accentText))
-                  : Icon(Icons.send_rounded, size: 18, color: c.accentText),
+                  : Icon(Icons.send_outlined, size: 18, color: c.accentText),
               label: Text(l.ledgerRemindNow,
                   style: TextStyle(
                       fontSize: 14,

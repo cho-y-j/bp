@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../theme/app_colors.dart';
-import '../../core/format.dart';
 import '../../models/models.dart';
 import '../../providers/wallet.dart';
 import '../../widgets/common.dart';
@@ -91,7 +90,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                     builder: (_) => const EquipmentScreen()))),
             IconButton(
                 tooltip: l.wshareTitle,
-                icon: const Icon(Icons.link_rounded),
+                icon: const Icon(Icons.link),
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => const MySharesScreen()))),
           ],
@@ -127,6 +126,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
           data: (list) {
             final expiring = list
                 .where((d) => d.derivedStatus == 'EXPIRED' ||
+                    d.derivedStatus == 'EXPIRING' ||
                     d.derivedStatus == 'EXPIRING_SOON')
                 .toList()
               ..sort((a, b) => (a.dday ?? 9999).compareTo(b.dday ?? 9999));
@@ -139,10 +139,37 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                       title: expiring.first.derivedStatus == 'EXPIRED'
                           ? l.walletExpiredTitle(expiring.first.type)
                           : l.walletExpiringTitle(expiring.first.type,
-                              ddayLabel(expiring.first.dday)),
+                              ddayUnified(l, expiring.first.dday)),
                       subtitle: expiring.length > 1
                           ? l.walletExpiringMultiSub(expiring.length)
                           : l.walletRenewHint,
+                    ),
+                  ),
+                // 상시 노출 "선택해서 보내기" 버튼 — 롱프레스 은닉 대신 발견성 확보.
+                if (list.isNotEmpty && !_selectMode)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: OutlinedButton.icon(
+                        onPressed: () => setState(() {
+                          _selectMode = true;
+                          _selected.clear();
+                        }),
+                        icon: Icon(Icons.checklist_rounded,
+                            size: 20, color: c.accentText),
+                        label: Text(l.walletSelectSend,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: c.accentText)),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: c.primary, width: 1.5),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
                     ),
                   ),
                 Expanded(
@@ -324,7 +351,7 @@ class _SendBar extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
         child: PrimaryButton(
           label: context.l.walletSendBundle(count),
-          icon: Icons.send_rounded,
+          icon: Icons.send_outlined,
           onPressed: onSend,
         ),
       ),
@@ -406,7 +433,7 @@ class _ShareOptionsSheetState extends State<_ShareOptionsSheet> {
             const SizedBox(height: 18),
             PrimaryButton(
               label: l.walletMakeLinkShare,
-              icon: Icons.share_rounded,
+              icon: Icons.share_outlined,
               onPressed: () => Navigator.pop(context, _days),
             ),
           ],

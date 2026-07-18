@@ -619,7 +619,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get bizSignErrName => '서명자 이름을 입력해 주세요.';
 
   @override
-  String get bizSignDone => '서명이 완료되었습니다. (SIGNED)';
+  String get bizSignDone => '서명이 완료되었습니다.';
 
   @override
   String bizSignFailed(String error) {
@@ -1065,7 +1065,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get taxEmptyTitle => '발행 대상 확인서가 없어요.';
 
   @override
-  String get taxEmptySubtitle => '서명 완료(SIGNED)·미발행 확인서만 여기 모여요.';
+  String get taxEmptySubtitle => '서명 완료·미발행 확인서만 여기 모여요.';
 
   @override
   String get taxStamp => '세금계산서 · WORKON';
@@ -1212,6 +1212,23 @@ class AppLocalizationsKo extends AppLocalizations {
   String walletSendBundle(int count) {
     return '$count건 묶어 보내기';
   }
+
+  @override
+  String get walletSelectSend => '선택해서 보내기';
+
+  @override
+  String ddayOverdue(int n) {
+    return '+$n일';
+  }
+
+  @override
+  String get ledgerEntryActions => '이 건 관리';
+
+  @override
+  String get homeWriteConfirmation => '확인서 쓰기';
+
+  @override
+  String get settleMonthTotal => '이번 달 지급할 돈';
 
   @override
   String get walletBundleSend => '묶음 보내기';

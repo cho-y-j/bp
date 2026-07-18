@@ -1213,7 +1213,7 @@ abstract class AppLocalizations {
   /// No description provided for @bizSignDone.
   ///
   /// In ko, this message translates to:
-  /// **'서명이 완료되었습니다. (SIGNED)'**
+  /// **'서명이 완료되었습니다.'**
   String get bizSignDone;
 
   /// No description provided for @bizSignFailed.
@@ -2011,7 +2011,7 @@ abstract class AppLocalizations {
   /// No description provided for @taxEmptySubtitle.
   ///
   /// In ko, this message translates to:
-  /// **'서명 완료(SIGNED)·미발행 확인서만 여기 모여요.'**
+  /// **'서명 완료·미발행 확인서만 여기 모여요.'**
   String get taxEmptySubtitle;
 
   /// No description provided for @taxStamp.
@@ -2265,6 +2265,36 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'{count}건 묶어 보내기'**
   String walletSendBundle(int count);
+
+  /// No description provided for @walletSelectSend.
+  ///
+  /// In ko, this message translates to:
+  /// **'선택해서 보내기'**
+  String get walletSelectSend;
+
+  /// No description provided for @ddayOverdue.
+  ///
+  /// In ko, this message translates to:
+  /// **'+{n}일'**
+  String ddayOverdue(int n);
+
+  /// No description provided for @ledgerEntryActions.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 건 관리'**
+  String get ledgerEntryActions;
+
+  /// No description provided for @homeWriteConfirmation.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인서 쓰기'**
+  String get homeWriteConfirmation;
+
+  /// No description provided for @settleMonthTotal.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 달 지급할 돈'**
+  String get settleMonthTotal;
 
   /// No description provided for @walletBundleSend.
   ///

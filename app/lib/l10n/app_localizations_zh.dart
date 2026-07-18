@@ -617,7 +617,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bizSignErrName => '请输入签名人姓名。';
 
   @override
-  String get bizSignDone => '签名完成。(SIGNED)';
+  String get bizSignDone => '签名完成。';
 
   @override
   String bizSignFailed(String error) {
@@ -1063,7 +1063,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get taxEmptyTitle => '没有需要开票的确认单。';
 
   @override
-  String get taxEmptySubtitle => '这里只显示已签名(SIGNED)且未开票的确认单。';
+  String get taxEmptySubtitle => '这里只显示已签名且未开票的确认单。';
 
   @override
   String get taxStamp => '税金计算书 · WORKON';
@@ -1210,6 +1210,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String walletSendBundle(int count) {
     return '打包发送 $count 份';
   }
+
+  @override
+  String get walletSelectSend => '选择后发送';
+
+  @override
+  String ddayOverdue(int n) {
+    return '+$n天';
+  }
+
+  @override
+  String get ledgerEntryActions => '管理此项';
+
+  @override
+  String get homeWriteConfirmation => '填写确认单';
+
+  @override
+  String get settleMonthTotal => '本月应付';
 
   @override
   String get walletBundleSend => '打包发送';

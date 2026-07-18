@@ -268,7 +268,7 @@ class _Badge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(linked ? Icons.link_rounded : Icons.edit_note_rounded,
+          Icon(linked ? Icons.link : Icons.edit_note_rounded,
               size: 12, color: fg),
           const SizedBox(width: 3),
           Text(linked ? l.teamMemberLinked : l.teamMemberManual,

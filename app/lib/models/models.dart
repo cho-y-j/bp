@@ -177,8 +177,10 @@ class Confirmation {
   final Map? amountCalc;
   final String shareToken;
   final String? signerName;
+  final String? signedAt; // 서명 일시(KST 표기 문자열)
   final String? teamId; // 팀(반장) 확인서면 팀 id
   final List? teamEntries; // [{name, profileId, quantity, rate, amount}]
+  final String? signImageDataUrl; // 손글씨 서명 획(PNG data URI) — 상세(getOne) SIGNED 만
 
   Confirmation({
     required this.id,
@@ -199,8 +201,10 @@ class Confirmation {
     required this.amountCalc,
     required this.shareToken,
     required this.signerName,
+    required this.signedAt,
     required this.teamId,
     required this.teamEntries,
+    this.signImageDataUrl,
   });
 
   factory Confirmation.fromJson(Map j) => Confirmation(
@@ -222,8 +226,10 @@ class Confirmation {
         amountCalc: j['amountCalc'] as Map?,
         shareToken: j['shareToken']?.toString() ?? '',
         signerName: j['signerName'] as String?,
+        signedAt: j['signedAt'] as String?,
         teamId: j['teamId'] as String?,
         teamEntries: j['teamEntries'] as List?,
+        signImageDataUrl: j['signImageDataUrl'] as String?,
       );
 
   /// 팀(반장) 확인서 여부.
@@ -535,7 +541,7 @@ class DocumentItem {
   final String ownerType; // PROFILE / EQUIPMENT
   final String? equipmentId;
   final String status;
-  final String derivedStatus; // VALID/EXPIRING_SOON/EXPIRED/NONE
+  final String derivedStatus; // 백엔드 ExpiryState: ACTIVE/EXPIRING/EXPIRED (구 EXPIRING_SOON 병용 수용)
   final int? dday;
   final DateTime? issuedDate;
   final DateTime? expiryDate;
@@ -764,6 +770,7 @@ class BizConfirmationDetail {
   final Map? equipmentSection;
   final String? signerName;
   final String? signedAt;
+  final String? signImageDataUrl; // 손글씨 서명 획(PNG data URI) — SIGNED 만
 
   BizConfirmationDetail({
     required this.id,
@@ -783,6 +790,7 @@ class BizConfirmationDetail {
     required this.equipmentSection,
     required this.signerName,
     required this.signedAt,
+    required this.signImageDataUrl,
   });
 
   factory BizConfirmationDetail.fromJson(Map j) => BizConfirmationDetail(
@@ -803,6 +811,7 @@ class BizConfirmationDetail {
         equipmentSection: j['equipmentSection'] as Map?,
         signerName: j['signerName'] as String?,
         signedAt: j['signedAt'] as String?,
+        signImageDataUrl: j['signImageDataUrl'] as String?,
       );
 }
 

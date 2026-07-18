@@ -167,7 +167,7 @@ class _AttendeeRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(children: [
-        Icon(a.linked ? Icons.link_rounded : Icons.edit_outlined,
+        Icon(a.linked ? Icons.link : Icons.edit_outlined,
             size: 18, color: c.ink3),
         const SizedBox(width: 10),
         Expanded(

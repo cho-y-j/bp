@@ -165,23 +165,10 @@ class _BizConfirmationDetailScreenState
               ),
               if (d.signed) ...[
                 const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                      color: c.deposited.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Row(
-                    children: [
-                      Icon(Icons.verified_rounded,
-                          color: c.depositedBadge, size: 20),
-                      const SizedBox(width: 8),
-                      Text(l.bizSignedBadge(d.signerName ?? '', d.signedAt ?? ''),
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: c.depositedBadge)),
-                    ],
-                  ),
+                SignatureSeal(
+                  signerName: d.signerName ?? '',
+                  signedAtText: d.signedAt,
+                  signImageDataUrl: d.signImageDataUrl,
                 ),
               ],
             ],

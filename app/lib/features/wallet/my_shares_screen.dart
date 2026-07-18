@@ -110,7 +110,7 @@ class MySharesScreen extends ConsumerWidget {
                                                 box.size
                                             : null);
                                   },
-                                  icon: const Icon(Icons.share_rounded, size: 18),
+                                  icon: const Icon(Icons.share_outlined, size: 18),
                                   label: Text(l.wshareReshare),
                                 ),
                               if (s.active)

@@ -633,7 +633,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get bizSignErrName => 'Введите имя подписавшего.';
 
   @override
-  String get bizSignDone => 'Подпись поставлена. (SIGNED)';
+  String get bizSignDone => 'Подпись поставлена.';
 
   @override
   String bizSignFailed(String error) {
@@ -1089,7 +1089,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get taxEmptySubtitle =>
-      'Здесь показаны только подписанные (SIGNED) и ещё не выставленные акты.';
+      'Здесь показаны только подписанные и ещё не выставленные акты.';
 
   @override
   String get taxStamp => 'СЧЁТ-ФАКТУРА · WORKON';
@@ -1241,6 +1241,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String walletSendBundle(int count) {
     return 'Отправить $count вместе';
   }
+
+  @override
+  String get walletSelectSend => 'Выбрать и отправить';
+
+  @override
+  String ddayOverdue(int n) {
+    return '+$n дн';
+  }
+
+  @override
+  String get ledgerEntryActions => 'Управление записью';
+
+  @override
+  String get homeWriteConfirmation => 'Составить акт';
+
+  @override
+  String get settleMonthTotal => 'К выплате в этом месяце';
 
   @override
   String get walletBundleSend => 'Отправить пакетом';

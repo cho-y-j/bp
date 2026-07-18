@@ -386,7 +386,7 @@
   "bizConfirmTitle": "작업확인서",
   "bizSignErrSign": "서명을 입력해 주세요.",
   "bizSignErrName": "서명자 이름을 입력해 주세요.",
-  "bizSignDone": "서명이 완료되었습니다. (SIGNED)",
+  "bizSignDone": "서명이 완료되었습니다.",
   "bizSignFailed": "서명 실패: {error}",
   "@bizSignFailed": {
     "placeholders": {
@@ -686,7 +686,7 @@
   },
   "taxHometaxGuide": "복사한 내용을 홈택스(hometax.go.kr) 세금계산서 발행에 붙여넣으세요. 발행 후 \"발행 완료 표시\"를 누르면 목록에서 빠져요.",
   "taxEmptyTitle": "발행 대상 확인서가 없어요.",
-  "taxEmptySubtitle": "서명 완료(SIGNED)·미발행 확인서만 여기 모여요.",
+  "taxEmptySubtitle": "서명 완료·미발행 확인서만 여기 모여요.",
   "taxStamp": "세금계산서 · WORKON",
   "taxSupplierPromptTitle": "먼저 사업자 정보를 입력하세요",
   "taxSupplierPromptDesc": "세금계산서 공급자(나)의 사업자등록번호·상호가 필요해요.",
@@ -804,6 +804,16 @@
     }
   },
   "walletSendBundle": "{count}건 묶어 보내기",
+  "walletSelectSend": "선택해서 보내기",
+  "ddayOverdue": "+{n}일",
+  "@ddayOverdue": {
+    "placeholders": {
+      "n": { "type": "int" }
+    }
+  },
+  "ledgerEntryActions": "이 건 관리",
+  "homeWriteConfirmation": "확인서 쓰기",
+  "settleMonthTotal": "이번 달 지급할 돈",
   "@walletSendBundle": {
     "placeholders": {
       "count": {

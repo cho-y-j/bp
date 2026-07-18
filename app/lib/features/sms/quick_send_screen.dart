@@ -342,7 +342,7 @@ class _TemplateTile extends StatelessWidget {
                     onPressed: onDelete,
                   )
                 else
-                  Icon(Icons.send_rounded, size: 18, color: c.ink3),
+                  Icon(Icons.send_outlined, size: 18, color: c.ink3),
               ],
             ),
           ),

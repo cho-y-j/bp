@@ -10,6 +10,7 @@ import '../../providers/data.dart';
 import '../../providers/drafts.dart';
 import '../../providers/notifications.dart';
 import '../../widgets/common.dart';
+import '../confirmation/confirmation_form_screen.dart';
 import '../drafts/draft_list_screen.dart';
 import '../notifications/notifications_screen.dart';
 import '../wallet/wallet_screen.dart';
@@ -94,6 +95,19 @@ class HomeScreen extends ConsumerWidget {
               // 전송 대기 초안 배너(오프라인 임시저장)
               const _DraftsBanner(),
 
+              // 상황 무관 상시 노출 주 CTA — "확인서 쓰기".
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: PrimaryButton(
+                  label: l.homeWriteConfirmation,
+                  icon: Icons.add_rounded,
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => const ConfirmationFormScreen(),
+                    fullscreenDialog: true,
+                  )),
+                ),
+              ),
+
               // 오늘 일정
               SectionTitle(l.homeToday),
               confirmations.when(
@@ -153,7 +167,11 @@ class HomeScreen extends ConsumerWidget {
                                   color: c.ink2)),
                         ),
                         WarnBanner(
-                          title: l.homeDocExpiry(d.type, ddayLabel(d.dday)),
+                          title: l.homeDocExpiry(
+                              d.type,
+                              (d.dday ?? 0) < 0
+                                  ? l.docExpired
+                                  : ddayUnified(l, d.dday)),
                           subtitle: l.homeDocExpirySub,
                           onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(

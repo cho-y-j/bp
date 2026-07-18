@@ -629,7 +629,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get bizSignErrName => 'हस्ताक्षर गर्नेको नाम लेख्नुहोस्।';
 
   @override
-  String get bizSignDone => 'हस्ताक्षर पूरा भयो। (SIGNED)';
+  String get bizSignDone => 'हस्ताक्षर पूरा भयो।';
 
   @override
   String bizSignFailed(String error) {
@@ -1085,7 +1085,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get taxEmptySubtitle =>
-      'यहाँ हस्ताक्षर भइसकेका (SIGNED) र जारी नभएका पुष्टि पत्र मात्र देखिन्छन्।';
+      'यहाँ हस्ताक्षर भइसकेका र जारी नभएका पुष्टि पत्र मात्र देखिन्छन्।';
 
   @override
   String get taxStamp => 'कर बिजक · WORKON';
@@ -1237,6 +1237,23 @@ class AppLocalizationsNe extends AppLocalizations {
   String walletSendBundle(int count) {
     return '$count वटा सँगै पठाउनुहोस्';
   }
+
+  @override
+  String get walletSelectSend => 'छानेर पठाउनुहोस्';
+
+  @override
+  String ddayOverdue(int n) {
+    return '+$n दिन';
+  }
+
+  @override
+  String get ledgerEntryActions => 'यो वस्तु व्यवस्थापन';
+
+  @override
+  String get homeWriteConfirmation => 'पुष्टि पत्र लेख्नुहोस्';
+
+  @override
+  String get settleMonthTotal => 'यो महिना तिर्नुपर्ने';
 
   @override
   String get walletBundleSend => 'सेट पठाउनुहोस्';

@@ -229,7 +229,7 @@ class _BodyState extends ConsumerState<_Body> {
               children: [
                 PrimaryButton(
                   label: conf.status == 'DRAFT' ? l.confSaveSend : l.confReshare,
-                  icon: Icons.send_rounded,
+                  icon: Icons.send_outlined,
                   loading: _sending,
                   onPressed: _send,
                 ),
@@ -255,18 +255,20 @@ class _BodyState extends ConsumerState<_Body> {
                     ),
                     if (extractPhone(conf.contact) != null) ...[
                       const SizedBox(width: 8),
-                      OutlinedButton.icon(
-                        onPressed: _call,
-                        icon: const Icon(Icons.call_rounded, size: 18),
-                        label: Text(l.callButtonLabel,
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w700)),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(46),
-                          foregroundColor: c.ink2,
-                          side: BorderSide(color: c.border),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(11)),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _call,
+                          icon: const Icon(Icons.call_rounded, size: 18),
+                          label: Text(l.callButtonLabel,
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w700)),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(46),
+                            foregroundColor: c.ink2,
+                            side: BorderSide(color: c.border),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(11)),
+                          ),
                         ),
                       ),
                     ],
@@ -318,29 +320,31 @@ class _SignStatus extends StatelessWidget {
     final c = context.c;
     final l = context.l;
     final signed = conf.status == 'SIGNED';
+    if (signed) {
+      return SignatureSeal(
+        signerName: conf.signerName ?? l.confCounterparty,
+        signedAtText: conf.signedAt,
+        signImageDataUrl: conf.signImageDataUrl,
+      );
+    }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: signed ? c.deposited.withValues(alpha: 0.1) : c.surface2,
-        border: Border.all(color: signed ? c.deposited.withValues(alpha: 0.4) : c.border),
+        color: c.surface2,
+        border: Border.all(color: c.border),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          Icon(signed ? Icons.verified_rounded : Icons.draw_outlined,
-              size: 20, color: signed ? c.deposited : c.ink3),
+          Icon(Icons.draw_outlined, size: 20, color: c.ink3),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-                signed
-                    ? l.paperSignedBy(conf.signerName ?? l.confCounterparty)
-                    : conf.status == 'SENT'
-                        ? l.confSentWaitingSign
-                        : l.confDraftBeforeSend,
+                conf.status == 'SENT'
+                    ? l.confSentWaitingSign
+                    : l.confDraftBeforeSend,
                 style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: signed ? c.deposited : c.ink2)),
+                    fontSize: 14, fontWeight: FontWeight.w700, color: c.ink2)),
           ),
         ],
       ),

@@ -360,7 +360,7 @@ class _JobFormState extends ConsumerState<_JobForm> {
             const SizedBox(height: 18),
             PrimaryButton(
                 label: l.jobFormSubmit,
-                icon: Icons.send_rounded,
+                icon: Icons.send_outlined,
                 loading: _saving,
                 onPressed: _submit),
             const SizedBox(height: 12),

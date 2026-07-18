@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../core/format.dart';
@@ -256,6 +258,123 @@ class DdayBadge extends StatelessWidget {
   }
 }
 
+/// 서명 완료 도장(印) 박스 — 종이 확인서의 시각적 클라이맥스.
+/// [signImageDataUrl] 이 있으면 실제 손글씨 획(PNG)을 흰 종이 칩에 렌더,
+/// 없으면 서명자명을 각인한 붉은 도장 원으로 대체(폴백).
+class SignatureSeal extends StatelessWidget {
+  final String signerName;
+  final String? signedAtText;
+  final String? signImageDataUrl;
+  const SignatureSeal({
+    super.key,
+    required this.signerName,
+    this.signedAtText,
+    this.signImageDataUrl,
+  });
+
+  Uint8List? _decode(String? dataUrl) {
+    if (dataUrl == null || !dataUrl.contains(',')) return null;
+    try {
+      return base64Decode(dataUrl.split(',').last);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l = context.l;
+    final name = signerName.trim().isEmpty ? l.confCounterparty : signerName.trim();
+    // 도장 각인 텍스트 — 2~3자 이름은 그대로, 길면 앞 두 글자.
+    final chars = name.characters;
+    final sealText = chars.length <= 3 ? name : chars.take(2).toString();
+    final stroke = _decode(signImageDataUrl);
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(
+        color: c.deposited.withValues(alpha: 0.06),
+        border: Border.all(color: c.deposited.withValues(alpha: 0.35)),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          // 실제 손글씨 획(있으면) → 흰 종이 칩 / 없으면 붉은 각인 도장.
+          if (stroke != null)
+            Container(
+              width: 96,
+              height: 58,
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: c.receivable.withValues(alpha: 0.5)),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Image.memory(stroke, fit: BoxFit.contain),
+            )
+          else
+            Container(
+              width: 58,
+              height: 58,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: c.receivable.withValues(alpha: 0.08),
+                border: Border.all(color: c.receivable, width: 2.4),
+              ),
+              child: Transform.rotate(
+                angle: -0.1,
+                child: Text(
+                  sealText,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: sealText.characters.length >= 3 ? 15 : 19,
+                    height: 1.05,
+                    fontWeight: FontWeight.w900,
+                    color: c.receivable,
+                  ),
+                ),
+              ),
+            ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.verified_rounded, size: 18, color: c.depositedBadge),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(l.paperSignedBy(name),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: c.depositedBadge)),
+                    ),
+                  ],
+                ),
+                if (signedAtText != null && signedAtText!.isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(signedAtText!,
+                      style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: c.ink3,
+                          fontFeatures: const [FontFeature.tabularFigures()])),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// 팀(반장) 확인서 배지.
 class TeamBadge extends StatelessWidget {
   const TeamBadge({super.key});
@@ -485,9 +604,20 @@ class CompanyAvatar extends StatelessWidget {
   }
 }
 
+/// 통일 D-day 규칙(전 화면 공용): 임박 "D-N" · 당일 "D-day" · 지남 "+N일".
+/// 부호 혼용(D+N)을 없애고 지남은 항상 "+N일" 하나로 표기한다.
+String ddayUnified(AppLocalizations l, int? dday) {
+  if (dday == null) return '';
+  if (dday >= 0) return ddayLabel(dday); // "D-N" / "D-day"
+  return l.ddayOverdue(-dday); // "+N일"
+}
+
+/// 수금(장부) D-day 텍스트 — 완납/지남은 의미 라벨, 임박은 "수금 D-N".
 String ddayText(AppLocalizations l, int? dday, String status) {
   if (status == 'PAID') return l.statusDeposited;
-  if (status == 'OVERDUE') return l.statusOverdue;
+  if (status == 'OVERDUE' || (dday != null && dday < 0)) {
+    return dday == null ? l.statusOverdue : ddayUnified(l, dday); // 지남 → "+N일"
+  }
   if (dday == null) return '';
-  return l.collectDday(ddayLabel(dday));
+  return l.collectDday(ddayUnified(l, dday)); // "수금 D-N"
 }

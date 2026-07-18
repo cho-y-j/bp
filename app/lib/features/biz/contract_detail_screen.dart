@@ -283,7 +283,7 @@ class _ContractDetailScreenState extends ConsumerState<ContractDetailScreen> {
             // 서명 완료 + 아직 미전송(DRAFT) → 전송
             PrimaryButton(
                 label: l.lcSend,
-                icon: Icons.send_rounded,
+                icon: Icons.send_outlined,
                 loading: _sending,
                 onPressed: _send),
           ] else if (ct.isSent) ...[
@@ -293,7 +293,7 @@ class _ContractDetailScreenState extends ConsumerState<ContractDetailScreen> {
             const SizedBox(height: 10),
             OutlinedButton.icon(
               onPressed: _sending ? null : _send,
-              icon: Icon(Icons.send_rounded, size: 18, color: c.ink),
+              icon: Icon(Icons.send_outlined, size: 18, color: c.ink),
               label: Text(l.lcSend,
                   style: TextStyle(
                       color: c.ink, fontSize: 15, fontWeight: FontWeight.w700)),

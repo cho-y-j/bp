@@ -630,7 +630,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get bizSignErrName => 'Vui lòng nhập tên người ký.';
 
   @override
-  String get bizSignDone => 'Đã ký xong. (SIGNED)';
+  String get bizSignDone => 'Đã ký xong.';
 
   @override
   String bizSignFailed(String error) {
@@ -1083,7 +1083,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get taxEmptySubtitle =>
-      'Chỉ những phiếu đã ký (SIGNED) và chưa phát hành mới hiện ở đây.';
+      'Chỉ những phiếu đã ký và chưa phát hành mới hiện ở đây.';
 
   @override
   String get taxStamp => 'HÓA ĐƠN THUẾ · WORKON';
@@ -1235,6 +1235,23 @@ class AppLocalizationsVi extends AppLocalizations {
   String walletSendBundle(int count) {
     return 'Gửi gộp $count giấy tờ';
   }
+
+  @override
+  String get walletSelectSend => 'Chọn để gửi';
+
+  @override
+  String ddayOverdue(int n) {
+    return '+$n ngày';
+  }
+
+  @override
+  String get ledgerEntryActions => 'Quản lý mục này';
+
+  @override
+  String get homeWriteConfirmation => 'Viết phiếu xác nhận';
+
+  @override
+  String get settleMonthTotal => 'Phải trả tháng này';
 
   @override
   String get walletBundleSend => 'Gửi theo bộ';

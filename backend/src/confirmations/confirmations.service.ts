@@ -257,7 +257,15 @@ export class ConfirmationsService {
 
   async getOne(userId: string, id: string) {
     const c = await this.ownedOrThrow(userId, id);
-    return toConfirmationDto(c);
+    return {
+      ...toConfirmationDto(c),
+      // 손글씨 서명 획(PNG data URI) — SIGNED 일 때만(작업자 앱 상세 실렌더용).
+      // 목록(list) 응답에는 포함하지 않는다(payload 비대 방지).
+      signImageDataUrl:
+        c.status === ConfirmationStatus.SIGNED
+          ? await this.loadSignDataUrl(c.signImagePath)
+          : null,
+    };
   }
 
   // --------------------------------------------------------------------------

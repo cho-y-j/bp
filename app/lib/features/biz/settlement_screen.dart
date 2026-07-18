@@ -76,11 +76,61 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
                 loading: () =>
                     Center(child: CircularProgressIndicator(color: c.primary)),
                 error: (e, _) => Center(child: Text(l.bizLoadFailed('$e'))),
-                data: (list) => list.isEmpty
-                    ? Center(
+                data: (list) {
+                  if (list.isEmpty) {
+                    return Center(
                         child: Text(l.settleEmpty,
-                            style: TextStyle(color: c.ink2, fontSize: 15)))
-                    : ListView.separated(
+                            style: TextStyle(color: c.ink2, fontSize: 15)));
+                  }
+                  final total =
+                      list.fold<int>(0, (s, w) => s + w.outstanding);
+                  return Column(
+                    children: [
+                      // 핵심 숫자·다음 행동을 상단 1스크린에 — 이번 달 지급할 돈 합계.
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 6),
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: c.surface,
+                            border: Border.all(color: c.border),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(l.settleMonthTotal,
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: c.ink2)),
+                              const SizedBox(height: 6),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                    formatMoney(total, context.lang),
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.w800,
+                                        color: total > 0
+                                            ? c.receivable
+                                            : c.deposited,
+                                        fontFeatures: const [
+                                          FontFeature.tabularFigures()
+                                        ])),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(l.settleEntryCount(list.length),
+                                  style:
+                                      TextStyle(fontSize: 13, color: c.ink3)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.separated(
                         padding: const EdgeInsets.all(16),
                         itemCount: list.length,
                         separatorBuilder: (_, _) => const SizedBox(height: 10),
@@ -157,7 +207,11 @@ class _SettlementScreenState extends ConsumerState<SettlementScreen> {
                             ),
                           );
                         },
+                        ),
                       ),
+                    ],
+                  );
+                },
               ),
             ),
           ],

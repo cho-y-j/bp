@@ -438,7 +438,7 @@ class _UrlRow extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
       child: Row(
         children: [
-          Icon(Icons.link_rounded, size: 18, color: c.ink3),
+          Icon(Icons.link, size: 18, color: c.ink3),
           const SizedBox(width: 8),
           Expanded(
             child: Text(url,
