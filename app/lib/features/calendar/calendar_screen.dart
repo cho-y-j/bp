@@ -145,7 +145,11 @@ class _MonthGrid extends ConsumerWidget {
     final c = context.c;
     final l = context.l;
     final selected = ref.watch(_selectedDayProvider);
-    final byDate = list.byDateMap;
+    // 날짜별 확인서(일감 미니 라인용) — 구글 캘린더 월뷰처럼 칸 안에 줄로 표시.
+    final byDayConfs = <String, List<Confirmation>>{};
+    for (final it in list.items) {
+      byDayConfs.putIfAbsent(it.date, () => []).add(it);
+    }
     final first = DateTime(month.year, month.month, 1);
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
     // 주 시작을 일요일로: weekday Mon=1..Sun=7 → 일요일 index=0
@@ -187,7 +191,9 @@ class _MonthGrid extends ConsumerWidget {
                           fontWeight: FontWeight.w700,
                           color: c.ink2)),
                   const SizedBox(height: 2),
-                  Text(formatMoney(list.totalAmount, context.lang),
+                  // '받을 돈' = 미수 합(totalOutstanding). 홈 히어로(ledger summary)와
+                  // 동일 정의 — 서버가 확인서 연결 장부 기준으로 동일하게 집계한다.
+                  Text(formatMoney(list.totalOutstanding, context.lang),
                       style: TextStyle(
                           fontSize: 26,
                           height: 1.1,
@@ -231,7 +237,9 @@ class _MonthGrid extends ConsumerWidget {
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 7,
-            childAspectRatio: 0.68,
+            // 칸 안에 일감 미니 라인(최대 3줄)을 담기 위해 셀을 세로로 늘림.
+            // 6주(42칸) 달도 히어로/요일행 포함 한 화면에 들어오는 비율.
+            childAspectRatio: 0.60,
             mainAxisSpacing: 4,
             crossAxisSpacing: 4,
           ),
@@ -240,14 +248,13 @@ class _MonthGrid extends ConsumerWidget {
             final day = cells[i];
             if (day == null) return const SizedBox.shrink();
             final key = dateParam(day);
-            final agg = byDate[key];
             final isToday = day.year == today.year &&
                 day.month == today.month &&
                 day.day == today.day;
             return _DayCell(
               key: ValueKey('cal-day-$key'),
               day: day,
-              agg: agg,
+              confs: byDayConfs[key] ?? const [],
               isToday: isToday,
               isSelected: selKey == key,
               onTap: () {
@@ -284,65 +291,77 @@ class _MonthGrid extends ConsumerWidget {
   }
 }
 
+// 미니 라인 상태 구분: 입금완료(초록) / 미수(주황) / 초안·전송(중립 회색).
+enum _LineKind { paid, due, draft }
+
+_LineKind _lineKindOf(Confirmation c) {
+  // DRAFT/SENT 는 아직 서명 전(확정 미수 아님) → 중립 회색.
+  if (c.status == 'DRAFT' || c.status == 'SENT') return _LineKind.draft;
+  // SIGNED: 완납이면 입금(초록), 미수 잔존이면 미수(주황).
+  return c.isFullyPaid ? _LineKind.paid : _LineKind.due;
+}
+
+// 구글 캘린더 월뷰처럼 날짜 칸 안에 그날 일감을 미니 라인(최대 3줄)으로 표시.
+//  - 각 줄 = 현장명(말줄임 1줄) + 정산 상태 색 칩.
+//  - 3건 초과분은 마지막 줄을 "+N".
+//  - 금액은 칸에서 생략(무슨 일을 했는지 우선) — 합계·건별 금액은 탭 펼침 뷰에서.
 class _DayCell extends StatelessWidget {
   final DateTime day;
-  final DayAggregate? agg;
+  final List<Confirmation> confs;
   final bool isToday;
   final bool isSelected;
   final VoidCallback onTap;
   const _DayCell(
       {super.key,
       required this.day,
-      required this.agg,
+      required this.confs,
       required this.isToday,
       required this.isSelected,
       required this.onTap});
+
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final hasWork = agg != null && agg!.count > 0;
-    final borderColor = isSelected
-        ? c.primary
-        : (isToday ? c.primary : c.border);
+    final hasWork = confs.isNotEmpty;
+    final borderColor = isSelected || isToday ? c.primary : c.border;
+
+    // 최대 3줄: 3건 이하면 전부, 초과면 2줄 + "+N".
+    const maxLines = 3;
+    final total = confs.length;
+    final shown = total <= maxLines ? total : maxLines - 1;
+    final overflow = total - shown;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: isSelected
-              ? c.primary.withValues(alpha: 0.16)
-              : (hasWork ? c.primary.withValues(alpha: 0.07) : c.surface),
+              ? c.primary.withValues(alpha: 0.12)
+              : c.surface,
           border: Border.all(
               color: borderColor, width: (isSelected || isToday) ? 1.6 : 1),
           borderRadius: BorderRadius.circular(9),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 2),
+        padding: const EdgeInsets.fromLTRB(3, 4, 3, 3),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('${day.day}',
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight:
-                        (isToday || isSelected) ? FontWeight.w800 : FontWeight.w600,
-                    color: (isToday || isSelected) ? c.accentText : c.ink,
-                    fontFeatures: const [FontFeature.tabularFigures()])),
-            const SizedBox(height: 3),
+            Padding(
+              padding: const EdgeInsets.only(left: 1, bottom: 2),
+              child: Text('${day.day}',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                      fontSize: 12,
+                      height: 1.0,
+                      fontWeight: (isToday || isSelected)
+                          ? FontWeight.w800
+                          : FontWeight.w600,
+                      color: (isToday || isSelected) ? c.accentText : c.ink,
+                      fontFeatures: const [FontFeature.tabularFigures()])),
+            ),
             if (hasWork) ...[
-              Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(color: c.primary, shape: BoxShape.circle),
-              ),
-              const Spacer(),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                    _compact(agg!.totalAmount, context.lang, context.l.calManUnit),
-                    style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: c.accentText,
-                        fontFeatures: const [FontFeature.tabularFigures()])),
-              ),
+              for (var i = 0; i < shown; i++) _line(context, confs[i]),
+              if (overflow > 0) _plusLine(context, overflow),
             ],
           ],
         ),
@@ -350,17 +369,48 @@ class _DayCell extends StatelessWidget {
     );
   }
 
-  // 셀 안 좁은 폭용 축약 금액. CJK(ko/zh)는 만/万 단위(÷10000),
-  // 그 외 언어는 천 단위(÷1000)로 축약하고 단위 라벨(calManUnit)을 붙인다.
-  static String _compact(int won, String lang, String unit) {
-    final cjk = lang == 'ko' || lang == 'zh';
-    final div = cjk ? 10000 : 1000;
-    if (won >= div) {
-      final u = won / div;
-      final s = u == u.roundToDouble() ? '${u.round()}' : u.toStringAsFixed(1);
-      return '$s$unit';
+  Widget _line(BuildContext context, Confirmation conf) {
+    final c = context.c;
+    late final Color bg, fg;
+    switch (_lineKindOf(conf)) {
+      case _LineKind.paid:
+        bg = c.deposited.withValues(alpha: 0.16);
+        fg = c.depositedBadge;
+        break;
+      case _LineKind.due:
+        bg = c.receivable.withValues(alpha: 0.15);
+        fg = c.receivable;
+        break;
+      case _LineKind.draft:
+        bg = c.ink2.withValues(alpha: 0.10);
+        fg = c.ink2;
+        break;
     }
-    return '$won';
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(3)),
+      child: Text(conf.siteName,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          softWrap: false,
+          style: TextStyle(
+              fontSize: 9,
+              height: 1.15,
+              fontWeight: FontWeight.w700,
+              color: fg)),
+    );
+  }
+
+  Widget _plusLine(BuildContext context, int n) {
+    final c = context.c;
+    return Padding(
+      padding: const EdgeInsets.only(left: 2, top: 1),
+      child: Text('+$n',
+          style: TextStyle(
+              fontSize: 9, fontWeight: FontWeight.w800, color: c.ink3)),
+    );
   }
 }
 
@@ -375,6 +425,9 @@ class _DayLedger extends StatelessWidget {
     final l = context.l;
     final confs = list.items.where((x) => x.date == dateParam(day)).toList();
     final dayTotal = confs.fold<int>(0, (s, x) => s + x.total);
+    // 그날 모든 확인서가 완납이면 합계도 입금 색(초록), 미수 잔존이면 미수 색(주황).
+    final dayFullyPaid =
+        confs.isNotEmpty && confs.every((x) => x.isFullyPaid);
     return Container(
       decoration: BoxDecoration(
         color: c.surface,
@@ -399,7 +452,7 @@ class _DayLedger extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
-                        color: c.receivable,
+                        color: dayFullyPaid ? c.depositedBadge : c.receivable,
                         fontFeatures: const [FontFeature.tabularFigures()])),
             ],
           ),
@@ -438,6 +491,9 @@ class _DayLedgerRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final st = conf.settlement;
+    // 항목 금액 색: 완납이면 입금(초록), 아니면 미수(주황).
+    final amtColor = conf.isFullyPaid ? c.depositedBadge : c.receivable;
     return Material(
       color: c.surface,
       borderRadius: BorderRadius.circular(12),
@@ -470,10 +526,25 @@ class _DayLedgerRow extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
-                          color: c.receivable,
+                          color: amtColor,
                           fontFeatures: const [FontFeature.tabularFigures()])),
                 ],
               ),
+              // 부분입금(PARTIAL): '입금 N원' 보조 표기 한 줄(입금 색).
+              if (st != null && st.isPartial) ...[
+                const SizedBox(height: 4),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                      context.l.ledgerDeposited(
+                          formatMoney(st.paidAmount, context.lang)),
+                      style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: c.depositedBadge,
+                          fontFeatures: const [FontFeature.tabularFigures()])),
+                ),
+              ],
               const SizedBox(height: 6),
               Row(
                 children: [

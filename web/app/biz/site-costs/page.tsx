@@ -274,7 +274,8 @@ export default function SiteCostsPage() {
                     </span>
                   </button>
                   {expanded ? (
-                    <div style={{ overflowX: 'auto', borderTop: '1px solid var(--border)' }}>
+                    <>
+                    <div className="tbl-desktop" style={{ overflowX: 'auto', borderTop: '1px solid var(--border)' }}>
                       <table className="data-table">
                         <thead>
                           <tr>
@@ -332,6 +333,45 @@ export default function SiteCostsPage() {
                         </tbody>
                       </table>
                     </div>
+                    {/* 모바일: 작업자별 카드 — 금액을 크게 우측에 노출 */}
+                    <div className="row-cards" style={{ borderTop: '1px solid var(--border)' }}>
+                      {s.entries.map((e) => (
+                        <div className="rowcard" key={e.workerProfileId + e.amount}>
+                          <div className="rowcard-main">
+                            <div className="rowcard-name">
+                              {e.workerName}
+                              {e.isTeam ? (
+                                <span
+                                  className="badge accent"
+                                  style={{ marginLeft: 8, verticalAlign: 'middle' }}
+                                >
+                                  <Users width={12} height={12} />팀 {e.teamMemberCount}명
+                                </span>
+                              ) : null}
+                            </div>
+                            <div className="rowcard-sub num">
+                              연인원 {e.days} · 공수 {e.gongsu || '-'}
+                              {e.entryCount > 1 ? ` · 확인서 ${e.entryCount}건` : ''}
+                            </div>
+                          </div>
+                          <div className="rowcard-amt">
+                            <div className="amt-val num">{won(e.amount)}원</div>
+                          </div>
+                        </div>
+                      ))}
+                      <div className="rowcard rowcard-total">
+                        <div className="rowcard-main">
+                          <div className="rowcard-name">소계</div>
+                          <div className="rowcard-sub num">
+                            연인원 {s.subtotalDays} · 공수 {s.subtotalGongsu || '-'}
+                          </div>
+                        </div>
+                        <div className="rowcard-amt">
+                          <div className="amt-val num">{won(s.subtotalAmount)}원</div>
+                        </div>
+                      </div>
+                    </div>
+                    </>
                   ) : null}
                 </div>
               );

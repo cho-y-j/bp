@@ -140,6 +140,17 @@ describe('Confirmations & Ledger flow (e2e)', () => {
     );
     expect(day.count).toBe(1);
     expect(day.totalAmount).toBe(260000);
+    // 정산 분리(additive): 아직 입금 전 → 전액 미수(UNPAID).
+    expect(day.paidAmount).toBe(0);
+    expect(day.outstandingAmount).toBe(260000);
+    const item = res.body.data.items.find(
+      (x: { id: string }) => x.id === store.id,
+    );
+    expect(item.settlement).toEqual({
+      paidAmount: 0,
+      outstandingAmount: 260000,
+      status: 'UNPAID',
+    });
   });
 
   it('send(수기 상대) → SENT + shareToken url', async () => {
@@ -272,6 +283,36 @@ describe('Confirmations & Ledger flow (e2e)', () => {
     expect(group.status).toBe('PAID');
     expect(group.statusLabel).toBe('전액입금');
     expect(group.days).toBe(1);
+  });
+
+  it('캘린더 정산 분리 — 완납 후 settlement PAID·미수 0, 홈 히어로(ledger summary)와 정합', async () => {
+    const cal = await request(app.getHttpServer())
+      .get('/api/confirmations?month=2026-07')
+      .set('Authorization', auth())
+      .expect(200);
+    const item = cal.body.data.items.find(
+      (x: { id: string }) => x.id === store.id,
+    );
+    expect(item.settlement.status).toBe('PAID');
+    expect(item.settlement.paidAmount).toBe(260000);
+    expect(item.settlement.outstandingAmount).toBe(0);
+    const day = cal.body.data.byDate.find(
+      (d: { date: string }) => d.date === '2026-07-05',
+    );
+    expect(day.paidAmount).toBe(260000);
+    expect(day.outstandingAmount).toBe(0);
+    // billed(청구) 는 무변경(기존 필드 보존).
+    expect(cal.body.data.totalAmount).toBe(260000);
+
+    // 홈 히어로(ledger summary)와 캘린더 미수/입금 총계 정의 일치.
+    const summary = await request(app.getHttpServer())
+      .get('/api/ledger/summary?month=2026-07')
+      .set('Authorization', auth())
+      .expect(200);
+    expect(cal.body.data.totalOutstanding).toBe(
+      summary.body.data.totalOutstanding,
+    );
+    expect(cal.body.data.totalPaid).toBe(summary.body.data.totalPaid);
   });
 
   it('수금예정일 수정(PATCH) → dueDate 반영', async () => {

@@ -210,7 +210,7 @@ export default function WageStatementPage() {
             </div>
           ) : (
             <>
-              <div className="card" style={{ overflowX: 'auto', marginBottom: 16 }}>
+              <div className="card tbl-desktop" style={{ overflowX: 'auto', marginBottom: 16 }}>
                 <table className="data-table">
                   <thead>
                     <tr>
@@ -282,6 +282,51 @@ export default function WageStatementPage() {
                     ) : null}
                   </tbody>
                 </table>
+              </div>
+
+              {/* 모바일: 행당 카드형 요약 — 차인지급액을 크게 우측에 노출 */}
+              <div className="card row-cards" style={{ marginBottom: 16 }}>
+                {data.workers.map((w) => {
+                  const t = sel(w);
+                  return (
+                    <div className="rowcard" key={w.workerProfileId}>
+                      <div className="rowcard-main">
+                        <div className="rowcard-name">
+                          {w.workerName}
+                          {w.paymentCount > 1 ? (
+                            <span
+                              className="num"
+                              style={{ color: 'var(--ink-3)', fontSize: 13, fontWeight: 600, marginLeft: 8 }}
+                            >
+                              {w.paymentCount}건
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className="rowcard-sub num">
+                          지급총액 {won(w.paidTotal)} · 일수 {w.workDays} · 소득세 {won(t.incomeTax)} · 지방세 {won(t.localTax)}
+                        </div>
+                      </div>
+                      <div className="rowcard-amt">
+                        <div className="amt-label">차인지급액</div>
+                        <div className="amt-val num money dep">{won(t.netPay)}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+                {selTotal ? (
+                  <div className="rowcard rowcard-total">
+                    <div className="rowcard-main">
+                      <div className="rowcard-name">합계</div>
+                      <div className="rowcard-sub num">
+                        지급총액 {won(data.totals.paidTotal)} · 소득세 {won(selTotal.incomeTax)} · 지방세 {won(selTotal.localTax)}
+                      </div>
+                    </div>
+                    <div className="rowcard-amt">
+                      <div className="amt-label">차인지급액 합계</div>
+                      <div className="amt-val num money dep">{won(selTotal.netPay)}</div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}>

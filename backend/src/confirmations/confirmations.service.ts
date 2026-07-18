@@ -27,6 +27,7 @@ import { CreateConfirmationDto } from './dto/create-confirmation.dto';
 import { UpdateConfirmationDto } from './dto/update-confirmation.dto';
 import { SignConfirmationDto } from './dto/sign-confirmation.dto';
 import { toConfirmationDto, RATE_TYPE_LABEL } from './confirmations.mapper';
+import { computeSettlement } from './settlement.util';
 import {
   computeTeamEntries,
   type TeamEntryComputed,
@@ -220,27 +221,57 @@ export class ConfirmationsService {
       const { start, end } = kstMonthRange(month);
       where = { profileId: userId, date: { gte: start, lt: end } };
     }
+    // 정산 상태(settlement)를 함께 내려주기 위해 연결된 1:1 ledger entry 를 포함한다.
     const rows = await this.prisma.confirmation.findMany({
       where,
       orderBy: [{ date: 'asc' }, { createdAt: 'asc' }],
+      include: { ledgerEntry: true },
     });
-    const items = rows.map(toConfirmationDto);
+    const now = new Date();
+    // 각 확인서 DTO 에 정산 상태(additive)를 덧붙인다.
+    //  - settlement: 연결 ledger entry 기준 { paidAmount, outstandingAmount, status }.
+    //    entry 가 없으면 null(정산 대상 아님 — 현행 스키마상 항상 존재하므로 방어적).
+    const items = rows.map((c) => {
+      const dto = toConfirmationDto(c);
+      const le = c.ledgerEntry;
+      const settlement = le
+        ? computeSettlement(Number(le.amount), le.payments, le.dueDate, now)
+        : null;
+      return { ...dto, settlement };
+    });
 
-    // 일자별 집계
+    // 일자별 집계 — billed(totalAmount) 는 기존 그대로, 정산 합계는 additive.
     const byDateMap = new Map<
       string,
-      { date: string; count: number; totalAmount: number }
+      {
+        date: string;
+        count: number;
+        totalAmount: number;
+        paidAmount: number;
+        outstandingAmount: number;
+      }
     >();
     let monthTotal = 0;
+    let monthPaid = 0;
+    let monthOutstanding = 0;
     for (const it of items) {
       const g = byDateMap.get(it.date) ?? {
         date: it.date,
         count: 0,
         totalAmount: 0,
+        paidAmount: 0,
+        outstandingAmount: 0,
       };
+      // entry 가 없는 방어적 케이스: 전액 미수로 간주(청구액 = 미수).
+      const paid = it.settlement?.paidAmount ?? 0;
+      const outstanding = it.settlement?.outstandingAmount ?? it.total;
       g.count += 1;
       g.totalAmount += it.total;
+      g.paidAmount += paid;
+      g.outstandingAmount += outstanding;
       monthTotal += it.total;
+      monthPaid += paid;
+      monthOutstanding += outstanding;
       byDateMap.set(it.date, g);
     }
     const byDate = [...byDateMap.values()].sort((a, b) =>
@@ -250,6 +281,9 @@ export class ConfirmationsService {
       month: month ?? null,
       count: items.length,
       totalAmount: monthTotal,
+      // additive: 캘린더 미수/입금 분리 표기용. billed(totalAmount) 는 무변경.
+      totalPaid: monthPaid,
+      totalOutstanding: monthOutstanding,
       byDate,
       items,
     };

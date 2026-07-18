@@ -181,6 +181,7 @@ class Confirmation {
   final String? teamId; // 팀(반장) 확인서면 팀 id
   final List? teamEntries; // [{name, profileId, quantity, rate, amount}]
   final String? signImageDataUrl; // 손글씨 서명 획(PNG data URI) — 상세(getOne) SIGNED 만
+  final Settlement? settlement; // 정산 상태(연결 장부 기준) — 캘린더 미수/입금 분리 표기용
 
   Confirmation({
     required this.id,
@@ -205,6 +206,7 @@ class Confirmation {
     required this.teamId,
     required this.teamEntries,
     this.signImageDataUrl,
+    this.settlement,
   });
 
   factory Confirmation.fromJson(Map j) => Confirmation(
@@ -230,10 +232,16 @@ class Confirmation {
         teamId: j['teamId'] as String?,
         teamEntries: j['teamEntries'] as List?,
         signImageDataUrl: j['signImageDataUrl'] as String?,
+        settlement: j['settlement'] is Map
+            ? Settlement.fromJson(j['settlement'] as Map)
+            : null,
       );
 
   /// 팀(반장) 확인서 여부.
   bool get isTeam => teamId != null && teamId!.isNotEmpty;
+
+  /// 전액 입금 완료 여부(정산 정보 없으면 false — 미수로 취급).
+  bool get isFullyPaid => settlement?.isPaid ?? false;
 
   DateTime get dateTime => DateTime.parse(date);
 
@@ -268,24 +276,56 @@ class Confirmation {
   bool get isGongsu => rateType == 'GONGSU';
 }
 
+/// 확인서 정산 상태 — 연결 장부(ledger entry) 기준. 서버가 계산해 내려준다.
+///  - status: 'UNPAID'(입금 0·연체 포함) | 'PARTIAL'(일부 입금) | 'PAID'(완납).
+class Settlement {
+  final int paidAmount;
+  final int outstandingAmount;
+  final String status;
+  Settlement(this.paidAmount, this.outstandingAmount, this.status);
+  factory Settlement.fromJson(Map j) => Settlement(
+        _pint(j['paidAmount']),
+        _pint(j['outstandingAmount']),
+        j['status']?.toString() ?? 'UNPAID',
+      );
+  bool get isPaid => status == 'PAID';
+  bool get isPartial => status == 'PARTIAL';
+}
+
 class DayAggregate {
   final String date;
   final int count;
-  final int totalAmount;
-  DayAggregate(this.date, this.count, this.totalAmount);
-  factory DayAggregate.fromJson(Map j) =>
-      DayAggregate(j['date'].toString(), _pint(j['count']), _pint(j['totalAmount']));
+  final int totalAmount; // 청구(billed) 합
+  final int paidAmount; // 입금 합
+  final int outstandingAmount; // 미수 합
+  DayAggregate(this.date, this.count, this.totalAmount, this.paidAmount,
+      this.outstandingAmount);
+  factory DayAggregate.fromJson(Map j) => DayAggregate(
+        j['date'].toString(),
+        _pint(j['count']),
+        _pint(j['totalAmount']),
+        _pint(j['paidAmount']),
+        _pint(j['outstandingAmount']),
+      );
+
+  /// 그날 전액 입금 완료 여부(작업이 있고 미수 잔액 0).
+  bool get fullyPaid => count > 0 && outstandingAmount <= 0;
 }
 
 class ConfirmationList {
   final int count;
-  final int totalAmount;
+  final int totalAmount; // 청구(billed) 총합
+  final int totalPaid; // 입금 총합
+  final int totalOutstanding; // 미수 총합(= 홈 히어로 '받을 돈'과 동일 정의)
   final List<DayAggregate> byDate;
   final List<Confirmation> items;
-  ConfirmationList(this.count, this.totalAmount, this.byDate, this.items);
+  ConfirmationList(this.count, this.totalAmount, this.totalPaid,
+      this.totalOutstanding, this.byDate, this.items);
   factory ConfirmationList.fromJson(Map j) => ConfirmationList(
         _pint(j['count']),
         _pint(j['totalAmount']),
+        _pint(j['totalPaid']),
+        _pint(j['totalOutstanding']),
         (j['byDate'] as List? ?? [])
             .map((e) => DayAggregate.fromJson(e as Map))
             .toList(),
