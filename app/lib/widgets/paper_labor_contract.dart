@@ -146,7 +146,7 @@ class PaperLaborContract extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Icon(applied ? Icons.check_circle_rounded : Icons.remove_circle_outline_rounded,
+          Icon(applied ? Icons.check_circle_outline_rounded : Icons.remove_circle_outline_rounded,
               size: 16, color: applied ? col.depositedBadge : col.ink3),
           const SizedBox(width: 8),
           Text(label, style: TextStyle(fontSize: 14, color: col.ink2)),
@@ -171,7 +171,7 @@ class PaperLaborContract extends StatelessWidget {
           borderRadius: BorderRadius.circular(10)),
       child: Row(
         children: [
-          Icon(Icons.verified_rounded, color: col.depositedBadge, size: 20),
+          Icon(Icons.verified_outlined, color: col.depositedBadge, size: 20),
           const SizedBox(width: 8),
           Expanded(
             child: Column(

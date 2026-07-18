@@ -66,7 +66,7 @@ class PostCallCard extends ConsumerWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: _ActionButton(
-                  icon: Icons.bolt_rounded,
+                  icon: Icons.bolt_outlined,
                   label: l.postCallQuickSend,
                   filled: false,
                   onTap: () {

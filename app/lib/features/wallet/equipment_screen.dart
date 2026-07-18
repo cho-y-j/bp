@@ -75,7 +75,7 @@ class EquipmentScreen extends ConsumerWidget {
                                 color: c.primary.withValues(alpha: 0.14),
                                 borderRadius: BorderRadius.circular(12)),
                             child:
-                                Icon(Icons.agriculture_rounded, color: c.accentText),
+                                Icon(Icons.agriculture_outlined, color: c.accentText),
                           ),
                           const SizedBox(width: 12),
                           Expanded(

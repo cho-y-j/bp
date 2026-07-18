@@ -320,7 +320,7 @@ class _GroupCardState extends ConsumerState<_GroupCard> {
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _copy,
-                  icon: Icon(Icons.copy_rounded, size: 18, color: c.ink),
+                  icon: Icon(Icons.copy_outlined, size: 18, color: c.ink),
                   label: Text(l.taxCopy,
                       style: TextStyle(
                           color: c.ink,

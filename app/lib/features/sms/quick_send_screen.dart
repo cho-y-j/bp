@@ -478,7 +478,7 @@ class _RecipientSheetState extends ConsumerState<_RecipientSheet> {
           const SizedBox(height: 18),
           PrimaryButton(
             label: l.smsOpenCompose,
-            icon: Icons.sms_rounded,
+            icon: Icons.sms_outlined,
             onPressed: () => Navigator.pop(
               context,
               _SendConfig(

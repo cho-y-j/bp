@@ -83,7 +83,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                 height: 72,
                 decoration: BoxDecoration(
                     color: c.primary, borderRadius: BorderRadius.circular(22)),
-                child: Icon(Icons.lock_rounded, color: c.primaryInk, size: 38),
+                child: Icon(Icons.lock_outline_rounded, color: c.primaryInk, size: 38),
               ),
               const SizedBox(height: 20),
               Text('작업온',

@@ -228,7 +228,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
             if (_doc.isImage)
               PrimaryButton(
                 label: _doc.hasMask ? l.docReMask : l.docMaskEdit,
-                icon: Icons.security_rounded,
+                icon: Icons.security_outlined,
                 onPressed: _openMaskEditor,
               ),
           ],

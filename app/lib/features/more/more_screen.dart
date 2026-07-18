@@ -134,7 +134,7 @@ class MoreScreen extends ConsumerWidget {
               onTap: () => _push(context, const QrCardScreen()),
             ),
             _Tile(
-              icon: Icons.bolt_rounded,
+              icon: Icons.bolt_outlined,
               title: l.quickSendMenuTitle,
               subtitle: l.quickSendMenuSub,
               onTap: () => _push(context, const QuickSendScreen()),
@@ -478,7 +478,7 @@ class _KakaoLinkTileState extends ConsumerState<_KakaoLinkTile> {
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: c.primary))
                 else if (linked)
-                  Icon(Icons.check_circle_rounded, color: c.deposited, size: 22),
+                  Icon(Icons.check_circle_outline_rounded, color: c.deposited, size: 22),
               ],
             ),
           ),

@@ -581,7 +581,7 @@ class _TbmFormScreenState extends ConsumerState<TbmFormScreen> {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(children: [
-          Icon(Icons.event_rounded, size: 18, color: c.ink3),
+          Icon(Icons.event_outlined, size: 18, color: c.ink3),
           const SizedBox(width: 10),
           Text('${fmtShortDate(_date, lang)}  ${fmtAmpm(_hhmm(_time), lang)}',
               style: TextStyle(

@@ -75,7 +75,7 @@ class _SafetyScreenState extends ConsumerState<SafetyScreen> {
                   const SizedBox(height: 16),
                   PrimaryButton(
                       label: l.safetyOpenReport(fmtMonth(DateTime.now(), context.lang)),
-                      icon: Icons.picture_as_pdf_rounded,
+                      icon: Icons.picture_as_pdf_outlined,
                       loading: _loading,
                       onPressed: _openReport),
                 ],

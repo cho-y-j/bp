@@ -98,7 +98,7 @@ class _ReceivedCardState extends ConsumerState<_ReceivedCard> {
                 color: c.deposited.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12)),
             child: Row(children: [
-              Icon(Icons.verified_rounded, color: c.depositedBadge, size: 20),
+              Icon(Icons.verified_outlined, color: c.depositedBadge, size: 20),
               const SizedBox(width: 8),
               Text(l.tbmAlreadyAcked,
                   style: TextStyle(

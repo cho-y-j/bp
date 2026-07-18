@@ -17,7 +17,7 @@ class SplashScreen extends StatelessWidget {
               height: 64,
               decoration: BoxDecoration(
                   color: c.primary, borderRadius: BorderRadius.circular(19)),
-              child: Icon(Icons.bolt_rounded, color: c.primaryInk, size: 36),
+              child: Icon(Icons.bolt_outlined, color: c.primaryInk, size: 36),
             ),
             const SizedBox(height: 18),
             Text('작업온',

@@ -208,7 +208,7 @@ class _ReceivedContractScreenState
             const SizedBox(height: 4),
             PrimaryButton(
                 label: l.lcSignSubmit,
-                icon: Icons.draw_rounded,
+                icon: Icons.draw_outlined,
                 loading: _signing,
                 onPressed: _sign),
           ] else if (ct.workerSigned)
@@ -218,7 +218,7 @@ class _ReceivedContractScreenState
                   color: c.deposited.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12)),
               child: Row(children: [
-                Icon(Icons.verified_rounded, color: c.depositedBadge, size: 22),
+                Icon(Icons.verified_outlined, color: c.depositedBadge, size: 22),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(l.lcAlreadySigned,

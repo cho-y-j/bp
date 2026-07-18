@@ -210,7 +210,7 @@ class _BizConfirmationDetailScreenState
           const SizedBox(height: 8),
           PrimaryButton(
               label: l.bizSignSubmit,
-              icon: Icons.draw_rounded,
+              icon: Icons.draw_outlined,
               loading: _signing,
               onPressed: _sign),
         ],

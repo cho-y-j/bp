@@ -276,7 +276,7 @@ class _ContractDetailScreenState extends ConsumerState<ContractDetailScreen> {
             const SizedBox(height: 4),
             PrimaryButton(
                 label: l.lcSignSubmit,
-                icon: Icons.draw_rounded,
+                icon: Icons.draw_outlined,
                 loading: _signing,
                 onPressed: _sign),
           ] else if (ct.isDraft) ...[

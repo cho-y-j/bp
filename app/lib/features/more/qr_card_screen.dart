@@ -481,7 +481,7 @@ class _DocStatusSection extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.verified_rounded,
+              Icon(Icons.verified_outlined,
                   size: 15, color: c.depositedBadge),
               const SizedBox(width: 5),
               Text(l.qrCardDocValid,

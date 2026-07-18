@@ -121,7 +121,7 @@ class _WageStatementScreenState extends ConsumerState<WageStatementScreen> {
                               Expanded(
                                 child: OutlinedButton.icon(
                                   onPressed: () => _copy(w),
-                                  icon: Icon(Icons.copy_rounded,
+                                  icon: Icon(Icons.copy_outlined,
                                       size: 18, color: c.ink),
                                   label: Text(l.wageStmtCopy,
                                       style: TextStyle(
@@ -145,7 +145,7 @@ class _WageStatementScreenState extends ConsumerState<WageStatementScreen> {
                                       : () => _mark(month),
                                   icon: Icon(
                                       w.marked
-                                          ? Icons.lock_rounded
+                                          ? Icons.lock_outline_rounded
                                           : Icons.check_circle_outline_rounded,
                                       size: 18),
                                   label: Text(
@@ -378,7 +378,7 @@ class _MarkedBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.lock_rounded, size: 12, color: c.depositedBadge),
+          Icon(Icons.lock_outline_rounded, size: 12, color: c.depositedBadge),
           const SizedBox(width: 3),
           Text(l.wageStmtMarked,
               style: TextStyle(

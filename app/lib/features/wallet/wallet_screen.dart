@@ -318,11 +318,11 @@ class _DocCard extends StatelessWidget {
                 if (selectMode)
                   Icon(
                       selected
-                          ? Icons.check_circle_rounded
+                          ? Icons.check_circle_outline_rounded
                           : Icons.radio_button_unchecked,
                       color: selected ? c.primary : c.ink3)
                 else if (doc.hasMask)
-                  Icon(Icons.security_rounded, size: 16, color: c.depositedBadge),
+                  Icon(Icons.security_outlined, size: 16, color: c.depositedBadge),
               ],
             ),
             const Spacer(),
@@ -415,7 +415,7 @@ class _ShareOptionsSheetState extends State<_ShareOptionsSheet> {
                 children: [
                   Icon(
                       widget.anyMasked
-                          ? Icons.security_rounded
+                          ? Icons.security_outlined
                           : Icons.info_outline_rounded,
                       size: 18,
                       color: widget.anyMasked ? c.depositedBadge : c.ink3),

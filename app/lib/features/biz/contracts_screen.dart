@@ -110,7 +110,7 @@ class ContractStatusBadge extends StatelessWidget {
         bg = c.deposited.withValues(alpha: 0.12);
         fg = c.depositedBadge;
         text = l.lcStatusSigned;
-        icon = Icons.verified_rounded;
+        icon = Icons.verified_outlined;
         break;
       case 'SENT':
         bg = c.primary.withValues(alpha: 0.14);

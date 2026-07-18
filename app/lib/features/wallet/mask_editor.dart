@@ -151,7 +151,7 @@ class _MaskEditorScreenState extends ConsumerState<MaskEditorScreen> {
                   const SizedBox(height: 10),
                   PrimaryButton(
                     label: l.maskSave,
-                    icon: Icons.security_rounded,
+                    icon: Icons.security_outlined,
                     loading: _saving,
                     onPressed: _regions.isEmpty ? null : _save,
                   ),

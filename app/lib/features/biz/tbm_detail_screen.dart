@@ -177,7 +177,7 @@ class _AttendeeRow extends StatelessWidget {
         ),
         if (a.acked)
           Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(Icons.verified_rounded, size: 16, color: c.depositedBadge),
+            Icon(Icons.verified_outlined, size: 16, color: c.depositedBadge),
             const SizedBox(width: 4),
             Text(a.ackAt ?? l.tbmAcked,
                 style: TextStyle(

@@ -89,7 +89,7 @@ class _CreateFlowState extends ConsumerState<_CreateFlow> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       children: [
-        Icon(Icons.storefront_rounded, size: 56, color: c.accentText),
+        Icon(Icons.storefront_outlined, size: 56, color: c.accentText),
         const SizedBox(height: 16),
         Text(l.bizCreateHeading,
             style: TextStyle(
@@ -104,7 +104,7 @@ class _CreateFlowState extends ConsumerState<_CreateFlow> {
         const SizedBox(height: 24),
         PrimaryButton(
             label: l.bizCreateButton,
-            icon: Icons.add_business_rounded,
+            icon: Icons.add_business_outlined,
             loading: _saving,
             onPressed: _create),
       ],
@@ -176,7 +176,7 @@ class _BizHome extends ConsumerWidget {
         ),
         const SizedBox(height: 18),
         _MenuCard(
-          icon: Icons.inbox_rounded,
+          icon: Icons.inbox_outlined,
           title: l.inboxTitle,
           subtitle: l.bizMenuInboxDesc,
           onTap: () => _push(context, const InboxScreen()),
@@ -290,7 +290,7 @@ class _SelfBadgeCard extends ConsumerWidget {
           children: [
             Icon(
                 excellent
-                    ? Icons.verified_rounded
+                    ? Icons.verified_outlined
                     : (good
                         ? Icons.thumb_up_alt_outlined
                         : Icons.insights_outlined),

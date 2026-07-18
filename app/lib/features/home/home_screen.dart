@@ -349,13 +349,13 @@ class _TodayCard extends StatelessWidget {
           _metaRow(context, Icons.schedule_rounded,
               '${fmtAmpm(conf.startTime, context.lang)} ~ ${fmtAmpm(conf.endTime, context.lang)}'),
           const SizedBox(height: 7),
-          _metaRow(context, Icons.business_rounded,
+          _metaRow(context, Icons.business_outlined,
               conf.contact != null && conf.contact!.isNotEmpty
                   ? '${conf.companyName} · ${conf.contact}'
                   : conf.companyName),
           if (equip != null && (equip['name'] ?? '').toString().isNotEmpty) ...[
             const SizedBox(height: 7),
-            _metaRow(context, Icons.agriculture_rounded,
+            _metaRow(context, Icons.agriculture_outlined,
                 '${equip['name']}${equip['vehicleNumber'] != null ? ' · ${equip['vehicleNumber']}' : ''}'),
           ],
         ],
@@ -465,7 +465,7 @@ class _MonthHero extends StatelessWidget {
               const SizedBox(width: 14),
               Expanded(
                 child: _HeroStat(
-                  icon: Icons.event_available_rounded,
+                  icon: Icons.event_available_outlined,
                   iconColor: c.ink3,
                   caption: l.homeDaysWorked,
                   value: worked,

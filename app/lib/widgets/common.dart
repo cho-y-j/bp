@@ -344,7 +344,7 @@ class SignatureSeal extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.verified_rounded, size: 18, color: c.depositedBadge),
+                    Icon(Icons.verified_outlined, size: 18, color: c.depositedBadge),
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(l.paperSignedBy(name),

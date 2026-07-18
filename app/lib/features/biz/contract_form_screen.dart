@@ -397,7 +397,7 @@ class _ContractFormScreenState extends ConsumerState<ContractFormScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Row(children: [
-                Icon(Icons.check_circle_rounded, size: 18, color: c.depositedBadge),
+                Icon(Icons.check_circle_outline_rounded, size: 18, color: c.depositedBadge),
                 const SizedBox(width: 6),
                 Text('${l.lcWorkerLinkedBadge} · $_pickedName',
                     style: TextStyle(
@@ -538,7 +538,7 @@ class _ContractFormScreenState extends ConsumerState<ContractFormScreen> {
         child: Row(children: [
           Icon(
               value
-                  ? Icons.check_box_rounded
+                  ? Icons.check_box_outlined
                   : Icons.check_box_outline_blank_rounded,
               color: value ? c.accentText : c.ink3,
               size: 24),
@@ -720,7 +720,7 @@ class _WorkerResultTile extends StatelessWidget {
             ),
             Icon(
                 selected
-                    ? Icons.check_circle_rounded
+                    ? Icons.check_circle_outline_rounded
                     : Icons.radio_button_unchecked,
                 color: selected ? c.accentText : c.ink3),
           ]),

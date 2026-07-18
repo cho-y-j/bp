@@ -113,7 +113,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   height: 44,
                   decoration: BoxDecoration(
                       color: c.primary, borderRadius: BorderRadius.circular(14)),
-                  child: Icon(Icons.bolt_rounded, color: c.primaryInk, size: 26),
+                  child: Icon(Icons.bolt_outlined, color: c.primaryInk, size: 26),
                 ),
                 const SizedBox(width: 12),
                 Text('작업온',

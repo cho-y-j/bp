@@ -172,7 +172,7 @@ class _AckPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(done ? Icons.verified_rounded : Icons.people_alt_outlined,
+        Icon(done ? Icons.verified_outlined : Icons.people_alt_outlined,
             size: 13, color: fg),
         const SizedBox(width: 4),
         Text('$ack/$att',

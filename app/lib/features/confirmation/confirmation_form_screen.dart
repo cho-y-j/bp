@@ -271,7 +271,7 @@ class _FormState extends ConsumerState<ConfirmationFormScreen> {
                 subtitle: Text(
                     '${fmtShortDate(conf.dateTime, ctx.lang)} · ${conf.companyName} · ${formatMoney(conf.total, ctx.lang)}',
                     style: TextStyle(color: ctx.c.ink2, fontSize: 13)),
-                trailing: Icon(Icons.copy_rounded, color: ctx.c.accentText, size: 20),
+                trailing: Icon(Icons.copy_outlined, color: ctx.c.accentText, size: 20),
                 onTap: () => Navigator.of(ctx).pop(conf),
               ),
           ],
@@ -806,7 +806,7 @@ class _CopyButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(children: [
-            Icon(Icons.content_copy_rounded, size: 20, color: c.accentText),
+            Icon(Icons.content_copy_outlined, size: 20, color: c.accentText),
             const SizedBox(width: 11),
             Text(context.l.confCopyPrevious,
                 style: TextStyle(
@@ -945,7 +945,7 @@ class _CounterpartySection extends StatelessWidget {
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: c.ink),
               decoration: InputDecoration(
                 hintText: l.confCompanyHint,
-                prefixIcon: Icon(Icons.business_rounded, size: 20, color: c.ink3),
+                prefixIcon: Icon(Icons.business_outlined, size: 20, color: c.ink3),
               ),
             ),
             const SizedBox(height: 8),
