@@ -227,18 +227,17 @@ export class ConfirmationsService {
   // 목록 (?month=YYYY-MM) + 일자별 집계 (캘린더 월/주 뷰)
   // --------------------------------------------------------------------------
   async list(userId: string, month?: string) {
-    let where: Prisma.ConfirmationWhereInput = { profileId: userId };
-    if (month) {
-      if (!/^\d{4}-\d{2}$/.test(month)) {
-        throw new AppException(
-          'INVALID_MONTH',
-          'month 는 YYYY-MM 형식이어야 합니다.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      const { start, end } = kstMonthRange(month);
-      where = { profileId: userId, date: { gte: start, lt: end } };
+    if (month && !/^\d{4}-\d{2}$/.test(month)) {
+      throw new AppException(
+        'INVALID_MONTH',
+        'month 는 YYYY-MM 형식이어야 합니다.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
+    const range = month ? kstMonthRange(month) : null;
+    const where: Prisma.ConfirmationWhereInput = range
+      ? { profileId: userId, date: { gte: range.start, lt: range.end } }
+      : { profileId: userId };
     // 정산 상태(settlement)를 함께 내려주기 위해 연결된 1:1 ledger entry 를 포함한다.
     const rows = await this.prisma.confirmation.findMany({
       where,
@@ -258,7 +257,44 @@ export class ConfirmationsService {
       return { ...dto, settlement };
     });
 
-    // 일자별 집계 — billed(totalAmount) 는 기존 그대로, 정산 합계는 additive.
+    // 팀원 파생 소득(teamShares) — 반장 팀 확인서에 포함된 '본인 몫'.
+    //  - 원천: 본인(profileId) 소유의 derived=true ledger entry(반장 서명 시 생성).
+    //    본인이 소유한 확인서가 아니므로 위 items 에는 절대 나타나지 않는다(confirmationId=null,
+    //    sourceConfirmationId 로만 원 확인서와 연결) → items 와 겹칠 수 없어 이중 계상 없음.
+    //  - date/site 는 원 확인서(sourceConfirmation)에서, teamLeaderName 은 파생 생성 시
+    //    스냅샷된 반장 이름(counterpartyName), amount 는 본인 몫, settlement 는 파생 entry 기준.
+    //  - 홈 히어로(ledger summary)는 파생 entry 를 포함해 집계하므로, 캘린더 총계도
+    //    teamShares 를 포함시켜 정의·수치를 재일치시킨다.
+    const derivedWhere: Prisma.LedgerEntryWhereInput = range
+      ? {
+          profileId: userId,
+          derived: true,
+          sourceConfirmation: { date: { gte: range.start, lt: range.end } },
+        }
+      : { profileId: userId, derived: true, sourceConfirmationId: { not: null } };
+    const derivedRows = await this.prisma.ledgerEntry.findMany({
+      where: derivedWhere,
+      orderBy: [{ createdAt: 'asc' }],
+      include: { sourceConfirmation: true },
+    });
+    const teamShares = derivedRows
+      .filter((e) => e.sourceConfirmation)
+      .map((e) => {
+        const src = e.sourceConfirmation!;
+        const amount = Number(e.amount);
+        return {
+          id: e.id,
+          date: toKstDateStr(src.date),
+          site: src.site,
+          teamLeaderName: e.counterpartyName,
+          amount,
+          settlement: computeSettlement(amount, e.payments, e.dueDate, now),
+        };
+      })
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    // 일자별 집계 — 확인서(items) + 팀원 파생(teamShares) 를 함께 반영.
+    //  둘은 서로 다른 원천이라 겹치지 않으므로 단순 합산(이중 계상 없음).
     const byDateMap = new Map<
       string,
       {
@@ -269,41 +305,62 @@ export class ConfirmationsService {
         outstandingAmount: number;
       }
     >();
-    let monthTotal = 0;
-    let monthPaid = 0;
-    let monthOutstanding = 0;
-    for (const it of items) {
-      const g = byDateMap.get(it.date) ?? {
-        date: it.date,
+    const bump = (
+      date: string,
+      total: number,
+      paid: number,
+      outstanding: number,
+    ) => {
+      const g = byDateMap.get(date) ?? {
+        date,
         count: 0,
         totalAmount: 0,
         paidAmount: 0,
         outstandingAmount: 0,
       };
+      g.count += 1;
+      g.totalAmount += total;
+      g.paidAmount += paid;
+      g.outstandingAmount += outstanding;
+      byDateMap.set(date, g);
+    };
+    let monthTotal = 0;
+    let monthPaid = 0;
+    let monthOutstanding = 0;
+    for (const it of items) {
       // entry 가 없는 방어적 케이스: 전액 미수로 간주(청구액 = 미수).
       const paid = it.settlement?.paidAmount ?? 0;
       const outstanding = it.settlement?.outstandingAmount ?? it.total;
-      g.count += 1;
-      g.totalAmount += it.total;
-      g.paidAmount += paid;
-      g.outstandingAmount += outstanding;
+      bump(it.date, it.total, paid, outstanding);
       monthTotal += it.total;
       monthPaid += paid;
       monthOutstanding += outstanding;
-      byDateMap.set(it.date, g);
+    }
+    for (const ts of teamShares) {
+      bump(
+        ts.date,
+        ts.amount,
+        ts.settlement.paidAmount,
+        ts.settlement.outstandingAmount,
+      );
+      monthTotal += ts.amount;
+      monthPaid += ts.settlement.paidAmount;
+      monthOutstanding += ts.settlement.outstandingAmount;
     }
     const byDate = [...byDateMap.values()].sort((a, b) =>
       a.date.localeCompare(b.date),
     );
     return {
       month: month ?? null,
-      count: items.length,
+      count: items.length + teamShares.length,
       totalAmount: monthTotal,
-      // additive: 캘린더 미수/입금 분리 표기용. billed(totalAmount) 는 무변경.
+      // 캘린더 미수/입금 분리 표기용. teamShares 를 포함해 홈 히어로와 정의 일치.
       totalPaid: monthPaid,
       totalOutstanding: monthOutstanding,
       byDate,
       items,
+      // 팀원 파생 소득(읽기 전용) — 본인 소유 확인서가 아님. 캘린더 '팀 작업' 표시용.
+      teamShares,
     };
   }
 

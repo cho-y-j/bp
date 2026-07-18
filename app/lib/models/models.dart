@@ -312,15 +312,49 @@ class DayAggregate {
   bool get fullyPaid => count > 0 && outstandingAmount <= 0;
 }
 
+/// 팀원 파생 소득 1건 — 반장 팀 확인서에 포함된 '본인 몫'(읽기 전용).
+///  - 본인 소유 확인서가 아니므로 캘린더에 '팀 작업'으로만 표시하고 상세로 이동하지 않는다.
+///  - date/site 는 원 확인서, teamLeaderName 은 반장 이름, amount 는 본인 몫.
+class TeamShare {
+  final String id;
+  final String date; // YYYY-MM-DD (KST)
+  final String site;
+  final String teamLeaderName; // 반장 이름(스냅샷)
+  final int amount; // 본인 몫(원)
+  final Settlement? settlement; // 정산 상태(파생 장부 기준)
+  TeamShare({
+    required this.id,
+    required this.date,
+    required this.site,
+    required this.teamLeaderName,
+    required this.amount,
+    this.settlement,
+  });
+  factory TeamShare.fromJson(Map j) => TeamShare(
+        id: j['id'].toString(),
+        date: j['date']?.toString() ?? '',
+        site: j['site']?.toString() ?? '',
+        teamLeaderName: j['teamLeaderName']?.toString() ?? '',
+        amount: _pint(j['amount']),
+        settlement: j['settlement'] is Map
+            ? Settlement.fromJson(j['settlement'] as Map)
+            : null,
+      );
+
+  /// 전액 입금 완료 여부(정산 정보 없으면 false — 미수로 취급).
+  bool get isFullyPaid => settlement?.isPaid ?? false;
+}
+
 class ConfirmationList {
-  final int count;
+  final int count; // 확인서 + 팀원 파생 소득 건수(서버 집계)
   final int totalAmount; // 청구(billed) 총합
   final int totalPaid; // 입금 총합
   final int totalOutstanding; // 미수 총합(= 홈 히어로 '받을 돈'과 동일 정의)
   final List<DayAggregate> byDate;
   final List<Confirmation> items;
+  final List<TeamShare> teamShares; // 팀원 파생 소득(읽기 전용)
   ConfirmationList(this.count, this.totalAmount, this.totalPaid,
-      this.totalOutstanding, this.byDate, this.items);
+      this.totalOutstanding, this.byDate, this.items, this.teamShares);
   factory ConfirmationList.fromJson(Map j) => ConfirmationList(
         _pint(j['count']),
         _pint(j['totalAmount']),
@@ -331,6 +365,9 @@ class ConfirmationList {
             .toList(),
         (j['items'] as List? ?? [])
             .map((e) => Confirmation.fromJson(e as Map))
+            .toList(),
+        (j['teamShares'] as List? ?? [])
+            .map((e) => TeamShare.fromJson(e as Map))
             .toList(),
       );
 

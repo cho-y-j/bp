@@ -373,3 +373,244 @@ describe('Confirmations & Ledger flow (e2e)', () => {
     expect(res.body.error.code).toBe('CONFIRMATION_REVOKED');
   });
 });
+
+/**
+ * 팀원 파생 소득 캘린더(teamShares) e2e:
+ *  반장이 팀 확인서(팀원 몫 포함)를 작성·서명 → 팀원(가입·연결) 본인 장부에 파생 소득 생성.
+ *  팀원 월 조회(GET /confirmations?month=)에 teamShares 로 등장하고, 본인 확인서(items)와 병존하며
+ *  미수/입금 총계가 홈 히어로(ledger summary, 파생 포함)와 정확히 일치함을 검증한다.
+ */
+describe('팀원 파생 소득 캘린더 teamShares (e2e)', () => {
+  let app: INestApplication;
+  let prisma: PrismaService;
+  let bossToken: string;
+  let memberToken: string;
+  let memberProfileId: string;
+  const bossPhone = '010-7777-0003';
+  const bossNorm = '01077770003';
+  const memberPhone = '010-8888-0002';
+  const memberNorm = '01088880002';
+  const MONTH = '2026-08';
+  const store: Record<string, string> = {};
+
+  async function signPngDataUri(): Promise<string> {
+    const png = await sharp({
+      create: {
+        width: 200,
+        height: 80,
+        channels: 4,
+        background: { r: 0, g: 0, b: 200, alpha: 1 },
+      },
+    })
+      .png()
+      .toBuffer();
+    return `data:image/png;base64,${png.toString('base64')}`;
+  }
+
+  async function login(
+    phone: string,
+  ): Promise<{ token: string; profileId: string }> {
+    const reqRes = await request(app.getHttpServer())
+      .post('/api/auth/phone/request')
+      .send({ phone })
+      .expect(200);
+    const devCode: string = reqRes.body.data.devCode;
+    const verifyRes = await request(app.getHttpServer())
+      .post('/api/auth/phone/verify')
+      .send({ phone, code: devCode })
+      .expect(200);
+    return {
+      token: verifyRes.body.data.accessToken,
+      profileId: verifyRes.body.data.profile.id,
+    };
+  }
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+    app = moduleRef.createNestApplication();
+    app.setGlobalPrefix('api', { exclude: ['health'] });
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+    await app.init();
+    prisma = app.get(PrismaService);
+
+    for (const p of [bossNorm, memberNorm]) {
+      await prisma.profile.deleteMany({ where: { phone: p } });
+      await prisma.otpCode.deleteMany({ where: { phone: p } });
+    }
+
+    const boss = await login(bossPhone);
+    bossToken = boss.token;
+    const member = await login(memberPhone);
+    memberToken = member.token;
+    memberProfileId = member.profileId;
+
+    await request(app.getHttpServer())
+      .patch('/api/me')
+      .set('Authorization', `Bearer ${bossToken}`)
+      .send({ name: '박현장' })
+      .expect(200);
+    // 팀원: 이름 + 전화검색 동의 ON(반장이 전화검색으로 연결하는 전제).
+    await request(app.getHttpServer())
+      .patch('/api/me')
+      .set('Authorization', `Bearer ${memberToken}`)
+      .send({ name: '이팀원', phoneSearchConsent: true })
+      .expect(200);
+  });
+
+  afterAll(async () => {
+    for (const p of [bossNorm, memberNorm]) {
+      await prisma.profile.deleteMany({ where: { phone: p } });
+      await prisma.otpCode.deleteMany({ where: { phone: p } });
+    }
+    await app.close();
+  });
+
+  it('반장: 팀 생성 + 팀원(가입) 연결', async () => {
+    const team = await request(app.getHttpServer())
+      .post('/api/teams')
+      .set('Authorization', `Bearer ${bossToken}`)
+      .send({ name: '박현장 A팀' })
+      .expect(201);
+    store.teamId = team.body.data.id;
+
+    const mem = await request(app.getHttpServer())
+      .post(`/api/teams/${store.teamId}/members`)
+      .set('Authorization', `Bearer ${bossToken}`)
+      .send({ profileId: memberProfileId, defaultRate: 180000 })
+      .expect(201);
+    expect(mem.body.data.linked).toBe(true);
+    store.memberId = mem.body.data.id;
+  });
+
+  it('팀원: 본인 확인서 1건 작성(병존 확인용, 2026-08-05 100,000)', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/confirmations')
+      .set('Authorization', `Bearer ${memberToken}`)
+      .send({
+        date: '2026-08-05',
+        siteName: '본인 직거래 현장',
+        companyName: '직거래건설',
+        contact: '010-2222-3333',
+        workDescription: '개인 작업',
+        startTime: '08:00',
+        endTime: '17:00',
+        rateType: 'DAILY',
+        rate: 100000,
+        quantity: 1,
+      })
+      .expect(201);
+    expect(res.body.data.total).toBe(100000);
+    store.ownConfId = res.body.data.id;
+  });
+
+  it('반장: 팀 확인서 작성(팀원 몫 180,000) → 전송 → 서명 → 파생 소득 생성', async () => {
+    const conf = await request(app.getHttpServer())
+      .post('/api/confirmations')
+      .set('Authorization', `Bearer ${bossToken}`)
+      .send({
+        date: '2026-08-10',
+        siteName: '판교 팀 현장',
+        companyName: '종합건설',
+        contact: '010-5555-0000',
+        workDescription: '팀 작업',
+        startTime: '07:00',
+        endTime: '18:00',
+        teamId: store.teamId,
+        teamEntries: [{ memberId: store.memberId, quantity: 1, rate: 180000 }],
+      })
+      .expect(201);
+    expect(conf.body.data.total).toBe(180000);
+    store.teamConfToken = conf.body.data.shareToken;
+
+    await request(app.getHttpServer())
+      .post(`/api/confirmations/${conf.body.data.id}/send`)
+      .set('Authorization', `Bearer ${bossToken}`)
+      .expect(201);
+
+    const signed = await request(app.getHttpServer())
+      .post(`/api/public/confirmations/${store.teamConfToken}/sign`)
+      .send({ signerName: '현장소장', signImageBase64: await signPngDataUri() })
+      .expect(201);
+    expect(signed.body.data.status).toBe('SIGNED');
+
+    // 팀원 본인 장부에 파생 entry(derived=true) 생성 확인.
+    const derived = await prisma.ledgerEntry.findFirst({
+      where: { profileId: memberProfileId, derived: true },
+    });
+    expect(derived).toBeTruthy();
+    expect(Number(derived!.amount)).toBe(180000);
+    store.derivedId = derived!.id;
+  });
+
+  it('팀원 월 조회: teamShares 등장 + 본인 확인서 병존 + 홈 히어로 정합', async () => {
+    const cal = await request(app.getHttpServer())
+      .get(`/api/confirmations?month=${MONTH}`)
+      .set('Authorization', `Bearer ${memberToken}`)
+      .expect(200);
+    const d = cal.body.data;
+
+    // 본인 확인서(items)는 1건, 팀 작업(teamShares)도 1건 — 병존.
+    expect(d.items.length).toBe(1);
+    expect(d.items[0].id).toBe(store.ownConfId);
+    expect(d.teamShares.length).toBe(1);
+    const ts = d.teamShares[0];
+    expect(ts.id).toBe(store.derivedId);
+    expect(ts.date).toBe('2026-08-10');
+    expect(ts.site).toBe('판교 팀 현장');
+    expect(ts.teamLeaderName).toBe('박현장');
+    expect(ts.amount).toBe(180000);
+    expect(ts.settlement).toEqual({
+      paidAmount: 0,
+      outstandingAmount: 180000,
+      status: 'UNPAID',
+    });
+
+    // count·byDate 에 teamShares 포함(본인 100,000 + 팀 180,000).
+    expect(d.count).toBe(2);
+    expect(d.totalOutstanding).toBe(280000);
+    const day10 = d.byDate.find((x: { date: string }) => x.date === '2026-08-10');
+    expect(day10.count).toBe(1);
+    expect(day10.outstandingAmount).toBe(180000);
+
+    // 홈 히어로(ledger summary, 파생 포함)와 미수/입금 총계 정확 일치.
+    const summary = await request(app.getHttpServer())
+      .get(`/api/ledger/summary?month=${MONTH}`)
+      .set('Authorization', `Bearer ${memberToken}`)
+      .expect(200);
+    expect(d.totalOutstanding).toBe(summary.body.data.totalOutstanding);
+    expect(d.totalPaid).toBe(summary.body.data.totalPaid);
+    expect(d.totalAmount).toBe(summary.body.data.totalBilled);
+  });
+
+  it('팀원: 파생 소득에 부분입금 → teamShares.settlement PARTIAL·총계 반영', async () => {
+    const pay = await request(app.getHttpServer())
+      .post(`/api/ledger/${store.derivedId}/payments`)
+      .set('Authorization', `Bearer ${memberToken}`)
+      .send({ amount: 80000, memo: '반장 일부 지급' })
+      .expect(201);
+    expect(pay.body.data.status).toBe('PARTIAL');
+
+    const cal = await request(app.getHttpServer())
+      .get(`/api/confirmations?month=${MONTH}`)
+      .set('Authorization', `Bearer ${memberToken}`)
+      .expect(200);
+    const ts = cal.body.data.teamShares[0];
+    expect(ts.settlement.status).toBe('PARTIAL');
+    expect(ts.settlement.paidAmount).toBe(80000);
+    expect(ts.settlement.outstandingAmount).toBe(100000);
+    // 본인 미수 100,000 + 팀 미수 100,000 = 200,000, 입금 80,000.
+    expect(cal.body.data.totalOutstanding).toBe(200000);
+    expect(cal.body.data.totalPaid).toBe(80000);
+
+    const summary = await request(app.getHttpServer())
+      .get(`/api/ledger/summary?month=${MONTH}`)
+      .set('Authorization', `Bearer ${memberToken}`)
+      .expect(200);
+    expect(cal.body.data.totalOutstanding).toBe(
+      summary.body.data.totalOutstanding,
+    );
+    expect(cal.body.data.totalPaid).toBe(summary.body.data.totalPaid);
+  });
+});

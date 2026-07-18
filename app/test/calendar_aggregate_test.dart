@@ -138,6 +138,99 @@ void main() {
       expect(unpaid.settlement!.status, 'UNPAID');
     });
 
+    test('teamShares(팀원 파생 소득) 파싱 + 총계/건수 포함', () {
+      final list = ConfirmationList.fromJson({
+        'month': '2026-07',
+        // 서버가 확인서(items) + teamShares 를 합산해 내려주는 형태.
+        'count': 2, // 확인서 1 + 팀 작업 1
+        'totalAmount': 400000,
+        'totalPaid': 100000,
+        'totalOutstanding': 300000,
+        'byDate': [
+          {
+            'date': '2026-07-09',
+            'count': 1,
+            'totalAmount': 220000,
+            'paidAmount': 0,
+            'outstandingAmount': 220000,
+          },
+          {
+            'date': '2026-07-10',
+            'count': 1,
+            'totalAmount': 180000,
+            'paidAmount': 100000,
+            'outstandingAmount': 80000,
+          },
+        ],
+        'items': [
+          {
+            'id': 'own',
+            'date': '2026-07-09',
+            'siteName': '판교',
+            'companyName': 'C',
+            'total': 220000,
+            'settlement': {
+              'paidAmount': 0,
+              'outstandingAmount': 220000,
+              'status': 'UNPAID',
+            },
+          },
+        ],
+        'teamShares': [
+          {
+            'id': 'ts1',
+            'date': '2026-07-10',
+            'site': '역삼 리모델링',
+            'teamLeaderName': '박현장',
+            'amount': 180000,
+            'settlement': {
+              'paidAmount': 100000,
+              'outstandingAmount': 80000,
+              'status': 'PARTIAL',
+            },
+          },
+        ],
+      });
+      expect(list.teamShares.length, 1);
+      final ts = list.teamShares.first;
+      expect(ts.id, 'ts1');
+      expect(ts.site, '역삼 리모델링');
+      expect(ts.teamLeaderName, '박현장');
+      expect(ts.amount, 180000);
+      expect(ts.isFullyPaid, isFalse);
+      expect(ts.settlement!.isPartial, isTrue);
+      expect(ts.settlement!.paidAmount, 100000);
+      // 서버가 이미 teamShares 를 포함해 집계 → 앱은 총계/건수를 그대로 신뢰.
+      expect(list.count, 2);
+      expect(list.totalAmount, 400000);
+      expect(list.totalPaid, 100000);
+      expect(list.totalOutstanding, 300000);
+    });
+
+    test('teamShares 완납 시 isFullyPaid=true, 누락 시 빈 리스트', () {
+      final paid = TeamShare.fromJson({
+        'id': 't',
+        'date': '2026-07-01',
+        'site': 'S',
+        'teamLeaderName': '김반장',
+        'amount': 150000,
+        'settlement': {
+          'paidAmount': 150000,
+          'outstandingAmount': 0,
+          'status': 'PAID',
+        },
+      });
+      expect(paid.isFullyPaid, isTrue);
+      // teamShares 키가 없으면 빈 리스트로 안전 파싱.
+      final list = ConfirmationList.fromJson({
+        'count': 0,
+        'totalAmount': 0,
+        'byDate': [],
+        'items': [],
+      });
+      expect(list.teamShares, isEmpty);
+    });
+
     test('settlement 누락 시 isFullyPaid=false, byDate 필드 0 기본', () {
       final list = ConfirmationList.fromJson({
         'count': 1,

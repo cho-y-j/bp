@@ -150,6 +150,11 @@ class _MonthGrid extends ConsumerWidget {
     for (final it in list.items) {
       byDayConfs.putIfAbsent(it.date, () => []).add(it);
     }
+    // 날짜별 팀원 파생 소득(팀 작업 몫) — 확인서와 같은 칸에 '팀' 라인으로 함께 표시.
+    final byDayShares = <String, List<TeamShare>>{};
+    for (final ts in list.teamShares) {
+      byDayShares.putIfAbsent(ts.date, () => []).add(ts);
+    }
     final first = DateTime(month.year, month.month, 1);
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
     // 주 시작을 일요일로: weekday Mon=1..Sun=7 → 일요일 index=0
@@ -255,6 +260,7 @@ class _MonthGrid extends ConsumerWidget {
               key: ValueKey('cal-day-$key'),
               day: day,
               confs: byDayConfs[key] ?? const [],
+              shares: byDayShares[key] ?? const [],
               isToday: isToday,
               isSelected: selKey == key,
               onTap: () {
@@ -301,13 +307,22 @@ _LineKind _lineKindOf(Confirmation c) {
   return c.isFullyPaid ? _LineKind.paid : _LineKind.due;
 }
 
+// 미니 라인 1줄 표현 — 확인서 또는 팀원 파생 소득 공통.
+class _MiniLine {
+  final String label; // 현장명
+  final _LineKind kind; // 정산 상태 색
+  final bool isTeam; // 팀 작업(파생) 여부 → '팀' 프리픽스
+  const _MiniLine(this.label, this.kind, this.isTeam);
+}
+
 // 구글 캘린더 월뷰처럼 날짜 칸 안에 그날 일감을 미니 라인(최대 3줄)으로 표시.
-//  - 각 줄 = 현장명(말줄임 1줄) + 정산 상태 색 칩.
-//  - 3건 초과분은 마지막 줄을 "+N".
+//  - 각 줄 = 현장명(말줄임 1줄) + 정산 상태 색 칩. 팀 작업은 '팀·' 프리픽스로 구분.
+//  - 확인서 + 팀원 파생 소득(팀 작업 몫)을 함께 3줄 제한·+N 규칙에 포함.
 //  - 금액은 칸에서 생략(무슨 일을 했는지 우선) — 합계·건별 금액은 탭 펼침 뷰에서.
 class _DayCell extends StatelessWidget {
   final DateTime day;
   final List<Confirmation> confs;
+  final List<TeamShare> shares;
   final bool isToday;
   final bool isSelected;
   final VoidCallback onTap;
@@ -315,6 +330,7 @@ class _DayCell extends StatelessWidget {
       {super.key,
       required this.day,
       required this.confs,
+      required this.shares,
       required this.isToday,
       required this.isSelected,
       required this.onTap});
@@ -322,12 +338,20 @@ class _DayCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final hasWork = confs.isNotEmpty;
+    // 확인서 → 팀 작업 순으로 미니 라인 구성(확인서를 먼저 노출).
+    final lines = <_MiniLine>[
+      for (final conf in confs)
+        _MiniLine(conf.siteName, _lineKindOf(conf), false),
+      for (final ts in shares)
+        _MiniLine(
+            ts.site, ts.isFullyPaid ? _LineKind.paid : _LineKind.due, true),
+    ];
+    final hasWork = lines.isNotEmpty;
     final borderColor = isSelected || isToday ? c.primary : c.border;
 
     // 최대 3줄: 3건 이하면 전부, 초과면 2줄 + "+N".
     const maxLines = 3;
-    final total = confs.length;
+    final total = lines.length;
     final shown = total <= maxLines ? total : maxLines - 1;
     final overflow = total - shown;
 
@@ -360,7 +384,7 @@ class _DayCell extends StatelessWidget {
                       fontFeatures: const [FontFeature.tabularFigures()])),
             ),
             if (hasWork) ...[
-              for (var i = 0; i < shown; i++) _line(context, confs[i]),
+              for (var i = 0; i < shown; i++) _line(context, lines[i]),
               if (overflow > 0) _plusLine(context, overflow),
             ],
           ],
@@ -369,10 +393,10 @@ class _DayCell extends StatelessWidget {
     );
   }
 
-  Widget _line(BuildContext context, Confirmation conf) {
+  Widget _line(BuildContext context, _MiniLine line) {
     final c = context.c;
     late final Color bg, fg;
-    switch (_lineKindOf(conf)) {
+    switch (line.kind) {
       case _LineKind.paid:
         bg = c.deposited.withValues(alpha: 0.16);
         fg = c.depositedBadge;
@@ -386,12 +410,15 @@ class _DayCell extends StatelessWidget {
         fg = c.ink2;
         break;
     }
+    // 팀 작업은 '팀·현장' 으로 구분(파생 소득 — 본인 소유 확인서 아님).
+    final text =
+        line.isTeam ? '${context.l.ledgerTeamBadge}·${line.label}' : line.label;
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 2),
       padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(3)),
-      child: Text(conf.siteName,
+      child: Text(text,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           softWrap: false,
@@ -423,11 +450,16 @@ class _DayLedger extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.c;
     final l = context.l;
-    final confs = list.items.where((x) => x.date == dateParam(day)).toList();
-    final dayTotal = confs.fold<int>(0, (s, x) => s + x.total);
-    // 그날 모든 확인서가 완납이면 합계도 입금 색(초록), 미수 잔존이면 미수 색(주황).
-    final dayFullyPaid =
-        confs.isNotEmpty && confs.every((x) => x.isFullyPaid);
+    final key = dateParam(day);
+    final confs = list.items.where((x) => x.date == key).toList();
+    final shares = list.teamShares.where((x) => x.date == key).toList();
+    final dayTotal = confs.fold<int>(0, (s, x) => s + x.total) +
+        shares.fold<int>(0, (s, x) => s + x.amount);
+    // 그날 모든 항목(확인서+팀 작업)이 완납이면 합계도 입금 색(초록), 미수 잔존이면 미수 색(주황).
+    final hasAny = confs.isNotEmpty || shares.isNotEmpty;
+    final dayFullyPaid = hasAny &&
+        confs.every((x) => x.isFullyPaid) &&
+        shares.every((x) => x.isFullyPaid);
     return Container(
       decoration: BoxDecoration(
         color: c.surface,
@@ -457,18 +489,25 @@ class _DayLedger extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          if (confs.isEmpty)
+          if (!hasAny)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Text(l.calEmptyDay,
                   style: TextStyle(fontSize: 15, color: c.ink2)),
             )
-          else
+          else ...[
             for (final conf in confs)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _DayLedgerRow(conf: conf),
               ),
+            // 팀원 파생 소득(팀 작업 몫) — 읽기 전용 카드(확인서 뒤에 표시).
+            for (final ts in shares)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _DayTeamShareRow(share: ts),
+              ),
+          ],
           const SizedBox(height: 4),
           PrimaryButton(
             label: l.calRecordThisDay,
@@ -571,6 +610,83 @@ class _DayLedgerRow extends StatelessWidget {
   }
 }
 
+// 팀원 파생 소득(팀 작업 몫) 카드 — 읽기 전용.
+//  - 라벨 "OOO 반장 팀 작업" + 현장 + 본인 몫 금액(정산 상태 색) + PARTIAL 입금 보조줄.
+//  - 본인 소유 문서가 아니므로 탭해도 확인서 상세로 이동하지 않는다(비인터랙티브).
+class _DayTeamShareRow extends StatelessWidget {
+  final TeamShare share;
+  const _DayTeamShareRow({required this.share});
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final st = share.settlement;
+    // 항목 금액 색: 완납이면 입금(초록), 아니면 미수(주황).
+    final amtColor = share.isFullyPaid ? c.depositedBadge : c.receivable;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(13, 11, 13, 11),
+      decoration: BoxDecoration(
+        // 파생(팀) 카드임을 은은한 배경으로 구분.
+        color: c.primary.withValues(alpha: 0.05),
+        border: Border.all(color: c.border),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(context.l.ledgerTeamDerived(share.teamLeaderName),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: c.ink)),
+              ),
+              const SizedBox(width: 8),
+              Text(formatMoney(share.amount, context.lang),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: amtColor,
+                      fontFeatures: const [FontFeature.tabularFigures()])),
+            ],
+          ),
+          // 부분입금(PARTIAL): '입금 N원' 보조 표기 한 줄(입금 색).
+          if (st != null && st.isPartial) ...[
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                  context.l.ledgerDeposited(
+                      formatMoney(st.paidAmount, context.lang)),
+                  style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: c.depositedBadge,
+                      fontFeatures: const [FontFeature.tabularFigures()])),
+            ),
+          ],
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              const TeamBadge(),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(share.site,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 13, color: c.ink2)),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // 확인서 상태 칩(작성됨/전송됨/서명완료 등 — 백엔드 라벨 사용).
 class _StatusChip extends StatelessWidget {
   final String status;
@@ -608,12 +724,16 @@ class _WeekList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    // 작업 있는 날짜만 그룹핑 (날짜 오름차순)
+    // 작업 있는 날짜만 그룹핑 (날짜 오름차순) — 확인서 + 팀원 파생 소득(팀 작업 몫).
     final byDay = <String, List<Confirmation>>{};
     for (final conf in list.items) {
       byDay.putIfAbsent(conf.date, () => []).add(conf);
     }
-    final days = byDay.keys.toList()..sort();
+    final byDayShares = <String, List<TeamShare>>{};
+    for (final ts in list.teamShares) {
+      byDayShares.putIfAbsent(ts.date, () => []).add(ts);
+    }
+    final days = <String>{...byDay.keys, ...byDayShares.keys}.toList()..sort();
     if (days.isEmpty) {
       return Center(
         child: Padding(
@@ -628,8 +748,10 @@ class _WeekList extends StatelessWidget {
       itemCount: days.length,
       itemBuilder: (_, i) {
         final date = DateTime.parse(days[i]);
-        final confs = byDay[days[i]]!;
-        final dayTotal = confs.fold<int>(0, (s, x) => s + x.total);
+        final confs = byDay[days[i]] ?? const <Confirmation>[];
+        final shares = byDayShares[days[i]] ?? const <TeamShare>[];
+        final dayTotal = confs.fold<int>(0, (s, x) => s + x.total) +
+            shares.fold<int>(0, (s, x) => s + x.amount);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -654,6 +776,11 @@ class _WeekList extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _WeekItem(conf: conf),
+              ),
+            for (final ts in shares)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _DayTeamShareRow(share: ts),
               ),
           ],
         );
