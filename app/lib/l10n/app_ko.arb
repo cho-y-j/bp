@@ -532,12 +532,20 @@
   "homeToday": "오늘 일정",
   "homeMonthSummary": "이번 달 요약",
   "homeCheckNeeded": "확인 필요",
-  "homeDocExpiry": "{type} 만료 {dday}",
+  "homeDocExpiry": "{type} {status}",
   "@homeDocExpiry": {
     "placeholders": {
       "type": {
         "type": "String"
       },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "homeDocExpiryDue": "만료 {dday}",
+  "@homeDocExpiryDue": {
+    "placeholders": {
       "dday": {
         "type": "String"
       }
@@ -560,6 +568,7 @@
   "homeStampToday": "오늘 · WORKON",
   "homeEmptyToday": "오늘 예정된 일정이 없어요",
   "homeEmptyTodaySub": "하단 + 버튼으로 오늘 작업을 30초에 기록하세요.",
+  "homeHeroReceivable": "이번 달 받을 돈",
   "homeDaysWorked": "일한 날",
   "homeReceivable": "받을 돈 (미수)",
   "homeReceived": "받은 돈 (입금)",
@@ -574,6 +583,8 @@
     }
   },
   "calManUnit": "만",
+  "calMonthReceivable": "받을 돈",
+  "calTapDayHint": "날짜를 눌러 그날 확인서를 펼쳐 보세요",
   "calEmptyMonth": "이 달에 기록된 작업이 없어요.",
   "calEmptyDay": "이 날 기록된 작업이 없어요.",
   "calRecordThisDay": "이 날 작업 기록하기",

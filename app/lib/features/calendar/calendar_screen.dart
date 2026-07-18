@@ -11,6 +11,8 @@ import '../confirmation/confirmation_form_screen.dart';
 import '../confirmation/confirmation_detail_screen.dart';
 
 final _calViewProvider = StateProvider<bool>((ref) => true); // true=월간 그리드, false=주간 리스트
+// 월 그리드에서 펼쳐 볼(장부) 선택 날짜. null이면 접힘.
+final _selectedDayProvider = StateProvider<DateTime?>((ref) => null);
 
 class CalendarScreen extends ConsumerWidget {
   const CalendarScreen({super.key});
@@ -34,6 +36,7 @@ class CalendarScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   _monthNav(context, Icons.chevron_left_rounded, () {
+                    ref.read(_selectedDayProvider.notifier).state = null;
                     ref.read(selectedMonthProvider.notifier).state =
                         DateTime(month.year, month.month - 1);
                   }),
@@ -41,6 +44,7 @@ class CalendarScreen extends ConsumerWidget {
                       style: TextStyle(
                           fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
                   _monthNav(context, Icons.chevron_right_rounded, () {
+                    ref.read(_selectedDayProvider.notifier).state = null;
                     ref.read(selectedMonthProvider.notifier).state =
                         DateTime(month.year, month.month + 1);
                   }),
@@ -129,15 +133,18 @@ class _ViewToggle extends StatelessWidget {
   }
 }
 
-// ── 월간 그리드 ───────────────────────────────────────────────
-class _MonthGrid extends StatelessWidget {
+// ── 월간 그리드(장부) ─────────────────────────────────────────
+// 날짜를 누르면 그 아래로 그날 확인서 목록이 펼쳐진다(장부 뷰).
+class _MonthGrid extends ConsumerWidget {
   final DateTime month;
   final ConfirmationList list;
   const _MonthGrid({required this.month, required this.list});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final l = context.l;
+    final selected = ref.watch(_selectedDayProvider);
     final byDate = list.byDateMap;
     final first = DateTime(month.year, month.month, 1);
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
@@ -160,25 +167,45 @@ class _MonthGrid extends StatelessWidget {
         DateFormat.E(loc).format(DateTime(2024, 1, 7 + i)), // 2024-01-07 = 일요일
     ];
     final today = DateTime.now();
+    final selKey = selected == null ? null : dateParam(selected);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(10, 6, 10, 24),
       children: [
-        // 월 합계
+        // 월 합계 — 그 달 받을 돈(홈 히어로와 동일 서식: 미수 색·큰 숫자).
         Padding(
-          padding: const EdgeInsets.fromLTRB(6, 0, 6, 8),
+          padding: const EdgeInsets.fromLTRB(6, 2, 6, 10),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(context.l.calWorkCount(list.count),
-                  style: TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w700, color: c.ink2)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l.calMonthReceivable,
+                      style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: c.ink2)),
+                  const SizedBox(height: 2),
+                  Text(formatMoney(list.totalAmount, context.lang),
+                      style: TextStyle(
+                          fontSize: 26,
+                          height: 1.1,
+                          fontWeight: FontWeight.w800,
+                          color: c.receivable,
+                          letterSpacing: -0.3,
+                          fontFeatures: const [FontFeature.tabularFigures()])),
+                ],
+              ),
               const Spacer(),
-              Text(formatMoney(list.totalAmount, context.lang),
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                      color: c.ink,
-                      fontFeatures: const [FontFeature.tabularFigures()])),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 3),
+                child: Text(l.calWorkCount(list.count),
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: c.ink3)),
+              ),
             ],
           ),
         ),
@@ -218,13 +245,40 @@ class _MonthGrid extends StatelessWidget {
                 day.month == today.month &&
                 day.day == today.day;
             return _DayCell(
+              key: ValueKey('cal-day-$key'),
               day: day,
               agg: agg,
               isToday: isToday,
-              onTap: () => _openDay(context, day, list),
+              isSelected: selKey == key,
+              onTap: () {
+                // 같은 날 다시 누르면 접기(토글).
+                ref.read(_selectedDayProvider.notifier).state =
+                    selKey == key ? null : day;
+              },
             );
           },
         ),
+        // 선택 날짜 장부 패널(펼침) / 미선택 시 안내.
+        if (selected != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(2, 14, 2, 0),
+            child: _DayLedger(day: selected, list: list),
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.fromLTRB(6, 16, 6, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.touch_app_outlined, size: 15, color: c.ink3),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(l.calTapDayHint,
+                      style: TextStyle(fontSize: 13, color: c.ink3)),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }
@@ -234,20 +288,31 @@ class _DayCell extends StatelessWidget {
   final DateTime day;
   final DayAggregate? agg;
   final bool isToday;
+  final bool isSelected;
   final VoidCallback onTap;
   const _DayCell(
-      {required this.day, required this.agg, required this.isToday, required this.onTap});
+      {super.key,
+      required this.day,
+      required this.agg,
+      required this.isToday,
+      required this.isSelected,
+      required this.onTap});
   @override
   Widget build(BuildContext context) {
     final c = context.c;
     final hasWork = agg != null && agg!.count > 0;
+    final borderColor = isSelected
+        ? c.primary
+        : (isToday ? c.primary : c.border);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: hasWork ? c.primary.withValues(alpha: 0.07) : c.surface,
+          color: isSelected
+              ? c.primary.withValues(alpha: 0.16)
+              : (hasWork ? c.primary.withValues(alpha: 0.07) : c.surface),
           border: Border.all(
-              color: isToday ? c.primary : c.border, width: isToday ? 1.6 : 1),
+              color: borderColor, width: (isSelected || isToday) ? 1.6 : 1),
           borderRadius: BorderRadius.circular(9),
         ),
         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 2),
@@ -256,8 +321,9 @@ class _DayCell extends StatelessWidget {
             Text('${day.day}',
                 style: TextStyle(
                     fontSize: 13,
-                    fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
-                    color: isToday ? c.accentText : c.ink,
+                    fontWeight:
+                        (isToday || isSelected) ? FontWeight.w800 : FontWeight.w600,
+                    color: (isToday || isSelected) ? c.accentText : c.ink,
                     fontFeatures: const [FontFeature.tabularFigures()])),
             const SizedBox(height: 3),
             if (hasWork) ...[
@@ -295,6 +361,171 @@ class _DayCell extends StatelessWidget {
       return '$s$unit';
     }
     return '$won';
+  }
+}
+
+// ── 선택 날짜 장부 패널(그리드 아래 펼침) ──────────────────────
+class _DayLedger extends StatelessWidget {
+  final DateTime day;
+  final ConfirmationList list;
+  const _DayLedger({required this.day, required this.list});
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l = context.l;
+    final confs = list.items.where((x) => x.date == dateParam(day)).toList();
+    final dayTotal = confs.fold<int>(0, (s, x) => s + x.total);
+    return Container(
+      decoration: BoxDecoration(
+        color: c.surface,
+        border: Border.all(color: c.borderStrong),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 날짜 + 그날 합계(받을 돈 색).
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Text(fmtDate(day, context.lang),
+                    style: TextStyle(
+                        fontSize: 17, fontWeight: FontWeight.w800, color: c.ink)),
+              ),
+              if (confs.isNotEmpty)
+                Text(formatMoney(dayTotal, context.lang),
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: c.receivable,
+                        fontFeatures: const [FontFeature.tabularFigures()])),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (confs.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Text(l.calEmptyDay,
+                  style: TextStyle(fontSize: 15, color: c.ink2)),
+            )
+          else
+            for (final conf in confs)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _DayLedgerRow(conf: conf),
+              ),
+          const SizedBox(height: 4),
+          PrimaryButton(
+            label: l.calRecordThisDay,
+            icon: Icons.add_rounded,
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => ConfirmationFormScreen(initialDate: day),
+              fullscreenDialog: true,
+            )),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 장부 행: 현장명·상대·시간 + 상태 배지 + 큰 금액. 탭 → 확인서 상세.
+class _DayLedgerRow extends StatelessWidget {
+  final Confirmation conf;
+  const _DayLedgerRow({required this.conf});
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return Material(
+      color: c.surface,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => ConfirmationDetailScreen(confirmationId: conf.id))),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(13, 11, 13, 11),
+          decoration: BoxDecoration(
+            border: Border.all(color: c.border),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(conf.siteName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: c.ink)),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(formatMoney(conf.total, context.lang),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: c.receivable,
+                          fontFeatures: const [FontFeature.tabularFigures()])),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  if (conf.isTeam) ...[
+                    const TeamBadge(),
+                    const SizedBox(width: 6),
+                  ],
+                  _StatusChip(status: conf.status, label: conf.statusLabel),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                        '${conf.companyName} · ${fmtAmpm(conf.startTime, context.lang)}~${fmtAmpm(conf.endTime, context.lang)}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 13, color: c.ink2)),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// 확인서 상태 칩(작성됨/전송됨/서명완료 등 — 백엔드 라벨 사용).
+class _StatusChip extends StatelessWidget {
+  final String status;
+  final String label;
+  const _StatusChip({required this.status, required this.label});
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    if (label.isEmpty) return const SizedBox.shrink();
+    late final Color bg, fg;
+    if (status == 'SIGNED') {
+      bg = c.deposited.withValues(alpha: 0.12);
+      fg = c.depositedBadge;
+    } else if (status == 'SENT') {
+      bg = c.primary.withValues(alpha: 0.12);
+      fg = c.accentText;
+    } else {
+      bg = c.ink2.withValues(alpha: 0.10);
+      fg = c.ink2;
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
+      child: Text(label,
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: fg)),
+    );
   }
 }
 
@@ -425,63 +656,3 @@ class _WeekItem extends StatelessWidget {
   }
 }
 
-// 날짜 탭 → 해당일 기록 시트
-void _openDay(BuildContext context, DateTime day, ConfirmationList list) {
-  final confs = list.items.where((x) => x.date == dateParam(day)).toList();
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: context.c.bg,
-    shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-    builder: (ctx) {
-      final c = ctx.c;
-      return SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 12, 18, 18),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                      color: c.borderStrong, borderRadius: BorderRadius.circular(2)),
-                ),
-              ),
-              const SizedBox(height: 14),
-              Text(fmtDate(day, ctx.lang),
-                  style: TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w800, color: c.ink)),
-              const SizedBox(height: 12),
-              if (confs.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Text(ctx.l.calEmptyDay,
-                      style: TextStyle(fontSize: 15, color: c.ink2)),
-                )
-              else
-                ...confs.map((conf) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: _WeekItem(conf: conf),
-                    )),
-              const SizedBox(height: 8),
-              PrimaryButton(
-                label: ctx.l.calRecordThisDay,
-                icon: Icons.add_rounded,
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => ConfirmationFormScreen(initialDate: day),
-                    fullscreenDialog: true,
-                  ));
-                },
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}

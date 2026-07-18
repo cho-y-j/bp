@@ -899,8 +899,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeCheckNeeded => 'Needs attention';
 
   @override
-  String homeDocExpiry(String type, String dday) {
-    return '$type expires $dday';
+  String homeDocExpiry(String type, String status) {
+    return '$type $status';
+  }
+
+  @override
+  String homeDocExpiryDue(String dday) {
+    return 'expires $dday';
   }
 
   @override
@@ -939,6 +944,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Tap the + button below to log today\'s work in 30 seconds.';
 
   @override
+  String get homeHeroReceivable => 'To collect this month';
+
+  @override
   String get homeDaysWorked => 'Days worked';
 
   @override
@@ -960,6 +968,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calManUnit => 'k';
+
+  @override
+  String get calMonthReceivable => 'To collect';
+
+  @override
+  String get calTapDayHint => 'Tap a date to open that day\'s confirmations';
 
   @override
   String get calEmptyMonth => 'No work recorded this month.';

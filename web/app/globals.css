@@ -706,18 +706,22 @@ button {
 }
 
 /* ============================================================
-   루트 랜딩 — 한 문장 + 큰 CTA 1개 (죽은 공간 제거·수직 중앙)
+   루트 랜딩 — 모바일: 한 문장+큰 CTA(깔끔 유지)
+   데스크톱(≥1024px): 2단 히어로(카피+CTA / 앱 목업) + 신뢰 3블록
    ============================================================ */
 .landing {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 48px 20px;
+}
+.landing-inner {
+  width: 100%;
+  max-width: 560px;
 }
 .landing-hero {
   width: 100%;
-  max-width: 560px;
 }
 .landing-title {
   font-size: 34px;
@@ -741,32 +745,105 @@ button {
   color: var(--ink-3);
   line-height: 1.55;
 }
-.landing-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 10px;
-  margin-top: 30px;
-  padding-top: 24px;
+
+/* 앱 화면 목업 — 모바일에서는 숨김(모바일 깔끔 유지) */
+.landing-visual {
+  display: none;
+}
+.phone {
+  width: 236px;
+  border-radius: 34px;
+  border: 8px solid #0f1522; /* 폰 베젤: 라이트·다크 공통 다크 프레임 */
+  background: #0f1522;
+  box-shadow: var(--shadow-lift);
+  overflow: hidden;
+  line-height: 0;
+}
+.phone img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 26px;
+}
+
+/* 신뢰 3블록 */
+.landing-trust {
+  list-style: none;
+  margin: 30px 0 0;
+  padding: 24px 0 0;
   border-top: 1px solid var(--border);
+  display: grid;
+  gap: 14px;
 }
-.landing-feature {
-  display: inline-flex;
+.landing-trust li {
+  display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 14px;
-  font-weight: 700;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--ink-2);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 8px 14px;
+  line-height: 1.4;
 }
-.landing-feature svg {
+.landing-trust-ic {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
   color: var(--accent-text);
 }
+
 @media (max-width: 480px) {
   .landing-title {
     font-size: 28px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .landing-inner {
+    max-width: 1060px;
+  }
+  .landing-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .landing-title {
+    font-size: 46px;
+    margin-top: 20px;
+  }
+  .landing-sub {
+    font-size: 19px;
+  }
+  .landing-visual {
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    min-height: 560px;
+  }
+  .phone-front {
+    position: relative;
+    z-index: 2;
+    transform: translateX(-40px) rotate(-3deg);
+  }
+  .phone-back {
+    position: absolute;
+    z-index: 1;
+    transform: translateX(80px) translateY(-14px) rotate(4deg) scale(0.92);
+    opacity: 0.96;
+  }
+  .landing-trust {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-top: 52px;
+    padding-top: 34px;
+  }
+  .landing-trust li {
+    font-size: 16px;
   }
 }
 

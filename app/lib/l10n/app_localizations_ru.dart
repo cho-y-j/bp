@@ -896,8 +896,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeCheckNeeded => 'Требует внимания';
 
   @override
-  String homeDocExpiry(String type, String dday) {
-    return '$type истекает $dday';
+  String homeDocExpiry(String type, String status) {
+    return '$type $status';
+  }
+
+  @override
+  String homeDocExpiryDue(String dday) {
+    return 'истекает $dday';
   }
 
   @override
@@ -937,6 +942,9 @@ class AppLocalizationsRu extends AppLocalizations {
       'Нажмите + внизу и запишите работу за 30 секунд.';
 
   @override
+  String get homeHeroReceivable => 'К получению в этом месяце';
+
+  @override
   String get homeDaysWorked => 'Отработано дней';
 
   @override
@@ -958,6 +966,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get calManUnit => 'тыс';
+
+  @override
+  String get calMonthReceivable => 'К получению';
+
+  @override
+  String get calTapDayHint => 'Нажмите дату, чтобы открыть подтверждения дня';
 
   @override
   String get calEmptyMonth => 'В этом месяце записей нет.';

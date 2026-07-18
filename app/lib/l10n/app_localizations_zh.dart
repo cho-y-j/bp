@@ -875,8 +875,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeCheckNeeded => '需确认';
 
   @override
-  String homeDocExpiry(String type, String dday) {
-    return '$type 到期 $dday';
+  String homeDocExpiry(String type, String status) {
+    return '$type $status';
+  }
+
+  @override
+  String homeDocExpiryDue(String dday) {
+    return '到期 $dday';
   }
 
   @override
@@ -912,6 +917,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeEmptyTodaySub => '点击下方 + 按钮，30秒记录今天的作业。';
 
   @override
+  String get homeHeroReceivable => '本月应收';
+
+  @override
   String get homeDaysWorked => '出勤天数';
 
   @override
@@ -933,6 +941,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get calManUnit => '万';
+
+  @override
+  String get calMonthReceivable => '应收';
+
+  @override
+  String get calTapDayHint => '点按日期展开当天确认单';
 
   @override
   String get calEmptyMonth => '本月没有作业记录。';

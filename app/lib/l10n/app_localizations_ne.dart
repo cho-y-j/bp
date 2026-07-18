@@ -892,8 +892,13 @@ class AppLocalizationsNe extends AppLocalizations {
   String get homeCheckNeeded => 'जाँच आवश्यक';
 
   @override
-  String homeDocExpiry(String type, String dday) {
-    return '$type म्याद $dday';
+  String homeDocExpiry(String type, String status) {
+    return '$type $status';
+  }
+
+  @override
+  String homeDocExpiryDue(String dday) {
+    return 'म्याद $dday';
   }
 
   @override
@@ -933,6 +938,9 @@ class AppLocalizationsNe extends AppLocalizations {
       'तलको + बटनले आजको काम ३० सेकेन्डमा टिप्नुहोस्।';
 
   @override
+  String get homeHeroReceivable => 'यस महिना पाउनुपर्ने';
+
+  @override
   String get homeDaysWorked => 'काम गरेको दिन';
 
   @override
@@ -954,6 +962,12 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get calManUnit => 'हजार';
+
+  @override
+  String get calMonthReceivable => 'पाउनुपर्ने';
+
+  @override
+  String get calTapDayHint => 'त्यस दिनको पुष्टि हेर्न मिति थिच्नुहोस्';
 
   @override
   String get calEmptyMonth => 'यस महिना कुनै काम टिपिएको छैन।';

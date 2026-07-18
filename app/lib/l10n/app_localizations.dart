@@ -1693,8 +1693,14 @@ abstract class AppLocalizations {
   /// No description provided for @homeDocExpiry.
   ///
   /// In ko, this message translates to:
-  /// **'{type} 만료 {dday}'**
-  String homeDocExpiry(String type, String dday);
+  /// **'{type} {status}'**
+  String homeDocExpiry(String type, String status);
+
+  /// No description provided for @homeDocExpiryDue.
+  ///
+  /// In ko, this message translates to:
+  /// **'만료 {dday}'**
+  String homeDocExpiryDue(String dday);
 
   /// No description provided for @homeDocExpirySub.
   ///
@@ -1756,6 +1762,12 @@ abstract class AppLocalizations {
   /// **'하단 + 버튼으로 오늘 작업을 30초에 기록하세요.'**
   String get homeEmptyTodaySub;
 
+  /// No description provided for @homeHeroReceivable.
+  ///
+  /// In ko, this message translates to:
+  /// **'이번 달 받을 돈'**
+  String get homeHeroReceivable;
+
   /// No description provided for @homeDaysWorked.
   ///
   /// In ko, this message translates to:
@@ -1797,6 +1809,18 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'만'**
   String get calManUnit;
+
+  /// No description provided for @calMonthReceivable.
+  ///
+  /// In ko, this message translates to:
+  /// **'받을 돈'**
+  String get calMonthReceivable;
+
+  /// No description provided for @calTapDayHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'날짜를 눌러 그날 확인서를 펼쳐 보세요'**
+  String get calTapDayHint;
 
   /// No description provided for @calEmptyMonth.
   ///

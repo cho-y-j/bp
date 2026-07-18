@@ -877,8 +877,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homeCheckNeeded => '확인 필요';
 
   @override
-  String homeDocExpiry(String type, String dday) {
-    return '$type 만료 $dday';
+  String homeDocExpiry(String type, String status) {
+    return '$type $status';
+  }
+
+  @override
+  String homeDocExpiryDue(String dday) {
+    return '만료 $dday';
   }
 
   @override
@@ -914,6 +919,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homeEmptyTodaySub => '하단 + 버튼으로 오늘 작업을 30초에 기록하세요.';
 
   @override
+  String get homeHeroReceivable => '이번 달 받을 돈';
+
+  @override
   String get homeDaysWorked => '일한 날';
 
   @override
@@ -935,6 +943,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get calManUnit => '만';
+
+  @override
+  String get calMonthReceivable => '받을 돈';
+
+  @override
+  String get calTapDayHint => '날짜를 눌러 그날 확인서를 펼쳐 보세요';
 
   @override
   String get calEmptyMonth => '이 달에 기록된 작업이 없어요.';

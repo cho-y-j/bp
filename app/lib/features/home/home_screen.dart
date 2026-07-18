@@ -95,6 +95,18 @@ class HomeScreen extends ConsumerWidget {
               // 전송 대기 초안 배너(오프라인 임시저장)
               const _DraftsBanner(),
 
+              // "내 돈" 단일 히어로 — 이번 달 받을 돈(미수)을 화면에서 가장 큰 숫자로.
+              // 받은 돈·일한 날은 그 아래 보조 스탯 한 줄로 흡수(별도 요약 카드 제거).
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: summary.when(
+                  loading: () => const _CardSkeleton(height: 150),
+                  error: (e, _) => ErrorRetry(
+                      onRetry: () => ref.invalidate(ledgerSummaryProvider)),
+                  data: (s) => _MonthHero(summary: s),
+                ),
+              ),
+
               // 상황 무관 상시 노출 주 CTA — "확인서 쓰기".
               Padding(
                 padding: const EdgeInsets.only(top: 16),
@@ -132,18 +144,6 @@ class HomeScreen extends ConsumerWidget {
                 },
               ),
 
-              // 이번 달 요약
-              SectionTitle(l.homeMonthSummary,
-                  trailing: Text('${now.year}.${now.month.toString().padLeft(2, '0')} ›',
-                      style: TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w600, color: c.accentText))),
-              summary.when(
-                loading: () => const _CardSkeleton(height: 150),
-                error: (e, _) =>
-                    ErrorRetry(onRetry: () => ref.invalidate(ledgerSummaryProvider)),
-                data: (s) => _SummaryCard(summary: s),
-              ),
-
               // 만료 임박 서류
               expiring.when(
                 loading: () => const SizedBox.shrink(),
@@ -171,7 +171,7 @@ class HomeScreen extends ConsumerWidget {
                               d.type,
                               (d.dday ?? 0) < 0
                                   ? l.docExpired
-                                  : ddayUnified(l, d.dday)),
+                                  : l.homeDocExpiryDue(ddayUnified(l, d.dday))),
                           subtitle: l.homeDocExpirySub,
                           onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
@@ -399,11 +399,13 @@ class _EmptyToday extends StatelessWidget {
   }
 }
 
-class _SummaryCard extends ConsumerWidget {
+/// 홈 "내 돈" 단일 히어로 — 이번 달 받을 돈(미수)을 화면에서 가장 큰 숫자 1개로
+/// 세우고, 받은 돈·일한 날은 그 아래 보조 스탯 한 줄로 흡수한다(토스식 위계).
+class _MonthHero extends StatelessWidget {
   final LedgerSummary summary;
-  const _SummaryCard({required this.summary});
+  const _MonthHero({required this.summary});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final c = context.c;
     final l = context.l;
     final worked = summary.totalGongsu > 0
@@ -415,24 +417,33 @@ class _SummaryCard extends ConsumerWidget {
         border: Border.all(color: c.border),
         borderRadius: BorderRadius.circular(14),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(l.homeDaysWorked,
+              Icon(Icons.south_west_rounded, size: 17, color: c.receivable),
+              const SizedBox(width: 6),
+              Text(l.homeHeroReceivable,
                   style: TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w600, color: c.ink2)),
-              const Spacer(),
-              Text(worked,
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: c.ink,
-                      fontFeatures: const [FontFeature.tabularFigures()])),
+                      fontSize: 14.5, fontWeight: FontWeight.w700, color: c.ink2)),
             ],
+          ),
+          const SizedBox(height: 8),
+          // 히어로 숫자 — 화면에서 가장 크게. 긴 로케일 표기는 한 줄 축소.
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(formatMoney(summary.totalOutstanding, context.lang),
+                maxLines: 1,
+                style: TextStyle(
+                    fontSize: 40,
+                    height: 1.05,
+                    fontWeight: FontWeight.w800,
+                    color: c.receivable,
+                    letterSpacing: -0.5,
+                    fontFeatures: const [FontFeature.tabularFigures()])),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 14),
@@ -441,18 +452,24 @@ class _SummaryCard extends ConsumerWidget {
           Row(
             children: [
               Expanded(
-                child: _SumCell(
-                  received: false,
-                  caption: l.homeReceivable,
-                  amount: summary.totalOutstanding,
+                child: _HeroStat(
+                  icon: Icons.check_circle_outline_rounded,
+                  iconColor: c.deposited,
+                  caption: l.homeReceived,
+                  value: formatMoney(summary.totalPaid, context.lang),
+                  valueColor: c.deposited,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
+              Container(width: 1, height: 34, color: c.border),
+              const SizedBox(width: 14),
               Expanded(
-                child: _SumCell(
-                  received: true,
-                  caption: l.homeReceived,
-                  amount: summary.totalPaid,
+                child: _HeroStat(
+                  icon: Icons.event_available_rounded,
+                  iconColor: c.ink3,
+                  caption: l.homeDaysWorked,
+                  value: worked,
+                  valueColor: c.ink,
                 ),
               ),
             ],
@@ -463,53 +480,51 @@ class _SummaryCard extends ConsumerWidget {
   }
 }
 
-class _SumCell extends StatelessWidget {
-  final bool received;
+class _HeroStat extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
   final String caption;
-  final int amount;
-  const _SumCell(
-      {required this.received, required this.caption, required this.amount});
+  final String value;
+  final Color valueColor;
+  const _HeroStat({
+    required this.icon,
+    required this.iconColor,
+    required this.caption,
+    required this.value,
+    required this.valueColor,
+  });
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final color = received ? c.deposited : c.receivable;
-    return Container(
-      decoration: BoxDecoration(
-        color: c.surface2,
-        border: Border.all(color: c.border),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.fromLTRB(13, 12, 13, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(received ? Icons.check_circle_outline_rounded : Icons.south_west_rounded,
-                  size: 15, color: color),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(caption,
-                    style: TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w700, color: color)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          // 금액은 줄바꿈/잘림 없이 한 줄 축소(scaleDown) — 긴 로케일 표기 대응.
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(formatMoney(amount, context.lang),
-                maxLines: 1,
-                style: TextStyle(
-                    fontSize: 21,
-                    fontWeight: FontWeight.w800,
-                    color: color,
-                    fontFeatures: const [FontFeature.tabularFigures()])),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 14, color: iconColor),
+            const SizedBox(width: 5),
+            Flexible(
+              child: Text(caption,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      fontSize: 12.5, fontWeight: FontWeight.w600, color: c.ink3)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(value,
+              maxLines: 1,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: valueColor,
+                  fontFeatures: const [FontFeature.tabularFigures()])),
+        ),
+      ],
     );
   }
 }

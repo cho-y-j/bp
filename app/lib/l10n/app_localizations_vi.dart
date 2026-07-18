@@ -893,8 +893,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get homeCheckNeeded => 'Cần kiểm tra';
 
   @override
-  String homeDocExpiry(String type, String dday) {
-    return '$type hết hạn $dday';
+  String homeDocExpiry(String type, String status) {
+    return '$type $status';
+  }
+
+  @override
+  String homeDocExpiryDue(String dday) {
+    return 'hết hạn $dday';
   }
 
   @override
@@ -931,6 +936,9 @@ class AppLocalizationsVi extends AppLocalizations {
       'Chạm nút + bên dưới để ghi việc hôm nay trong 30 giây.';
 
   @override
+  String get homeHeroReceivable => 'Cần thu tháng này';
+
+  @override
   String get homeDaysWorked => 'Số ngày làm';
 
   @override
@@ -952,6 +960,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get calManUnit => 'k';
+
+  @override
+  String get calMonthReceivable => 'Cần thu';
+
+  @override
+  String get calTapDayHint => 'Chạm vào ngày để mở xác nhận của ngày đó';
 
   @override
   String get calEmptyMonth => 'Chưa có công việc trong tháng này.';
