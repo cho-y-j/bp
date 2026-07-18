@@ -36,8 +36,11 @@ export interface LaborContractView {
   specialTerms?: string | null;
   employerSignerName?: string | null;
   employerSignedAt?: string | null;
+  // 손글씨 서명 획(PNG data URI). 서명 완료된 쪽만 서버가 제공. 없으면 체크 스탬프 폴백.
+  employerSignImageDataUrl?: string | null;
   workerSignerName?: string | null;
   workerSignedAt?: string | null;
+  workerSignImageDataUrl?: string | null;
   pdfUrl?: string;
 }
 
@@ -201,6 +204,14 @@ export default function PaperLaborContract({
                   </span>
                 ) : null}
               </span>
+              {c.employerSignImageDataUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  className="sign-stroke sign-stroke-inline"
+                  src={c.employerSignImageDataUrl}
+                  alt={c.employerSignerName ?? t('lcEmployerSigned')}
+                />
+              ) : null}
             </div>
           </div>
         ) : null}
@@ -223,6 +234,14 @@ export default function PaperLaborContract({
                   </span>
                 ) : null}
               </span>
+              {c.workerSignImageDataUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  className="sign-stroke sign-stroke-inline"
+                  src={c.workerSignImageDataUrl}
+                  alt={c.workerSignerName ?? ''}
+                />
+              ) : null}
             </div>
           </div>
         ) : null}

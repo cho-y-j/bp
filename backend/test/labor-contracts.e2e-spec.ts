@@ -191,6 +191,9 @@ describe('P2b Labor contracts flow (e2e)', () => {
     expect(v.wageAmount).toBe(180000);
     expect(v.employerSignerName).toBe('대성건설 대표');
     expect(v.socialInsurance.employment).toBe(true);
+    // 사업장 서명 완료 → 사업장 손글씨 획 노출, 작업자는 미서명이라 부재.
+    expect(v.employerSignImageDataUrl).toMatch(/^data:image\/png;base64,/);
+    expect(v.workerSignImageDataUrl).toBeFalsy();
   });
 
   it('작업자 "내 계약서" 목록에 자동 연결(SENT)', async () => {
@@ -210,6 +213,16 @@ describe('P2b Labor contracts flow (e2e)', () => {
       .expect(201);
     expect(res.body.data.status).toBe('SIGNED');
     expect(res.body.data.workerSignerName).toBe('김근로');
+  });
+
+  it('공개 열람(SIGNED) → 양측 손글씨 서명 이미지 포함', async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/api/public/contracts/${store.token}`)
+      .expect(200);
+    const v = res.body.data;
+    expect(v.signed).toBe(true);
+    expect(v.employerSignImageDataUrl).toMatch(/^data:image\/png;base64,/);
+    expect(v.workerSignImageDataUrl).toMatch(/^data:image\/png;base64,/);
   });
 
   it('재서명 → 409 ALREADY_SIGNED', async () => {

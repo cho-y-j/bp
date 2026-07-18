@@ -160,6 +160,8 @@ describe('Confirmations & Ledger flow (e2e)', () => {
     expect(res.body.data.companyName).toBe('대한건설');
     expect(res.body.data.total).toBe(260000);
     expect(res.body.data.signed).toBe(false);
+    // 미서명 상태에서는 손글씨 서명 이미지가 노출되지 않아야 한다.
+    expect(res.body.data.signImageDataUrl).toBeFalsy();
 
     const c = await prisma.confirmation.findUnique({
       where: { id: store.id },
@@ -198,6 +200,17 @@ describe('Confirmations & Ledger flow (e2e)', () => {
       .send({ signerName: '다른사람', signImageBase64: await signPngDataUri() })
       .expect(409);
     expect(res.body.error.code).toBe('ALREADY_SIGNED');
+  });
+
+  it('public 열람(SIGNED) → 손글씨 서명 이미지(PNG data URI) 포함', async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/api/public/confirmations/${store.token}`)
+      .expect(200);
+    expect(res.body.data.signed).toBe(true);
+    expect(typeof res.body.data.signImageDataUrl).toBe('string');
+    expect(res.body.data.signImageDataUrl).toMatch(
+      /^data:image\/png;base64,/,
+    );
   });
 
   it('SIGNED 상태 수정 시도 → 409 NOT_EDITABLE', async () => {

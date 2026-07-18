@@ -412,12 +412,29 @@ export class LaborContractsService {
       employerSignedAt: c.employerSignedAt
         ? toKstDateTimeStr(c.employerSignedAt)
         : null,
+      // 손글씨 서명 획(PNG data URI) — 양측. 각 서명이 완료된 쪽만 노출.
+      employerSignImageDataUrl: c.employerSignedAt
+        ? await this.loadSignDataUrl(c.employerSignImagePath)
+        : null,
       workerSignerName: c.workerSignerName,
       workerSignedAt: c.workerSignedAt
         ? toKstDateTimeStr(c.workerSignedAt)
         : null,
+      workerSignImageDataUrl: c.workerSignedAt
+        ? await this.loadSignDataUrl(c.workerSignImagePath)
+        : null,
       pdfUrl: `/api/public/contracts/${token}/pdf`,
     };
+  }
+
+  /** 서명 이미지 파일(상대경로)을 PNG data URI 로 로드. 없거나 실패 시 null. */
+  private async loadSignDataUrl(
+    path: string | null,
+  ): Promise<string | null> {
+    if (!path) return null;
+    const buf = await this.storage.readFile(path).catch(() => null);
+    if (!buf || buf.length === 0) return null;
+    return `data:image/png;base64,${buf.toString('base64')}`;
   }
 
   async publicPdf(token: string): Promise<Buffer> {

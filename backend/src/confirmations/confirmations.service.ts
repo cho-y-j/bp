@@ -606,8 +606,23 @@ export class ConfirmationsService {
       notes: c.notes,
       signerName: c.signerName,
       signedAt: c.signedAt ? toKstDateTimeStr(c.signedAt) : null,
+      // 손글씨 서명 획(PNG data URI) — SIGNED 일 때만 노출(증빙 실렌더용).
+      signImageDataUrl:
+        c.status === ConfirmationStatus.SIGNED
+          ? await this.loadSignDataUrl(c.signImagePath)
+          : null,
       pdfUrl: `/api/public/confirmations/${token}/pdf`,
     };
+  }
+
+  /** 서명 이미지 파일(상대경로)을 PNG data URI 로 로드. 없거나 실패 시 null. */
+  private async loadSignDataUrl(
+    path: string | null,
+  ): Promise<string | null> {
+    if (!path) return null;
+    const buf = await this.storage.readFile(path).catch(() => null);
+    if (!buf || buf.length === 0) return null;
+    return `data:image/png;base64,${buf.toString('base64')}`;
   }
 
   // --------------------------------------------------------------------------
@@ -723,6 +738,11 @@ export class ConfirmationsService {
       notes: c.notes,
       signerName: c.signerName,
       signedAt: c.signedAt ? toKstDateTimeStr(c.signedAt) : null,
+      // 손글씨 서명 획(PNG data URI) — SIGNED 일 때만(사업장 수신함 상세 실렌더용).
+      signImageDataUrl:
+        c.status === ConfirmationStatus.SIGNED
+          ? await this.loadSignDataUrl(c.signImagePath)
+          : null,
     };
   }
 

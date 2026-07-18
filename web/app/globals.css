@@ -441,6 +441,26 @@ button {
   padding: 0 2px;
 }
 
+/* 실제 손글씨 서명 획 이미지. 서명은 대개 진한 획의 투명 PNG 이므로
+   흰 종이 바탕을 깔아 라이트/다크 어느 테마에서도 획이 보이도록 한다. */
+.sign-stroke {
+  flex: 0 0 auto;
+  height: 66px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+/* 근로계약서 양측 서명 스탬프 안 인라인 획(체크 스탬프 옆). */
+.sign-stroke-inline {
+  height: 40px;
+  max-width: 140px;
+  margin-left: auto;
+}
+
 /* 캔버스 서명 패드 */
 .sign-canvas-wrap {
   position: relative;

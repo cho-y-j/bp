@@ -69,6 +69,8 @@ export interface ConfirmationView {
   notes?: string | null;
   signerName?: string | null;
   signedAt?: string | null;
+  // 손글씨 서명 획(PNG data URI). SIGNED 일 때만 서버가 제공. 없으면 도장(인영) 폴백.
+  signImageDataUrl?: string | null;
 }
 
 /**
@@ -262,11 +264,20 @@ export default function PaperConfirmation({
                   {t('paperSignConfirmed')}
                 </span>
               </div>
-              {/* 서명자 인영(도장) — 서명 이미지 대체 시각요소. 서버가 서명
-                  이미지를 공개 API로 제공하면 여기에 실제 획을 렌더한다. */}
-              <span className="seal" aria-hidden>
-                <span className="seal-name">{sealText(c.signerName)}</span>
-              </span>
+              {/* 실제 손글씨 서명 획 — 서버가 SIGNED 시 PNG data URI 제공.
+                  없으면 서명자 인영(도장)으로 폴백. */}
+              {c.signImageDataUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  className="sign-stroke"
+                  src={c.signImageDataUrl}
+                  alt={t('paperSignConfirmed')}
+                />
+              ) : (
+                <span className="seal" aria-hidden>
+                  <span className="seal-name">{sealText(c.signerName)}</span>
+                </span>
+              )}
             </div>
           </div>
         ) : null}
